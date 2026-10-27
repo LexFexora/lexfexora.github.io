@@ -1,0 +1,33 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function isOwner() {
+      return signedIn() && request.auth.token.email_verified == true
+        && request.auth.token.email == "febriankusumaa@gmail.com";
+    }
+    function approved() {
+      return signedIn()
+        && get(/databases/$(database)/documents/izin/$(request.auth.uid)).data.status == "disetujui";
+    }
+
+    // Daftar izin: satu dokumen per akun Google (id = uid).
+    match /izin/{uid} {
+      allow get: if isOwner() || (signedIn() && request.auth.uid == uid);
+      allow list: if isOwner();
+      allow create: if signedIn() && request.auth.uid == uid
+        && request.resource.data.status == "menunggu"
+        && request.resource.data.keys().hasOnly(["email", "nama", "foto", "status", "diminta", "terakhir", "posisi"]);
+      allow update: if isOwner()
+        || (signedIn() && request.auth.uid == uid
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["terakhir", "posisi"]));
+      allow delete: if isOwner();
+    }
+
+    // Bank soal: hanya bisa dibaca akun yang disetujui; hanya pemilik yang bisa mengunggah.
+    match /bank/{doc} {
+      allow read: if isOwner() || approved();
+      allow write: if isOwner();
+    }
+  }
+}
