@@ -428,7 +428,7 @@ function restore(){
 function renderTabs(){
   const t=$("tabs");
   // "Pilih Klaster" membuka dan menutup daftar klaster; klaster yang dipilih tampil di bawah judulnya.
-  t.innerHTML=`<button class="tab pilih" type="button" id="pilih" aria-expanded="${!!state.klOpen}"><b>Pilih Klaster</b>${state.cat!=="all"?`<span>${esc(CATS[state.cat].short)}</span>`:""}</button>`+
+  t.innerHTML=`<button class="tab pilih" type="button" id="pilih" aria-expanded="${!!state.klOpen}"><b>Pilih Klaster - Seleksi Kemampuan Bidang</b>${state.cat!=="all"?`<span>${esc(CATS[state.cat].short)}</span>`:""}</button>`+
     (state.klOpen?Object.keys(CATS).map(n=>`<button class="tab" role="tab" type="button" data-k="${n}" aria-selected="${state.cat===+n}"><b>${esc(CATS[n].short)}</b></button>`).join(""):"");
   $("pilih").onclick=()=>{state.klOpen=!state.klOpen;renderTabs();};
   t.querySelectorAll(".tab[data-k]").forEach(b=>b.onclick=()=>{state.klOpen=false;selectCat(+b.dataset.k,"all");});
