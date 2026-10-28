@@ -187,12 +187,12 @@ html.gate-wait .wrap{display:none}
 .btn.copy{padding:4px 10px;font-size:12px;min-height:0}
 .adm h4{margin:10px 0 2px;font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em}
 .brand{display:flex;align-items:center;gap:14px}
-.brand .emb{width:60px;height:60px;flex:none;filter:drop-shadow(0 6px 12px rgba(0,0,0,.28))}
-@media (max-width:520px){.brand .emb{width:44px;height:44px}}
+.brand{font-size:clamp(26px,4.4vw,36px)}.brand .emb{width:2.35em;height:2.35em;flex:none;filter:drop-shadow(0 6px 12px rgba(0,0,0,.28))}
+
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .brand .emb{filter:invert(1)}}
 :root[data-theme="dark"] .brand .emb{filter:invert(1)}
 /* Judul dua baris: Computer Assisted Test di atas, nama di bawah */
-header h1 .t1,header h1 .t2{display:block}header h1 .sep{display:none}header h1 .t2{font-family:var(--f-display);font-size:1em;font-weight:650;letter-spacing:.04em;color:var(--brass);margin-top:2px;line-height:1.15}header .brand+.eyebrow{margin-top:10px}
+header h1 .t1,header h1 .t2{display:block}header h1 .sep{display:none}header h1 .t2{font-family:var(--f-display);font-size:1em;font-weight:650;letter-spacing:.1em;color:var(--ink);margin-top:2px;line-height:1.15}header .brand+.eyebrow{margin-top:10px}
 html.gate-wait .wrap{display:none}
 .gate-emb{width:64px;height:64px;margin:0 auto 10px;display:block}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .gate-emb{filter:invert(1)}}
@@ -558,7 +558,7 @@ function renderCard(){
   if(answered){
     html+=`${ketHTML(q)}`;
   }
-  if(locked) html+=`<div class="verdict bad">✗ SALAH · ⏱ ${state.timeUp?"Waktu ujian habis":"Waktu habis"} <small>Tidak dijawab, dianggap salah. Jawaban yang tepat: ${L[perm.indexOf(q.a)]}. ${esc(q.o[q.a])}</small></div>${ketHTML(q)}`;
+  if(locked) html+=ketHTML(q);
   html+=`<div class="nav"><button class="btn" id="prev" type="button" ${state.pos===0?"disabled":""}>← Sebelumnya</button><button class="btn primary" id="next" type="button">${state.pos===state.list.length-1?"Lihat hasil":"Berikutnya →"}</button></div>`;
   card.innerHTML=html;
   if(own){$("mv").onclick=()=>{state.mvOpen=!state.mvOpen;renderCard();};$("ed").onclick=()=>{state.edOpen=true;state.mvOpen=false;renderCard();};
