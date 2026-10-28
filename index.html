@@ -74,6 +74,8 @@ select{font:inherit;font-size:14px;padding:7px 10px;border-radius:8px;border:1px
 .meter .m-ok{background:var(--ok)} .meter .m-bad{background:var(--bad)}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px clamp(16px,3vw,28px);display:flex;flex-direction:column;gap:16px}
 .qhead{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:12px}
+.card{position:relative}.qhead.own{padding-right:104px}.mvbtn{position:absolute;top:12px;right:12px;font-size:12px;padding:4px 10px}
+.mvbox{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px;border:1px dashed var(--line);border-radius:10px;font-size:13px}.mvbox select{flex:1 1 220px;width:auto}.mvbox .note{flex-basis:100%;margin:0;font-size:12px;color:var(--muted)}
 .qno{font-family:var(--f-mono);color:var(--muted)}
 .chip{border-radius:999px;padding:2px 10px;background:var(--accent-soft);color:var(--accent);font-weight:600}
 .chip.kec{background:var(--brass-soft);color:var(--brass)}
@@ -190,6 +192,8 @@ html.gate-wait .wrap{display:none}
     <h4>Bank soal</h4>
     <p class="note" id="bankinfo">Memeriksa…</p>
     <div class="linkrow"><input type="file" id="bankfile" accept=".json,application/json"><button class="btn copy" type="button" id="bankup">Unggah bank soal</button></div>
+    <p class="note" id="pindahinfo"></p>
+    <div class="linkrow"><button class="btn copy" type="button" id="bankdl">⤓ Unduh bank-soal.json (termasuk perpindahan)</button></div>
     <p class="note">Kirim tautan di atas. Orang yang membukanya masuk dengan Google dan muncul di sini. Setujui agar bisa mengerjakan, Tolak atau Cabut untuk menutup aksesnya, Hapus agar ia bisa meminta ulang.</p>
     <button class="btn copy" type="button" id="adm-logout">Keluar</button>
   </details>
@@ -218,6 +222,12 @@ html.gate-wait .wrap{display:none}
 
 <script>
 const QB=[];
+// Perpindahan soal oleh pemilik (dokumen bank/pindah): id -> ["c|s|nama sub", ...], mapping pertama = kamar utama. Diabaikan bila nama sub tidak lagi cocok dengan meta.
+function applyPindah(q,list){
+  const ms=list.map(x=>{const [c,s,...n]=String(x).split("|");return {c:+c,s:+s,n:n.join("|")};});
+  if(!ms.length||!ms.every(m=>CATS[m.c]&&SUBS[m.c][m.s-1]===m.n))return false;
+  q.mappings=ms.map(m=>({c:m.c,s:m.s,kategori_utama:CATS[m.c].short,sub_materi:m.n}));
+  Object.assign(q,{c:q.mappings[0].c,s:q.mappings[0].s,kategori_utama:q.mappings[0].kategori_utama,sub_materi:q.mappings[0].sub_materi});return true;}
 const CATS = {"1":{"key":"ilmu-hukum","name":"Ilmu Hukum: PIH, Asas & Teori Hukum, Perundang-undangan, Penemuan Hukum, Kekuasaan Kehakiman, Kelembagaan PA, KEPPH & PMH-Wanprestasi","short":"Ilmu Hukum"},
 "2":{"key":"formil","name":"Hukum Formil: Hukum Acara Peradilan Agama & Hukum Acara Jinayat","short":"Hukum Formil"},
 "3":{"key":"materil","name":"Hukum Materil: Hukum Islam & Ushul Fikih, Perkawinan, Waris Islam, Wasiat-Hibah, ZISWAF, Ekonomi Syariah & Jinayat","short":"Hukum Materil"},
@@ -385,6 +395,18 @@ function renderMap(){
   $("map").innerHTML=state.list.map((id,i)=>{const a=state.ans[id];const c=a===undefined?"":(a===BYID[id].a?"ok":"bad");return `<button type="button" class="${c}${i===state.pos?" cur":""}" data-i="${i}" aria-label="Soal ${i+1}">${i+1}</button>`;}).join("");
   $("map").querySelectorAll("button").forEach(b=>b.onclick=()=>{state.pos=+b.dataset.i;persist();render();window.scrollTo({top:$("card").offsetTop-12});});
 }
+function moveQ(id,from,c,s){
+  const q=BYID[id];if(from.c===c&&from.s===s){state.mvOpen=false;renderCard();return;}
+  const seen=new Set(),ms=q.mappings.map(m=>m===from?{c,s}:{c:m.c,s:m.s}).filter(m=>{const k=m.c+"|"+m.s;if(seen.has(k))return false;seen.add(k);return true;});
+  const list=ms.map(m=>m.c+"|"+m.s+"|"+SUBS[m.c][m.s-1]);
+  $("mvok").disabled=true;$("mvmsg").textContent="Menyimpan…";
+  Promise.resolve(window.__pindah?window.__pindah(id,list):Promise.reject(new Error("tidak tersedia"))).then(()=>{
+    applyPindah(q,list);state.mvOpen=false;
+    if(!pool().some(x=>x.id===id)){const i=state.list.indexOf(id);if(i>=0){state.list.splice(i,1);if(i<state.pos)state.pos--;}}
+    persist();renderTabs();renderSub();render();
+    const n=$("card").querySelector(".qhead");if(n){const tip=document.createElement("p");tip.className="note";tip.style.margin="0";tip.textContent=`✓ Soal ${id} dipindahkan ke ${CATS[c].short} ${s}. ${SUBS[c][s-1]}.`;n.after(tip);}
+  }).catch(e=>{$("mvok").disabled=false;$("mvmsg").textContent="Gagal menyimpan: "+(e.code||e.message);});
+}
 function renderCard(){
   const card=$("card");
   if(!state.list.length){card.innerHTML="<p>Tidak ada soal untuk pilihan ini.</p>";return;}
@@ -398,7 +420,10 @@ function renderCard(){
   const locked=!answered&&(state.timeUp||!!state.expired[id]);
   const here=state.cat==="all"?q.mappings[0]:(q.mappings.find(m=>m.c===state.cat&&(state.sub==="all"||m.s===+state.sub))||q.mappings[0]);
   const also=q.mappings.filter(m=>m!==here).map(m=>`${CATS[m.c].short} ${m.s}`).join(", ");
-  let html=`<div class="qhead"><span class="qno">Soal No. ${state.pos+1}${isPin(q)?" 📌":""} <span class="of">/ ${state.list.length}</span></span><span class="chip">${esc(here.kategori_utama)} · ${here.s}. ${esc(here.sub_materi)}</span>${also?`<span class="chip">Juga di: ${esc(also)}</span>`:""}${isKec(q)?'<span class="chip kec">Pola kecuali</span>':""}${isPin(q)?'<span class="chip kec">📌 Pendapat ahli</span>':""}${isPin(q)&&getQuestionTier(q)===3?"":`<span class="chip">${TIERNAME[getQuestionTier(q)]}</span>`}</div>`;
+  const own=!!window.__isOwner;
+  let html=(own?`<button class="btn mvbtn" id="mv" type="button" aria-expanded="${!!state.mvOpen}">⇄ Pindahkan</button>`:"")+`<div class="qhead${own?" own":""}"><span class="qno">Soal No. ${state.pos+1}${isPin(q)?" 📌":""} <span class="of">/ ${state.list.length}</span></span><span class="chip">${esc(here.kategori_utama)} · ${here.s}. ${esc(here.sub_materi)}</span>${also?`<span class="chip">Juga di: ${esc(also)}</span>`:""}${isKec(q)?'<span class="chip kec">Pola kecuali</span>':""}${isPin(q)?'<span class="chip kec">📌 Pendapat ahli</span>':""}${isPin(q)&&getQuestionTier(q)===3?"":`<span class="chip">${TIERNAME[getQuestionTier(q)]}</span>`}</div>`;
+  if(own&&state.mvOpen){const cs=Object.keys(CATS).map(Number);
+    html+=`<div class="mvbox" id="mvbox"><span>Pindahkan dari <b>${esc(here.kategori_utama)} ${here.s}</b> ke:</span><select id="mvc" aria-label="Kategori tujuan">${cs.map(c=>`<option value="${c}"${c===here.c?" selected":""}>${esc(CATS[c].short)}</option>`).join("")}</select><select id="mvs" aria-label="Sub-materi tujuan"></select><button class="btn primary" id="mvok" type="button">Simpan</button><button class="btn" id="mvno" type="button">Batal</button><p class="note" id="mvmsg">Perpindahan disimpan di server dan berlaku untuk semua pengguna setelah mereka memuat ulang halaman.</p></div>`;}
   html+=`<p class="qtext">${esc(q.q)}</p><ol class="opts">`;
   perm.forEach((oi,pi)=>{
     let cls="",mark="";
@@ -414,6 +439,10 @@ function renderCard(){
   if(locked) html+=`<div class="verdict exp">⏱ ${state.timeUp?"Waktu ujian habis":"Waktu soal ini habis"} <small>Soal tidak dijawab. Jawaban yang tepat: ${L[perm.indexOf(q.a)]}. ${esc(q.o[q.a])}</small></div><div class="explain"><div><h3>💡 Pembahasan:</h3><p>${esc(q.p)}</p></div><div class="dasar"><h3>Sumber:</h3><p>${esc(q.d)}</p></div></div>`;
   html+=`<div class="nav"><button class="btn" id="prev" type="button" ${state.pos===0?"disabled":""}>← Sebelumnya</button><button class="btn primary" id="next" type="button">${state.pos===state.list.length-1?"Lihat hasil":"Berikutnya →"}</button></div>`;
   card.innerHTML=html;
+  if(own){$("mv").onclick=()=>{state.mvOpen=!state.mvOpen;renderCard();};
+    if(state.mvOpen){const fill=()=>{const c=+$("mvc").value;$("mvs").innerHTML=SUBS[c].map((n,i)=>`<option value="${i+1}"${c===here.c&&i+1===here.s?" selected":""}>${i+1}. ${esc(n)}</option>`).join("");};
+      fill();$("mvc").onchange=fill;$("mvno").onclick=()=>{state.mvOpen=false;renderCard();};
+      $("mvok").onclick=()=>moveQ(id,here,+$("mvc").value,+$("mvs").value);}}
   card.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{state.ans[id]=+b.dataset.o;persist();render();});
   $("prev").onclick=()=>{state.pos--;persist();render();};
   $("next").onclick=()=>{state.pos++;persist();render();window.scrollTo({top:Math.max(0,$("card").offsetTop-12)});};
@@ -502,6 +531,8 @@ window.__quiz={state};
     const get=i=>db.doc('bank/c'+i).get({source:src}).catch(()=>db.doc('bank/c'+i).get());
     const docs=await Promise.all(Array.from({length:chunks},(_,i)=>get(i)));
     const arr=JSON.parse('['+docs.map(d=>d.data().d).join(',')+']');
+    try{const pd=await db.doc('bank/pindah').get();const mp=(pd.exists&&pd.data().m)||{};
+      arr.forEach(q=>{if(mp[q.id])applyPindah(q,mp[q.id]);});}catch(e){}
     try{localStorage.setItem('bank-versi',String(versi));}catch(e){}
     return arr;
   }
@@ -521,7 +552,8 @@ window.__quiz={state};
     if(unsub){unsub();unsub=null;}if(beat){clearInterval(beat);beat=null;}
     if(!u){show('Latihan ini membutuhkan izin','Masuk dengan akun Google. Permintaan akses Anda akan dikirim ke pemilik untuk disetujui.',null,true,false);return;}
     const who='Masuk sebagai '+(u.displayName?u.displayName+' · ':'')+u.email;
-    if(OWNER&&(u.email||'').toLowerCase()===OWNER&&u.emailVerified){isOwner=true;admin();start();return;}
+    if(OWNER&&(u.email||'').toLowerCase()===OWNER&&u.emailVerified){isOwner=true;window.__isOwner=true;
+      window.__pindah=(id,list)=>db.doc('bank/pindah').set({m:{[id]:list}},{merge:true}).then(()=>pinfo());admin();start();return;}
     const ref=db.doc('izin/'+u.uid);
     try{const s=await ref.get();
       if(!s.exists)await ref.set({email:u.email||'',nama:u.displayName||'',foto:u.photoURL||'',status:'menunggu',diminta:FV.serverTimestamp(),terakhir:FV.serverTimestamp(),posisi:''});
@@ -533,7 +565,12 @@ window.__quiz={state};
     },e=>show('Akses belum dapat diperiksa','Muat ulang halaman. ('+(e.code||e.message)+')',who,false,true));
   });
 
+  function pinfo(){return db.doc('bank/pindah').get().then(d=>{const n=d.exists?Object.keys(d.data().m||{}).length:0;
+    $('pindahinfo').textContent=n?`Soal yang sudah dipindahkan lewat tombol ⇄ Pindahkan: ${n}. Perpindahan tetap berlaku setelah bank diunggah ulang.`:'Belum ada soal yang dipindahkan. Tombol ⇄ Pindahkan ada di pojok kanan atas setiap soal (hanya terlihat oleh Anda).';}).catch(()=>{});}
   function admin(){
+    pinfo();
+    $('bankdl').onclick=()=>{if(!QB.length){alert('Bank soal belum dimuat.');return;}
+      const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(QB,null,1)],{type:'application/json'}));a.download='bank-soal.json';document.body.appendChild(a);a.click();a.remove();};
     const box=$('adm'),body=$('admbody');box.hidden=false;
     const link=location.origin+location.pathname;$('admlink').value=link;
     $('admcopy').onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(link).then(()=>{$('admcopy').textContent='✓ Tersalin';setTimeout(()=>$('admcopy').textContent='⧉ Salin tautan',1500);});};
