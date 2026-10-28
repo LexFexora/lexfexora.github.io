@@ -65,7 +65,6 @@ header p{margin:6px 0 0;color:var(--muted);max-width:68ch}
 @media(min-width:720px){.controls{grid-template-columns:2fr 1fr 1fr}.controls .ctl-sub{grid-column:auto}}
 select{font:inherit;font-size:14px;padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);max-width:100%;min-width:0}
 .ctl-sub{grid-column:1/-1}
-.aksi{display:grid;grid-template-columns:1fr 1fr;gap:10px}.aksi .btn{min-height:44px;font-size:14px;border-radius:10px;white-space:nowrap;padding:8px 6px}.aksi .btn.salah{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}.aksi .btn:disabled{opacity:.5}
 .setelan{border:1px solid var(--line);border-radius:12px;background:var(--surface)}
 .setelan>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:10px;padding:11px 14px;font-size:14px;font-weight:600;color:var(--ink)}
 .setelan>summary::-webkit-details-marker{display:none}
@@ -224,7 +223,6 @@ html.gate-wait .wrap{display:none}
 
   <div class="timer" id="timerbox" role="timer" aria-live="off" hidden></div>
   <div class="scorebar" id="score"></div>
-  <div class="aksi"><button class="btn primary" id="retake" type="button">↻ Ulangi semua</button><button class="btn salah" id="retry-wrong" type="button">✗ Ulangi yang salah</button></div>
 
   <section class="card" id="card" aria-live="polite"></section>
 
@@ -439,7 +437,6 @@ function renderScore(){
   const {ok,bad,n}=tally();const done=ok+bad;
   const pct=done?Math.round(ok*100/done):0;
   $("score").innerHTML=`<span>Dijawab <strong>${done}</strong>/${n}</span><span>Benar <strong>${ok}</strong></span><span>Salah <strong>${bad}</strong></span><span>Akurasi <strong>${pct}%</strong></span><span title="Soal di pilihan ini yang pernah Anda jawab benar, tersimpan di akun Anda">Dikuasai <strong>${fmtPct(state.list.filter(i=>BENAR[i]).length,n)}</strong></span><span class="meter" aria-hidden="true"><i class="m-ok" style="width:${n?ok*100/n:0}%"></i><i class="m-bad" style="width:${n?bad*100/n:0}%"></i></span>`;
-  $("retry-wrong").disabled=!bad;
 }
 function renderMap(){
   $("mapsum").textContent=`Peta soal (${state.list.length})`;
@@ -557,8 +554,6 @@ $("order").onchange=e=>{state.order=e.target.value;buildSession(true);render();}
 $("timer").value=tMode;
 $("timer").onchange=e=>{tMode=e.target.value;store.timerMode=tMode;resetTimer();persist();render();};
 document.addEventListener("visibilitychange",()=>{if(document.hidden)persist();});
-$("retake").onclick=retake;
-$("retry-wrong").onclick=retryWrong;
 
 (function init(){
   const h=(location.hash||"").slice(1);
