@@ -436,7 +436,10 @@ function selectCat(k,sub){
   restore(); $("order").value=state.order; renderTabs(); renderSub(); render();
 }
 
-function tally(){let ok=0,bad=0;for(const id of state.list){const a=state.ans[id];if(a===undefined)continue;if(a===BYID[id].a)ok++;else bad++;}return {ok,bad,n:state.list.length};}
+// Soal yang waktunya habis tanpa dijawab dihitung salah.
+function habis(id){return state.ans[id]===undefined&&(!!state.expired[id]||state.timeUp);}
+function isBad(id){const a=state.ans[id];return a===undefined?habis(id):a!==BYID[id].a;}
+function tally(){let ok=0,bad=0;for(const id of state.list){const a=state.ans[id];if(a!==undefined&&a===BYID[id].a)ok++;else if(isBad(id))bad++;}return {ok,bad,n:state.list.length};}
 function renderScore(){
   const {ok,bad,n}=tally();const done=ok+bad;
   const pct=done?Math.round(ok*100/done):0;
@@ -444,7 +447,7 @@ function renderScore(){
 }
 function renderMap(){
   $("mapsum").textContent=`Peta soal (${state.list.length})`;
-  $("map").innerHTML=state.list.map((id,i)=>{const a=state.ans[id];const c=a===undefined?"":(a===BYID[id].a?"ok":"bad");return `<button type="button" class="${c}${i===state.pos?" cur":""}" data-i="${i}" aria-label="Soal ${i+1}">${i+1}</button>`;}).join("");
+  $("map").innerHTML=state.list.map((id,i)=>{const a=state.ans[id];const c=isBad(id)?"bad":(a===undefined?"":"ok");return `<button type="button" class="${c}${i===state.pos?" cur":""}" data-i="${i}" aria-label="Soal ${i+1}">${i+1}</button>`;}).join("");
   $("map").querySelectorAll("button").forEach(b=>b.onclick=()=>{state.pos=+b.dataset.i;persist();render();window.scrollTo({top:$("card").offsetTop-12});});
 }
 function editQ(id){
@@ -510,7 +513,7 @@ function renderCard(){
     html+=`<div class="verdict ${right?"ok":"bad"}">${right?"✓ BENAR":"✗ SALAH"} <small>Jawaban yang tepat: ${letter}. ${esc(q.o[q.a])}</small></div>`;
     html+=`${ketHTML(q)}`;
   }
-  if(locked) html+=`<div class="verdict exp">⏱ ${state.timeUp?"Waktu ujian habis":"Waktu soal ini habis"} <small>Soal tidak dijawab. Jawaban yang tepat: ${L[perm.indexOf(q.a)]}. ${esc(q.o[q.a])}</small></div>${ketHTML(q)}`;
+  if(locked) html+=`<div class="verdict bad">✗ SALAH · ⏱ ${state.timeUp?"Waktu ujian habis":"Waktu habis"} <small>Tidak dijawab, dianggap salah. Jawaban yang tepat: ${L[perm.indexOf(q.a)]}. ${esc(q.o[q.a])}</small></div>${ketHTML(q)}`;
   html+=`<div class="nav"><button class="btn" id="prev" type="button" ${state.pos===0?"disabled":""}>← Sebelumnya</button><button class="btn primary" id="next" type="button">${state.pos===state.list.length-1?"Lihat hasil":"Berikutnya →"}</button></div>`;
   card.innerHTML=html;
   if(own){$("mv").onclick=()=>{state.mvOpen=!state.mvOpen;renderCard();};$("ed").onclick=()=>{state.edOpen=true;state.mvOpen=false;renderCard();};
@@ -553,7 +556,7 @@ function renderRingkas(){const st=$("setelan");if(st)st.hidden=state.cat==="all"
   r.textContent=s+" · "+(state.order==="rand"?"Acak":"Berurutan")+" · "+({off:"Timer mati",cum:"Timer total",per:"Timer per soal"}[tMode]||"");}
 function render(){if(tMode==="per")syncQ();renderScore();renderCard();renderMap();renderTimer();renderRingkas();}
 function retake(){buildSession(true);render();}
-function retryWrong(){const w=state.list.filter(id=>state.ans[id]!==undefined&&state.ans[id]!==BYID[id].a);if(!w.length)return;buildSession(true,w);render();}
+function retryWrong(){const w=state.list.filter(isBad);if(!w.length)return;buildSession(true,w);render();}
 
 $("sub").onchange=e=>{state.sub=e.target.value==="all"?"all":+e.target.value;restore();$("order").value=state.order;render();};
 $("order").onchange=e=>{state.order=e.target.value;buildSession(true);render();};
