@@ -610,10 +610,10 @@ function renderCard(){
 function fmt(t){t=Math.max(0,Math.ceil(t));const h=Math.floor(t/3600),m=Math.floor(t%3600/60),x=t%60;return (h?h+":"+String(m).padStart(2,"0"):String(m).padStart(2,"0"))+":"+String(x).padStart(2,"0");}
 // Penilaian akhir: nilai 0-100 poin dan predikat menurut persentase jawaban benar.
 const STANDAR=[[100,"Standar Sempurna"],[90,"Standar Istimewa"],[80,"Standar Sangat Ketat"],[70,"Standar Tinggi"],[60,"Standar KKM / Sedang"],[50,"Standar Cukup"]];
-function nilaiHTML(ok,n){const v=n?Math.round(ok*100/n):0,cap=STANDAR.find(([p])=>v>=p);
+function nilaiHTML(ok,n){const v=n?Math.round(ok*100/n):0,min=p=>Math.ceil(p*n/100-1e-9),cap=n?STANDAR.find(([p])=>ok>=min(p)):null;
   return `<p class="predikat ${cap?"lulus":"gagal"}">${cap?"Lulus · "+cap[1]+" · "+cap[0]+"%":"Belum lulus · di bawah Standar Cukup 50%"}</p>`+
   `<table class="nilaitab"><thead><tr><th>Persentase Kelulusan</th><th>Minimal Soal Benar</th><th>Nilai Lolos Terkecil</th></tr></thead><tbody>`+
-  STANDAR.slice().reverse().map(([p,t])=>`<tr class="${cap&&cap[0]===p?"capai":""}${v>=p?" ok":""}"><td><b>${p}%</b> ${t}</td><td>${Math.ceil(p*n/100)} Soal</td><td><b>${p} Poin</b></td></tr>`).join("")+`</tbody></table>`;}
+  STANDAR.slice().reverse().map(([p,t])=>`<tr class="${cap&&cap[0]===p?"capai":""}${n&&ok>=min(p)?" ok":""}"><td><b>${p}%</b> ${t}</td><td>${min(p)} Soal</td><td><b>${p} Poin</b></td></tr>`).join("")+`</tbody></table>`;}
 function bagNext(){if(state.sub==="all"||state.bag==="all"||state.bag==="bonus")return false;const {k,bonus}=bagInfo(QB.filter(q=>inCat(q,state.cat,state.sub)).length);return +state.bag<k?+state.bag+1:bonus?"bonus":false;}
 function siapOK(){return state.cat==="all"||store.siapCat===state.cat;}
 function timerActive(){return siapOK()&&tMode!=="off"&&state.cat!=="all"&&state.list.length&&!state.timeUp&&state.pos<state.list.length;}
