@@ -65,7 +65,7 @@ header p{margin:6px 0 0;color:var(--muted);max-width:68ch}
 .controls label{font-size:12px;color:var(--muted);display:flex;flex-direction:column;gap:4px;min-width:0}.controls select{width:100%}.controls .btn{width:100%;min-height:40px;white-space:nowrap;padding:8px 6px;font-size:13px}
 @media(min-width:720px){.controls{grid-template-columns:2fr 1fr 1fr}.controls .ctl-sub{grid-column:auto}}
 select{font:inherit;font-size:14px;padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);max-width:100%;min-width:0}
-.ctl-sub{grid-column:1/-1}
+.ctl-sub{grid-column:1/-1}#bagwrap{grid-column:1/-1}#bagwrap[hidden]{display:none}
 .setelan{border:1px solid var(--line);border-radius:12px;background:var(--surface)}
 .setelan>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:10px;padding:11px 14px;font-size:14px;font-weight:600;color:var(--ink)}
 .setelan>summary::-webkit-details-marker{display:none}
@@ -251,6 +251,7 @@ html.gate-wait .wrap{display:none}
     <summary><span>⚙ Pengaturan Kuis</span><span class="ringkas" id="ringkas"></span></summary>
     <div class="controls">
       <label class="ctl-sub" for="sub"><span id="sublbl">Detail Bagian</span><select id="sub"></select></label>
+      <label class="ctl-sub" for="bag" id="bagwrap" hidden><span>Bagian Soal</span><select id="bag"></select></label>
       <label for="order">Urutan <select id="order"><option value="seq">Berurutan</option><option value="rand">Acak</option></select></label>
       <label for="timer">Timer <select id="timer"><option value="off">Mati</option><option value="cum">Total (54 dtk × soal)</option><option value="per">Per soal (54 dtk)</option></select></label>
       <div class="siaprow" id="siaprow"><button class="btn primary" id="siapbtn" type="button">✓ Simpan &amp; Mulai</button></div>
@@ -414,7 +415,7 @@ let store={};
 try{store=JSON.parse(localStorage.getItem(KEY)||"{}")||{};}catch(e){store={};}
 function save(){if(window.__keluar)return;try{localStorage.setItem(KEY,JSON.stringify(store));}catch(e){}}
 
-const state={cat:"all",sub:"all",order:"seq",list:[],pos:0,perm:{},ans:{},tLeft:0,timeUp:false,qLeft:0,qId:null,expired:{}};
+const state={cat:"all",sub:"all",bag:"all",order:"seq",list:[],pos:0,perm:{},ans:{},tLeft:0,timeUp:false,qLeft:0,qId:null,expired:{}};
 const SEC=54;
 let tMode=store.timerMode||"off";
 const L="ABCDEF";
@@ -425,11 +426,19 @@ function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
 function isKec(q){return /,\s*kecuali( aturan yang mana)?\?$/i.test(q.q);}
 function catKeyToNum(k){for(const n in CATS) if(CATS[n].key===k) return +n; return null;}
-function sessionKey(){return state.cat+"|"+state.sub;}
+function sessionKey(){return state.cat+"|"+state.sub+(state.bag!=="all"&&state.sub!=="all"?"|b"+state.bag:"");}
+// Bagian soal: satu sub-materi dibagi berurutan menjadi 3 bagian, masing-masing paling banyak 50 soal; sisanya menjadi Soal Bonus.
+function bagInfo(n){const k=Math.min(n,3),sz=Math.min(50,Math.ceil(n/(k||1)));return {k,sz,bonus:Math.max(0,n-k*sz)};}
+function bagNum(b){return b==="bonus"?"bonus":b==="all"?"all":+b;}
 
 function pool(){
   if(state.cat==="all") return QB.slice();
-  return QB.filter(q=>inCat(q,state.cat,state.sub));
+  const p=QB.filter(q=>inCat(q,state.cat,state.sub));
+  if(state.sub==="all"||state.bag==="all") return p;
+  const {k,sz}=bagInfo(p.length);
+  if(state.bag==="bonus") return sortSeq(p).slice(k*sz);
+  const b=Math.min(+state.bag,k);
+  return sortSeq(p).slice((b-1)*sz,b*sz);
 }
 // Mode Berurutan (pedoman G4; V41 alur perkara untuk kategori 2 sampai 4): sub-materi -> grup getOrderKey (1 dasar hukum menurut hierarki, 2 istilah per rumpun, 3 syarat/prosedur, 4 klaster jangka waktu, 5 pendapat ahli) -> id soal.
 function subIdx(q){if(state.cat==="all")return q.c*100+q.s;const m=q.mappings.find(m=>m.c===state.cat&&(state.sub==="all"||m.s===+state.sub));return m?m.s:99;}
@@ -446,7 +455,7 @@ function buildSession(fresh,onlyIds){
   persist();
 }
 function resetTimer(){state.tLeft=SEC*state.list.length;state.timeUp=false;state.qLeft=SEC;state.qId=null;state.expired={};}
-function persist(){store[sessionKey()]={list:state.list,pos:state.pos,ans:state.ans,perm:state.perm,order:state.order,tLeft:state.tLeft,timeUp:state.timeUp,qLeft:state.qLeft,qId:state.qId,expired:state.expired};store.last={cat:state.cat,sub:state.sub};save();}
+function persist(){store[sessionKey()]={list:state.list,pos:state.pos,ans:state.ans,perm:state.perm,order:state.order,tLeft:state.tLeft,timeUp:state.timeUp,qLeft:state.qLeft,qId:state.qId,expired:state.expired};store.last={cat:state.cat,sub:state.sub,bag:state.bag};save();}
 function restore(){
   const s=store[sessionKey()];
   const valid=s&&Array.isArray(s.list)&&s.list.length&&s.list.every(id=>BYID[id]&&s.perm&&s.perm[id]);
@@ -471,9 +480,18 @@ function renderSub(){
   const c=state.cat;
   s.innerHTML=`<option value="all">Semua bagian</option>`+SUBS[c].map((n,i)=>`<option value="${i+1}">${i+1}. ${esc(n)}</option>`).join("");
   s.value=String(state.sub);
+  renderBag();
 }
-function selectCat(k,sub){
-  state.cat=k; state.sub=sub;
+function renderBag(){
+  const w=$("bagwrap"),s=$("bag");if(!w)return;
+  w.hidden=state.cat==="all"||state.sub==="all";if(w.hidden)return;
+  const n=QB.filter(q=>inCat(q,state.cat,state.sub)).length,{k,sz,bonus}=bagInfo(n);
+  if(state.bag==="bonus"&&!bonus)state.bag=1;
+  s.innerHTML=Array.from({length:k},(_,i)=>`<option value="${i+1}">Bagian ${i+1} · soal ${i*sz+1}–${Math.min(n,(i+1)*sz)}</option>`).join("")+(bonus?`<option value="bonus">Soal Bonus · soal ${k*sz+1}–${n}</option>`:"")+`<option value="all">Semua soal sub-materi ini</option>`;
+  s.value=String(state.bag);
+}
+function selectCat(k,sub,bag){
+  state.cat=k; state.sub=sub; state.bag=sub==="all"?"all":bagNum(bag??1);
   try{history.replaceState(null,"",k==="all"?location.pathname:"#"+CATS[k].key);}catch(e){}
   restore(); $("order").value=state.order; renderTabs(); renderSub(); render();
 }
@@ -539,7 +557,8 @@ function renderCard(){
     $("bukaset").onclick=()=>{const st=$("setelan");st.open=true;st.scrollIntoView({behavior:"smooth",block:"start"});};return;}
   if(state.pos>=state.list.length){
     const {ok,bad,n}=tally();
-    card.innerHTML=`<div class="done"><div class="eyebrow">${state.timeUp?"Waktu habis · sesi selesai":"Sesi selesai"}</div><div class="big">${ok}/${n}</div><p>Benar ${ok}, salah ${bad}, belum dijawab ${n-ok-bad}. Nilai ${n?Math.round(ok*100/n):0}.</p><div class="row"><button class="btn primary" id="d-retake" type="button">Ulangi semua</button>${bad?'<button class="btn" id="d-wrong" type="button">Ulangi yang salah</button>':""}<button class="btn" id="d-back" type="button">Tinjau soal</button></div></div>`;
+    card.innerHTML=`<div class="done"><div class="eyebrow">${state.timeUp?"Waktu habis · sesi selesai":"Sesi selesai"}</div><div class="big">${ok}/${n}</div><p>Benar ${ok}, salah ${bad}, belum dijawab ${n-ok-bad}. Nilai ${n?Math.round(ok*100/n):0}.</p><div class="row"><button class="btn primary" id="d-retake" type="button">Ulangi semua</button>${bad?'<button class="btn" id="d-wrong" type="button">Ulangi yang salah</button>':""}<button class="btn" id="d-back" type="button">Tinjau soal</button>${bagNext()?`<button class="btn primary" id="d-next" type="button">Lanjut ${bagNext()==="bonus"?"Soal Bonus":"Bagian "+bagNext()} →</button>`:""}</div></div>`;
+    if(bagNext())$("d-next").onclick=()=>{state.bag=bagNext();restore();renderBag();render();window.scrollTo({top:Math.max(0,$("card").offsetTop-12)});};
     $("d-retake").onclick=retake; if(bad) $("d-wrong").onclick=retryWrong; $("d-back").onclick=()=>{state.pos=0;persist();render();};
     return;
   }
@@ -583,6 +602,7 @@ function renderCard(){
   pasFokus();
 }
 function fmt(t){t=Math.max(0,Math.ceil(t));const h=Math.floor(t/3600),m=Math.floor(t%3600/60),x=t%60;return (h?h+":"+String(m).padStart(2,"0"):String(m).padStart(2,"0"))+":"+String(x).padStart(2,"0");}
+function bagNext(){if(state.sub==="all"||state.bag==="all"||state.bag==="bonus")return false;const {k,bonus}=bagInfo(QB.filter(q=>inCat(q,state.cat,state.sub)).length);return +state.bag<k?+state.bag+1:bonus?"bonus":false;}
 function siapOK(){return state.cat==="all"||store.siapCat===state.cat;}
 function timerActive(){return siapOK()&&tMode!=="off"&&state.cat!=="all"&&state.list.length&&!state.timeUp&&state.pos<state.list.length;}
 function syncQ(){const id=state.list[state.pos];if(id!==state.qId){state.qId=id;state.qLeft=SEC;}}
@@ -613,13 +633,14 @@ setInterval(()=>{
   if(++tickN%5===0)persist();
   renderTimer();
 },1000);
-function renderRingkas(){const st=$("setelan");if(st){st.hidden=state.cat==="all";st.classList.toggle("perlu",!siapOK());document.querySelector(".wrap").classList.toggle("blmsiap",!siapOK());const sr=$("siaprow");if(sr)sr.hidden=siapOK();}const r=$("ringkas");if(!r)return;const s=state.cat==="all"||state.sub==="all"?"Semua bagian":state.sub+". "+SUBS[state.cat][state.sub-1];
+function renderRingkas(){const st=$("setelan");if(st){st.hidden=state.cat==="all";st.classList.toggle("perlu",!siapOK());document.querySelector(".wrap").classList.toggle("blmsiap",!siapOK());const sr=$("siaprow");if(sr)sr.hidden=siapOK();}const r=$("ringkas");if(!r)return;const s=state.cat==="all"||state.sub==="all"?"Semua bagian":state.sub+". "+SUBS[state.cat][state.sub-1]+(state.bag==="bonus"?" · Soal Bonus":state.bag!=="all"?" · Bagian "+state.bag:"");
   r.textContent=s+" · "+(state.order==="rand"?"Acak":"Berurutan")+" · "+({off:"Timer mati",cum:"Timer total",per:"Timer per soal"}[tMode]||"");}
 function render(){if(tMode==="per")syncQ();renderScore();renderCard();renderMap();renderTimer();renderRingkas();}
 function retake(){buildSession(true);render();}
 function retryWrong(){const w=state.list.filter(isBad);if(!w.length)return;buildSession(true,w);render();}
 
-$("sub").onchange=e=>{state.sub=e.target.value==="all"?"all":+e.target.value;restore();$("order").value=state.order;render();};
+$("bag").onchange=e=>{state.bag=bagNum(e.target.value);restore();$("order").value=state.order;render();};
+$("sub").onchange=e=>{state.sub=e.target.value==="all"?"all":+e.target.value;state.bag=state.sub==="all"?"all":1;renderBag();restore();$("order").value=state.order;render();};
 $("order").onchange=e=>{state.order=e.target.value;buildSession(true);render();};
 $("fsexit").onclick=()=>fokus(false);
 $("timer").value=tMode;
@@ -631,7 +652,7 @@ document.addEventListener("visibilitychange",()=>{if(document.hidden)persist();}
   const h=(location.hash||"").slice(1);
   const n=catKeyToNum(h);
   if(n) selectCat(n,"all");
-  else if(store.last&&store.last.cat!==undefined) selectCat(store.last.cat==="all"?"all":+store.last.cat,store.last.sub??"all");
+  else if(store.last&&store.last.cat!==undefined) selectCat(store.last.cat==="all"?"all":+store.last.cat,store.last.sub??"all",store.last.bag);
   else selectCat("all","all");
 })();
 window.__quiz={state};
