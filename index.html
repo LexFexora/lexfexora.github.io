@@ -126,6 +126,11 @@ select{font:inherit;font-size:14px;padding:7px 10px;border-radius:8px;border:1px
 details.mapbox{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
 details.mapbox summary{cursor:pointer;font-weight:600;font-size:14px}
 details.mapbox .map{margin-top:12px}
+.map button{position:relative;overflow:visible}
+.tk{font:700 9px/1 system-ui,sans-serif;font-style:normal;width:13px;height:13px;border-radius:50%;display:inline-grid;place-items:center;color:var(--surface)}
+.map .tk{position:absolute;top:-5px;right:-5px}
+.tk.ok{background:var(--ok)}.tk.no{background:var(--bad)}
+.mapket{margin:12px 0 0;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:5px}
 .timer{position:sticky;top:8px;z-index:5;align-self:flex-end;display:flex;gap:8px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-family:var(--f-mono);font-size:14px;font-variant-numeric:tabular-nums;box-shadow:0 2px 8px rgb(0 0 0 / .08)}
 .timer[hidden]{display:none}
 .timer small{font-family:var(--f-body);font-size:12px;color:var(--muted)}
@@ -228,7 +233,7 @@ html.gate-wait .wrap{display:none}
 
   <section class="card" id="card" aria-live="polite"></section>
 
-  <details class="mapbox" id="mapbox"><summary id="mapsum">Peta soal</summary><div class="map" id="map"></div></details>
+  <details class="mapbox" id="mapbox"><summary id="mapsum">Peta soal</summary><div class="map" id="map"></div><p class="mapket"><i class="tk ok">✓</i> pernah dijawab benar &nbsp; <i class="tk no">✗</i> pernah dikerjakan, belum pernah benar</p></details>
 
   <footer>Opsi jawaban diacak setiap kali retake. Progres tersimpan di peramban Anda. Bank soal ini adalah bahan latihan mandiri; selalu cocokkan dengan naskah resmi peraturan.</footer>
 </div>
@@ -366,6 +371,13 @@ const BSRV=window.__BENAR_AWAL||{};
 if(window.__sinkronBenar&&Object.keys(BENAR).some(id=>!BSRV[id]))window.__sinkronBenar(BENAR);
 Object.assign(BENAR,BSRV);try{localStorage.setItem(BKEY,JSON.stringify(BENAR));}catch(e){}
 function tandaiBenar(id){if(BENAR[id])return;BENAR[id]=1;try{localStorage.setItem(BKEY,JSON.stringify(BENAR));}catch(e){}if(window.__simpanBenar)window.__simpanBenar(id);}
+// Soal yang pernah dikerjakan (dijawab atau waktunya habis), untuk tanda silang di peta soal.
+const CKEY="tkbcakim-coba-"+(window.__UID||"lokal");
+let COBA={};try{COBA=JSON.parse(localStorage.getItem(CKEY)||"{}")||{};}catch(e){COBA={};}
+const CSRV=window.__COBA_AWAL||{};
+if(window.__sinkronCoba&&Object.keys(COBA).some(id=>!CSRV[id]))window.__sinkronCoba(COBA);
+Object.assign(COBA,CSRV);try{localStorage.setItem(CKEY,JSON.stringify(COBA));}catch(e){}
+function tandaiCoba(id){if(COBA[id])return;COBA[id]=1;try{localStorage.setItem(CKEY,JSON.stringify(COBA));}catch(e){}if(window.__simpanCoba)window.__simpanCoba(id);}
 function fmtPct(c,n){const v=n?c*100/n:0;return (v>0&&v<10?v.toFixed(1).replace(".",","):Math.round(v))+"%";}
 const TIERNAME={1:"Dasar hukum",2:"Istilah, jenis & prosedur",3:"Pendapat ahli & doktrin"};
 let store={};
@@ -447,7 +459,7 @@ function renderScore(){
 }
 function renderMap(){
   $("mapsum").textContent=`Peta soal (${state.list.length})`;
-  $("map").innerHTML=state.list.map((id,i)=>{const a=state.ans[id];const c=isBad(id)?"bad":(a===undefined?"":"ok");return `<button type="button" class="${c}${i===state.pos?" cur":""}" data-i="${i}" aria-label="Soal ${i+1}">${i+1}</button>`;}).join("");
+  $("map").innerHTML=state.list.map((id,i)=>{const a=state.ans[id];const c=isBad(id)?"bad":(a===undefined?"":"ok");return `<button type="button" class="${c}${i===state.pos?" cur":""}" data-i="${i}" aria-label="Soal ${i+1}">${i+1}${BENAR[id]?'<i class="tk ok" aria-hidden="true">✓</i>':COBA[id]?'<i class="tk no" aria-hidden="true">✗</i>':""}</button>`;}).join("");
   $("map").querySelectorAll("button").forEach(b=>b.onclick=()=>{state.pos=+b.dataset.i;persist();render();window.scrollTo({top:$("card").offsetTop-12});});
 }
 function editQ(id){
@@ -520,7 +532,7 @@ function renderCard(){
     if(state.mvOpen){const fill=()=>{const c=+$("mvc").value;$("mvs").innerHTML=SUBS[c].map((n,i)=>`<option value="${i+1}"${c===here.c&&i+1===here.s?" selected":""}>${i+1}. ${esc(n)}</option>`).join("");};
       fill();$("mvc").onchange=fill;$("mvno").onclick=()=>{state.mvOpen=false;renderCard();};
       $("mvok").onclick=()=>moveQ(id,here,+$("mvc").value,+$("mvs").value);}}
-  card.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{state.ans[id]=+b.dataset.o;if(state.ans[id]===q.a)tandaiBenar(id);persist();render();});
+  card.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{state.ans[id]=+b.dataset.o;tandaiCoba(id);if(state.ans[id]===q.a)tandaiBenar(id);persist();render();});
   $("prev").onclick=()=>{state.pos--;persist();render();};
   $("next").onclick=()=>{state.pos++;persist();render();window.scrollTo({top:Math.max(0,$("card").offsetTop-12)});};
 }
@@ -546,7 +558,7 @@ setInterval(()=>{
     syncQ();const id=state.qId;
     if(state.ans[id]===undefined&&!state.expired[id]){
       state.qLeft-=dt;
-      if(state.qLeft<=0){state.expired[id]=true;state.qLeft=0;state.pos++;persist();render();window.scrollTo({top:Math.max(0,$("card").offsetTop-12)});return;}
+      if(state.qLeft<=0){state.expired[id]=true;tandaiCoba(id);state.qLeft=0;state.pos++;persist();render();window.scrollTo({top:Math.max(0,$("card").offsetTop-12)});return;}
     }
   }
   if(++tickN%5===0)persist();
@@ -617,9 +629,11 @@ window.__quiz={state};
   }
   // Soal yang pernah dijawab benar disimpan di progres/<uid> agar tetap ada setelah keluar atau ganti perangkat.
   async function progres(){const u=auth.currentUser;if(!u)return;window.__UID=u.uid;const ref=db.doc('progres/'+u.uid);
-    try{const s=await ref.get();window.__BENAR_AWAL=(s.exists&&s.data().b)||{};}catch(e){window.__BENAR_AWAL={};}
+    try{const s=await ref.get();window.__BENAR_AWAL=(s.exists&&s.data().b)||{};window.__COBA_AWAL=(s.exists&&s.data().c)||{};}catch(e){window.__BENAR_AWAL={};window.__COBA_AWAL={};}
     window.__simpanBenar=id=>ref.set({b:{[id]:1}},{merge:true}).catch(()=>{});
-    window.__sinkronBenar=m=>ref.set({b:m},{merge:true}).catch(()=>{});}
+    window.__sinkronBenar=m=>ref.set({b:m},{merge:true}).catch(()=>{});
+    window.__simpanCoba=id=>ref.set({c:{[id]:1}},{merge:true}).catch(()=>{});
+    window.__sinkronCoba=m=>ref.set({c:m},{merge:true}).catch(()=>{});}
   async function start(){
     if(started)return;started=true;
     show('Memuat bank soal…','Sekali muat pertama bisa beberapa detik.');
