@@ -396,7 +396,7 @@ function restore(){
 function renderTabs(){
   const t=$("tabs");
   const items=[["all","Semua Kategori",QB.length]].concat(Object.keys(CATS).map(n=>[+n,CATS[n].short,QB.filter(q=>inCat(q,+n,"all")).length]));
-  t.innerHTML=items.map(([k,name,n])=>`<button class="tab" role="tab" type="button" data-k="${k}" aria-selected="${state.cat===k}"><b>${esc(name)}</b><span>${n} soal${k!=="all"?" · "+SUBS[k].length+" sub-materi":" unik"}</span></button>`).join("");
+  t.innerHTML=items.map(([k,name,n])=>`<button class="tab" role="tab" type="button" data-k="${k}" aria-selected="${state.cat===k}"><b>${esc(name)}</b></button>`).join("");
   t.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{const k=b.dataset.k==="all"?"all":+b.dataset.k;selectCat(k,"all");});
 }
 function renderSub(){
