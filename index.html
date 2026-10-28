@@ -232,6 +232,7 @@ html.gate-wait .wrap{display:none}
 .linkrow{display:flex;gap:6px;margin:8px 0 2px;flex-wrap:wrap}
 .linkrow input{flex:1 1 220px;min-width:0;font:12.5px var(--f-mono);padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink)}
 .btn.copy{padding:4px 10px;font-size:12px;min-height:0}
+.tocard .toisi{padding:2px 14px 14px}.tocard .toisi>.note{margin:0 0 6px;font-size:12.5px;color:var(--muted)}.tocard .tobox>summary{list-style:none;display:inline-block;margin:6px 0}.tocard .tobox>summary::-webkit-details-marker{display:none}.tolist .btn.primary{color:var(--surface)}
 .adm .tobox>summary{list-style:none;display:inline-block;margin:6px 0}.adm .tobox>summary::-webkit-details-marker{display:none}
 .toform{display:flex;flex-direction:column;gap:8px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;margin:4px 0 8px}
 .toform label{display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--muted)}.toform input,.toform select{font:inherit;font-size:14px;padding:7px 9px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
@@ -285,19 +286,6 @@ html.gate-wait .wrap{display:none}
     <p class="note" id="pindahinfo"></p>
     <div class="linkrow"><button class="btn copy" type="button" id="bankdl">⤓ Unduh bank-soal.json (termasuk perpindahan)</button></div>
     <p class="note">Kirim tautan di atas. Orang yang membukanya masuk dengan Google dan muncul di sini. Setujui agar bisa mengerjakan, Tolak atau Cabut untuk menutup aksesnya, Hapus agar ia bisa meminta ulang.</p>
-    <h4>Try Out bersama</h4>
-    <details class="tobox" id="tobox"><summary class="btn copy">＋ Buat Try Out baru</summary>
-      <div class="toform">
-        <label>Judul<input id="tojudul" value="Try Out Seleksi Kemampuan Bidang"></label>
-        <div class="torow"><label>Jumlah soal<select id="tojml"><option value="50">50 soal</option><option value="75">75 soal</option><option value="100" selected>100 soal</option></select></label>
-        <label>Waktu (menit)<input id="tomenit" type="number" min="5" max="300" value="90"></label></div>
-        <p class="note" style="margin:4px 0 0">Pilih satu atau beberapa sub-materi. Soal diracik otomatis: jatah tiap sub-materi sebanding jumlah soalnya, seimbang antara dasar hukum, istilah &amp; prosedur, dan pendapat ahli, tanpa soal kembar, dengan urutan sub-materi diselang-seling.</p>
-        <div class="tosub" id="tosub"></div>
-        <p class="note" id="toinfo"></p>
-        <div class="linkrow"><button class="btn primary" type="button" id="tobuat">Buat Try Out</button></div>
-      </div>
-    </details>
-    <div id="tolist" class="tolist"></div>
     <button class="btn copy" type="button" id="adm-logout">Keluar</button>
   </details>
 
@@ -313,6 +301,26 @@ html.gate-wait .wrap{display:none}
       <label for="order">Urutan <select id="order"><option value="seq">Berurutan</option><option value="rand">Acak</option></select></label>
       <label for="timer">Timer <select id="timer"><option value="off">Mati</option><option value="cum">Total (54 dtk × soal)</option><option value="per">Per soal (54 dtk)</option></select></label>
       <div class="siaprow" id="siaprow"><button class="btn primary" id="siapbtn" type="button">✓ Simpan &amp; Mulai</button></div>
+    </div>
+  </details>
+  <details class="setelan tocard" id="tocard" hidden>
+    <summary><span class="stl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4.5a2.5 2.5 0 0 0 2.6 3.4M17 6h2.5a2.5 2.5 0 0 1-2.6 3.4"/></svg> Try Out Bersama</span></summary>
+    <div class="toisi">
+      <p class="note" id="toket">Try out yang sedang dibuka. Ketuk Ikut untuk bergabung.</p>
+      <div id="tolist" class="tolist"></div>
+      <div id="toown" hidden>
+    <details class="tobox" id="tobox"><summary class="btn copy">＋ Buat Try Out baru</summary>
+      <div class="toform">
+        <label>Judul<input id="tojudul" value="Try Out Seleksi Kemampuan Bidang"></label>
+        <div class="torow"><label>Jumlah soal<select id="tojml"><option value="50">50 soal</option><option value="75">75 soal</option><option value="100" selected>100 soal</option></select></label>
+        <label>Waktu (menit)<input id="tomenit" type="number" min="5" max="300" value="90"></label></div>
+        <p class="note" style="margin:4px 0 0">Pilih satu atau beberapa sub-materi. Soal diracik otomatis: jatah tiap sub-materi sebanding jumlah soalnya, seimbang antara dasar hukum, istilah &amp; prosedur, dan pendapat ahli, tanpa soal kembar, dengan urutan sub-materi diselang-seling.</p>
+        <div class="tosub" id="tosub"></div>
+        <p class="note" id="toinfo"></p>
+        <div class="linkrow"><button class="btn primary" type="button" id="tobuat">Buat Try Out</button></div>
+      </div>
+    </details>
+      </div>
     </div>
   </details>
 
@@ -737,6 +745,7 @@ window.__quiz={state};
 // Gerbang izin berbasis Firebase: login Google, permintaan akses di izin/<uid>, bank soal di bank/* hanya untuk akun yang disetujui.
 (function(){
   const H=document.documentElement,$=id=>document.getElementById(id);
+  const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
   const gh=$('gate-h'),gp=$('gate-p'),gw=$('gate-who'),bIn=$('g-login'),bOut=$('g-logout'),gnote=$('gate-note');
   const show=(h,p,who,login,logout)=>{$('gate').hidden=false;H.classList.add('gate-wait');gh.textContent=h;gp.textContent=p||'';gw.textContent=who||'';bIn.hidden=!login;bOut.hidden=!logout;gnote.hidden=!login;};
   const open=()=>{$('gate').hidden=true;H.classList.remove('gate-wait');};
@@ -779,10 +788,20 @@ window.__quiz={state};
     window.__sinkronBenar=m=>ref.set({b:m},{merge:true}).catch(()=>{});
     window.__simpanCoba=id=>ref.set({c:{[id]:1}},{merge:true}).catch(()=>{});
     window.__sinkronCoba=m=>ref.set({c:m},{merge:true}).catch(()=>{});}
+  // Kartu Try Out Bersama di halaman utama: semua pengguna melihat try out yang dibuka; pemilik juga bisa membuat dan menghapus.
+  function tryoutKartu(){$('tocard').hidden=false;if(isOwner){$('toown').hidden=false;$('toket').textContent='Try out terbaru Anda. Bagikan tautannya, lalu buka untuk menekan Play.';}
+    const ST={menunggu:'ruang tunggu',siap:'cek kesiapan',mulai:'sedang berjalan',selesai:'selesai'};
+    db.collection('tryout').orderBy('dibuat','desc').limit(15).onSnapshot(qs=>{const rows=[];qs.forEach(d=>{const t=d.data(),u=location.origin+location.pathname.replace(/[^/]*$/,'')+'tryout.html?t='+d.id;
+        if(!isOwner&&t.status==='selesai')return;
+        rows.push(`<div class="tr"><b>${esc(t.judul||'Try Out')}</b><span class="muted">${(t.soal||[]).length} soal · ${ST[t.status]||t.status}</span><a class="btn copy${isOwner?'':' primary'}" href="${u}" target="_blank" rel="noopener">${isOwner?'Buka':'Ikut'}</a>${isOwner?`<button class="btn copy" type="button" data-salin="${u}">Salin tautan</button><button class="btn copy" type="button" data-hapus="${d.id}">Hapus</button>`:''}</div>`);});
+      $('tolist').innerHTML=rows.join('')||`<p class="note">${isOwner?'Belum ada try out.':'Belum ada try out yang dibuka.'}</p>`;
+      $('tolist').querySelectorAll('[data-salin]').forEach(b=>b.onclick=()=>navigator.clipboard&&navigator.clipboard.writeText(b.dataset.salin).then(()=>{b.textContent='✓ Tersalin';}));
+      $('tolist').querySelectorAll('[data-hapus]').forEach(b=>b.onclick=()=>{if(confirm('Hapus try out ini? Tautannya tidak bisa dibuka lagi.'))db.doc('tryout/'+b.dataset.hapus).delete();});},
+      ()=>{$('tolist').innerHTML='<p class="note">Daftar try out belum bisa dimuat.</p>';});}
   async function start(){
     if(started)return;started=true;
     show('Memuat bank soal…','Sekali muat pertama bisa beberapa detik.');
-    try{const arr=await loadBank();QB.push(...arr);await progres();startQuiz();open();}
+    try{const arr=await loadBank();QB.push(...arr);await progres();startQuiz();open();tryoutKartu();}
     catch(e){started=false;if(isOwner){open();$('adm').open=true;$('adm').scrollIntoView();return;}show(e.message==='kosong'?'Bank soal belum diunggah':'Gagal memuat bank soal',e.message==='kosong'?'Pemilik perlu mengunggah bank soal dari panel persetujuan.':'Periksa koneksi lalu muat ulang halaman. ('+(e.code||e.message)+')',null,false,true);}
   }
   function posisi(){try{const s=window.__quiz&&window.__quiz.state;if(!s)return '';const c=s.cat;
@@ -847,12 +866,6 @@ window.__quiz={state};
         $('tobox').open=false;$('toinfo').textContent='';window.open('tryout.html?t='+r.id,'_blank');}
       catch(e){alert('Gagal membuat try out: '+(e.code||e.message));}
       $('tobuat').disabled=false;};
-    const ST={menunggu:'ruang tunggu',mulai:'sedang berjalan',selesai:'selesai'};
-    db.collection('tryout').orderBy('dibuat','desc').limit(10).onSnapshot(qs=>{const rows=[];qs.forEach(d=>{const t=d.data(),u=location.origin+location.pathname.replace(/[^/]*$/,'')+'tryout.html?t='+d.id;
-        rows.push(`<div class="tr"><b>${esc(t.judul||'Try Out')}</b><span class="muted">${(t.soal||[]).length} soal · ${ST[t.status]||t.status}</span><a class="btn copy" href="${u}" target="_blank" rel="noopener">Buka</a><button class="btn copy" type="button" data-salin="${u}">Salin tautan</button><button class="btn copy" type="button" data-hapus="${d.id}">Hapus</button></div>`);});
-      $('tolist').innerHTML=rows.join('')||'<p class="note">Belum ada try out.</p>';
-      $('tolist').querySelectorAll('[data-salin]').forEach(b=>b.onclick=()=>navigator.clipboard&&navigator.clipboard.writeText(b.dataset.salin).then(()=>{b.textContent='✓ Tersalin';}));
-      $('tolist').querySelectorAll('[data-hapus]').forEach(b=>b.onclick=()=>{if(confirm('Hapus try out ini? Tautannya tidak bisa dibuka lagi.'))db.doc('tryout/'+b.dataset.hapus).delete();});},()=>{});
     $('bankdl').onclick=()=>{if(!QB.length){alert('Bank soal belum dimuat.');return;}
       const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(QB,null,1)],{type:'application/json'}));a.download='bank-soal.json';document.body.appendChild(a);a.click();a.remove();};
     const box=$('adm'),body=$('admbody');box.hidden=false;
