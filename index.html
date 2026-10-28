@@ -332,6 +332,7 @@ const PALU_ORD={"Q3346":1000,"Q3347":1001,"Q3348":1002,"Q3349":1003,"Q3350":1004
 // V54: 11 sub TIK dilengkapi sesuai blueprint asesmen; kata "buku" diganti (buku register menjadi register, buku bantu menjadi register bantu), urutan dikunci TIK_ORD.
 // V55: celah blueprint Ilmu Hukum yang tersisa setelah V51 dilengkapi; soal baru disisipkan ke IH_ORD per tahap, lalu IH_ORD dinomori ulang bilangan bulat.
 // V56: audit regulasi terbaru (PERMA 7/2022, 6/2022, 3/2022, 4/2019, SEMA Pleno Kamar Agama, UU P2SK, UU 13/2022, UU PDP, UU 1/2024); pembahasan dan sumber dimutakhirkan, 3 soal baru.
+// V57: format umpan balik dua bagian; 💡 Pembahasan tanpa nomor pasal atau aturan, 📌 Sumber memuat pasal, jenis dan nomor aturan, serta judul lengkapnya.
 
 // KATEGORI 1 — data v17 (Okt 2026): taksonomi final (IH 10, Formil 16, Materil 12, TIK 11) dan multi-tagging. Setiap soal wajib punya id unik dan mappings[]; mapping pertama = kamar utama (file ini). Lihat pedoman/STANDAR-WAJIB-BANK-SOAL.md.
 // Kuis baru dijalankan setelah bank soal dimuat dari Firestore (lihat auth.js).
@@ -484,9 +485,9 @@ function renderCard(){
   if(answered){
     const right=chosen===q.a, letter=L[perm.indexOf(q.a)];
     html+=`<div class="verdict ${right?"ok":"bad"}">${right?"✓ BENAR":"✗ SALAH"} <small>Jawaban yang tepat: ${letter}. ${esc(q.o[q.a])}</small></div>`;
-    html+=`<div class="explain"><div><h3>💡 Pembahasan:</h3><p>${esc(q.p)}</p></div><div class="dasar"><h3>Sumber:</h3><p>${esc(q.d)}</p></div></div>`;
+    html+=`<div class="explain"><div><h3>💡 Pembahasan:</h3><p>${esc(q.p)}</p></div><div class="dasar"><h3>📌 Sumber:</h3><p>${esc(q.d)}</p></div></div>`;
   }
-  if(locked) html+=`<div class="verdict exp">⏱ ${state.timeUp?"Waktu ujian habis":"Waktu soal ini habis"} <small>Soal tidak dijawab. Jawaban yang tepat: ${L[perm.indexOf(q.a)]}. ${esc(q.o[q.a])}</small></div><div class="explain"><div><h3>💡 Pembahasan:</h3><p>${esc(q.p)}</p></div><div class="dasar"><h3>Sumber:</h3><p>${esc(q.d)}</p></div></div>`;
+  if(locked) html+=`<div class="verdict exp">⏱ ${state.timeUp?"Waktu ujian habis":"Waktu soal ini habis"} <small>Soal tidak dijawab. Jawaban yang tepat: ${L[perm.indexOf(q.a)]}. ${esc(q.o[q.a])}</small></div><div class="explain"><div><h3>💡 Pembahasan:</h3><p>${esc(q.p)}</p></div><div class="dasar"><h3>📌 Sumber:</h3><p>${esc(q.d)}</p></div></div>`;
   html+=`<div class="nav"><button class="btn" id="prev" type="button" ${state.pos===0?"disabled":""}>← Sebelumnya</button><button class="btn primary" id="next" type="button">${state.pos===state.list.length-1?"Lihat hasil":"Berikutnya →"}</button></div>`;
   card.innerHTML=html;
   if(own){$("mv").onclick=()=>{state.mvOpen=!state.mvOpen;renderCard();};$("ed").onclick=()=>{state.edOpen=true;state.mvOpen=false;renderCard();};
