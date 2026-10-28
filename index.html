@@ -77,6 +77,7 @@ select{font:inherit;font-size:14px;padding:7px 10px;border-radius:8px;border:1px
 .setelan.perlu>summary{color:#e2685d}
 @keyframes perlu{0%,100%{box-shadow:0 0 0 0 rgb(220 80 70 / 0)}50%{box-shadow:0 0 14px 2px rgb(220 80 70 / .28)}}
 @media (prefers-reduced-motion:reduce){.setelan.perlu{animation:none;box-shadow:0 0 10px 1px rgb(220 80 70 / .25)}}
+.blmsiap #card,.blmsiap #mapbox,.blmsiap #score .st,.blmsiap #score .meter{display:none!important}.blmsiap #score .sbrow{justify-content:flex-end}
 .siaprow{grid-column:1/-1;display:flex;justify-content:flex-end;margin-top:12px}.siaprow[hidden]{display:none}
 .kunci{text-align:center;padding:28px 8px;display:flex;flex-direction:column;align-items:center;gap:10px}.kunci .ik{font-size:30px}.kunci p{margin:0;color:var(--muted);font-size:14px;max-width:34ch}.kunci b{font-size:16px;color:var(--ink)}
 .ctl-sub select{width:100%}
@@ -612,7 +613,7 @@ setInterval(()=>{
   if(++tickN%5===0)persist();
   renderTimer();
 },1000);
-function renderRingkas(){const st=$("setelan");if(st){st.hidden=state.cat==="all";st.classList.toggle("perlu",!siapOK());const sr=$("siaprow");if(sr)sr.hidden=siapOK();}const r=$("ringkas");if(!r)return;const s=state.cat==="all"||state.sub==="all"?"Semua bagian":state.sub+". "+SUBS[state.cat][state.sub-1];
+function renderRingkas(){const st=$("setelan");if(st){st.hidden=state.cat==="all";st.classList.toggle("perlu",!siapOK());document.querySelector(".wrap").classList.toggle("blmsiap",!siapOK());const sr=$("siaprow");if(sr)sr.hidden=siapOK();}const r=$("ringkas");if(!r)return;const s=state.cat==="all"||state.sub==="all"?"Semua bagian":state.sub+". "+SUBS[state.cat][state.sub-1];
   r.textContent=s+" · "+(state.order==="rand"?"Acak":"Berurutan")+" · "+({off:"Timer mati",cum:"Timer total",per:"Timer per soal"}[tMode]||"");}
 function render(){if(tMode==="per")syncQ();renderScore();renderCard();renderMap();renderTimer();renderRingkas();}
 function retake(){buildSession(true);render();}
