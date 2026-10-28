@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Try Out Bersama - CAT Lex Fexora</title>
+<meta name="description" content="Try out bersama Seleksi Kemampuan Bidang Calon Hakim Peradilan Agama dengan papan peringkat langsung.">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Try Out Bersama - CAT Lex Fexora">
+<meta property="og:description" content="Ikuti try out bersama dan lihat peringkat Anda secara langsung.">
+<meta property="og:image" content="https://lexfexora.github.io/kartu-tautan.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,650&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+:root{
+  --bg:#f3f5f1; --surface:#ffffff; --ink:#18241d; --muted:#5b6b61; --line:#d9e0d8;
+  --accent:#0f5a3a; --accent-soft:#e3efe7; --brass:#9a6b12; --brass-soft:#f6ecd6;
+  --ok:#17733f; --ok-soft:#e1f3e7; --bad:#b3261e; --bad-soft:#fbe5e3;
+  --f-display:"Newsreader", Georgia, "Times New Roman", serif;
+  --f-body:"Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#101612; --surface:#18201b; --ink:#e6ece7; --muted:#9aaba0; --line:#2b362f;
+  --accent:#5cc28f; --accent-soft:#1d3327; --brass:#d9a849; --brass-soft:#352a14;
+  --ok:#5cc28f; --ok-soft:#173326; --bad:#f08b83; --bad-soft:#3a1d1b; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#101612; --surface:#18201b; --ink:#e6ece7; --muted:#9aaba0; --line:#2b362f;
+  --accent:#5cc28f; --accent-soft:#1d3327; --brass:#d9a849; --brass-soft:#352a14;
+  --ok:#5cc28f; --ok-soft:#173326; --bad:#f08b83; --bad-soft:#3a1d1b; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:radial-gradient(900px 380px at 50% -140px,color-mix(in srgb,var(--accent) 13%,transparent),transparent 72%) no-repeat,var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55;margin:0}
+.wrap{max-width:880px;margin:0 auto;padding:24px max(16px,env(safe-area-inset-right,0px)) 64px max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:16px}
+.brand{display:flex;align-items:center;gap:14px;font-size:clamp(26px,4.4vw,36px)}
+.brand .emb{width:2.35em;height:2.35em;flex:none;filter:drop-shadow(0 6px 12px rgba(0,0,0,.28))}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .brand .emb{filter:invert(1)}}
+header h1{font-family:var(--f-display);font-weight:650;font-size:1em;line-height:1.15;margin:0}
+header h1 span{display:block}header h1 .t2{letter-spacing:.1em}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-top:10px}
+@media(max-width:640px){header .eyebrow{white-space:nowrap;letter-spacing:.02em;font-size:clamp(7px,calc((100vw - 52px)/38.6),12px)}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px clamp(16px,3vw,28px);display:flex;flex-direction:column;gap:14px}
+[hidden]{display:none!important}.muted{color:var(--muted)}
+.btn{appearance:none;font:inherit;font-size:14px;font-weight:600;padding:9px 16px;border-radius:9px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+.btn.bahaya{border-color:var(--bad);color:var(--bad)}
+.btn:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.judul{font-family:var(--f-display);font-size:24px;font-weight:650;margin:0;line-height:1.25}
+.info{display:flex;gap:8px;flex-wrap:wrap}.info span{font-size:12.5px;border:1px solid var(--line);border-radius:999px;padding:3px 10px;color:var(--muted)}
+.linkrow{display:flex;gap:8px}.linkrow input{flex:1;min-width:0;font:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}.chips span{font-size:12.5px;background:var(--accent-soft);border-radius:999px;padding:3px 10px}
+.gate{text-align:center;align-items:center}
+.chips span{border:1px solid var(--line);background:var(--bg);transition:background .3s,box-shadow .3s,color .3s}
+.chips span.siap{background:var(--accent-soft);border-color:var(--accent);color:var(--ink);animation:cahaya 1.8s ease-in-out infinite}
+.chips span.belum{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.chips span.kosong{color:var(--muted)}
+@keyframes cahaya{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--accent) 0%,transparent)}50%{box-shadow:0 0 14px 2px color-mix(in srgb,var(--accent) 55%,transparent)}}
+@media (prefers-reduced-motion:reduce){.chips span.siap{animation:none;box-shadow:0 0 10px 1px color-mix(in srgb,var(--accent) 45%,transparent)}}
+.btn.besar{font-size:17px;padding:14px 28px;border-radius:12px}.btn.play{font-size:15px;padding:10px 22px}
+
+.ujian-h{display:flex;align-items:center;gap:10px}.ujian-h .qno{font-family:var(--f-mono);font-size:12px;color:var(--muted);margin-right:auto}
+.timer{display:flex;gap:6px;align-items:center;border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-family:var(--f-mono);font-size:14px;font-variant-numeric:tabular-nums;background:var(--bg)}
+.timer.warn{border-color:var(--bad);color:var(--bad)}
+.qtext{font-family:var(--f-display);font-size:clamp(18px,2.4vw,21px);font-weight:500;line-height:1.45;margin:0}
+.opts{display:flex;flex-direction:column;gap:8px;margin:0;padding:0;list-style:none}
+.opt{appearance:none;width:100%;text-align:left;font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:11px 14px;display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:start;cursor:pointer}
+.opt:hover{border-color:var(--accent)}
+.opt .l{font-family:var(--f-mono);width:26px;height:26px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line);font-size:13px}
+.opt .t{padding-top:2px}
+.opt.pilih{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}.opt.pilih .l{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.nav{display:flex;gap:8px;justify-content:space-between}
+.peta{display:flex;flex-wrap:wrap;gap:5px}.peta button{width:30px;height:30px;font:500 12px var(--f-mono);border:1px solid var(--line);border-radius:7px;background:var(--surface);color:var(--muted);cursor:pointer;padding:0}
+.peta button.sdh{background:var(--ink);color:var(--surface);border-color:var(--ink)}.peta button.ini{outline:2px solid var(--accent);outline-offset:1px}
+.papan-h{display:flex;justify-content:space-between;align-items:baseline}
+.lb{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;position:relative}
+.lb li{display:grid;grid-template-columns:34px 30px 1fr auto 44px;gap:10px;align-items:center;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--surface);will-change:transform}
+.lb li.aku{border-color:var(--accent);background:var(--accent-soft)}
+.lb .rk{font-family:var(--f-display);font-weight:650;font-size:18px;text-align:center}
+.lb .av{width:30px;height:30px;border-radius:50%;background:var(--ink);color:var(--surface);display:grid;place-items:center;font-size:13px;font-weight:700;overflow:hidden}.lb .av img{width:100%;height:100%;object-fit:cover}
+.lb .nm{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}.lb .nm small{display:block;font-weight:400;color:var(--muted);font-size:11.5px}
+.lb .sk{font-family:var(--f-display);font-weight:650;font-size:18px;font-variant-numeric:tabular-nums}
+.lb .dl{font-size:12px;font-weight:700;text-align:right;font-variant-numeric:tabular-nums}.dl.naik{color:var(--ok)}.dl.turun{color:var(--bad)}
+.lb li.gap{display:block;text-align:center;border:0;background:none;padding:0;color:var(--muted)}
+.podium{display:grid;grid-template-columns:1fr 1.15fr 1fr;align-items:end;gap:10px;margin-top:6px}
+.pd{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;min-width:0}
+.pd .av{width:52px;height:52px;border-radius:50%;background:var(--ink);color:var(--surface);display:grid;place-items:center;font-weight:700;font-size:20px;overflow:hidden;border:3px solid var(--md)}.pd .av img{width:100%;height:100%;object-fit:cover}
+.pd .nm{font-weight:600;font-size:13.5px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pd .sk{font-family:var(--f-display);font-weight:650;font-size:22px}
+.pd .tg{width:100%;border-radius:10px 10px 0 0;background:linear-gradient(180deg,color-mix(in srgb,var(--md) 45%,var(--surface)),color-mix(in srgb,var(--md) 12%,var(--surface)));border:1px solid color-mix(in srgb,var(--md) 60%,var(--line));border-bottom:0;display:grid;place-items:start center;padding-top:8px;font-family:var(--f-display);font-size:30px;font-weight:650;color:var(--ink);transform-origin:bottom;animation:naik .9s cubic-bezier(.2,.8,.2,1) both}
+.pd.j1{--md:#d4af37}.pd.j2{--md:#a8b0b8}.pd.j3{--md:#b87333}
+.pd.j1 .tg{height:150px;animation-delay:.6s}.pd.j2 .tg{height:110px;animation-delay:.3s}.pd.j3 .tg{height:84px;animation-delay:0s}
+.pd .ats{animation:muncul .6s ease-out both}.pd.j1 .ats{animation-delay:1.3s}.pd.j2 .ats{animation-delay:1s}.pd.j3 .ats{animation-delay:.7s}
+.pd.kosong .tg{opacity:.35}
+@keyframes naik{from{transform:scaleY(0)}to{transform:none}}
+@keyframes muncul{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.pd .tg,.pd .ats{animation:none}}
+.hasilku{text-align:center}.hasilku .angka{font-family:var(--f-display);font-size:54px;font-weight:650;line-height:1}.hasilku .poin{font-family:var(--f-display);letter-spacing:.1em;color:var(--muted);font-size:16px}
+footer{font-size:12px;color:var(--muted);text-align:center}footer span{white-space:nowrap}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><svg class="emb" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" aria-hidden="true"><defs><linearGradient id="lgG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2a2a2a"/><stop offset="1" stop-color="#000000"/></linearGradient></defs><rect width="256" height="256" rx="60" fill="url(#lgG)"/><g transform="translate(146 100) rotate(45)"><rect x="-8" y="20" width="16" height="104" rx="8" fill="#ffffff"/><rect x="-56" y="-26" width="112" height="52" rx="12" fill="#ffffff"/><rect x="-64" y="-31" width="14" height="62" rx="6" fill="#ffffff"/><rect x="50" y="-31" width="14" height="62" rx="6" fill="#ffffff"/><rect x="-46" y="-26" width="5" height="52" fill="#000" opacity=".28"/><rect x="41" y="-26" width="5" height="52" fill="#000" opacity=".28"/></g><rect x="132" y="190" width="96" height="14" rx="7" fill="#ffffff"/><rect x="144" y="178" width="72" height="14" rx="7" fill="#d4d4d4"/></svg><h1><span class="t1">Try Out Bersama</span><span class="t2">LEX FEXORA.</span></h1></div>
+    <div class="eyebrow">Latihan · Seleksi Kemampuan Bidang · Calon Hakim Peradilan Agama</div>
+  </header>
+  <section class="card" id="main"><p class="muted">Memuat…</p></section>
+  <section class="card papan" id="papan" hidden>
+    <div class="papan-h"><b>Peringkat langsung</b><span class="muted" id="jmlp"></span></div>
+    <ol class="lb" id="lb"></ol>
+  </section>
+  <footer><span>© 2026 CAT - Lex Fexora. All rights reserved.</span> | <span>Developed &amp; Curated by Febrillian Kusuma Raafi</span></footer>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+// Try Out bersama: login Google tanpa persetujuan, soal dari dokumen tryout/<id>, nilai peserta di tryout/<id>/peserta/<uid>.
+(function(){
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const L="ABCDEFGH";
+const main=$("main"),papan=$("papan"),lb=$("lb");
+const TID=new URLSearchParams(location.search).get("t");
+const cfg=window.FIREBASE_CONFIG||{};
+if(!window.firebase||!cfg.apiKey){main.innerHTML="<p>Situs belum dikonfigurasi.</p>";return;}
+firebase.initializeApp(cfg);
+const auth=firebase.auth(),db=firebase.firestore(),FV=firebase.firestore.FieldValue;
+const OWNER=(window.OWNER_EMAIL||"").toLowerCase();
+let U=null,isOwner=false,T=null,P={},aku=null,pos=0,urutLama={},deltaUntil={},simpanT=null,tick=null,unsubT=null,unsubP=null,selesaiKirim=false;
+
+function login(){const p=new firebase.auth.GoogleAuthProvider();p.setCustomParameters({prompt:"select_account"});
+  auth.signInWithPopup(p).catch(e=>{if(e&&/popup-blocked|operation-not-supported/.test(e.code||""))auth.signInWithRedirect(p);});}
+function gate(h,p,btn){papan.hidden=true;main.className="card gate";main.innerHTML=`<h2 class="judul">${esc(h)}</h2><p class="muted">${esc(p||"")}</p>${btn?'<div class="row" style="justify-content:center"><button class="btn primary" id="masuk" type="button">Masuk dengan Google</button></div>':""}`;
+  if(btn)$("masuk").onclick=login;}
+
+if(!TID){gate("Tautan try out tidak lengkap","Buka tautan try out yang dibagikan penyelenggara.");return;}
+
+auth.onAuthStateChanged(u=>{U=u;if(unsubT){unsubT();unsubT=null;}if(unsubP){unsubP();unsubP=null;}
+  if(!u){gate("Try Out Bersama","Masuk dengan akun Google untuk ikut try out. Nama akun Anda akan tampil di papan peringkat.",true);return;}
+  isOwner=!!OWNER&&(u.email||"").toLowerCase()===OWNER&&u.emailVerified;
+  unsubT=db.doc("tryout/"+TID).onSnapshot(s=>{if(!s.exists){gate("Try out tidak ditemukan","Periksa kembali tautannya.");return;}
+      T=s.data({serverTimestamps:"estimate"});T.id=s.id;gabung();render();},
+    e=>gate("Try out belum dapat dibuka","Muat ulang halaman. ("+(e.code||e.message)+")"));
+  unsubP=db.collection("tryout/"+TID+"/peserta").onSnapshot(qs=>{const m={};qs.forEach(d=>{m[d.id]=d.data();});P=m;
+      if(P[U.uid]&&!aku)aku=Object.assign({jawab:{}},P[U.uid]);renderPapan();if(T&&(T.status==="menunggu"||T.status==="siap"))render();},()=>{});
+  if(!tick)tick=setInterval(()=>{if(!T)return;if(T.status==="mulai"){const sisa=sisaMs();const el=$("sisa");
+      if(el){el.textContent=fmt(sisa);el.parentElement.classList.toggle("warn",sisa<=60000);}
+      if(sisa<=0&&!habisDitangani){habisDitangani=true;kumpul(true);render();}}},500);
+});
+let habisDitangani=false;
+
+function mulaiMs(){const m=T&&T.mulai;return m?(m.toMillis?m.toMillis():m.seconds*1000):0;}
+function sisaMs(){return Math.max(0,mulaiMs()+T.durasi*1000-Date.now());}
+function fmt(ms){const s=Math.ceil(ms/1000);return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");}
+function selesaiSemua(){return T.status==="selesai"||(T.status==="mulai"&&sisaMs()<=0);}
+
+// Bergabung otomatis: dokumen peserta dibuat sekali saat try out belum selesai.
+function gabung(){if(!U||isOwner||P[U.uid]||aku||T.status==="selesai")return;
+  aku={nama:U.displayName||(U.email||"Peserta").split("@")[0],foto:U.photoURL||"",jawab:{},benar:0,dijawab:0,skor:0,dur:0,selesai:false,siap:false};
+  db.doc("tryout/"+TID+"/peserta/"+U.uid).set(Object.assign({},aku,{t:FV.serverTimestamp()})).catch(()=>{});}
+
+// Urutan pilihan diacak per peserta, tetap sama setiap kali dimuat ulang.
+function acak(n,seed){let h=2166136261;for(const c of seed)h=Math.imul(h^c.charCodeAt(0),16777619);const a=[...Array(n).keys()];
+  for(let i=n-1;i>0;i--){h=Math.imul(h^(h>>>15),2246822507);h^=h>>>13;const j=(h>>>0)%(i+1);[a[i],a[j]]=[a[j],a[i]];}return a;}
+function hitung(){const j=aku.jawab||{};let b=0,d=0;T.soal.forEach(q=>{if(j[q.id]!==undefined){d++;if(j[q.id]===q.a)b++;}});
+  aku.benar=b;aku.dijawab=d;aku.skor=Math.round(b*100/T.soal.length);aku.dur=Math.max(0,Date.now()-mulaiMs());}
+function simpan(segera){clearTimeout(simpanT);const f=()=>db.doc("tryout/"+TID+"/peserta/"+U.uid).set({nama:aku.nama,foto:aku.foto,jawab:aku.jawab||{},benar:aku.benar||0,dijawab:aku.dijawab||0,skor:aku.skor||0,dur:aku.dur||0,selesai:!!aku.selesai,siap:!!aku.siap,t:FV.serverTimestamp()}).catch(()=>{});
+  if(segera)f();else simpanT=setTimeout(f,350);}
+function kumpul(otomatis){if(!aku||aku.selesai||selesaiKirim)return;selesaiKirim=true;if(!otomatis)hitung();aku.selesai=true;simpan(true);}
+
+function render(){if(!T||!U)return;main.className="card";
+  if(selesaiSemua())return hasil();
+  if(T.status==="menunggu"||T.status==="siap")return lobi();
+  if(isOwner)return pantau();
+  if(aku&&aku.selesai)tunggu();else ujian();renderPapan();}
+
+function tautan(){return location.origin+location.pathname+"?t="+TID;}
+// Ruang tunggu: peserta otomatis terdaftar. Setelah pemilik menekan Play, peserta menekan "Saya siap";
+// nama yang siap bercahaya, yang belum siap berwarna merah.
+function lobi(){const ps=Object.entries(P).map(([uid,p])=>Object.assign({uid},p)),cek=T.status==="siap",nSiap=ps.filter(p=>p.siap).length;papan.hidden=true;
+  const chip=p=>`<span class="${cek?(p.siap?"siap":"belum"):""}">${esc(p.nama)}${U&&p.uid===U.uid?" (Anda)":""}</span>`;
+  main.innerHTML=`<p class="eyebrow" style="margin:0">${cek?"Cek kesiapan":"Ruang tunggu"}</p><h2 class="judul">${esc(T.judul)}</h2>
+  <div class="info"><span>${T.soal.length} soal</span><span>Waktu ${Math.round(T.durasi/60)} menit</span><span>${ps.length} peserta bergabung</span>${cek?`<span>${nSiap} siap · ${ps.length-nSiap} belum</span>`:""}</div>
+  <div class="chips">${ps.map(chip).join("")||'<span class="kosong">Belum ada peserta</span>'}</div>
+  ${isOwner?`<div class="linkrow"><input readonly value="${esc(tautan())}" aria-label="Tautan try out"><button class="btn" id="salin" type="button">Salin tautan</button></div>
+  <div class="row">${cek?`<button class="btn primary" id="mulai" type="button">Mulai sekarang (${nSiap}/${ps.length} siap)</button><button class="btn" id="batal" type="button">Kembali ke ruang tunggu</button>`:'<button class="btn primary play" id="play" type="button">▶ Play</button>'}</div>
+  <p class="muted" style="margin:0;font-size:13px">${cek?"Nama yang bercahaya sudah siap, yang merah belum. Tekan Mulai untuk memulai serentak.":"Bagikan tautan di atas. Setiap orang yang membukanya otomatis masuk daftar. Tekan Play untuk meminta peserta bersiap."}</p>`
+  :cek?`<div class="row" style="justify-content:center"><button class="btn ${aku&&aku.siap?"":"primary "}besar" id="siapku" type="button">${aku&&aku.siap?"✓ Anda sudah siap":"Saya siap"}</button></div><p class="muted" style="margin:0;text-align:center">${aku&&aku.siap?"Tunggu sebentar, soal muncul otomatis saat penyelenggara memulai.":"Penyelenggara meminta Anda bersiap. Tekan tombol di atas."}</p>`
+  :`<p class="muted" style="margin:0">Anda sudah terdaftar. Tunggu penyelenggara menekan Play.</p>`}`;
+  if(isOwner){$("salin").onclick=()=>navigator.clipboard&&navigator.clipboard.writeText(tautan()).then(()=>{$("salin").textContent="✓ Tersalin";});
+    if($("play"))$("play").onclick=()=>db.doc("tryout/"+TID).update({status:"siap"});
+    if($("batal"))$("batal").onclick=()=>db.doc("tryout/"+TID).update({status:"menunggu"});
+    if($("mulai"))$("mulai").onclick=()=>{const b=ps.length-nSiap;if(!confirm(b?`Mulai try out sekarang? ${b} peserta belum siap.`:"Mulai try out sekarang? Semua peserta sudah siap."))return;db.doc("tryout/"+TID).update({status:"mulai",mulai:FV.serverTimestamp()});};}
+  else if($("siapku"))$("siapku").onclick=()=>{if(!aku)return;aku.siap=!aku.siap;simpan(true);render();};}
+
+// Pemilik memantau peringkat selama try out berjalan.
+function pantau(){papan.hidden=false;main.innerHTML=`<div class="ujian-h"><span class="qno">${esc(T.judul)} · berjalan</span><span class="timer">⏱ <span id="sisa">${fmt(sisaMs())}</span></span></div>
+  <div class="linkrow"><input readonly value="${esc(tautan())}" aria-label="Tautan try out"></div>
+  <div class="row"><button class="btn bahaya" id="akhiri" type="button">Akhiri try out untuk semua</button></div>`;$("akhiri").onclick=akhiri;}
+
+function ujian(){papan.hidden=false;if(!aku){main.innerHTML='<p class="muted">Menyiapkan…</p>';return;}
+  const n=T.soal.length;pos=Math.min(Math.max(0,pos),n-1);const q=T.soal[pos],perm=acak(q.o.length,U.uid+q.id),pil=(aku.jawab||{})[q.id];
+  main.innerHTML=`<div class="ujian-h"><span class="qno">Soal ${pos+1} / ${n} · terjawab ${aku.dijawab||0}</span><span class="timer">⏱ <span id="sisa">${fmt(sisaMs())}</span></span></div>
+  <p class="qtext">${esc(q.q)}</p><ol class="opts">${perm.map((oi,pi)=>`<li><button type="button" class="opt${pil===oi?" pilih":""}" data-o="${oi}"><span class="l">${L[pi]}</span><span class="t">${esc(q.o[oi])}</span></button></li>`).join("")}</ol>
+  <div class="nav"><button class="btn" id="prev" type="button"${pos===0?" disabled":""}>← Sebelumnya</button>${pos<n-1?'<button class="btn primary" id="next" type="button">Berikutnya →</button>':'<button class="btn primary" id="kumpul" type="button">Selesai &amp; kumpulkan</button>'}</div>
+  <div class="peta">${T.soal.map((s,i)=>`<button type="button" data-i="${i}" class="${(aku.jawab||{})[s.id]!==undefined?"sdh":""}${i===pos?" ini":""}">${i+1}</button>`).join("")}</div>
+  ${pos<n-1?'<div class="row" style="justify-content:flex-end"><button class="btn" id="kumpul" type="button">Kumpulkan sekarang</button></div>':""}
+  ${isOwner?'<div class="row"><button class="btn bahaya" id="akhiri" type="button">Akhiri try out untuk semua</button></div>':""}`;
+  main.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{aku.jawab=Object.assign({},aku.jawab,{[q.id]:+b.dataset.o});hitung();simpan();
+    if(pos<n-1){pos++;}render();});
+  main.querySelectorAll(".peta button").forEach(b=>b.onclick=()=>{pos=+b.dataset.i;render();});
+  if($("prev"))$("prev").onclick=()=>{pos--;render();};if($("next"))$("next").onclick=()=>{pos++;render();};
+  main.querySelectorAll("#kumpul").forEach(b=>b.onclick=()=>{const sisa=n-(aku.dijawab||0);if(!confirm(sisa?`Masih ada ${sisa} soal belum dijawab. Kumpulkan sekarang?`:"Kumpulkan jawaban sekarang?"))return;kumpul();render();});
+  if($("akhiri"))$("akhiri").onclick=akhiri;}
+function akhiri(){if(!confirm("Akhiri try out sekarang? Semua peserta langsung melihat hasil akhir."))return;db.doc("tryout/"+TID).update({status:"selesai"});}
+
+function tunggu(){papan.hidden=false;main.innerHTML=`<div class="hasilku"><p class="eyebrow" style="margin:0 0 6px">Jawaban terkumpul</p><div><span class="angka">${aku.skor}</span> <span class="poin">POIN</span></div>
+  <p class="muted">Benar ${aku.benar} dari ${T.soal.length} soal. Peringkat akhir diumumkan saat waktu habis atau penyelenggara mengakhiri try out.</p>
+  <p class="muted">Sisa waktu <b id="sisa">${fmt(sisaMs())}</b></p></div>${isOwner?'<div class="row" style="justify-content:center"><button class="btn bahaya" id="akhiri" type="button">Akhiri try out untuk semua</button></div>':""}`;
+  if($("akhiri"))$("akhiri").onclick=akhiri;}
+
+// Peringkat: nilai tertinggi, lalu waktu pengerjaan tercepat, lalu nama.
+function urut(){return Object.entries(P).map(([uid,p])=>Object.assign({uid},p)).sort((a,b)=>(b.skor||0)-(a.skor||0)||(b.benar||0)-(a.benar||0)||(a.dur||0)-(b.dur||0)||String(a.nama).localeCompare(String(b.nama)));}
+function av(p){return p.foto?`<img src="${esc(p.foto)}" alt="" referrerpolicy="no-referrer">`:esc((p.nama||"?").trim().charAt(0).toUpperCase());}
+function renderPapan(){if(!T||papan.hidden&&!(T.status==="mulai"))return;if(selesaiSemua()){papan.hidden=true;return;}
+  const r=urut(),now=Date.now(),me=U&&U.uid;$("jmlp").textContent=r.length+" peserta";
+  r.forEach((p,i)=>{const lama=urutLama[p.uid];if(lama!==undefined&&lama!==i+1)deltaUntil[p.uid]={d:lama-(i+1),s:now+4000};urutLama[p.uid]=i+1;});
+  let tampil=r.slice(0,10);const iMe=r.findIndex(p=>p.uid===me);if(iMe>=10)tampil=tampil.concat([null,r[iMe]]);
+  const before={};lb.querySelectorAll("li[data-u]").forEach(li=>before[li.dataset.u]=li.getBoundingClientRect().top);
+  lb.innerHTML=tampil.map(p=>{if(!p)return '<li class="gap">⋯</li>';const rk=urutLama[p.uid],dl=deltaUntil[p.uid],ad=dl&&dl.s>now;
+    return `<li data-u="${esc(p.uid)}" class="${p.uid===me?"aku":""}"><span class="rk">${rk}</span><span class="av">${av(p)}</span><span class="nm">${esc(p.nama)}${p.uid===me?" (Anda)":""}<small>${p.dijawab||0}/${T.soal.length} terjawab${p.selesai?" · selesai":""}</small></span><span class="sk">${p.skor||0}</span><span class="dl ${ad?(dl.d>0?"naik":"turun"):""}">${ad?(dl.d>0?"▲"+dl.d:"▼"+(-dl.d)):""}</span></li>`;}).join("");
+  // Animasi FLIP: baris bergeser halus dari posisi lama ke posisi baru.
+  if(!matchMedia("(prefers-reduced-motion: reduce)").matches)lb.querySelectorAll("li[data-u]").forEach(li=>{const b=before[li.dataset.u];if(b===undefined)return;const dy=b-li.getBoundingClientRect().top;if(!dy)return;
+    li.style.transition="none";li.style.transform=`translateY(${dy}px)`;requestAnimationFrame(()=>{li.style.transition="transform .6s cubic-bezier(.2,.8,.2,1)";li.style.transform="";});});}
+setInterval(()=>{if(Object.values(deltaUntil).some(d=>d.s<Date.now()+0&&d.s>Date.now()-1500))renderPapan();},1000);
+
+function hasil(){papan.hidden=true;if(aku&&!aku.selesai&&T.status==="mulai")kumpul(true);
+  const r=urut(),me=U.uid,iMe=r.findIndex(p=>p.uid===me);
+  const pd=(p,j)=>p?`<div class="pd j${j}"><div class="ats"><div class="av">${av(p)}</div><div class="nm">${esc(p.nama)}</div><div class="sk">${p.skor||0} <small class="muted" style="font-size:12px">poin</small></div></div><div class="tg">${j}</div></div>`:`<div class="pd j${j} kosong"><div class="tg">${j}</div></div>`;
+  main.innerHTML=`<p class="eyebrow" style="margin:0;text-align:center">Hasil akhir</p><h2 class="judul" style="text-align:center">${esc(T.judul)}</h2>
+  <div class="podium">${pd(r[1],2)}${pd(r[0],1)}${pd(r[2],3)}</div>
+  ${iMe>=0?`<p style="text-align:center;margin:4px 0 0">Peringkat Anda: <b>${iMe+1}</b> dari ${r.length} · <b>${r[iMe].skor||0} poin</b> (benar ${r[iMe].benar||0} dari ${T.soal.length})</p>`:""}
+  <ol class="lb">${r.map((p,i)=>`<li class="${p.uid===me?"aku":""}"><span class="rk">${i+1}</span><span class="av">${av(p)}</span><span class="nm">${esc(p.nama)}<small>benar ${p.benar||0} dari ${T.soal.length}</small></span><span class="sk">${p.skor||0}</span><span class="dl"></span></li>`).join("")}</ol>`;}
+})();
+</script>
+</body>
+</html>

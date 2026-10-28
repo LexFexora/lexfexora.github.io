@@ -34,5 +34,21 @@ service cloud.firestore {
       allow read: if isOwner() || approved();
       allow write: if isOwner();
     }
+
+    // Try Out bersama: siapa pun yang masuk dengan Google bisa membaca soal dan papan peringkat;
+    // hanya pemilik yang membuat, memulai, dan mengakhiri. Peserta hanya menulis dokumennya sendiri selama try out berjalan.
+    match /tryout/{id} {
+      allow read: if signedIn();
+      allow write: if isOwner();
+      match /peserta/{uid} {
+        allow read: if signedIn();
+        allow create, update: if signedIn() && request.auth.uid == uid
+          && request.resource.data.keys().hasOnly(["nama", "foto", "jawab", "benar", "dijawab", "skor", "dur", "selesai", "siap", "t"])
+          && request.resource.data.skor is int && request.resource.data.skor >= 0 && request.resource.data.skor <= 100
+          && get(/databases/$(database)/documents/tryout/$(id)).data.status in ["menunggu", "siap", "mulai"]
+          && (resource == null || resource.data.selesai != true);
+        allow delete: if isOwner();
+      }
+    }
   }
 }
