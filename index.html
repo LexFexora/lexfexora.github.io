@@ -79,6 +79,11 @@ select{font:inherit;font-size:14px;padding:7px 10px;border-radius:8px;border:1px
 .btn:disabled{opacity:.45;cursor:default}
 .scorebar{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;align-items:center}
 .scorebar strong{color:var(--ink)}
+.fsexit{display:none}
+html.fokus .wrap>*:not(#timerbox):not(#card):not(#fsexit){display:none!important}
+html.fokus .card .qhead,html.fokus .card .owntools,html.fokus .card .verdict,html.fokus .card .edbox,html.fokus .card .mvbox,html.fokus .card>p.note{display:none!important}
+html.fokus .fsexit{display:block;align-self:flex-start;font-size:12px;padding:6px 12px}
+html.fokus .timer{position:fixed;top:10px;right:12px}
 .scorebar small{font-size:inherit}.sbrow{flex:1 1 160px;display:flex;align-items:center;gap:10px;min-width:0}.sbrow .meter{flex:1}.sbrow .keluar{padding:4px 12px;font-size:12px;min-height:0;flex:none}.scorebar .st{white-space:nowrap}
 @media(max-width:640px){.scorebar{display:grid;grid-template-columns:repeat(5,auto);justify-content:space-between;gap:10px 6px}.scorebar .st{display:flex;flex-direction:column;align-items:center;gap:1px}.scorebar .st small{font-size:11px}.scorebar .st strong{font-size:14px}.scorebar .sbrow{grid-column:1/-1}}
 .meter{flex:1 1 160px;height:6px;border-radius:3px;background:var(--line);overflow:hidden;display:flex}
@@ -228,6 +233,7 @@ html.gate-wait .wrap{display:none}
     </div>
   </details>
 
+  <button class="btn fsexit" id="fsexit" type="button">✕ Tutup layar penuh</button>
   <div class="timer" id="timerbox" role="timer" aria-live="off" hidden></div>
   <div class="scorebar" id="score"></div>
 
@@ -455,7 +461,8 @@ function tally(){let ok=0,bad=0;for(const id of state.list){const a=state.ans[id
 function renderScore(){
   const {ok,bad,n}=tally();const done=ok+bad;
   const pct=done?Math.round(ok*100/done):0;
-  $("score").innerHTML=`<span class="st"><small>Dijawab</small> <strong>${done}/${n}</strong></span><span class="st"><small>Benar</small> <strong>${ok}</strong></span><span class="st"><small>Salah</small> <strong>${bad}</strong></span><span class="st"><small>Akurasi</small> <strong>${pct}%</strong></span><span class="st" title="Soal di pilihan ini yang pernah Anda jawab benar, tersimpan di akun Anda"><small>Dikuasai</small> <strong>${fmtPct(state.list.filter(i=>BENAR[i]).length,n)}</strong></span><div class="sbrow"><span class="meter" aria-hidden="true"><i class="m-ok" style="width:${n?ok*100/n:0}%"></i><i class="m-bad" style="width:${n?bad*100/n:0}%"></i></span>${window.__logout?'<button class="btn keluar" id="sbkeluar" type="button">Keluar</button>':""}</div>`;
+  $("score").innerHTML=`<span class="st"><small>Dijawab</small> <strong>${done}/${n}</strong></span><span class="st"><small>Benar</small> <strong>${ok}</strong></span><span class="st"><small>Salah</small> <strong>${bad}</strong></span><span class="st"><small>Akurasi</small> <strong>${pct}%</strong></span><span class="st" title="Soal di pilihan ini yang pernah Anda jawab benar, tersimpan di akun Anda"><small>Dikuasai</small> <strong>${fmtPct(state.list.filter(i=>BENAR[i]).length,n)}</strong></span><div class="sbrow"><span class="meter" aria-hidden="true"><i class="m-ok" style="width:${n?ok*100/n:0}%"></i><i class="m-bad" style="width:${n?bad*100/n:0}%"></i></span><button class="btn keluar" id="sbfs" type="button">⛶ Layar penuh</button>${window.__logout?'<button class="btn keluar" id="sbkeluar" type="button">Keluar</button>':""}</div>`;
+  $("sbfs").onclick=()=>fokus(true);
   if($("sbkeluar"))$("sbkeluar").onclick=()=>window.__logout();
 }
 function renderMap(){
@@ -488,6 +495,12 @@ function moveQ(id,from,c,s){
 }
 // Pembahasan dan sumber dibungkus "🕯️ Keterangan": di HP tertutup sampai diketuk, di layar lebar langsung terbuka.
 function ketHTML(q){return `<details class="ket"${matchMedia("(min-width:720px)").matches?" open":""}><summary>🕯️ Keterangan</summary><div class="explain"><div><h3>💡 Pembahasan:</h3><p>${esc(q.p)}</p></div><div class="dasar"><h3>📌 Sumber:</h3><p>${esc(q.d)}</p></div></div></details>`;}
+// Mode layar penuh: hanya soal, pilihan, timer, dan tombol navigasi.
+function fokus(on){document.documentElement.classList.toggle("fokus",on);
+  try{if(on&&document.documentElement.requestFullscreen&&!document.fullscreenElement)document.documentElement.requestFullscreen().catch(()=>{});
+      if(!on&&document.fullscreenElement)document.exitFullscreen().catch(()=>{});}catch(e){}
+  window.scrollTo({top:0});}
+document.addEventListener("fullscreenchange",()=>{if(!document.fullscreenElement)document.documentElement.classList.remove("fokus");});
 function renderCard(){
   const card=$("card");
   if(!state.list.length){card.innerHTML="<p>Tidak ada soal untuk pilihan ini.</p>";return;}
@@ -571,6 +584,7 @@ function retryWrong(){const w=state.list.filter(isBad);if(!w.length)return;build
 
 $("sub").onchange=e=>{state.sub=e.target.value==="all"?"all":+e.target.value;restore();$("order").value=state.order;render();};
 $("order").onchange=e=>{state.order=e.target.value;buildSession(true);render();};
+$("fsexit").onclick=()=>fokus(false);
 $("timer").value=tMode;
 $("timer").onchange=e=>{tMode=e.target.value;store.timerMode=tMode;resetTimer();persist();render();};
 document.addEventListener("visibilitychange",()=>{if(document.hidden)persist();});
