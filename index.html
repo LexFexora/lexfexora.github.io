@@ -79,8 +79,8 @@ select{font:inherit;font-size:14px;padding:7px 10px;border-radius:8px;border:1px
 .btn:disabled{opacity:.45;cursor:default}
 .scorebar{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;align-items:center}
 .scorebar strong{color:var(--ink)}
-.scorebar small{font-size:inherit}.scorebar .st{white-space:nowrap}
-@media(max-width:640px){.scorebar{display:grid;grid-template-columns:repeat(5,auto);justify-content:space-between;gap:10px 6px}.scorebar .st{display:flex;flex-direction:column;align-items:center;gap:1px}.scorebar .st small{font-size:11px}.scorebar .st strong{font-size:14px}.scorebar .meter{grid-column:1/-1}}
+.scorebar small{font-size:inherit}.sbrow{flex:1 1 160px;display:flex;align-items:center;gap:10px;min-width:0}.sbrow .meter{flex:1}.sbrow .keluar{padding:4px 12px;font-size:12px;min-height:0;flex:none}.scorebar .st{white-space:nowrap}
+@media(max-width:640px){.scorebar{display:grid;grid-template-columns:repeat(5,auto);justify-content:space-between;gap:10px 6px}.scorebar .st{display:flex;flex-direction:column;align-items:center;gap:1px}.scorebar .st small{font-size:11px}.scorebar .st strong{font-size:14px}.scorebar .sbrow{grid-column:1/-1}}
 .meter{flex:1 1 160px;height:6px;border-radius:3px;background:var(--line);overflow:hidden;display:flex}
 .meter i{display:block;height:100%}
 .meter .m-ok{background:var(--ok)} .meter .m-bad{background:var(--bad)}
@@ -455,7 +455,8 @@ function tally(){let ok=0,bad=0;for(const id of state.list){const a=state.ans[id
 function renderScore(){
   const {ok,bad,n}=tally();const done=ok+bad;
   const pct=done?Math.round(ok*100/done):0;
-  $("score").innerHTML=`<span class="st"><small>Dijawab</small> <strong>${done}/${n}</strong></span><span class="st"><small>Benar</small> <strong>${ok}</strong></span><span class="st"><small>Salah</small> <strong>${bad}</strong></span><span class="st"><small>Akurasi</small> <strong>${pct}%</strong></span><span class="st" title="Soal di pilihan ini yang pernah Anda jawab benar, tersimpan di akun Anda"><small>Dikuasai</small> <strong>${fmtPct(state.list.filter(i=>BENAR[i]).length,n)}</strong></span><span class="meter" aria-hidden="true"><i class="m-ok" style="width:${n?ok*100/n:0}%"></i><i class="m-bad" style="width:${n?bad*100/n:0}%"></i></span>`;
+  $("score").innerHTML=`<span class="st"><small>Dijawab</small> <strong>${done}/${n}</strong></span><span class="st"><small>Benar</small> <strong>${ok}</strong></span><span class="st"><small>Salah</small> <strong>${bad}</strong></span><span class="st"><small>Akurasi</small> <strong>${pct}%</strong></span><span class="st" title="Soal di pilihan ini yang pernah Anda jawab benar, tersimpan di akun Anda"><small>Dikuasai</small> <strong>${fmtPct(state.list.filter(i=>BENAR[i]).length,n)}</strong></span><div class="sbrow"><span class="meter" aria-hidden="true"><i class="m-ok" style="width:${n?ok*100/n:0}%"></i><i class="m-bad" style="width:${n?bad*100/n:0}%"></i></span>${window.__logout?'<button class="btn keluar" id="sbkeluar" type="button">Keluar</button>':""}</div>`;
+  if($("sbkeluar"))$("sbkeluar").onclick=()=>window.__logout();
 }
 function renderMap(){
   $("mapsum").textContent=`Peta soal (${state.list.length})`;
@@ -607,6 +608,7 @@ window.__quiz={state};
   bIn.onclick=async()=>{const p=new firebase.auth.GoogleAuthProvider();p.setCustomParameters({prompt:'select_account'});
     try{await auth.signInWithPopup(p);}catch(e){if(e&&/popup-blocked|operation-not-supported/.test(e.code||''))auth.signInWithRedirect(p);else if(e&&e.code!=='auth/popup-closed-by-user'&&e.code!=='auth/cancelled-popup-request')gp.textContent='Gagal masuk: '+(e.message||e.code);}};
   // Keluar menghapus jawaban sesi (benar/salah di kuis); tanda ✓/✗ di akun tetap tersimpan.
+  window.__logout=()=>bOut.onclick();
   bOut.onclick=()=>{window.__keluar=true;try{localStorage.removeItem('tkbcakim-v12');}catch(e){}auth.signOut().then(()=>location.reload());};
   $('adm-logout').onclick=bOut.onclick;
 
