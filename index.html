@@ -88,6 +88,7 @@ select{font:inherit;font-size:14px;padding:7px 10px;border-radius:8px;border:1px
 .mvbox{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px;border:1px dashed var(--line);border-radius:10px;font-size:13px}.mvbox select{flex:1 1 220px;width:auto}.mvbox .note{flex-basis:100%;margin:0;font-size:12px;color:var(--muted)}
 .qno{font-family:var(--f-mono);color:var(--muted)}
 .chip{border-radius:999px;padding:2px 10px;background:var(--accent-soft);color:var(--accent);font-weight:600}
+.chip.benar{background:var(--accent);color:var(--surface)}
 .chip.kec{background:var(--brass-soft);color:var(--brass)}
 .qtext{font-family:var(--f-display);font-size:clamp(18px,2.4vw,21px);font-weight:500;line-height:1.45;margin:0}
 .opts{display:flex;flex-direction:column;gap:8px;margin:0;padding:0;list-style:none}
@@ -212,9 +213,9 @@ html.gate-wait .wrap{display:none}
   <nav class="tabs" role="tablist" id="tabs"></nav>
 
   <details class="setelan" id="setelan">
-    <summary><span>⚙ Atur kuis</span><span class="ringkas" id="ringkas"></span></summary>
+    <summary><span>⚙ Pengaturan Kuis</span><span class="ringkas" id="ringkas"></span></summary>
     <div class="controls">
-      <label class="ctl-sub" for="sub">Sub-materi <select id="sub"></select></label>
+      <label class="ctl-sub" for="sub"><span id="sublbl">Detail Bagian</span><select id="sub"></select></label>
       <label for="order">Urutan <select id="order"><option value="seq">Berurutan</option><option value="rand">Acak</option></select></label>
       <label for="timer">Timer <select id="timer"><option value="off">Mati</option><option value="cum">Total (54 dtk × soal)</option><option value="per">Per soal (54 dtk)</option></select></label>
       <button class="btn" id="retake" type="button">↻ Ulangi</button>
@@ -358,6 +359,14 @@ for(let i=QB.length-1;i>=0;i--){const q=QB[i];
 if(INVALID.length)console.error("Soal tidak valid dikeluarkan dari bank:",INVALID);
 const inCat=(q,c,s)=>q.mappings.some(m=>m.c===c&&(s==="all"||m.s===+s));
 const KEY="tkbcakim-v12";
+// Tanda soal yang pernah dijawab benar, per akun (window.__UID); disalin ke server bila situs menyediakan window.__simpanBenar.
+const BKEY="tkbcakim-benar-"+(window.__UID||"lokal");
+let BENAR={};try{BENAR=JSON.parse(localStorage.getItem(BKEY)||"{}")||{};}catch(e){BENAR={};}
+const BSRV=window.__BENAR_AWAL||{};
+if(window.__sinkronBenar&&Object.keys(BENAR).some(id=>!BSRV[id]))window.__sinkronBenar(BENAR);
+Object.assign(BENAR,BSRV);try{localStorage.setItem(BKEY,JSON.stringify(BENAR));}catch(e){}
+function tandaiBenar(id){if(BENAR[id])return;BENAR[id]=1;try{localStorage.setItem(BKEY,JSON.stringify(BENAR));}catch(e){}if(window.__simpanBenar)window.__simpanBenar(id);}
+function fmtPct(c,n){const v=n?c*100/n:0;return (v>0&&v<10?v.toFixed(1).replace(".",","):Math.round(v))+"%";}
 const TIERNAME={1:"Dasar hukum",2:"Istilah, jenis & prosedur",3:"Pendapat ahli & doktrin"};
 let store={};
 try{store=JSON.parse(localStorage.getItem(KEY)||"{}")||{};}catch(e){store={};}
@@ -412,10 +421,11 @@ function renderTabs(){
 }
 function renderSub(){
   const s=$("sub");
-  if(state.cat==="all"){s.innerHTML=`<option value="all">Semua sub-materi (${QB.length} soal)</option>`;s.disabled=true;return;}
+  $("sublbl").textContent=state.cat==="all"?"Detail Bagian":"Detail Bagian - "+CATS[state.cat].short;
+  if(state.cat==="all"){s.innerHTML=`<option value="all">Semua bagian</option>`;s.disabled=true;return;}
   s.disabled=false;
-  const c=state.cat,qs=QB.filter(q=>inCat(q,c,"all"));
-  s.innerHTML=`<option value="all">Semua sub-materi (${qs.length} soal)</option>`+SUBS[c].map((n,i)=>`<option value="${i+1}">${i+1}. ${esc(n)} (${qs.filter(q=>inCat(q,c,i+1)).length})</option>`).join("");
+  const c=state.cat;
+  s.innerHTML=`<option value="all">Semua bagian</option>`+SUBS[c].map((n,i)=>`<option value="${i+1}">${i+1}. ${esc(n)}</option>`).join("");
   s.value=String(state.sub);
 }
 function selectCat(k,sub){
@@ -428,7 +438,7 @@ function tally(){let ok=0,bad=0;for(const id of state.list){const a=state.ans[id
 function renderScore(){
   const {ok,bad,n}=tally();const done=ok+bad;
   const pct=done?Math.round(ok*100/done):0;
-  $("score").innerHTML=`<span>Dijawab <strong>${done}</strong>/${n}</span><span>Benar <strong>${ok}</strong></span><span>Salah <strong>${bad}</strong></span><span>Akurasi <strong>${pct}%</strong></span><span class="meter" aria-hidden="true"><i class="m-ok" style="width:${n?ok*100/n:0}%"></i><i class="m-bad" style="width:${n?bad*100/n:0}%"></i></span>`;
+  $("score").innerHTML=`<span>Dijawab <strong>${done}</strong>/${n}</span><span>Benar <strong>${ok}</strong></span><span>Salah <strong>${bad}</strong></span><span>Akurasi <strong>${pct}%</strong></span><span title="Soal di pilihan ini yang pernah Anda jawab benar, tersimpan di akun Anda">Dikuasai <strong>${fmtPct(state.list.filter(i=>BENAR[i]).length,n)}</strong></span><span class="meter" aria-hidden="true"><i class="m-ok" style="width:${n?ok*100/n:0}%"></i><i class="m-bad" style="width:${n?bad*100/n:0}%"></i></span>`;
   $("retry-wrong").disabled=!bad;
 }
 function renderMap(){
@@ -473,7 +483,7 @@ function renderCard(){
   const here=state.cat==="all"?q.mappings[0]:(q.mappings.find(m=>m.c===state.cat&&(state.sub==="all"||m.s===+state.sub))||q.mappings[0]);
   const also=q.mappings.filter(m=>m!==here).map(m=>`${CATS[m.c].short} ${m.s}`).join(", ");
   const own=!!window.__isOwner;
-  let html=(own?`<div class="owntools"><button class="btn mvbtn" id="ed" type="button" aria-expanded="${!!state.edOpen}">✎ Edit</button><button class="btn mvbtn" id="mv" type="button" aria-expanded="${!!state.mvOpen}">⇄ Pindahkan</button></div>`:"")+`<div class="qhead${own?" own":""}"><span class="qno">Soal No. ${state.pos+1}${isPin(q)?" 📌":""} <span class="of">/ ${state.list.length}</span></span><span class="chip">${esc(here.kategori_utama)} · ${here.s}. ${esc(here.sub_materi)}</span>${also?`<span class="chip">Juga di: ${esc(also)}</span>`:""}${isKec(q)?'<span class="chip kec">Pola kecuali</span>':""}${isPin(q)?'<span class="chip kec">📌 Pendapat ahli</span>':""}${isPin(q)&&getQuestionTier(q)===3?"":`<span class="chip">${TIERNAME[getQuestionTier(q)]}</span>`}</div>`;
+  let html=(own?`<div class="owntools"><button class="btn mvbtn" id="ed" type="button" aria-expanded="${!!state.edOpen}">✎ Edit</button><button class="btn mvbtn" id="mv" type="button" aria-expanded="${!!state.mvOpen}">⇄ Pindahkan</button></div>`:"")+`<div class="qhead${own?" own":""}"><span class="qno">Soal No. ${state.pos+1}${isPin(q)?" 📌":""} <span class="of">/ ${state.list.length}</span></span>${BENAR[id]?'<span class="chip benar" title="Soal ini pernah Anda jawab benar">✓ Pernah benar</span>':""}<span class="chip">${esc(here.kategori_utama)} · ${here.s}. ${esc(here.sub_materi)}</span>${also?`<span class="chip">Juga di: ${esc(also)}</span>`:""}${isKec(q)?'<span class="chip kec">Pola kecuali</span>':""}${isPin(q)?'<span class="chip kec">📌 Pendapat ahli</span>':""}${isPin(q)&&getQuestionTier(q)===3?"":`<span class="chip">${TIERNAME[getQuestionTier(q)]}</span>`}</div>`;
   if(own&&state.mvOpen){const cs=Object.keys(CATS).map(Number);
     html+=`<div class="mvbox" id="mvbox"><span>Pindahkan dari <b>${esc(here.kategori_utama)} ${here.s}</b> ke:</span><select id="mvc" aria-label="Kategori tujuan">${cs.map(c=>`<option value="${c}"${c===here.c?" selected":""}>${esc(CATS[c].short)}</option>`).join("")}</select><select id="mvs" aria-label="Sub-materi tujuan"></select><button class="btn primary" id="mvok" type="button">Simpan</button><button class="btn" id="mvno" type="button">Batal</button><p class="note" id="mvmsg">Perpindahan disimpan di server dan berlaku untuk semua pengguna setelah mereka memuat ulang halaman.</p></div>`;}
   if(own&&state.edOpen){
@@ -504,7 +514,7 @@ function renderCard(){
     if(state.mvOpen){const fill=()=>{const c=+$("mvc").value;$("mvs").innerHTML=SUBS[c].map((n,i)=>`<option value="${i+1}"${c===here.c&&i+1===here.s?" selected":""}>${i+1}. ${esc(n)}</option>`).join("");};
       fill();$("mvc").onchange=fill;$("mvno").onclick=()=>{state.mvOpen=false;renderCard();};
       $("mvok").onclick=()=>moveQ(id,here,+$("mvc").value,+$("mvs").value);}}
-  card.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{state.ans[id]=+b.dataset.o;persist();render();});
+  card.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{state.ans[id]=+b.dataset.o;if(state.ans[id]===q.a)tandaiBenar(id);persist();render();});
   $("prev").onclick=()=>{state.pos--;persist();render();};
   $("next").onclick=()=>{state.pos++;persist();render();window.scrollTo({top:Math.max(0,$("card").offsetTop-12)});};
 }
@@ -536,7 +546,7 @@ setInterval(()=>{
   if(++tickN%5===0)persist();
   renderTimer();
 },1000);
-function renderRingkas(){const r=$("ringkas");if(!r)return;const s=state.cat==="all"||state.sub==="all"?"Semua sub-materi":state.sub+". "+SUBS[state.cat][state.sub-1];
+function renderRingkas(){const r=$("ringkas");if(!r)return;const s=state.cat==="all"||state.sub==="all"?"Semua bagian":state.sub+". "+SUBS[state.cat][state.sub-1];
   r.textContent=s+" · "+(state.order==="rand"?"Acak":"Berurutan")+" · "+({off:"Timer mati",cum:"Timer total",per:"Timer per soal"}[tMode]||"");}
 function render(){if(tMode==="per")syncQ();renderScore();renderCard();renderMap();renderTimer();renderRingkas();}
 function retake(){buildSession(true);render();}
@@ -601,10 +611,15 @@ window.__quiz={state};
     try{localStorage.setItem('bank-versi',String(versi));}catch(e){}
     return arr;
   }
+  // Soal yang pernah dijawab benar disimpan di progres/<uid> agar tetap ada setelah keluar atau ganti perangkat.
+  async function progres(){const u=auth.currentUser;if(!u)return;window.__UID=u.uid;const ref=db.doc('progres/'+u.uid);
+    try{const s=await ref.get();window.__BENAR_AWAL=(s.exists&&s.data().b)||{};}catch(e){window.__BENAR_AWAL={};}
+    window.__simpanBenar=id=>ref.set({b:{[id]:1}},{merge:true}).catch(()=>{});
+    window.__sinkronBenar=m=>ref.set({b:m},{merge:true}).catch(()=>{});}
   async function start(){
     if(started)return;started=true;
     show('Memuat bank soal…','Sekali muat pertama bisa beberapa detik.');
-    try{const arr=await loadBank();QB.push(...arr);startQuiz();open();}
+    try{const arr=await loadBank();QB.push(...arr);await progres();startQuiz();open();}
     catch(e){started=false;if(isOwner){open();$('adm').open=true;$('adm').scrollIntoView();return;}show(e.message==='kosong'?'Bank soal belum diunggah':'Gagal memuat bank soal',e.message==='kosong'?'Pemilik perlu mengunggah bank soal dari panel persetujuan.':'Periksa koneksi lalu muat ulang halaman. ('+(e.code||e.message)+')',null,false,true);}
   }
   function posisi(){try{const s=window.__quiz&&window.__quiz.state;if(!s)return '';const c=s.cat;

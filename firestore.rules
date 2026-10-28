@@ -24,6 +24,11 @@ service cloud.firestore {
       allow delete: if isOwner();
     }
 
+    // Progres pribadi: soal yang pernah dijawab benar, hanya bisa dibaca dan ditulis pemiliknya sendiri.
+    match /progres/{uid} {
+      allow read, write: if signedIn() && request.auth.uid == uid && (isOwner() || approved());
+    }
+
     // Bank soal: hanya bisa dibaca akun yang disetujui; hanya pemilik yang bisa mengunggah.
     match /bank/{doc} {
       allow read: if isOwner() || approved();
