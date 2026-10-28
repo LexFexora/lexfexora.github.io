@@ -63,7 +63,8 @@ header p{margin:6px 0 0;color:var(--muted);max-width:68ch}
 :root{--k1:#3fae7a;--k2:#4f8fd6;--k3:#c9962e;--k4:#8b72e0}
 .tabs .tab.pilih{grid-column:1/-1}
 .tab.pilih,.tab.kl{flex-direction:row;align-items:center;gap:12px;padding-block:12px}
-.tab .ki{flex:none;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-size:20px;line-height:1;color:var(--ink);background:color-mix(in srgb,var(--kc,var(--accent)) 15%,transparent);border:1px solid color-mix(in srgb,var(--kc,var(--accent)) 35%,transparent)}
+.tab .ki{flex:none;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;color:var(--bg);background:var(--ink);box-shadow:0 3px 8px rgb(0 0 0 / .22)}.tab .ki svg{width:58%;height:58%}
+.setelan .stl{display:inline-flex;align-items:center;gap:7px}.setelan .stl svg{width:17px;height:17px}
 .tab .kt{display:flex;flex-direction:column;gap:3px;min-width:0;font-size:inherit;color:inherit}
 .tab .kt small{font-size:11.5px;line-height:1.3;color:var(--muted);font-weight:400}
 .tab.kl{position:relative;padding-right:28px;transition:border-color .15s,transform .15s,background .15s}
@@ -71,8 +72,8 @@ header p{margin:6px 0 0;color:var(--muted);max-width:68ch}
 .tab.kl[aria-selected="true"]{border-color:var(--kc);background:color-mix(in srgb,var(--kc) 12%,var(--surface));box-shadow:inset 0 0 0 1px var(--kc)}
 .tab.kl[aria-selected="true"]::after{content:"✓";position:absolute;top:8px;right:10px;font-size:12px;font-weight:700;color:var(--kc)}
 @media (prefers-reduced-motion:reduce){.tab.kl{transition:none}.tab.kl:hover{transform:none}}
-@media (max-width:720px){.tab.kl{flex-direction:column;align-items:flex-start;gap:8px;padding:12px 28px 12px 12px}.tab.kl .ki{width:36px;height:36px;font-size:18px;border-radius:10px}
-.tab.pilih{gap:10px}.tab.pilih .ki{width:34px;height:34px;font-size:17px;border-radius:10px}.tab.pilih .kt>b{white-space:nowrap;font-size:clamp(11.5px,3.3vw,14px);letter-spacing:-.005em}}
+@media (max-width:720px){.tab.kl{flex-direction:column;align-items:flex-start;gap:8px;padding:12px 28px 12px 12px}.tab.kl .ki{width:36px;height:36px;border-radius:10px}
+.tab.pilih{gap:10px}.tab.pilih .ki{width:34px;height:34px;border-radius:10px}.tab.pilih .kt>b{white-space:nowrap;font-size:clamp(11.5px,3.3vw,14px);letter-spacing:-.005em}}
 .tab:focus-visible,.opt:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
 .controls{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .controls label{font-size:12px;color:var(--muted);display:flex;flex-direction:column;gap:4px;min-width:0}.controls select{width:100%}.controls .btn{width:100%;min-height:40px;white-space:nowrap;padding:8px 6px;font-size:13px}
@@ -180,6 +181,21 @@ details.mapbox .map{margin-top:12px}
 .done{text-align:center;display:flex;flex-direction:column;gap:10px;align-items:center}
 .done .big{font-family:var(--f-display);font-size:44px;font-weight:650;font-variant-numeric:tabular-nums}
 .done .row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.putusan{padding:6px 0 4px;gap:8px}.putusan .eyebrow{color:var(--muted)}
+.palu{width:160px;height:120px;color:var(--ink);overflow:visible;margin-bottom:-4px}
+.palu .kepala{transform-origin:132px 56px;transform-box:view-box;animation:ketuk 1.15s cubic-bezier(.55,0,.25,1) .15s both}
+.palu .alas{color:var(--muted);opacity:.9}
+.palu .riak{fill:none;stroke:var(--ink);stroke-width:1.3;opacity:0;transform-origin:56px 74px;transform-box:view-box;animation:riak 1.1s ease-out .78s forwards}
+.palu .riak.r2{animation-delay:.92s}
+@keyframes ketuk{0%{transform:rotate(30deg)}38%{transform:rotate(38deg)}55%{transform:rotate(-1.5deg)}66%{transform:rotate(7deg)}80%,100%{transform:rotate(0)}}
+@keyframes riak{0%{opacity:.75;transform:scale(.25)}100%{opacity:0;transform:scale(1.6)}}
+.putusan .skor{display:flex;align-items:baseline;gap:8px;animation:munculskor .7s ease-out .78s both}
+.putusan .angka{font-family:var(--f-display);font-size:68px;line-height:1;font-weight:650;font-variant-numeric:tabular-nums;color:var(--ink)}
+.putusan .poin{font-family:var(--f-display);font-size:20px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.putusan .predikat{animation:muncul .6s ease-out 1.2s both}.putusan .row{animation:muncul .6s ease-out 1.4s both;margin-top:6px}
+@keyframes munculskor{0%{opacity:0;transform:translateY(8px) scale(.92)}60%{opacity:1;transform:scale(1.04)}100%{opacity:1;transform:none}}
+@keyframes muncul{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.palu .kepala,.palu .riak,.putusan .skor,.putusan .predikat,.putusan .row{animation:none}.palu .riak{display:none}}
 .done .predikat{font-weight:600;font-size:15px}.done .predikat.lulus{color:var(--ok,#3fb27f)}.done .predikat.gagal{color:#e2685d}
 .nilaitab{width:100%;max-width:440px;border-collapse:collapse;font-size:13px;margin:4px 0 6px;text-align:left}
 .nilaitab th{font-size:11.5px;font-weight:600;color:var(--muted);padding:6px 8px;border-bottom:1px solid var(--line)}
@@ -267,7 +283,7 @@ html.gate-wait .wrap{display:none}
   <nav class="tabs" role="tablist" id="tabs"></nav>
 
   <details class="setelan" id="setelan">
-    <summary><span>⚙ Pengaturan Kuis</span><span class="ringkas" id="ringkas"></span></summary>
+    <summary><span class="stl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg> Pengaturan Kuis</span><span class="ringkas" id="ringkas"></span></summary>
     <div class="controls">
       <label class="ctl-sub" for="sub"><span id="sublbl">Detail Bagian</span><select id="sub"></select></label>
       <label class="ctl-sub" for="bag" id="bagwrap" hidden><span>Bagian Soal</span><select id="bag"></select></label>
@@ -484,12 +500,13 @@ function restore(){
 }
 
 // Ikon dan keterangan singkat setiap klaster di menu Pilih Klaster.
-const KLIK={1:["⚖️","Teori, asas & kelembagaan"],2:["📜","Hukum acara PA & jinayat"],3:["📖","Perkawinan, waris & ekonomi syariah"],4:["💻","Peradilan elektronik & e-Court"]};
+const KLIK={1:[`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5v16.5M7.5 20h9M4.5 6.5h15"/><circle cx="12" cy="4.5" r="1"/><path d="M4.5 6.5 2 13a2.5 2.5 0 0 0 5 0z"/><path d="M19.5 6.5 17 13a2.5 2.5 0 0 0 5 0z"/></svg>`,"Teori, asas & kelembagaan"],2:[`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4"/><path d="M9.5 11h6M9.5 14.5h6M9.5 18h4"/></svg>`,"Hukum acara PA & jinayat"],3:[`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5.5c3-1.2 6-1 9 1 3-2 6-2.2 9-1V19c-3-1-6-.8-9 1-3-1.8-6-2-9-1z"/><path d="M12 6.5V20"/></svg>`,"Perkawinan, waris & ekonomi syariah"],4:[`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="16" height="11" rx="1.5"/><path d="M2 19.5h20"/><path d="m10 9 -1.8 1.8L10 12.6M14 9l1.8 1.8L14 12.6"/></svg>`,"Peradilan elektronik & e-Court"]};
+const KOMPAS=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/></svg>`;
 function renderTabs(){
   const t=$("tabs");
   // "Pilih Klaster" membuka dan menutup daftar klaster; klaster yang dipilih tampil di bawah judulnya.
-  const sel=state.cat!=="all",ik=n=>(KLIK[n]||["📚",""])[0];
-  t.innerHTML=`<button class="tab pilih" type="button" id="pilih" aria-expanded="${!!state.klOpen}"${sel?` style="--kc:var(--k${state.cat})"`:""}><span class="ki">${sel?ik(state.cat):"🧭"}</span><span class="kt"><b>Pilih Klaster - Seleksi Kemampuan Bidang</b>${sel?`<span class="sel">${esc(CATS[state.cat].short)}</span>`:`<small>Ketuk untuk memilih klaster</small>`}</span></button>`+
+  const sel=state.cat!=="all",ik=n=>(KLIK[n]||[KOMPAS])[0];
+  t.innerHTML=`<button class="tab pilih" type="button" id="pilih" aria-expanded="${!!state.klOpen}"${sel?` style="--kc:var(--k${state.cat})"`:""}><span class="ki">${sel?ik(state.cat):KOMPAS}</span><span class="kt"><b>Pilih Klaster - Seleksi Kemampuan Bidang</b>${sel?`<span class="sel">${esc(CATS[state.cat].short)}</span>`:`<small>Ketuk untuk memilih klaster</small>`}</span></button>`+
     (state.klOpen?Object.keys(CATS).map(n=>`<button class="tab kl" role="tab" type="button" data-k="${n}" aria-selected="${state.cat===+n}" style="--kc:var(--k${n})"><span class="ki">${ik(n)}</span><span class="kt"><b>${esc(CATS[n].short)}</b><small>${esc((KLIK[n]||[])[1]||"")}</small></span></button>`).join(""):"");
   $("pilih").onclick=()=>{state.klOpen=!state.klOpen;renderTabs();};
   t.querySelectorAll(".tab[data-k]").forEach(b=>b.onclick=()=>{state.klOpen=false;selectCat(+b.dataset.k,"all");});
@@ -575,13 +592,14 @@ document.addEventListener("toggle",e=>{const k=e.target,c=$("card");if(!k.classL
 function renderCard(){
   const card=$("card");
   if(!state.list.length){card.innerHTML="<p>Tidak ada soal untuk pilihan ini.</p>";return;}
-  if(!siapOK()){card.innerHTML=`<div class="kunci"><span class="ik">🔒</span><b>Atur Pengaturan Kuis dulu</b><p>Pilih detail bagian, urutan, dan timer, lalu tekan Simpan &amp; Mulai.</p><button class="btn primary" id="bukaset" type="button">⚙ Buka Pengaturan Kuis</button></div>`;
+  if(!siapOK()){card.innerHTML=`<div class="kunci"><span class="ik">🔒</span><b>Atur Pengaturan Kuis dulu</b><p>Pilih detail bagian, urutan, dan timer, lalu tekan Simpan &amp; Mulai.</p><button class="btn primary" id="bukaset" type="button">Buka Pengaturan Kuis</button></div>`;
     $("bukaset").onclick=()=>{const st=$("setelan");st.open=true;st.scrollIntoView({behavior:"smooth",block:"start"});};return;}
   if(state.pos>=state.list.length){
     const {ok,bad,n}=tally();
-    card.innerHTML=`<div class="done"><div class="eyebrow">${state.timeUp?"Waktu habis · sesi selesai":"Sesi selesai"}</div><div class="big">${ok}/${n}</div><p>Benar ${ok}, salah ${bad}, belum dijawab ${n-ok-bad}. Nilai <b>${n?Math.round(ok*100/n):0} Poin</b>.</p>${nilaiHTML(ok,n)}<div class="row"><button class="btn primary" id="d-retake" type="button">Ulangi semua</button>${bad?'<button class="btn" id="d-wrong" type="button">Ulangi yang salah</button>':""}<button class="btn" id="d-back" type="button">Tinjau soal</button>${bagNext()?`<button class="btn primary" id="d-next" type="button">Lanjut ${bagNext()==="bonus"?"Soal Bonus":"Bagian "+bagNext()} →</button>`:""}</div></div>`;
+    const nilai=n?Math.round(ok*100/n):0;
+    card.innerHTML=`<div class="done putusan">${PALU}<div class="eyebrow">${state.timeUp?"Waktu habis · ":""}Nilai Akhir</div><div class="skor"><span class="angka" id="angka">${nilai}</span><span class="poin">Poin</span></div>${nilaiHTML(ok,n)}<div class="row"><button class="btn primary" id="d-retake" type="button">Ulangi semua</button>${bad?'<button class="btn" id="d-wrong" type="button">Ulangi yang salah</button>':""}<button class="btn" id="d-back" type="button">Tinjau soal</button>${bagNext()?`<button class="btn primary" id="d-next" type="button">Lanjut ${bagNext()==="bonus"?"Soal Bonus":"Bagian "+bagNext()} →</button>`:""}</div></div>`;
     if(bagNext())$("d-next").onclick=()=>{state.bag=bagNext();restore();renderBag();render();window.scrollTo({top:Math.max(0,$("card").offsetTop-12)});};
-    $("d-retake").onclick=retake; if(bad) $("d-wrong").onclick=retryWrong; $("d-back").onclick=()=>{state.pos=0;persist();render();};
+    hitungNaik();$("d-retake").onclick=retake; if(bad) $("d-wrong").onclick=retryWrong; $("d-back").onclick=()=>{state.pos=0;persist();render();};
     return;
   }
   const id=state.list[state.pos], q=BYID[id], perm=state.perm[id], chosen=state.ans[id], answered=chosen!==undefined;
@@ -626,10 +644,12 @@ function renderCard(){
 function fmt(t){t=Math.max(0,Math.ceil(t));const h=Math.floor(t/3600),m=Math.floor(t%3600/60),x=t%60;return (h?h+":"+String(m).padStart(2,"0"):String(m).padStart(2,"0"))+":"+String(x).padStart(2,"0");}
 // Penilaian akhir: nilai 0-100 poin dan predikat menurut persentase jawaban benar.
 const STANDAR=[[100,"Standar Sempurna"],[90,"Standar Istimewa"],[80,"Standar Sangat Ketat"],[70,"Standar Tinggi"],[60,"Standar KKM / Sedang"],[50,"Standar Cukup"]];
-function nilaiHTML(ok,n){const v=n?Math.round(ok*100/n):0,min=p=>Math.ceil(p*n/100-1e-9),cap=n?STANDAR.find(([p])=>ok>=min(p)):null;
-  return `<p class="predikat ${cap?"lulus":"gagal"}">${cap?"Lulus · "+cap[1]+" · "+cap[0]+"%":"Belum lulus · di bawah Standar Cukup 50%"}</p>`+
-  `<table class="nilaitab"><thead><tr><th>Persentase Kelulusan</th><th>Minimal Soal Benar</th><th>Nilai Lolos Terkecil</th></tr></thead><tbody>`+
-  STANDAR.slice().reverse().map(([p,t])=>`<tr class="${cap&&cap[0]===p?"capai":""}${n&&ok>=min(p)?" ok":""}"><td><b>${p}%</b> ${t}</td><td>${min(p)} Soal</td><td><b>${p} Poin</b></td></tr>`).join("")+`</tbody></table>`;}
+// Animasi palu hakim untuk layar Nilai Akhir.
+const PALU=`<svg class="palu" viewBox="0 0 150 112" aria-hidden="true"><circle class="riak" cx="56" cy="74" r="30"/><circle class="riak r2" cx="56" cy="74" r="30"/><g class="alas" fill="currentColor"><rect x="22" y="84" width="68" height="9" rx="3"/><rect x="31" y="75" width="50" height="10" rx="2.5" opacity=".75"/></g><g class="kepala" fill="currentColor"><rect x="70" y="53" width="64" height="7" rx="3.5"/><rect x="40" y="38" width="32" height="37" rx="6"/><rect x="38" y="45" width="36" height="4.5" rx="2"/><rect x="38" y="63.5" width="36" height="4.5" rx="2"/><rect x="47" y="49.5" width="18" height="14" rx="2" fill="var(--bg)" opacity=".18"/></g></svg>`;
+function hitungNaik(){const el=$("angka");if(!el||matchMedia("(prefers-reduced-motion: reduce)").matches)return;const v=+el.textContent;el.textContent="0";
+  const t0=performance.now()+780,d=900;const f=t=>{const k=Math.min(1,Math.max(0,(t-t0)/d));el.textContent=Math.round(v*(1-Math.pow(1-k,3)));if(k<1)requestAnimationFrame(f);};requestAnimationFrame(f);}
+function nilaiHTML(ok,n){const min=p=>Math.ceil(p*n/100-1e-9),cap=n?STANDAR.find(([p])=>ok>=min(p)):null;
+  return `<p class="predikat ${cap?"lulus":"gagal"}">${cap?"Lulus · "+cap[1]+" · "+cap[0]+"%":"Belum lulus · di bawah Standar Cukup 50%"}</p>`;}
 function bagNext(){if(state.sub==="all"||state.bag==="all"||state.bag==="bonus")return false;const {k,bonus}=bagInfo(QB.filter(q=>inCat(q,state.cat,state.sub)).length);return +state.bag<k?+state.bag+1:bonus?"bonus":false;}
 function siapOK(){return state.cat==="all"||store.siapCat===state.cat;}
 function timerActive(){return siapOK()&&tMode!=="off"&&state.cat!=="all"&&state.list.length&&!state.timeUp&&state.pos<state.list.length;}
