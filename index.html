@@ -522,11 +522,11 @@ function renderCard(){
   $("next").onclick=()=>{state.pos++;persist();render();window.scrollTo({top:Math.max(0,$("card").offsetTop-12)});};
 }
 function fmt(t){t=Math.max(0,Math.ceil(t));const h=Math.floor(t/3600),m=Math.floor(t%3600/60),x=t%60;return (h?h+":"+String(m).padStart(2,"0"):String(m).padStart(2,"0"))+":"+String(x).padStart(2,"0");}
-function timerActive(){return tMode!=="off"&&state.list.length&&!state.timeUp&&state.pos<state.list.length;}
+function timerActive(){return tMode!=="off"&&state.cat!=="all"&&state.list.length&&!state.timeUp&&state.pos<state.list.length;}
 function syncQ(){const id=state.list[state.pos];if(id!==state.qId){state.qId=id;state.qLeft=SEC;}}
 function renderTimer(){
   const b=$("timerbox");
-  if(tMode==="off"||!state.list.length){b.hidden=true;return;}
+  if(tMode==="off"||!state.list.length||state.cat==="all"){b.hidden=true;return;}
   b.hidden=false;
   if(tMode==="cum"){b.className="timer"+(state.tLeft<=60||state.timeUp?" warn":"");b.innerHTML=`⏱ ${state.timeUp?"Waktu habis":fmt(state.tLeft)} <small>dari ${fmt(SEC*state.list.length)} · ${state.list.length} soal × ${SEC} detik</small>`;}
   else{const id=state.list[state.pos];const idle=state.pos>=state.list.length||state.ans[id]!==undefined||state.expired[id];
@@ -549,7 +549,7 @@ setInterval(()=>{
   if(++tickN%5===0)persist();
   renderTimer();
 },1000);
-function renderRingkas(){const r=$("ringkas");if(!r)return;const s=state.cat==="all"||state.sub==="all"?"Semua bagian":state.sub+". "+SUBS[state.cat][state.sub-1];
+function renderRingkas(){const st=$("setelan");if(st)st.hidden=state.cat==="all";const r=$("ringkas");if(!r)return;const s=state.cat==="all"||state.sub==="all"?"Semua bagian":state.sub+". "+SUBS[state.cat][state.sub-1];
   r.textContent=s+" · "+(state.order==="rand"?"Acak":"Berurutan")+" · "+({off:"Timer mati",cum:"Timer total",per:"Timer per soal"}[tMode]||"");}
 function render(){if(tMode==="per")syncQ();renderScore();renderCard();renderMap();renderTimer();renderRingkas();}
 function retake(){buildSession(true);render();}
