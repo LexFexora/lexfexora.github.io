@@ -486,12 +486,12 @@ function renderBag(){
   const w=$("bagwrap"),s=$("bag");if(!w)return;
   w.hidden=state.cat==="all"||state.sub==="all";if(w.hidden)return;
   const n=QB.filter(q=>inCat(q,state.cat,state.sub)).length,{k,sz,bonus}=bagInfo(n);
-  if(state.bag==="bonus"&&!bonus)state.bag=1;
-  s.innerHTML=Array.from({length:k},(_,i)=>`<option value="${i+1}">Bagian ${i+1} · soal ${i*sz+1}–${Math.min(n,(i+1)*sz)}</option>`).join("")+(bonus?`<option value="bonus">Soal Bonus · soal ${k*sz+1}–${n}</option>`:"")+`<option value="all">Semua soal sub-materi ini</option>`;
+  if((state.bag==="bonus"&&!bonus)||state.bag==="all")state.bag=1;
+  s.innerHTML=Array.from({length:k},(_,i)=>`<option value="${i+1}">Bagian ${i+1} · soal ${i*sz+1}–${Math.min(n,(i+1)*sz)}</option>`).join("")+(bonus?`<option value="bonus">Soal Bonus · soal ${k*sz+1}–${n}</option>`:"");
   s.value=String(state.bag);
 }
 function selectCat(k,sub,bag){
-  state.cat=k; state.sub=sub; state.bag=sub==="all"?"all":bagNum(bag??1);
+  state.cat=k; state.sub=sub; state.bag=sub==="all"?"all":(bag==null||bag==="all"?1:bagNum(bag));
   try{history.replaceState(null,"",k==="all"?location.pathname:"#"+CATS[k].key);}catch(e){}
   restore(); $("order").value=state.order; renderTabs(); renderSub(); render();
 }
