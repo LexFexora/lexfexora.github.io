@@ -74,7 +74,8 @@ select{font:inherit;font-size:14px;padding:7px 10px;border-radius:8px;border:1px
 .meter .m-ok{background:var(--ok)} .meter .m-bad{background:var(--bad)}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px clamp(16px,3vw,28px);display:flex;flex-direction:column;gap:16px}
 .qhead{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:12px}
-.card{position:relative}.qhead.own{padding-right:104px}.mvbtn{position:absolute;top:12px;right:12px;font-size:12px;padding:4px 10px}
+.card{position:relative}.qhead.own{padding-right:190px}.owntools{position:absolute;top:12px;right:12px;display:flex;gap:6px}@media(max-width:560px){.owntools{position:static;justify-content:flex-end;margin-bottom:-6px}.qhead.own{padding-right:0}}.mvbtn{font-size:12px;padding:4px 10px}
+.edbox{display:flex;flex-direction:column;gap:8px;padding:12px;border:1px dashed var(--line);border-radius:10px;font-size:13px}.edbox label{font-weight:600;font-size:12px;color:var(--muted)}.edbox textarea{font:inherit;font-size:14px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);resize:vertical;width:100%;box-sizing:border-box}.edbox .eo{display:flex;gap:8px;align-items:flex-start}.edbox .eo input{margin-top:10px}.edbox .row{display:flex;gap:8px;flex-wrap:wrap}.edbox .note{margin:0;font-size:12px;color:var(--muted)}
 .mvbox{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px;border:1px dashed var(--line);border-radius:10px;font-size:13px}.mvbox select{flex:1 1 220px;width:auto}.mvbox .note{flex-basis:100%;margin:0;font-size:12px;color:var(--muted)}
 .qno{font-family:var(--f-mono);color:var(--muted)}
 .chip{border-radius:999px;padding:2px 10px;background:var(--accent-soft);color:var(--accent);font-weight:600}
@@ -223,6 +224,9 @@ html.gate-wait .wrap{display:none}
 <script>
 const QB=[];
 // Perpindahan soal oleh pemilik (dokumen bank/pindah): id -> ["c|s|nama sub", ...], mapping pertama = kamar utama. Diabaikan bila nama sub tidak lagi cocok dengan meta.
+// Suntingan soal oleh pemilik (dokumen bank/edit): id -> {q,o,a,p,d}. Diabaikan bila jumlah pilihan berbeda dari soal asli.
+function applyEdit(q,r){if(!r||typeof r.q!=="string"||!Array.isArray(r.o)||r.o.length!==q.o.length||!Number.isInteger(r.a)||r.a<0||r.a>=r.o.length)return false;
+  Object.assign(q,{q:r.q,o:r.o.slice(),a:r.a,p:String(r.p||""),d:String(r.d||"")});return true;}
 function applyPindah(q,list){
   const ms=list.map(x=>{const [c,s,...n]=String(x).split("|");return {c:+c,s:+s,n:n.join("|")};});
   if(!ms.length||!ms.every(m=>CATS[m.c]&&SUBS[m.c][m.s-1]===m.n))return false;
@@ -398,6 +402,17 @@ function renderMap(){
   $("map").innerHTML=state.list.map((id,i)=>{const a=state.ans[id];const c=a===undefined?"":(a===BYID[id].a?"ok":"bad");return `<button type="button" class="${c}${i===state.pos?" cur":""}" data-i="${i}" aria-label="Soal ${i+1}">${i+1}</button>`;}).join("");
   $("map").querySelectorAll("button").forEach(b=>b.onclick=()=>{state.pos=+b.dataset.i;persist();render();window.scrollTo({top:$("card").offsetTop-12});});
 }
+function editQ(id){
+  const q=BYID[id],o=q.o.slice();$("edbox").querySelectorAll("textarea[data-o]").forEach(x=>o[+x.dataset.o]=x.value.trim());
+  const ch=$("edbox").querySelector("input[name=eda]:checked");
+  const rec={q:$("edq").value.trim(),o,a:ch?+ch.value:q.a,p:$("edp").value.trim(),d:$("edd").value.trim()};
+  if(!rec.q||o.some(x=>!x)){$("edmsg").textContent="Teks soal dan semua pilihan wajib diisi.";return;}
+  $("edok").disabled=true;$("edmsg").textContent="Menyimpan…";
+  Promise.resolve(window.__edit?window.__edit(id,rec):Promise.reject(new Error("tidak tersedia"))).then(()=>{
+    applyEdit(q,rec);state.edOpen=false;render();
+    const n=$("card").querySelector(".qhead");if(n){const tip=document.createElement("p");tip.className="note";tip.style.margin="0";tip.textContent=`✓ Soal ${id} tersimpan.`;n.after(tip);}
+  }).catch(e=>{$("edok").disabled=false;$("edmsg").textContent="Gagal menyimpan: "+(e.code||e.message);});
+}
 function moveQ(id,from,c,s){
   const q=BYID[id];if(from.c===c&&from.s===s){state.mvOpen=false;renderCard();return;}
   const seen=new Set(),ms=q.mappings.map(m=>m===from?{c,s}:{c:m.c,s:m.s}).filter(m=>{const k=m.c+"|"+m.s;if(seen.has(k))return false;seen.add(k);return true;});
@@ -424,9 +439,18 @@ function renderCard(){
   const here=state.cat==="all"?q.mappings[0]:(q.mappings.find(m=>m.c===state.cat&&(state.sub==="all"||m.s===+state.sub))||q.mappings[0]);
   const also=q.mappings.filter(m=>m!==here).map(m=>`${CATS[m.c].short} ${m.s}`).join(", ");
   const own=!!window.__isOwner;
-  let html=(own?`<button class="btn mvbtn" id="mv" type="button" aria-expanded="${!!state.mvOpen}">⇄ Pindahkan</button>`:"")+`<div class="qhead${own?" own":""}"><span class="qno">Soal No. ${state.pos+1}${isPin(q)?" 📌":""} <span class="of">/ ${state.list.length}</span></span><span class="chip">${esc(here.kategori_utama)} · ${here.s}. ${esc(here.sub_materi)}</span>${also?`<span class="chip">Juga di: ${esc(also)}</span>`:""}${isKec(q)?'<span class="chip kec">Pola kecuali</span>':""}${isPin(q)?'<span class="chip kec">📌 Pendapat ahli</span>':""}${isPin(q)&&getQuestionTier(q)===3?"":`<span class="chip">${TIERNAME[getQuestionTier(q)]}</span>`}</div>`;
+  let html=(own?`<div class="owntools"><button class="btn mvbtn" id="ed" type="button" aria-expanded="${!!state.edOpen}">✎ Edit</button><button class="btn mvbtn" id="mv" type="button" aria-expanded="${!!state.mvOpen}">⇄ Pindahkan</button></div>`:"")+`<div class="qhead${own?" own":""}"><span class="qno">Soal No. ${state.pos+1}${isPin(q)?" 📌":""} <span class="of">/ ${state.list.length}</span></span><span class="chip">${esc(here.kategori_utama)} · ${here.s}. ${esc(here.sub_materi)}</span>${also?`<span class="chip">Juga di: ${esc(also)}</span>`:""}${isKec(q)?'<span class="chip kec">Pola kecuali</span>':""}${isPin(q)?'<span class="chip kec">📌 Pendapat ahli</span>':""}${isPin(q)&&getQuestionTier(q)===3?"":`<span class="chip">${TIERNAME[getQuestionTier(q)]}</span>`}</div>`;
   if(own&&state.mvOpen){const cs=Object.keys(CATS).map(Number);
     html+=`<div class="mvbox" id="mvbox"><span>Pindahkan dari <b>${esc(here.kategori_utama)} ${here.s}</b> ke:</span><select id="mvc" aria-label="Kategori tujuan">${cs.map(c=>`<option value="${c}"${c===here.c?" selected":""}>${esc(CATS[c].short)}</option>`).join("")}</select><select id="mvs" aria-label="Sub-materi tujuan"></select><button class="btn primary" id="mvok" type="button">Simpan</button><button class="btn" id="mvno" type="button">Batal</button><p class="note" id="mvmsg">Perpindahan disimpan di server dan berlaku untuk semua pengguna setelah mereka memuat ulang halaman.</p></div>`;}
+  if(own&&state.edOpen){
+    html+=`<div class="edbox" id="edbox"><label for="edq">Teks soal</label><textarea id="edq" rows="3">${esc(q.q)}</textarea><label>Pilihan jawaban (tandai kunci jawaban)</label>`+
+      perm.map((oi,pi)=>`<div class="eo"><input type="radio" name="eda" value="${oi}" aria-label="Kunci ${L[pi]}"${oi===q.a?" checked":""}><b style="margin-top:8px">${L[pi]}</b><textarea data-o="${oi}" rows="2">${esc(q.o[oi])}</textarea></div>`).join("")+
+      `<label for="edp">Pembahasan</label><textarea id="edp" rows="4">${esc(q.p)}</textarea><label for="edd">Sumber</label><textarea id="edd" rows="2">${esc(q.d)}</textarea><div class="row"><button class="btn primary" id="edok" type="button">Simpan</button><button class="btn" id="edno" type="button">Batal</button></div><p class="note" id="edmsg">Perubahan disimpan di server dan berlaku untuk semua pengguna setelah mereka memuat ulang halaman.</p></div>`;
+    card.innerHTML=html;
+    $("ed").onclick=$("edno").onclick=()=>{state.edOpen=false;renderCard();};
+    $("mv").onclick=()=>{state.edOpen=false;state.mvOpen=true;renderCard();};
+    $("edok").onclick=()=>editQ(id);
+    return;}
   html+=`<p class="qtext">${esc(q.q)}</p><ol class="opts">`;
   perm.forEach((oi,pi)=>{
     let cls="",mark="";
@@ -442,7 +466,7 @@ function renderCard(){
   if(locked) html+=`<div class="verdict exp">⏱ ${state.timeUp?"Waktu ujian habis":"Waktu soal ini habis"} <small>Soal tidak dijawab. Jawaban yang tepat: ${L[perm.indexOf(q.a)]}. ${esc(q.o[q.a])}</small></div><div class="explain"><div><h3>💡 Pembahasan:</h3><p>${esc(q.p)}</p></div><div class="dasar"><h3>Sumber:</h3><p>${esc(q.d)}</p></div></div>`;
   html+=`<div class="nav"><button class="btn" id="prev" type="button" ${state.pos===0?"disabled":""}>← Sebelumnya</button><button class="btn primary" id="next" type="button">${state.pos===state.list.length-1?"Lihat hasil":"Berikutnya →"}</button></div>`;
   card.innerHTML=html;
-  if(own){$("mv").onclick=()=>{state.mvOpen=!state.mvOpen;renderCard();};
+  if(own){$("mv").onclick=()=>{state.mvOpen=!state.mvOpen;renderCard();};$("ed").onclick=()=>{state.edOpen=true;state.mvOpen=false;renderCard();};
     if(state.mvOpen){const fill=()=>{const c=+$("mvc").value;$("mvs").innerHTML=SUBS[c].map((n,i)=>`<option value="${i+1}"${c===here.c&&i+1===here.s?" selected":""}>${i+1}. ${esc(n)}</option>`).join("");};
       fill();$("mvc").onchange=fill;$("mvno").onclick=()=>{state.mvOpen=false;renderCard();};
       $("mvok").onclick=()=>moveQ(id,here,+$("mvc").value,+$("mvs").value);}}
@@ -536,6 +560,8 @@ window.__quiz={state};
     const arr=JSON.parse('['+docs.map(d=>d.data().d).join(',')+']');
     try{const pd=await db.doc('bank/pindah').get();const mp=(pd.exists&&pd.data().m)||{};
       arr.forEach(q=>{if(mp[q.id])applyPindah(q,mp[q.id]);});}catch(e){}
+    try{const ed=await db.doc('bank/edit').get();const me=(ed.exists&&ed.data().m)||{};
+      arr.forEach(q=>{if(me[q.id])applyEdit(q,me[q.id]);});}catch(e){}
     try{localStorage.setItem('bank-versi',String(versi));}catch(e){}
     return arr;
   }
@@ -556,7 +582,8 @@ window.__quiz={state};
     if(!u){show('Latihan ini membutuhkan izin','Masuk dengan akun Google. Permintaan akses Anda akan dikirim ke pemilik untuk disetujui.',null,true,false);return;}
     const who='Masuk sebagai '+(u.displayName?u.displayName+' · ':'')+u.email;
     if(OWNER&&(u.email||'').toLowerCase()===OWNER&&u.emailVerified){isOwner=true;window.__isOwner=true;
-      window.__pindah=(id,list)=>db.doc('bank/pindah').set({m:{[id]:list}},{merge:true}).then(()=>pinfo());admin();start();return;}
+      window.__pindah=(id,list)=>db.doc('bank/pindah').set({m:{[id]:list}},{merge:true}).then(()=>pinfo());
+      window.__edit=(id,rec)=>db.doc('bank/edit').set({m:{[id]:rec}},{merge:true}).then(()=>pinfo());admin();start();return;}
     const ref=db.doc('izin/'+u.uid);
     try{const s=await ref.get();
       if(!s.exists)await ref.set({email:u.email||'',nama:u.displayName||'',foto:u.photoURL||'',status:'menunggu',diminta:FV.serverTimestamp(),terakhir:FV.serverTimestamp(),posisi:''});
@@ -568,8 +595,8 @@ window.__quiz={state};
     },e=>show('Akses belum dapat diperiksa','Muat ulang halaman. ('+(e.code||e.message)+')',who,false,true));
   });
 
-  function pinfo(){return db.doc('bank/pindah').get().then(d=>{const n=d.exists?Object.keys(d.data().m||{}).length:0;
-    $('pindahinfo').textContent=n?`Soal yang sudah dipindahkan lewat tombol ⇄ Pindahkan: ${n}. Perpindahan tetap berlaku setelah bank diunggah ulang.`:'Belum ada soal yang dipindahkan. Tombol ⇄ Pindahkan ada di pojok kanan atas setiap soal (hanya terlihat oleh Anda).';}).catch(()=>{});}
+  function pinfo(){return Promise.all([db.doc('bank/pindah').get(),db.doc('bank/edit').get()]).then(([d,e])=>{const n=d.exists?Object.keys(d.data().m||{}).length:0,ne=e.exists?Object.keys(e.data().m||{}).length:0;
+    $('pindahinfo').textContent=`Soal yang Anda ubah lewat pojok kanan atas setiap soal: ${n} dipindahkan (⇄ Pindahkan), ${ne} diedit (✎ Edit). Tombolnya hanya terlihat oleh Anda, sedangkan perubahannya berlaku untuk semua pengguna dan tetap berlaku setelah bank diunggah ulang.`;}).catch(()=>{});}
   function admin(){
     pinfo();
     $('bankdl').onclick=()=>{if(!QB.length){alert('Bank soal belum dimuat.');return;}
