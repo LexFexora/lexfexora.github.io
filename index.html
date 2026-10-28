@@ -121,8 +121,6 @@ select{font:inherit;font-size:14px;padding:7px 10px;border-radius:8px;border:1px
 .map{display:grid;grid-template-columns:repeat(auto-fill,minmax(34px,1fr));gap:6px}
 .map button{appearance:none;font:500 12px var(--f-mono);height:32px;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--muted);cursor:pointer;padding:0}
 .map button.cur{border-color:var(--ink);color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
-.map button.ok{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
-.map button.bad{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
 details.mapbox{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
 details.mapbox summary{cursor:pointer;font-weight:600;font-size:14px}
 details.mapbox .map{margin-top:12px}
@@ -521,8 +519,6 @@ function renderCard(){
   });
   html+="</ol>";
   if(answered){
-    const right=chosen===q.a, letter=L[perm.indexOf(q.a)];
-    html+=`<div class="verdict ${right?"ok":"bad"}">${right?"✓ BENAR":"✗ SALAH"} <small>Jawaban yang tepat: ${letter}. ${esc(q.o[q.a])}</small></div>`;
     html+=`${ketHTML(q)}`;
   }
   if(locked) html+=`<div class="verdict bad">✗ SALAH · ⏱ ${state.timeUp?"Waktu ujian habis":"Waktu habis"} <small>Tidak dijawab, dianggap salah. Jawaban yang tepat: ${L[perm.indexOf(q.a)]}. ${esc(q.o[q.a])}</small></div>${ketHTML(q)}`;
