@@ -93,6 +93,10 @@ select{font:inherit;font-size:14px;padding:7px 10px;border-radius:8px;border:1px
 .setelan.perlu>summary{color:#e2685d}
 @keyframes perlu{0%,100%{box-shadow:0 0 0 0 rgb(220 80 70 / 0)}50%{box-shadow:0 0 14px 2px rgb(220 80 70 / .28)}}
 @media (prefers-reduced-motion:reduce){.setelan.perlu{animation:none;box-shadow:0 0 10px 1px rgb(220 80 70 / .25)}}
+.blmmulai #mapbox{display:none!important}
+.mulaikartu .info{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}.mulaikartu .info span{font-size:12.5px;border:1px solid var(--line);border-radius:999px;padding:3px 10px;color:var(--muted)}
+.mulaikartu h2{font-family:var(--f-display);font-weight:650;font-size:21px;line-height:1.3;margin:0;max-width:30ch}
+.mulaikartu .btn.mulai{font-size:17px;padding:13px 34px;border-radius:12px;margin-top:4px}
 .blmsiap #card,.blmsiap #mapbox,.blmsiap #score .st,.blmsiap #score .meter{display:none!important}.blmsiap #score .sbrow{justify-content:flex-end}
 .siaprow{grid-column:1/-1;display:flex;justify-content:flex-end;margin-top:12px}.siaprow[hidden]{display:none}
 .kunci{text-align:center;padding:28px 8px;display:flex;flex-direction:column;align-items:center;gap:10px}.kunci .ik{font-size:30px}.kunci p{margin:0;color:var(--muted);font-size:14px;max-width:34ch}.kunci b{font-size:16px;color:var(--ink)}
@@ -118,7 +122,7 @@ html.fokus .card .ket{flex:none;padding-top:min(12px,1.4vh)}
 html.fokus .card .ket>summary{padding:min(10px,1.2vh) 14px}
 html.fokus .card:has(.ket[open]){overflow-y:auto;overscroll-behavior:contain}
 html.fokus .card .ket .explain{font-size:15px;line-height:1.65;padding-top:10px}
-html.fokus .card .nav{margin-top:auto;flex:none;padding-top:min(10px,1.2vh);position:sticky;bottom:0;background:var(--bg)}
+html.fokus .card .nav{margin-top:0;flex:none;padding-top:min(10px,1.2vh);position:sticky;bottom:0;background:var(--bg)}
 html.fokus .card .nav .btn{min-height:44px;padding:8px 18px;font-size:15px;flex:1}
 .scorebar small{font-size:inherit}.sbrow{flex:1 1 160px;display:flex;align-items:center;gap:10px;min-width:0}.sbrow .meter{flex:1}.sbrow .keluar{padding:4px 12px;font-size:12px;min-height:0;flex:none}.scorebar .st{white-space:nowrap}
 @media(max-width:640px){.scorebar{display:grid;grid-template-columns:repeat(4,auto);justify-content:space-between;gap:10px 6px}.scorebar .st{display:flex;flex-direction:column;align-items:center;gap:1px}.scorebar .st small{font-size:11px}.scorebar .st strong{font-size:14px}.scorebar .sbrow{grid-column:1/-1}}
@@ -300,7 +304,7 @@ html.gate-wait .wrap{display:none}
       <label class="ctl-sub" for="bag" id="bagwrap" hidden><span>Bagian Soal</span><select id="bag"></select></label>
       <label for="order">Urutan <select id="order"><option value="seq">Berurutan</option><option value="rand">Acak</option></select></label>
       <label for="timer">Timer <select id="timer"><option value="off">Mati</option><option value="cum">Total (54 dtk × soal)</option><option value="per">Per soal (54 dtk)</option></select></label>
-      <div class="siaprow" id="siaprow"><button class="btn primary" id="siapbtn" type="button">✓ Simpan &amp; Mulai</button></div>
+      <div class="siaprow" id="siaprow"><button class="btn primary" id="siapbtn" type="button">✓ Simpan Pengaturan</button></div>
     </div>
   </details>
   <details class="setelan tocard" id="tocard" hidden>
@@ -515,18 +519,18 @@ function sortSeq(qs){const K=new Map(qs.map(q=>[q.id,seqKey(q)]));return qs.slic
 function buildSession(fresh,onlyIds){
   let ids=onlyIds||sortSeq(pool()).map(q=>q.id);
   if(state.order==="rand") ids=shuffle(ids);
-  state.list=ids; state.pos=0; state.ans={}; state.perm={};
+  state.list=ids; state.pos=0; state.ans={}; state.perm={}; state.mulai=false;
   resetTimer();
   ids.forEach(id=>{state.perm[id]=shuffle(BYID[id].o.map((_,i)=>i));});
   persist();
 }
 function resetTimer(){state.tLeft=SEC*state.list.length;state.timeUp=false;state.qLeft=SEC;state.qId=null;state.expired={};}
-function persist(){store[sessionKey()]={list:state.list,pos:state.pos,ans:state.ans,perm:state.perm,order:state.order,tLeft:state.tLeft,timeUp:state.timeUp,qLeft:state.qLeft,qId:state.qId,expired:state.expired};store.last={cat:state.cat,sub:state.sub,bag:state.bag};save();}
+function persist(){store[sessionKey()]={list:state.list,pos:state.pos,mulai:!!state.mulai,ans:state.ans,perm:state.perm,order:state.order,tLeft:state.tLeft,timeUp:state.timeUp,qLeft:state.qLeft,qId:state.qId,expired:state.expired};store.last={cat:state.cat,sub:state.sub,bag:state.bag};save();}
 function restore(){
   const s=store[sessionKey()];
   const valid=s&&Array.isArray(s.list)&&s.list.length&&s.list.every(id=>BYID[id]&&s.perm&&s.perm[id]);
   const ids=new Set(pool().map(q=>q.id));
-  if(valid&&s.list.length===ids.size&&s.list.every(id=>ids.has(id))){state.list=(s.order||"seq")==="seq"?sortSeq(s.list.map(id=>BYID[id])).map(q=>q.id):s.list;state.pos=Math.min(s.pos||0,s.list.length);state.ans=s.ans||{};state.perm=s.perm;state.order=s.order||"seq";state.tLeft=typeof s.tLeft==="number"?s.tLeft:SEC*s.list.length;state.timeUp=!!s.timeUp;state.qLeft=typeof s.qLeft==="number"?s.qLeft:SEC;state.qId=s.qId||null;state.expired=s.expired||{};}
+  if(valid&&s.list.length===ids.size&&s.list.every(id=>ids.has(id))){state.list=(s.order||"seq")==="seq"?sortSeq(s.list.map(id=>BYID[id])).map(q=>q.id):s.list;state.pos=Math.min(s.pos||0,s.list.length);state.ans=s.ans||{};state.perm=s.perm;state.order=s.order||"seq";state.mulai=typeof s.mulai==="boolean"?s.mulai:!!(s.pos||Object.keys(s.ans||{}).length);state.tLeft=typeof s.tLeft==="number"?s.tLeft:SEC*s.list.length;state.timeUp=!!s.timeUp;state.qLeft=typeof s.qLeft==="number"?s.qLeft:SEC;state.qId=s.qId||null;state.expired=s.expired||{};}
   else buildSession(true);
 }
 
@@ -623,8 +627,14 @@ document.addEventListener("toggle",e=>{const k=e.target,c=$("card");if(!k.classL
 function renderCard(){
   const card=$("card");
   if(!state.list.length){card.innerHTML="<p>Tidak ada soal untuk pilihan ini.</p>";return;}
-  if(!siapOK()){card.innerHTML=`<div class="kunci"><span class="ik">🔒</span><b>Atur Pengaturan Kuis dulu</b><p>Pilih detail bagian, urutan, dan timer, lalu tekan Simpan &amp; Mulai.</p><button class="btn primary" id="bukaset" type="button">Buka Pengaturan Kuis</button></div>`;
+  if(!siapOK()){card.innerHTML=`<div class="kunci"><span class="ik">🔒</span><b>Atur Pengaturan Kuis dulu</b><p>Pilih detail bagian, urutan, dan timer, lalu tekan Simpan Pengaturan.</p><button class="btn primary" id="bukaset" type="button">Buka Pengaturan Kuis</button></div>`;
     $("bukaset").onclick=()=>{const st=$("setelan");st.open=true;st.scrollIntoView({behavior:"smooth",block:"start"});};return;}
+  // Soal baru tampil dan timer baru berjalan setelah pengguna menekan Mulai.
+  if(state.cat!=="all"&&!state.mulai&&state.pos<state.list.length){
+    const n=state.list.length,sub=state.sub==="all"?CATS[state.cat].short:state.sub+". "+SUBS[state.cat][state.sub-1],bg=state.sub==="all"||state.bag==="all"?"":state.bag==="bonus"?"Soal Bonus":"Bagian "+state.bag;
+    const tm={off:"Tanpa timer",cum:"Timer total "+fmt(SEC*n),per:"Timer "+SEC+" detik per soal"}[tMode]||"";
+    card.innerHTML=`<div class="kunci mulaikartu"><div class="eyebrow">${esc(bg||"Siap mengerjakan")}</div><h2>${esc(sub)}</h2><div class="info"><span>${n} soal</span><span>${state.order==="rand"?"Acak":"Berurutan"}</span><span>${tm}</span></div><p>${tMode==="off"?"Soal pertama tampil setelah Anda menekan Mulai.":"Soal dan timer baru berjalan setelah Anda menekan Mulai."}</p><button class="btn primary mulai" id="mulaibtn" type="button">▶ Mulai</button></div>`;
+    $("mulaibtn").onclick=()=>{state.mulai=true;state.qLeft=SEC;state.qId=null;lastTick=Date.now();persist();render();window.scrollTo({top:Math.max(0,$("card").offsetTop-12)});};return;}
   if(state.pos>=state.list.length){
     const {ok,bad,n}=tally();
     const nilai=n?Math.round(ok*100/n):0;
@@ -683,13 +693,13 @@ function nilaiHTML(ok,n){const min=p=>Math.ceil(p*n/100-1e-9),cap=n?STANDAR.find
   return `<p class="predikat ${cap?"lulus":"gagal"}">${cap?"Lulus · "+cap[1]+" · "+cap[0]+"%":"Belum lulus · di bawah Standar Cukup 50%"}</p>`;}
 function bagNext(){if(state.sub==="all"||state.bag==="all"||state.bag==="bonus")return false;const {k,bonus}=bagInfo(QB.filter(q=>inCat(q,state.cat,state.sub)).length);return +state.bag<k?+state.bag+1:bonus?"bonus":false;}
 function siapOK(){return state.cat==="all"||store.siapCat===state.cat;}
-function timerActive(){return siapOK()&&tMode!=="off"&&state.cat!=="all"&&state.list.length&&!state.timeUp&&state.pos<state.list.length;}
+function timerActive(){return siapOK()&&state.mulai&&tMode!=="off"&&state.cat!=="all"&&state.list.length&&!state.timeUp&&state.pos<state.list.length;}
 function syncQ(){const id=state.list[state.pos];if(id!==state.qId){state.qId=id;state.qLeft=SEC;}}
 const TB=document.getElementById("timerbox");
 function pasangAlat(){const s=$("tslot");if(s)s.replaceWith(TB);const f=$("cfs");if(f)f.onclick=()=>fokus(true);}
 function renderTimer(){
   const b=TB;
-  if(tMode==="off"||!state.list.length||state.cat==="all"||!siapOK()){b.hidden=true;return;}
+  if(tMode==="off"||!state.list.length||state.cat==="all"||!siapOK()||!state.mulai&&state.pos<state.list.length){b.hidden=true;return;}
   b.hidden=false;
   if(tMode==="cum"){b.className="timer"+(state.tLeft<=60||state.timeUp?" warn":"");b.innerHTML=`⏱ ${state.timeUp?"Waktu habis":fmt(state.tLeft)} <small>dari ${fmt(SEC*state.list.length)} · ${state.list.length} soal × ${SEC} detik</small>`;}
   else{const id=state.list[state.pos];const idle=state.pos>=state.list.length||state.ans[id]!==undefined||state.expired[id];
@@ -712,7 +722,7 @@ setInterval(()=>{
   if(++tickN%5===0)persist();
   renderTimer();
 },1000);
-function renderRingkas(){const st=$("setelan");if(st){st.hidden=state.cat==="all";st.classList.toggle("perlu",!siapOK());document.querySelector(".wrap").classList.toggle("blmsiap",!siapOK());const sr=$("siaprow");if(sr)sr.hidden=siapOK();}const r=$("ringkas");if(!r)return;const s=state.cat==="all"||state.sub==="all"?"Semua bagian":state.sub+". "+SUBS[state.cat][state.sub-1]+(state.bag==="bonus"?" · Soal Bonus":state.bag!=="all"?" · Bagian "+state.bag:"");
+function renderRingkas(){const st=$("setelan");if(st){st.hidden=state.cat==="all";st.classList.toggle("perlu",!siapOK());document.querySelector(".wrap").classList.toggle("blmsiap",!siapOK());document.querySelector(".wrap").classList.toggle("blmmulai",state.cat!=="all"&&siapOK()&&!state.mulai&&state.pos<state.list.length);const sr=$("siaprow");if(sr)sr.hidden=siapOK();}const r=$("ringkas");if(!r)return;const s=state.cat==="all"||state.sub==="all"?"Semua bagian":state.sub+". "+SUBS[state.cat][state.sub-1]+(state.bag==="bonus"?" · Soal Bonus":state.bag!=="all"?" · Bagian "+state.bag:"");
   r.textContent=s+" · "+(state.order==="rand"?"Acak":"Berurutan")+" · "+({off:"Timer mati",cum:"Timer total",per:"Timer per soal"}[tMode]||"");}
 function render(){if(tMode==="per")syncQ();renderScore();renderCard();renderMap();renderTimer();renderRingkas();}
 function retake(){buildSession(true);render();}
