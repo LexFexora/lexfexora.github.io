@@ -73,6 +73,12 @@ select{font:inherit;font-size:14px;padding:7px 10px;border-radius:8px;border:1px
 .setelan[open]>summary::after{content:"▴"}
 .setelan .ringkas{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;font-weight:400;color:var(--muted)}
 .setelan .controls{padding:2px 14px 14px}
+.setelan.perlu{border-color:rgb(220 80 70 / .55);background:rgb(220 80 70 / .07);animation:perlu 2.4s ease-in-out infinite}
+.setelan.perlu>summary{color:#e2685d}
+@keyframes perlu{0%,100%{box-shadow:0 0 0 0 rgb(220 80 70 / 0)}50%{box-shadow:0 0 14px 2px rgb(220 80 70 / .28)}}
+@media (prefers-reduced-motion:reduce){.setelan.perlu{animation:none;box-shadow:0 0 10px 1px rgb(220 80 70 / .25)}}
+.siaprow{grid-column:1/-1;display:flex;justify-content:flex-end;margin-top:12px}.siaprow[hidden]{display:none}
+.kunci{text-align:center;padding:28px 8px;display:flex;flex-direction:column;align-items:center;gap:10px}.kunci .ik{font-size:30px}.kunci p{margin:0;color:var(--muted);font-size:14px;max-width:34ch}.kunci b{font-size:16px;color:var(--ink)}
 .ctl-sub select{width:100%}
 .btn{appearance:none;font:inherit;font-size:14px;font-weight:600;padding:8px 14px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
 .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--surface)}
@@ -246,6 +252,7 @@ html.gate-wait .wrap{display:none}
       <label class="ctl-sub" for="sub"><span id="sublbl">Detail Bagian</span><select id="sub"></select></label>
       <label for="order">Urutan <select id="order"><option value="seq">Berurutan</option><option value="rand">Acak</option></select></label>
       <label for="timer">Timer <select id="timer"><option value="off">Mati</option><option value="cum">Total (54 dtk × soal)</option><option value="per">Per soal (54 dtk)</option></select></label>
+      <div class="siaprow" id="siaprow"><button class="btn primary" id="siapbtn" type="button">✓ Simpan &amp; Mulai</button></div>
     </div>
   </details>
 
@@ -527,6 +534,8 @@ document.addEventListener("toggle",e=>{const k=e.target,c=$("card");if(!k.classL
 function renderCard(){
   const card=$("card");
   if(!state.list.length){card.innerHTML="<p>Tidak ada soal untuk pilihan ini.</p>";return;}
+  if(!siapOK()){card.innerHTML=`<div class="kunci"><span class="ik">🔒</span><b>Atur Pengaturan Kuis dulu</b><p>Pilih detail bagian, urutan, dan timer, lalu tekan Simpan &amp; Mulai.</p><button class="btn primary" id="bukaset" type="button">⚙ Buka Pengaturan Kuis</button></div>`;
+    $("bukaset").onclick=()=>{const st=$("setelan");st.open=true;st.scrollIntoView({behavior:"smooth",block:"start"});};return;}
   if(state.pos>=state.list.length){
     const {ok,bad,n}=tally();
     card.innerHTML=`<div class="done"><div class="eyebrow">${state.timeUp?"Waktu habis · sesi selesai":"Sesi selesai"}</div><div class="big">${ok}/${n}</div><p>Benar ${ok}, salah ${bad}, belum dijawab ${n-ok-bad}. Nilai ${n?Math.round(ok*100/n):0}.</p><div class="row"><button class="btn primary" id="d-retake" type="button">Ulangi semua</button>${bad?'<button class="btn" id="d-wrong" type="button">Ulangi yang salah</button>':""}<button class="btn" id="d-back" type="button">Tinjau soal</button></div></div>`;
@@ -573,13 +582,14 @@ function renderCard(){
   pasFokus();
 }
 function fmt(t){t=Math.max(0,Math.ceil(t));const h=Math.floor(t/3600),m=Math.floor(t%3600/60),x=t%60;return (h?h+":"+String(m).padStart(2,"0"):String(m).padStart(2,"0"))+":"+String(x).padStart(2,"0");}
-function timerActive(){return tMode!=="off"&&state.cat!=="all"&&state.list.length&&!state.timeUp&&state.pos<state.list.length;}
+function siapOK(){return state.cat==="all"||store.siapCat===state.cat;}
+function timerActive(){return siapOK()&&tMode!=="off"&&state.cat!=="all"&&state.list.length&&!state.timeUp&&state.pos<state.list.length;}
 function syncQ(){const id=state.list[state.pos];if(id!==state.qId){state.qId=id;state.qLeft=SEC;}}
 const TB=document.getElementById("timerbox");
 function pasangAlat(){const s=$("tslot");if(s)s.replaceWith(TB);const f=$("cfs");if(f)f.onclick=()=>fokus(true);}
 function renderTimer(){
   const b=TB;
-  if(tMode==="off"||!state.list.length||state.cat==="all"){b.hidden=true;return;}
+  if(tMode==="off"||!state.list.length||state.cat==="all"||!siapOK()){b.hidden=true;return;}
   b.hidden=false;
   if(tMode==="cum"){b.className="timer"+(state.tLeft<=60||state.timeUp?" warn":"");b.innerHTML=`⏱ ${state.timeUp?"Waktu habis":fmt(state.tLeft)} <small>dari ${fmt(SEC*state.list.length)} · ${state.list.length} soal × ${SEC} detik</small>`;}
   else{const id=state.list[state.pos];const idle=state.pos>=state.list.length||state.ans[id]!==undefined||state.expired[id];
@@ -602,7 +612,7 @@ setInterval(()=>{
   if(++tickN%5===0)persist();
   renderTimer();
 },1000);
-function renderRingkas(){const st=$("setelan");if(st)st.hidden=state.cat==="all";const r=$("ringkas");if(!r)return;const s=state.cat==="all"||state.sub==="all"?"Semua bagian":state.sub+". "+SUBS[state.cat][state.sub-1];
+function renderRingkas(){const st=$("setelan");if(st){st.hidden=state.cat==="all";st.classList.toggle("perlu",!siapOK());const sr=$("siaprow");if(sr)sr.hidden=siapOK();}const r=$("ringkas");if(!r)return;const s=state.cat==="all"||state.sub==="all"?"Semua bagian":state.sub+". "+SUBS[state.cat][state.sub-1];
   r.textContent=s+" · "+(state.order==="rand"?"Acak":"Berurutan")+" · "+({off:"Timer mati",cum:"Timer total",per:"Timer per soal"}[tMode]||"");}
 function render(){if(tMode==="per")syncQ();renderScore();renderCard();renderMap();renderTimer();renderRingkas();}
 function retake(){buildSession(true);render();}
@@ -612,6 +622,7 @@ $("sub").onchange=e=>{state.sub=e.target.value==="all"?"all":+e.target.value;res
 $("order").onchange=e=>{state.order=e.target.value;buildSession(true);render();};
 $("fsexit").onclick=()=>fokus(false);
 $("timer").value=tMode;
+$("siapbtn").onclick=()=>{store.siapCat=state.cat;state.qLeft=SEC;state.qId=null;persist();$("setelan").open=false;render();window.scrollTo({top:Math.max(0,$("card").offsetTop-12),behavior:"smooth"});};
 $("timer").onchange=e=>{tMode=e.target.value;store.timerMode=tMode;resetTimer();persist();render();};
 document.addEventListener("visibilitychange",()=>{if(document.hidden)persist();});
 
