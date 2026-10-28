@@ -382,7 +382,7 @@ function fmtPct(c,n){const v=n?c*100/n:0;return (v>0&&v<10?v.toFixed(1).replace(
 const TIERNAME={1:"Dasar hukum",2:"Istilah, jenis & prosedur",3:"Pendapat ahli & doktrin"};
 let store={};
 try{store=JSON.parse(localStorage.getItem(KEY)||"{}")||{};}catch(e){store={};}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(store));}catch(e){}}
+function save(){if(window.__keluar)return;try{localStorage.setItem(KEY,JSON.stringify(store));}catch(e){}}
 
 const state={cat:"all",sub:"all",order:"seq",list:[],pos:0,perm:{},ans:{},tLeft:0,timeUp:false,qLeft:0,qId:null,expired:{}};
 const SEC=54;
@@ -606,7 +606,8 @@ window.__quiz={state};
 
   bIn.onclick=async()=>{const p=new firebase.auth.GoogleAuthProvider();p.setCustomParameters({prompt:'select_account'});
     try{await auth.signInWithPopup(p);}catch(e){if(e&&/popup-blocked|operation-not-supported/.test(e.code||''))auth.signInWithRedirect(p);else if(e&&e.code!=='auth/popup-closed-by-user'&&e.code!=='auth/cancelled-popup-request')gp.textContent='Gagal masuk: '+(e.message||e.code);}};
-  bOut.onclick=()=>auth.signOut().then(()=>location.reload());
+  // Keluar menghapus jawaban sesi (benar/salah di kuis); tanda ✓/✗ di akun tetap tersimpan.
+  bOut.onclick=()=>{window.__keluar=true;try{localStorage.removeItem('tkbcakim-v12');}catch(e){}auth.signOut().then(()=>location.reload());};
   $('adm-logout').onclick=bOut.onclick;
 
   let started=false,unsub=null,beat=null;let isOwner=false;
