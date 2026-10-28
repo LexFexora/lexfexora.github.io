@@ -53,11 +53,12 @@ header h1{font-family:var(--f-display);font-weight:650;font-size:clamp(26px,4.4v
 header p{margin:6px 0 0;color:var(--muted);max-width:68ch}
 .eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--brass)}
 @media(max-width:640px){header .eyebrow{white-space:nowrap;letter-spacing:.02em;font-size:clamp(8px,calc((100vw - 52px)/32),12px)}}
-.tabs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
 @media (max-width:720px){.tabs{grid-template-columns:repeat(2,minmax(0,1fr))}.tabs .tab:first-child{grid-column:1/-1}}
 .tab{appearance:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;padding:10px 12px;text-align:left;cursor:pointer;font:inherit;display:flex;flex-direction:column;gap:2px;min-width:0}
 .tab b{font-size:14px;font-weight:600}
 .tab span{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.tab.pilih{position:relative;padding-right:36px}.tab.pilih span{font-size:13px;color:var(--accent);font-weight:600}.tab.pilih::after{content:"▾";position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--muted)}.tab.pilih[aria-expanded=true]::after{content:"▴"}
 .tab[aria-selected="true"]{border-color:var(--accent);background:var(--accent-soft);box-shadow:inset 0 0 0 1px var(--accent)}
 .tab:focus-visible,.opt:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
 .controls{display:grid;grid-template-columns:1fr 1fr;gap:12px}
@@ -414,9 +415,11 @@ function restore(){
 
 function renderTabs(){
   const t=$("tabs");
-  const items=[["all","Semua Kategori",QB.length]].concat(Object.keys(CATS).map(n=>[+n,CATS[n].short,QB.filter(q=>inCat(q,+n,"all")).length]));
-  t.innerHTML=items.map(([k,name,n])=>`<button class="tab" role="tab" type="button" data-k="${k}" aria-selected="${state.cat===k}"><b>${esc(name)}</b></button>`).join("");
-  t.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{const k=b.dataset.k==="all"?"all":+b.dataset.k;selectCat(k,"all");});
+  // "Pilih Klaster" membuka dan menutup daftar klaster; klaster yang dipilih tampil di bawah judulnya.
+  t.innerHTML=`<button class="tab pilih" type="button" id="pilih" aria-expanded="${!!state.klOpen}"><b>Pilih Klaster</b>${state.cat!=="all"?`<span>${esc(CATS[state.cat].short)}</span>`:""}</button>`+
+    (state.klOpen?Object.keys(CATS).map(n=>`<button class="tab" role="tab" type="button" data-k="${n}" aria-selected="${state.cat===+n}"><b>${esc(CATS[n].short)}</b></button>`).join(""):"");
+  $("pilih").onclick=()=>{state.klOpen=!state.klOpen;renderTabs();};
+  t.querySelectorAll(".tab[data-k]").forEach(b=>b.onclick=()=>{state.klOpen=false;selectCat(+b.dataset.k,"all");});
 }
 function renderSub(){
   const s=$("sub");
