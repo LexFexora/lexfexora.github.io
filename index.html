@@ -79,6 +79,8 @@ select{font:inherit;font-size:14px;padding:7px 10px;border-radius:8px;border:1px
 .btn:disabled{opacity:.45;cursor:default}
 .scorebar{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;align-items:center}
 .scorebar strong{color:var(--ink)}
+.scorebar small{font-size:inherit}.scorebar .st{white-space:nowrap}
+@media(max-width:640px){.scorebar{display:grid;grid-template-columns:repeat(5,auto);justify-content:space-between;gap:10px 6px}.scorebar .st{display:flex;flex-direction:column;align-items:center;gap:1px}.scorebar .st small{font-size:11px}.scorebar .st strong{font-size:14px}.scorebar .meter{grid-column:1/-1}}
 .meter{flex:1 1 160px;height:6px;border-radius:3px;background:var(--line);overflow:hidden;display:flex}
 .meter i{display:block;height:100%}
 .meter .m-ok{background:var(--ok)} .meter .m-bad{background:var(--bad)}
@@ -453,7 +455,7 @@ function tally(){let ok=0,bad=0;for(const id of state.list){const a=state.ans[id
 function renderScore(){
   const {ok,bad,n}=tally();const done=ok+bad;
   const pct=done?Math.round(ok*100/done):0;
-  $("score").innerHTML=`<span>Dijawab <strong>${done}</strong>/${n}</span><span>Benar <strong>${ok}</strong></span><span>Salah <strong>${bad}</strong></span><span>Akurasi <strong>${pct}%</strong></span><span title="Soal di pilihan ini yang pernah Anda jawab benar, tersimpan di akun Anda">Dikuasai <strong>${fmtPct(state.list.filter(i=>BENAR[i]).length,n)}</strong></span><span class="meter" aria-hidden="true"><i class="m-ok" style="width:${n?ok*100/n:0}%"></i><i class="m-bad" style="width:${n?bad*100/n:0}%"></i></span>`;
+  $("score").innerHTML=`<span class="st"><small>Dijawab</small> <strong>${done}/${n}</strong></span><span class="st"><small>Benar</small> <strong>${ok}</strong></span><span class="st"><small>Salah</small> <strong>${bad}</strong></span><span class="st"><small>Akurasi</small> <strong>${pct}%</strong></span><span class="st" title="Soal di pilihan ini yang pernah Anda jawab benar, tersimpan di akun Anda"><small>Dikuasai</small> <strong>${fmtPct(state.list.filter(i=>BENAR[i]).length,n)}</strong></span><span class="meter" aria-hidden="true"><i class="m-ok" style="width:${n?ok*100/n:0}%"></i><i class="m-bad" style="width:${n?bad*100/n:0}%"></i></span>`;
 }
 function renderMap(){
   $("mapsum").textContent=`Peta soal (${state.list.length})`;
@@ -499,7 +501,7 @@ function renderCard(){
   const here=state.cat==="all"?q.mappings[0]:(q.mappings.find(m=>m.c===state.cat&&(state.sub==="all"||m.s===+state.sub))||q.mappings[0]);
   const also=q.mappings.filter(m=>m!==here).map(m=>`${CATS[m.c].short} ${m.s}`).join(", ");
   const own=!!window.__isOwner;
-  let html=(own?`<div class="owntools"><button class="btn mvbtn" id="ed" type="button" aria-expanded="${!!state.edOpen}">✎ Edit</button><button class="btn mvbtn" id="mv" type="button" aria-expanded="${!!state.mvOpen}">⇄ Pindahkan</button></div>`:"")+`<div class="qhead${own?" own":""}"><span class="qno">Soal No. ${state.pos+1}${isPin(q)?" 📌":""} <span class="of">/ ${state.list.length}</span></span>${BENAR[id]?'<span class="chip benar" title="Soal ini pernah Anda jawab benar">✓ Pernah benar</span>':""}<span class="chip">${esc(here.kategori_utama)} · ${here.s}. ${esc(here.sub_materi)}</span>${also?`<span class="chip">Juga di: ${esc(also)}</span>`:""}${isKec(q)?'<span class="chip kec">Pola kecuali</span>':""}${isPin(q)?'<span class="chip kec">📌 Pendapat ahli</span>':""}${isPin(q)&&getQuestionTier(q)===3?"":`<span class="chip">${TIERNAME[getQuestionTier(q)]}</span>`}</div>`;
+  let html=(own?`<div class="owntools"><button class="btn mvbtn" id="ed" type="button" aria-expanded="${!!state.edOpen}">✎ Edit</button><button class="btn mvbtn" id="mv" type="button" aria-expanded="${!!state.mvOpen}">⇄ Pindahkan</button></div>`:"")+`<div class="qhead${own?" own":""}"><span class="qno">Soal No. ${state.pos+1}${isPin(q)?" 📌":""} <span class="of">/ ${state.list.length}</span></span>${BENAR[id]?'<span class="chip benar" title="Soal ini pernah Anda jawab benar">✓ Pernah benar</span>':""}</div>`;
   if(own&&state.mvOpen){const cs=Object.keys(CATS).map(Number);
     html+=`<div class="mvbox" id="mvbox"><span>Pindahkan dari <b>${esc(here.kategori_utama)} ${here.s}</b> ke:</span><select id="mvc" aria-label="Kategori tujuan">${cs.map(c=>`<option value="${c}"${c===here.c?" selected":""}>${esc(CATS[c].short)}</option>`).join("")}</select><select id="mvs" aria-label="Sub-materi tujuan"></select><button class="btn primary" id="mvok" type="button">Simpan</button><button class="btn" id="mvno" type="button">Batal</button><p class="note" id="mvmsg">Perpindahan disimpan di server dan berlaku untuk semua pengguna setelah mereka memuat ulang halaman.</p></div>`;}
   if(own&&state.edOpen){
