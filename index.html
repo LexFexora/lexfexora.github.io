@@ -233,7 +233,7 @@ html.gate-wait .wrap{display:none}
 
   <section class="card" id="card" aria-live="polite"></section>
 
-  <details class="mapbox" id="mapbox"><summary id="mapsum">Peta soal</summary><div class="map" id="map"></div><p class="mapket"><i class="tk ok">✓</i> pernah dijawab benar &nbsp; <i class="tk no">✗</i> pernah dikerjakan, belum pernah benar</p></details>
+  <details class="mapbox" id="mapbox"><summary id="mapsum">Peta soal</summary><div class="map" id="map"></div><p class="mapket"><i class="tk ok">✓</i> dijawab benar &nbsp; <i class="tk no">✗</i> dijawab salah atau waktu habis</p></details>
 
   <footer>Opsi jawaban diacak setiap kali retake. Progres tersimpan di peramban Anda. Bank soal ini adalah bahan latihan mandiri; selalu cocokkan dengan naskah resmi peraturan.</footer>
 </div>
@@ -459,7 +459,7 @@ function renderScore(){
 }
 function renderMap(){
   $("mapsum").textContent=`Peta soal (${state.list.length})`;
-  $("map").innerHTML=state.list.map((id,i)=>{const a=state.ans[id];const c=isBad(id)?"bad":(a===undefined?"":"ok");return `<button type="button" class="${c}${i===state.pos?" cur":""}" data-i="${i}" aria-label="Soal ${i+1}">${i+1}${BENAR[id]?'<i class="tk ok" aria-hidden="true">✓</i>':COBA[id]?'<i class="tk no" aria-hidden="true">✗</i>':""}</button>`;}).join("");
+  $("map").innerHTML=state.list.map((id,i)=>{const a=state.ans[id];const c=isBad(id)?"bad":(a===undefined?"":"ok");return `<button type="button" class="${c}${i===state.pos?" cur":""}" data-i="${i}" aria-label="Soal ${i+1}">${i+1}${c==="ok"?'<i class="tk ok" aria-hidden="true">✓</i>':c==="bad"?'<i class="tk no" aria-hidden="true">✗</i>':""}</button>`;}).join("");
   $("map").querySelectorAll("button").forEach(b=>b.onclick=()=>{state.pos=+b.dataset.i;persist();render();window.scrollTo({top:$("card").offsetTop-12});});
 }
 function editQ(id){
@@ -501,7 +501,7 @@ function renderCard(){
   const here=state.cat==="all"?q.mappings[0]:(q.mappings.find(m=>m.c===state.cat&&(state.sub==="all"||m.s===+state.sub))||q.mappings[0]);
   const also=q.mappings.filter(m=>m!==here).map(m=>`${CATS[m.c].short} ${m.s}`).join(", ");
   const own=!!window.__isOwner;
-  let html=(own?`<div class="owntools"><button class="btn mvbtn" id="ed" type="button" aria-expanded="${!!state.edOpen}">✎ Edit</button><button class="btn mvbtn" id="mv" type="button" aria-expanded="${!!state.mvOpen}">⇄ Pindahkan</button></div>`:"")+`<div class="qhead${own?" own":""}"><span class="qno">Soal No. ${state.pos+1}${isPin(q)?" 📌":""} <span class="of">/ ${state.list.length}</span></span>${BENAR[id]?'<span class="chip benar" title="Soal ini pernah Anda jawab benar">✓ Pernah benar</span>':""}</div>`;
+  let html=(own?`<div class="owntools"><button class="btn mvbtn" id="ed" type="button" aria-expanded="${!!state.edOpen}">✎ Edit</button><button class="btn mvbtn" id="mv" type="button" aria-expanded="${!!state.mvOpen}">⇄ Pindahkan</button></div>`:"")+`<div class="qhead${own?" own":""}"><span class="qno">Soal No. ${state.pos+1}${isPin(q)?" 📌":""} <span class="of">/ ${state.list.length}</span></span></div>`;
   if(own&&state.mvOpen){const cs=Object.keys(CATS).map(Number);
     html+=`<div class="mvbox" id="mvbox"><span>Pindahkan dari <b>${esc(here.kategori_utama)} ${here.s}</b> ke:</span><select id="mvc" aria-label="Kategori tujuan">${cs.map(c=>`<option value="${c}"${c===here.c?" selected":""}>${esc(CATS[c].short)}</option>`).join("")}</select><select id="mvs" aria-label="Sub-materi tujuan"></select><button class="btn primary" id="mvok" type="button">Simpan</button><button class="btn" id="mvno" type="button">Batal</button><p class="note" id="mvmsg">Perpindahan disimpan di server dan berlaku untuk semua pengguna setelah mereka memuat ulang halaman.</p></div>`;}
   if(own&&state.edOpen){
