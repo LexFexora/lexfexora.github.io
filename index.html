@@ -81,7 +81,7 @@ select{font:inherit;font-size:14px;padding:7px 10px;border-radius:8px;border:1px
 .scorebar strong{color:var(--ink)}
 .fsexit{display:none}
 html.fokus .wrap>*:not(#timerbox):not(#card):not(#fsexit){display:none!important}
-html.fokus .card .qhead,html.fokus .card .owntools,html.fokus .card .verdict,html.fokus .card .edbox,html.fokus .card .mvbox,html.fokus .card>p.note{display:none!important}
+html.fokus .card .qhead{display:contents}html.fokus .card .qno,html.fokus .card .qfs,html.fokus .card .owntools,html.fokus .card .verdict,html.fokus .card .edbox,html.fokus .card .mvbox,html.fokus .card>p.note{display:none!important}
 html.fokus .fsexit{display:block;align-self:flex-start;font-size:12px;padding:6px 12px}
 html.fokus .timer{position:fixed;top:max(10px,env(safe-area-inset-top,0px));right:max(12px,env(safe-area-inset-right,0px));box-shadow:0 2px 12px rgb(0 0 0 / .25)}
 html.fokus,html.fokus body{height:100%;overflow:hidden;overscroll-behavior:none}
@@ -104,7 +104,10 @@ html.fokus .card .nav .btn{min-height:44px;padding:8px 18px;font-size:15px;flex:
 .meter .m-ok{background:var(--ok)} .meter .m-bad{background:var(--bad)}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px clamp(16px,3vw,28px);display:flex;flex-direction:column;gap:16px}
 .qhead{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:12px}
-.card{position:relative}.qhead.own{padding-right:190px}.owntools{position:absolute;top:12px;right:12px;display:flex;gap:6px}@media(max-width:560px){.owntools{position:static;justify-content:flex-end;margin-bottom:-6px}.qhead.own{padding-right:0}}.mvbtn{font-size:12px;padding:4px 10px}
+.card{position:relative}.qhead{flex-wrap:nowrap;gap:8px}.qhead .qno{margin-right:auto;white-space:nowrap}.owntools{display:flex;gap:6px}.qtools{display:flex;align-items:center;gap:6px;flex:none}
+.qtools .timer{position:static;align-self:auto;padding:5px 12px;font-size:13.5px;box-shadow:none;background:var(--bg);gap:6px;line-height:1.2}.qtools .timer small{font-family:var(--f-body);font-size:11px;color:var(--muted)}
+.qfs{min-height:0;width:32px;height:32px;padding:0;display:grid;place-items:center;font-size:16px;line-height:1;border-radius:999px;background:var(--bg)}
+@media(max-width:560px){.qhead{flex-wrap:wrap}.owntools{order:3;flex-basis:100%;justify-content:flex-end}.qtools .timer small{display:none}}.mvbtn{font-size:12px;padding:4px 10px}
 .edbox{display:flex;flex-direction:column;gap:8px;padding:12px;border:1px dashed var(--line);border-radius:10px;font-size:13px}.edbox label{font-weight:600;font-size:12px;color:var(--muted)}.edbox textarea{font:inherit;font-size:14px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);resize:vertical;width:100%;box-sizing:border-box}.edbox .eo{display:flex;gap:8px;align-items:flex-start}.edbox .eo input{margin-top:10px}.edbox .row{display:flex;gap:8px;flex-wrap:wrap}.edbox .note{margin:0;font-size:12px;color:var(--muted)}
 .mvbox{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px;border:1px dashed var(--line);border-radius:10px;font-size:13px}.mvbox select{flex:1 1 220px;width:auto}.mvbox .note{flex-basis:100%;margin:0;font-size:12px;color:var(--muted)}
 .qno{font-family:var(--f-mono);color:var(--muted)}
@@ -474,8 +477,7 @@ function tally(){let ok=0,bad=0;for(const id of state.list){const a=state.ans[id
 function renderScore(){
   const {ok,bad,n}=tally();const done=ok+bad;
   const pct=done?Math.round(ok*100/done):0;
-  $("score").innerHTML=`<span class="st"><small>Dijawab</small> <strong>${done}/${n}</strong></span><span class="st"><small>Benar</small> <strong>${ok}</strong></span><span class="st"><small>Salah</small> <strong>${bad}</strong></span><span class="st"><small>Akurasi</small> <strong>${pct}%</strong></span><span class="st" title="Soal di pilihan ini yang pernah Anda jawab benar, tersimpan di akun Anda"><small>Dikuasai</small> <strong>${fmtPct(state.list.filter(i=>BENAR[i]).length,n)}</strong></span><div class="sbrow"><span class="meter" aria-hidden="true"><i class="m-ok" style="width:${n?ok*100/n:0}%"></i><i class="m-bad" style="width:${n?bad*100/n:0}%"></i></span><button class="btn keluar" id="sbfs" type="button">⛶ Layar penuh</button>${window.__logout?'<button class="btn keluar" id="sbkeluar" type="button">Keluar</button>':""}</div>`;
-  $("sbfs").onclick=()=>fokus(true);
+  $("score").innerHTML=`<span class="st"><small>Dijawab</small> <strong>${done}/${n}</strong></span><span class="st"><small>Benar</small> <strong>${ok}</strong></span><span class="st"><small>Salah</small> <strong>${bad}</strong></span><span class="st"><small>Akurasi</small> <strong>${pct}%</strong></span><span class="st" title="Soal di pilihan ini yang pernah Anda jawab benar, tersimpan di akun Anda"><small>Dikuasai</small> <strong>${fmtPct(state.list.filter(i=>BENAR[i]).length,n)}</strong></span><div class="sbrow"><span class="meter" aria-hidden="true"><i class="m-ok" style="width:${n?ok*100/n:0}%"></i><i class="m-bad" style="width:${n?bad*100/n:0}%"></i></span>${window.__logout?'<button class="btn keluar" id="sbkeluar" type="button">Keluar</button>':""}</div>`;
   if($("sbkeluar"))$("sbkeluar").onclick=()=>window.__logout();
 }
 function renderMap(){
@@ -536,14 +538,14 @@ function renderCard(){
   const here=state.cat==="all"?q.mappings[0]:(q.mappings.find(m=>m.c===state.cat&&(state.sub==="all"||m.s===+state.sub))||q.mappings[0]);
   const also=q.mappings.filter(m=>m!==here).map(m=>`${CATS[m.c].short} ${m.s}`).join(", ");
   const own=!!window.__isOwner;
-  let html=(own?`<div class="owntools"><button class="btn mvbtn" id="ed" type="button" aria-expanded="${!!state.edOpen}">✎ Edit</button><button class="btn mvbtn" id="mv" type="button" aria-expanded="${!!state.mvOpen}">⇄ Pindahkan</button></div>`:"")+`<div class="qhead${own?" own":""}"><span class="qno">Soal No. ${state.pos+1}${isPin(q)?" 📌":""} <span class="of">/ ${state.list.length}</span></span></div>`;
+  let html=`<div class="qhead"><span class="qno">Soal No. ${state.pos+1}${isPin(q)?" 📌":""} <span class="of">/ ${state.list.length}</span></span>`+(own?`<div class="owntools"><button class="btn mvbtn" id="ed" type="button" aria-expanded="${!!state.edOpen}">✎ Edit</button><button class="btn mvbtn" id="mv" type="button" aria-expanded="${!!state.mvOpen}">⇄ Pindahkan</button></div>`:"")+`<div class="qtools"><span id="tslot"></span><button class="btn qfs" id="cfs" type="button" title="Layar penuh" aria-label="Layar penuh">⛶</button></div></div>`;
   if(own&&state.mvOpen){const cs=Object.keys(CATS).map(Number);
     html+=`<div class="mvbox" id="mvbox"><span>Pindahkan dari <b>${esc(here.kategori_utama)} ${here.s}</b> ke:</span><select id="mvc" aria-label="Kategori tujuan">${cs.map(c=>`<option value="${c}"${c===here.c?" selected":""}>${esc(CATS[c].short)}</option>`).join("")}</select><select id="mvs" aria-label="Sub-materi tujuan"></select><button class="btn primary" id="mvok" type="button">Simpan</button><button class="btn" id="mvno" type="button">Batal</button><p class="note" id="mvmsg">Perpindahan disimpan di server dan berlaku untuk semua pengguna setelah mereka memuat ulang halaman.</p></div>`;}
   if(own&&state.edOpen){
     html+=`<div class="edbox" id="edbox"><label for="edq">Teks soal</label><textarea id="edq" rows="3">${esc(q.q)}</textarea><label>Pilihan jawaban (tandai kunci jawaban)</label>`+
       perm.map((oi,pi)=>`<div class="eo"><input type="radio" name="eda" value="${oi}" aria-label="Kunci ${L[pi]}"${oi===q.a?" checked":""}><b style="margin-top:8px">${L[pi]}</b><textarea data-o="${oi}" rows="2">${esc(q.o[oi])}</textarea></div>`).join("")+
       `<label for="edp">Pembahasan</label><textarea id="edp" rows="4">${esc(q.p)}</textarea><label for="edd">Sumber</label><textarea id="edd" rows="2">${esc(q.d)}</textarea><div class="row"><button class="btn primary" id="edok" type="button">Simpan</button><button class="btn" id="edno" type="button">Batal</button></div><p class="note" id="edmsg">Perubahan disimpan di server dan berlaku untuk semua pengguna setelah mereka memuat ulang halaman.</p></div>`;
-    card.innerHTML=html;
+    card.innerHTML=html;pasangAlat();
     $("ed").onclick=$("edno").onclick=()=>{state.edOpen=false;renderCard();};
     $("mv").onclick=()=>{state.edOpen=false;state.mvOpen=true;renderCard();};
     $("edok").onclick=()=>editQ(id);
@@ -560,7 +562,7 @@ function renderCard(){
   }
   if(locked) html+=ketHTML(q);
   html+=`<div class="nav"><button class="btn" id="prev" type="button" ${state.pos===0?"disabled":""}>← Sebelumnya</button><button class="btn primary" id="next" type="button">${state.pos===state.list.length-1?"Lihat hasil":"Berikutnya →"}</button></div>`;
-  card.innerHTML=html;
+  card.innerHTML=html;pasangAlat();
   if(own){$("mv").onclick=()=>{state.mvOpen=!state.mvOpen;renderCard();};$("ed").onclick=()=>{state.edOpen=true;state.mvOpen=false;renderCard();};
     if(state.mvOpen){const fill=()=>{const c=+$("mvc").value;$("mvs").innerHTML=SUBS[c].map((n,i)=>`<option value="${i+1}"${c===here.c&&i+1===here.s?" selected":""}>${i+1}. ${esc(n)}</option>`).join("");};
       fill();$("mvc").onchange=fill;$("mvno").onclick=()=>{state.mvOpen=false;renderCard();};
@@ -573,8 +575,10 @@ function renderCard(){
 function fmt(t){t=Math.max(0,Math.ceil(t));const h=Math.floor(t/3600),m=Math.floor(t%3600/60),x=t%60;return (h?h+":"+String(m).padStart(2,"0"):String(m).padStart(2,"0"))+":"+String(x).padStart(2,"0");}
 function timerActive(){return tMode!=="off"&&state.cat!=="all"&&state.list.length&&!state.timeUp&&state.pos<state.list.length;}
 function syncQ(){const id=state.list[state.pos];if(id!==state.qId){state.qId=id;state.qLeft=SEC;}}
+const TB=document.getElementById("timerbox");
+function pasangAlat(){const s=$("tslot");if(s)s.replaceWith(TB);const f=$("cfs");if(f)f.onclick=()=>fokus(true);}
 function renderTimer(){
-  const b=$("timerbox");
+  const b=TB;
   if(tMode==="off"||!state.list.length||state.cat==="all"){b.hidden=true;return;}
   b.hidden=false;
   if(tMode==="cum"){b.className="timer"+(state.tLeft<=60||state.timeUp?" warn":"");b.innerHTML=`⏱ ${state.timeUp?"Waktu habis":fmt(state.tLeft)} <small>dari ${fmt(SEC*state.list.length)} · ${state.list.length} soal × ${SEC} detik</small>`;}
