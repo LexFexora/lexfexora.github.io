@@ -2,6 +2,7 @@
 <html lang="id" class="gate-wait">
 <head>
 <meta charset="utf-8">
+<script>try{var t=localStorage.getItem("cat-tema");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;}catch(e){}</script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Computer Assisted Test - Febrillian Kusuma Raafi, S.H.</title>
 <meta name="description" content="Latihan Seleksi Kemampuan Bidang Calon Hakim Peradilan Agama: bank soal pilihan ganda Ilmu Hukum, Hukum Formil, Hukum Materil, dan TIK dengan pembahasan dan dasar hukum.">
@@ -295,6 +296,7 @@ header h1 .t1,header h1 .t2{display:block}header h1 .sep{display:none}header h1 
 html.gate-wait .wrap{display:none}
 .gate-emb{width:64px;height:64px;margin:0 auto 10px;display:block}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .gate-emb{filter:invert(1)}}
+:root[data-theme="dark"] .gate-emb{filter:invert(1)}
 .gate-act{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:14px}
 .gate .note{font-size:12px;margin-top:12px}
 @media (max-width:552px){.gate{margin:12vh 16px}}
@@ -304,6 +306,9 @@ input,textarea,select,[contenteditable]{-webkit-user-select:text;user-select:tex
 #tirai{position:fixed;inset:0;z-index:2147483647;display:none;align-items:center;justify-content:center;text-align:center;padding:24px;background:var(--bg,#111);color:var(--muted,#999);font:500 15px/1.5 system-ui,sans-serif}
 body.tertutup #tirai{display:flex}
 @media print{body:not(.bebas){display:none!important}}
+/* Pengalih tema (desktop): pilihan disimpan per perangkat di localStorage "cat-tema". */
+.tema{width:38px;height:38px;border-radius:50%;padding:0;display:grid;place-items:center;font-size:17px;line-height:1;flex:none}
+@media(max-width:999px){.tema{display:none!important}}
 </style>
 </head>
 <body>
@@ -321,7 +326,7 @@ body.tertutup #tirai{display:flex}
 
 <div class="wrap">
   <header>
-    <div class="akunku" id="akunku" hidden><span class="av" id="akunav"></span><span class="nm" id="akunnm"></span></div>
+    <div class="akunku" id="akunku" hidden><button class="btn tema" id="tema" type="button" aria-label="Ganti tema"></button><span class="av" id="akunav"></span><span class="nm" id="akunnm"></span></div>
     <div class="brand"><svg class="emb" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" aria-hidden="true"><defs><linearGradient id="lgG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2a2a2a"/><stop offset="1" stop-color="#000000"/></linearGradient></defs><rect width="256" height="256" rx="60" fill="url(#lgG)"/><g transform="translate(146 100) rotate(45)"><rect x="-8" y="20" width="16" height="104" rx="8" fill="#ffffff"/><rect x="-56" y="-26" width="112" height="52" rx="12" fill="#ffffff"/><rect x="-64" y="-31" width="14" height="62" rx="6" fill="#ffffff"/><rect x="50" y="-31" width="14" height="62" rx="6" fill="#ffffff"/><rect x="-46" y="-26" width="5" height="52" fill="#000" opacity=".28"/><rect x="41" y="-26" width="5" height="52" fill="#000" opacity=".28"/></g><rect x="132" y="190" width="96" height="14" rx="7" fill="#ffffff"/><rect x="144" y="178" width="72" height="14" rx="7" fill="#d4d4d4"/></svg><h1><span class="t1">Computer Assisted Test</span><span class="sep"> - </span><span class="t2">LEX FEXORA.</span></h1></div>
     <div class="eyebrow">Latihan · Seleksi Kemampuan Bidang · Calon Hakim Peradilan Agama</div>
   </header>
@@ -1023,5 +1028,10 @@ window.__quiz={state};
   document.addEventListener("pointerdown",buka,true);
 })();
 </script>
+<script>(function(){var b=document.getElementById("tema");if(!b)return;var r=document.documentElement,mq=matchMedia("(prefers-color-scheme: dark)");
+  function gelap(){return r.dataset.theme?r.dataset.theme==="dark":mq.matches;}
+  function sync(){var g=gelap();b.textContent=g?"☀️":"🌙";b.title=g?"Ganti ke mode terang":"Ganti ke mode gelap";b.setAttribute("aria-label",b.title);b.setAttribute("aria-pressed",g?"true":"false");}
+  b.onclick=function(){var t=gelap()?"light":"dark";r.dataset.theme=t;try{localStorage.setItem("cat-tema",t);}catch(e){}sync();};
+  if(mq.addEventListener)mq.addEventListener("change",sync);sync();})();</script>
 </body>
 </html>
