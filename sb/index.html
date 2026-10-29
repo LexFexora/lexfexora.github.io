@@ -266,6 +266,9 @@ html.gate-wait .wrap{display:none}
 .adm>summary>span:not(.dot){white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis;font-size:clamp(11.5px,3.2vw,13px)}
 .wrap:has(#adm:not([hidden])) #sbkeluar{display:none}
 .adm .acts{display:flex;gap:6px;margin-left:auto}
+.adm .siapa{display:flex;align-items:center;gap:8px;min-width:0;background:none;border:0;padding:0;margin:0;color:inherit;font:inherit;cursor:pointer;text-align:left}.adm .siapa .nm{font-weight:600;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.adm .siapa .av{width:30px;height:30px;flex:none;border-radius:50%;overflow:hidden;display:grid;place-items:center;background:var(--line);color:var(--ink);font-size:13px;font-weight:700}.adm .siapa .av img{width:100%;height:100%;object-fit:cover;display:block}
+.adm li .em{flex-basis:100%;font:12.5px var(--f-mono);color:var(--muted);padding-left:38px;word-break:break-all}.adm li .em[hidden]{display:none!important}
 .adm .acts .btn{padding:4px 10px;font-size:12px;min-height:0}
 .linkrow{display:flex;gap:6px;margin:8px 0 2px;flex-wrap:wrap}
 .linkrow input{flex:1 1 220px;min-width:0;font:12.5px var(--f-mono);padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink)}
@@ -1041,8 +1044,10 @@ window.__quiz={state};
       izinOK=g.disetujui.map(([,x])=>String(x.email||'').trim().toLowerCase()).filter(e=>/^[^@\s']+@[^@\s']+$/.test(e));
       $('admcount').textContent=g.menunggu.length;$('admon').textContent=on;
       body.innerHTML=Object.keys(g).filter(k=>g[k].length).map(k=>`<h4>${TTL[k]} (${g[k].length})</h4><ul>`+g[k].map(([id,x])=>
-        `<li><span class="em">${esc(x.email)}</span><span class="nm">${esc(x.nama)}</span><span class="acts">${ACT[k].map(([v,l,c])=>`<button class="btn ${c}" data-id="${id}" data-v="${v}" type="button">${l}</button>`).join('')}</span>`+
-        `<span class="dur">${k==='menunggu'?'Meminta '+fmt(x.diminta):'Terakhir '+(fmt(x.terakhir)||'-')}${x.posisi&&k==='disetujui'?' · '+esc(x.posisi):''}</span></li>`).join('')+'</ul>').join('')||'<p class="note">Belum ada yang meminta akses.</p>';
+        `<li><button class="siapa" type="button" aria-expanded="false" title="Ketuk untuk melihat email"><span class="av">${x.foto?`<img src="${esc(x.foto)}" alt="" referrerpolicy="no-referrer" onerror="this.replaceWith(document.createTextNode('${esc((x.nama||x.email||'?')[0].toUpperCase()).replace(/'/g,'')}'))">`:esc((x.nama||x.email||'?')[0].toUpperCase())}</span><span class="nm">${esc(x.nama||(x.email||'').split('@')[0])}</span></button><span class="acts">${ACT[k].map(([v,l,c])=>`<button class="btn ${c}" data-id="${id}" data-v="${v}" type="button">${l}</button>`).join('')}</span>`+
+        `<span class="em" hidden>${esc(x.email)}</span><span class="dur">${k==='menunggu'?'Meminta '+fmt(x.diminta):'Terakhir '+(fmt(x.terakhir)||'-')}${x.posisi&&k==='disetujui'?' · '+esc(x.posisi):''}</span></li>`).join('')+'</ul>').join('')||'<p class="note">Belum ada yang meminta akses.</p>';
+      // Foto dan nama tampil; email muncul saat nama diketuk.
+      body.querySelectorAll('.siapa').forEach(b=>b.onclick=()=>{const e=b.parentElement.querySelector('.em');e.hidden=!e.hidden;b.setAttribute('aria-expanded',String(!e.hidden));});
       body.querySelectorAll('button[data-id]').forEach(b=>b.onclick=()=>{const r=db.doc('izin/'+b.dataset.id);b.disabled=true;
         (b.dataset.v==='hapus'?r.delete():r.update({status:b.dataset.v})).catch(e=>{alert('Gagal: '+(e.code||e.message));b.disabled=false;});});
     },e=>{body.innerHTML='<p class="note">Gagal membaca daftar izin ('+esc(e.code||e.message)+'). Periksa Firestore Rules.</p>';});
