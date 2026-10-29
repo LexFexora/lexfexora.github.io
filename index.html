@@ -104,6 +104,14 @@ select{font:inherit;font-size:14px;padding:7px 10px;border-radius:8px;border:1px
 #siapbtn:hover,#next:hover{background:linear-gradient(180deg,#3a3a3a,#1b1b1b)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #siapbtn,:root:not([data-theme="light"]) #next{background:linear-gradient(180deg,#3b413e,#252a27);border-color:#4d5450;color:#eef1ee;box-shadow:0 4px 14px rgb(0 0 0 / .35)}}
 :root[data-theme="dark"] #siapbtn,:root[data-theme="dark"] #next{background:linear-gradient(180deg,#3b413e,#252a27);border-color:#4d5450;color:#eef1ee;box-shadow:0 4px 14px rgb(0 0 0 / .35)}
+/* Previous dan Next soal: kaca buram bernuansa hijau, warnanya sama. */
+body .card .nav>#prev.btn,body .card .nav>#next.btn{color:var(--ink);border:1px solid color-mix(in srgb,var(--accent) 32%,transparent);
+  background:linear-gradient(180deg,color-mix(in srgb,var(--accent) 16%,transparent),color-mix(in srgb,var(--accent) 6%,transparent)),color-mix(in srgb,var(--surface) 55%,transparent);
+  -webkit-backdrop-filter:blur(12px) saturate(150%);backdrop-filter:blur(12px) saturate(150%);
+  box-shadow:inset 0 1px 0 rgb(255 255 255 / .22),inset 0 -1px 0 rgb(0 0 0 / .10),0 6px 18px rgb(0 0 0 / .14);transition:background .2s,border-color .2s,transform .15s}
+body .card .nav>#prev.btn:hover:not(:disabled),body .card .nav>#next.btn:hover{border-color:color-mix(in srgb,var(--accent) 55%,transparent);background:linear-gradient(180deg,color-mix(in srgb,var(--accent) 24%,transparent),color-mix(in srgb,var(--accent) 10%,transparent)),color-mix(in srgb,var(--surface) 55%,transparent)}
+body .card .nav>#prev.btn:active:not(:disabled),body .card .nav>#next.btn:active{transform:translateY(1px)}
+body .card .nav>#prev.btn:disabled{opacity:.45}
 .mulaikartu .info{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}.mulaikartu .info span{font-size:12.5px;border:1px solid var(--line);border-radius:999px;padding:3px 10px;color:var(--muted)}
 .mulaikartu h2{font-family:var(--f-display);font-weight:650;font-size:21px;line-height:1.3;margin:0;max-width:30ch;color:color-mix(in srgb,var(--brass) 45%,var(--ink))}
 .mulaikartu .narasi{list-style:none;margin:2px 0 4px;padding:14px 16px;display:flex;flex-direction:column;gap:14px;text-align:center;max-width:46ch;border:1px solid color-mix(in srgb,var(--brass) 35%,var(--line));border-radius:14px;background:linear-gradient(180deg,color-mix(in srgb,var(--brass) 9%,var(--bg)),color-mix(in srgb,var(--brass) 4%,var(--bg)))}
