@@ -255,7 +255,7 @@ function ujian(){papan.hidden=false;if(!aku){main.innerHTML='<p class="muted">Me
   const n=T.soal.length;pos=Math.min(Math.max(0,pos),n-1);try{sessionStorage.setItem("to-pos-"+TID,pos);}catch(e){}const q=T.soal[pos],perm=acak(q.o.length,U.uid+q.id),pil=(aku.jawab||{})[q.id];
   main.innerHTML=`<div class="ujian-h"><span class="qno">Soal ${pos+1} / ${n} · terjawab ${aku.dijawab||0}</span><span class="timer">⏱ <span id="sisa">${fmt(sisaMs())}</span></span></div>
   <p class="qtext">${esc(q.q)}</p><ol class="opts">${perm.map((oi,pi)=>`<li><button type="button" class="opt${pil===oi?" pilih":""}" data-o="${oi}"><span class="l">${L[pi]}</span><span class="t">${esc(q.o[oi])}</span></button></li>`).join("")}</ol>
-  <div class="nav"><button class="btn" id="prev" type="button"${pos===0?" disabled":""}>← Sebelumnya</button>${pos<n-1?'<button class="btn primary" id="next" type="button">Berikutnya →</button>':'<button class="btn primary" id="kumpul" type="button">Selesai &amp; kumpulkan</button>'}</div>
+  <div class="nav"><button class="btn" id="prev" type="button"${pos===0?" disabled":""}>← Previous</button>${pos<n-1?'<button class="btn primary" id="next" type="button">Next →</button>':'<button class="btn primary" id="kumpul" type="button">Selesai &amp; kumpulkan</button>'}</div>
   <div class="peta">${T.soal.map((s,i)=>`<button type="button" data-i="${i}" class="${(aku.jawab||{})[s.id]!==undefined?"sdh":""}${i===pos?" ini":""}">${i+1}</button>`).join("")}</div>
   ${pos<n-1?'<div class="row" style="justify-content:flex-end"><button class="btn" id="kumpul" type="button">Kumpulkan sekarang</button></div>':""}
   ${isOwner?'<div class="row"><button class="btn bahaya" id="akhiri" type="button">Akhiri try out untuk semua</button></div>':""}
