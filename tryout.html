@@ -122,7 +122,7 @@ header h1 span{display:block}header h1 .t2{letter-spacing:.1em}
 .kunci-peta button{cursor:default}
 /* Tata letak: HP ditumpuk (soal, pembahasan, peringkat, chat, peta); desktop tiga kolom setinggi layar tanpa gulir halaman. */
 .arena,.kiri,.tengah,.kanan{display:contents}
-@media(max-width:1023px){body[data-v=lobi] #papan{display:none!important}}
+@media(max-width:1023px){body[data-v=lobi] #papan,body[data-v=hasil] #papan{display:none!important}}
 #main{order:1}#bahas{order:2}#papan{order:3}#chat{order:4}#alat{order:5}footer{order:6}
 /* Pita header gelap (sedikit lebih terang dari logo hitam): Beranda di kiri, logo dan nama di tengah, timer/akun di kanan. */
 header{background:linear-gradient(180deg,#323a35,#272d29);border:1px solid #3d4741;border-radius:14px;padding:12px 16px;display:grid;grid-template-columns:1fr;justify-items:center;text-align:center;row-gap:6px;color:#eef2ef}
@@ -180,6 +180,9 @@ header .akun .av{background:#eef2ef;color:#1f2421}header .akun .nm{color:#eef2ef
 .chatlist li.aku p{background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 40%,var(--line))}
 .chatform{display:flex;gap:8px}.chatform input{flex:1;min-width:0;font:inherit;font-size:14px;padding:9px 12px;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--ink)}.lb .crown{margin-right:4px}.nav.sk{flex-direction:column;align-items:center;gap:6px}.mini{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:center}.mini select{font:inherit;font-size:12.5px;padding:5px 8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);max-width:200px}.nav.sk .tunggun{margin:0;font-size:12px;width:100%;text-align:center}
 .opt .mk.x{color:var(--bad);font-weight:700}
+.btn.review{display:inline-flex;align-items:center;gap:8px;padding:9px 20px;color:#1f1608;border-color:color-mix(in srgb,var(--brass) 70%,#000);
+  background:linear-gradient(180deg,#e2bd6a,#c79a3e);box-shadow:inset 0 1px 0 rgb(255 255 255 / .35),0 6px 16px -8px rgb(154 107 18 / .6);letter-spacing:.02em}
+.btn.review:hover{background:linear-gradient(180deg,#ebc877,#cfa246)}.btn.review svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 /* HP: header satu baris ringkas, kartu soal lebih padat, kendali room master rapi. */
 @media(max-width:1023px){
   .wrap{padding-top:10px;gap:12px}
@@ -214,7 +217,7 @@ header .akun .av{background:#eef2ef;color:#1f2421}header .akun .nm{color:#eef2ef
 .lb .dl{font-size:12px;font-weight:700;text-align:right;font-variant-numeric:tabular-nums}.dl.naik{color:var(--ok)}.dl.turun{color:var(--bad)}
 .lb li.gap{display:block;text-align:center;border:0;background:none;padding:0;color:var(--muted)}
 .podium{display:grid;grid-template-columns:1fr 1.15fr 1fr;align-items:end;gap:10px;margin-top:6px}
-.pd{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;min-width:0}
+.pd{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;min-width:0}.pd .ats{display:flex;flex-direction:column;align-items:center;gap:4px;width:100%;min-width:0}
 .pd .av{width:52px;height:52px;border-radius:50%;background:var(--ink);color:var(--surface);display:grid;place-items:center;font-weight:700;font-size:20px;overflow:hidden;border:3px solid var(--md)}.pd .av img{width:100%;height:100%;object-fit:cover}
 .pd .nm{font-weight:600;font-size:13.5px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pd .sk{font-family:var(--f-display);font-weight:650;font-size:22px}
@@ -507,7 +510,7 @@ function av(p){return p.foto?`<img src="${esc(p.foto)}" alt="" referrerpolicy="n
 function tandaSoal(p){if(!SINK()||T.status!=="mulai")return "";const q=T.soal[Math.min(T.idx||0,T.soal.length-1)],j=(p.jawab||{})[q.id];
   const [c,t,l]=j!==undefined?(j===q.a?["ok","✓","benar"]:["no","✕","salah"]):soalSisaMs()>0?["tg","…","belum menjawab"]:["ks","–","tidak menjawab"];
   return `<i class="tq ${c}" title="Soal ${(T.idx||0)+1}: ${l}" aria-label="Soal ${(T.idx||0)+1}: ${l}">${t}</i>`;}
-function renderPapan(){if(!T||papan.hidden&&!(T.status==="mulai"))return;if(selesaiSemua()){papan.hidden=true;return;}
+function renderPapan(){if(!T||papan.hidden&&!(T.status==="mulai"))return;
   const r=urut(),now=Date.now(),me=U&&U.uid;
   r.forEach((p,i)=>{const lama=urutLama[p.uid];if(lama!==undefined&&lama!==i+1)deltaUntil[p.uid]={d:lama-(i+1),s:now+4000};urutLama[p.uid]=i+1;});
   let tampil=r.slice(0,10);const iMe=r.findIndex(p=>p.uid===me);if(iMe>=10)tampil=tampil.concat([null,r[iMe]]);
@@ -519,19 +522,22 @@ function renderPapan(){if(!T||papan.hidden&&!(T.status==="mulai"))return;if(sele
     li.style.transition="none";li.style.transform=`translateY(${dy}px)`;requestAnimationFrame(()=>{li.style.transition="transform .6s cubic-bezier(.2,.8,.2,1)";li.style.transform="";});});}
 setInterval(()=>{if(Object.values(deltaUntil).some(d=>d.s<Date.now()+0&&d.s>Date.now()-1500))renderPapan();},1000);
 
-function hasil(){papan.hidden=true;if(aku&&!aku.selesai&&T.status==="mulai")kumpul(true);
+function hasil(){papan.hidden=false;document.body.dataset.v="hasil";if(aku&&!aku.selesai&&T.status==="mulai")kumpul(true);
   const r=urut(),me=U.uid,iMe=r.findIndex(p=>p.uid===me);
   // Nilai yang masuk belakangan memperbarui hasil tanpa mengulang animasi atau menutup pembahasan.
   const ulang=!!main.querySelector(".podium"),buka=!!main.querySelector(".rev[open]"),hanyaSalah=!!main.querySelector(".rv.salah");
   const pd=(p,j)=>p?`<div class="pd j${j}"><div class="ats"><div class="av">${av(p)}</div><div class="nm">${esc(p.nama)}</div><div class="sk">${p.skor||0} <small class="muted" style="font-size:12px">pts</small></div></div><div class="tg">${j}</div></div>`:`<div class="pd j${j} kosong"><div class="tg">${j}</div></div>`;
-  main.innerHTML=`<p class="eyebrow" style="margin:0;text-align:center">Final Results</p><h2 class="judul" style="text-align:center">${esc(T.judul)}</h2>
+  main.innerHTML=`<h2 class="judul" style="text-align:center">${esc(T.judul)}</h2><p class="eyebrow" style="margin:-8px 0 0;text-align:center;letter-spacing:.16em">Final Results</p>
   <div class="podium${ulang?" diam":""}">${pd(r[1],2)}${pd(r[0],1)}${pd(r[2],3)}</div>
   ${iMe>=0?`<p style="text-align:center;margin:4px 0 0">Your rank: <b>${iMe+1}</b> of ${r.length} · <b>${r[iMe].skor||0} pts</b> (${r[iMe].benar||0} of ${T.soal.length} correct)</p>${predikat(r[iMe].benar||0,T.soal.length)}`:""}
-  ${isOwner?`${statHTML()}<div class="row" style="justify-content:center"><button class="btn" id="csv" type="button">⤓ Download results (CSV)</button></div>`:""}
+  ${isOwner?statHTML():""}${iMe>=0||isOwner?`<div class="row" style="justify-content:center">${iMe>=0?'<button class="btn review" id="review" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12S6 5 12 5s9.5 7 9.5 7-3.5 7-9.5 7-9.5-7-9.5-7z"/><circle cx="12" cy="12" r="3"/></svg>Review</button>':""}${isOwner?'<button class="btn" id="csv" type="button">⤓ Download results (CSV)</button>':""}</div>`:""}
   <ol class="lb">${r.map((p,i)=>`<li class="${p.uid===me?"aku":""}"><span class="rk${i<3?" m"+(i+1):""}">${i+1}</span><span class="av">${av(p)}</span><span class="nm">${esc(p.nama)}<small>${p.benar||0} of ${T.soal.length} correct</small></span><span class="sk">${p.skor||0}</span><span class="dl"></span></li>`).join("")}</ol>
   ${iMe>=0?pembahasan(r[iMe]):""}`;
   if(buka)main.querySelector(".rev").open=true;if(hanyaSalah){$("rv").classList.add("salah");main.querySelectorAll(".revf button").forEach(x=>x.classList.toggle("on",x.dataset.f==="salah"));}
-  if($("csv"))$("csv").onclick=unduhCSV;
+  if($("csv"))$("csv").onclick=unduhCSV;renderPapan();
+  // Review: buka Answer review, saring ke jawaban salah dan tidak dijawab, lalu gulir ke sana.
+  if($("review"))$("review").onclick=()=>{const rv=main.querySelector(".rev");if(!rv)return;rv.open=true;$("rv").classList.add("salah");
+    main.querySelectorAll(".revf button").forEach(x=>x.classList.toggle("on",x.dataset.f==="salah"));rv.scrollIntoView({behavior:"smooth",block:"start"});};
   main.querySelectorAll(".revf button").forEach(b=>b.onclick=()=>{main.querySelectorAll(".revf button").forEach(x=>x.classList.toggle("on",x===b));$("rv").classList.toggle("salah",b.dataset.f==="salah");});}
 // Pembahasan dibuka setelah mock exam selesai: jawaban peserta, kunci, dan penjelasannya.
 function pembahasan(p){const j=(aku&&aku.jawab)||p.jawab||{},n=T.soal.length;let salah=0;
