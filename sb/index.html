@@ -884,10 +884,12 @@ window.__quiz={state};
     // Modul Firebase dimuat lebih dulu agar popup Google terbuka langsung saat tombol diklik (tidak diblokir browser).
     const V='https://www.gstatic.com/firebasejs/10.12.5/',mods=Promise.all([import(V+'firebase-app.js'),import(V+'firebase-auth.js'),import(V+'firebase-firestore.js')]);mods.catch(()=>{});
     // Popup Google harus dibuka langsung di dalam klik (tanpa await sebelumnya), kalau tidak iPhone/Safari memblokirnya.
-    let M=null;mods.then(m=>{M=m;}).catch(()=>{});
+    // Firebase Auth disiapkan sejak kotak tampil (getRedirectResult memuat iframe login lebih dulu), agar saat diketuk popup langsung terbuka.
+    let M=null,P=null;mods.then(m=>{M=m;const [{initializeApp,getApps},A]=m;const app=getApps().find(a=>a.name==='lama')||initializeApp(L,'lama'),fa=A.getAuth(app);
+      P={app,fa};A.getRedirectResult(fa).catch(()=>{});}).catch(()=>{});
     $('imporgo').onclick=()=>{const b=$('imporgo');if(!M){alert('Sedang menyiapkan, coba ketuk lagi dalam beberapa detik.');return;}
-      const [{initializeApp,getApps},A,F]=M;let pop;
-      try{const app=getApps().find(a=>a.name==='lama')||initializeApp(L,'lama'),fa=A.getAuth(app),pv=new A.GoogleAuthProvider();pv.setCustomParameters({login_hint:u.email||'',prompt:'select_account'});
+      const [,A,F]=M;let pop;
+      try{const {app,fa}=P,pv=new A.GoogleAuthProvider();pv.setCustomParameters({login_hint:u.email||'',prompt:'select_account'});
         pop=A.signInWithPopup(fa,pv).then(r=>({r,app,fa}));}catch(e){pop=Promise.reject(e);}
       b.disabled=true;b.textContent='Memulihkan…';
       pop.then(async({r,app,fa})=>{if((r.user.email||'').toLowerCase()!==(u.email||'').toLowerCase())throw new Error('Pilih akun Google yang sama: '+u.email);
