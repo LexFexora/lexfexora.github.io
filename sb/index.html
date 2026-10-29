@@ -151,7 +151,12 @@ html.fokus .card:has(.ket[open]){overflow-y:auto;overscroll-behavior:contain}
 html.fokus .card .ket .explain{font-size:15px;line-height:1.65;padding-top:10px}
 html.fokus .card .nav{margin-top:0;flex:none;padding-top:min(10px,1.2vh);position:sticky;bottom:0;background:var(--bg)}
 html.fokus .card .nav .btn{min-height:44px;padding:8px 18px;font-size:15px;flex:1}
-.scorebar small{font-size:inherit}.sbrow{flex:1 1 160px;display:flex;align-items:center;gap:10px;min-width:0}.sbrow .meter{flex:1}.sbrow .keluar{padding:4px 12px;font-size:12px;min-height:0;flex:none}.scorebar .st{white-space:nowrap}
+.scorebar small{font-size:inherit}.sbrow{flex:1 1 160px;display:flex;align-items:center;gap:10px;min-width:0}.sbrow .meter{flex:1}.sbrow .keluar{padding:4px 12px;font-size:12px;min-height:0;flex:none}
+/* Tombol EXIT: merah lembut (aksi keluar), huruf kapital berjarak. */
+.btn.keluar{color:#d9483b;border-color:rgb(217 72 59 / .45);background:rgb(217 72 59 / .08);font-weight:700;letter-spacing:.08em}
+.btn.keluar:hover{background:rgb(217 72 59 / .16);border-color:rgb(217 72 59 / .7)}
+html[data-theme="dark"] .btn.keluar{color:#f07a6e;border-color:rgb(240 122 110 / .45);background:rgb(240 122 110 / .1)}
+@media (prefers-color-scheme:dark){html:not([data-theme="light"]) .btn.keluar{color:#f07a6e;border-color:rgb(240 122 110 / .45);background:rgb(240 122 110 / .1)}}.scorebar .st{white-space:nowrap}
 @media(max-width:640px){.scorebar{display:grid;grid-template-columns:repeat(4,auto);justify-content:space-between;gap:10px 6px}.scorebar .st{display:flex;flex-direction:column;align-items:center;gap:1px}.scorebar .st small{font-size:11px}.scorebar .st strong{font-size:14px}.scorebar .sbrow{grid-column:1/-1}}
 .meter{flex:1 1 160px;height:6px;border-radius:3px;background:var(--line);overflow:hidden;display:flex}
 .meter i{display:block;height:100%}
