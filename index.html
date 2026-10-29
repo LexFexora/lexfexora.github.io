@@ -677,7 +677,7 @@ function renderCard(){
   html+=`<p class="qtext">${esc(q.q)}</p><ol class="opts">`;
   perm.forEach((oi,pi)=>{
     let cls="",mark="";
-    if(answered){ if(oi===q.a){cls="correct";mark="✅";} else if(oi===chosen){cls="wrong";mark="SALAH";} }
+    if(answered){ if(oi===q.a){cls="correct";mark="✅";} else if(oi===chosen){cls="wrong";mark="❌";} }
     html+=`<li><button type="button" class="opt ${cls}" data-o="${oi}" ${answered||locked?"disabled":""}><span class="l">${L[pi]}</span><span class="t">${esc(q.o[oi])}</span><span class="mark">${mark}</span></button></li>`;
   });
   html+="</ol>";
