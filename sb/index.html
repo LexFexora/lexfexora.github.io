@@ -331,14 +331,14 @@ body.tertutup #tirai{display:flex}
 <body>
 <div class="gate" id="gate">
   <svg class="gate-emb" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" aria-hidden="true"><defs><linearGradient id="lgG2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2a2a2a"/><stop offset="1" stop-color="#000000"/></linearGradient></defs><rect width="256" height="256" rx="60" fill="url(#lgG2)"/><g transform="translate(146 100) rotate(45)"><rect x="-8" y="20" width="16" height="104" rx="8" fill="#ffffff"/><rect x="-56" y="-26" width="112" height="52" rx="12" fill="#ffffff"/><rect x="-64" y="-31" width="14" height="62" rx="6" fill="#ffffff"/><rect x="50" y="-31" width="14" height="62" rx="6" fill="#ffffff"/><rect x="-46" y="-26" width="5" height="52" fill="#000" opacity=".28"/><rect x="41" y="-26" width="5" height="52" fill="#000" opacity=".28"/></g><rect x="132" y="190" width="96" height="14" rx="7" fill="#ffffff"/><rect x="144" y="178" width="72" height="14" rx="7" fill="#d4d4d4"/></svg>
-  <h2 id="gate-h">Memuat…</h2>
+  <h2 id="gate-h">Loading…</h2>
   <p id="gate-p"></p>
   <p class="who" id="gate-who"></p>
   <div class="gate-act">
-    <button class="btn primary" id="g-login" type="button" hidden>Masuk dengan Google</button>
-    <button class="btn" id="g-logout" type="button" hidden>Ganti akun</button>
+    <button class="btn primary" id="g-login" type="button" hidden>Sign in with Google</button>
+    <button class="btn" id="g-logout" type="button" hidden>Switch account</button>
   </div>
-  <p class="note" id="gate-note" hidden>Jika tombol masuk tidak berfungsi, buka tautan ini di Chrome atau Safari (bukan dari dalam aplikasi WhatsApp/Instagram).</p>
+  <p class="note" id="gate-note" hidden>If the sign-in button does not work, open this link in Chrome or Safari (not inside the WhatsApp/Instagram app).</p>
 </div>
 
 <div class="wrap">
@@ -839,7 +839,7 @@ window.__quiz={state};
   const show=(h,p,who,login,logout)=>{$('gate').hidden=false;H.classList.add('gate-wait');gh.textContent=h;gp.textContent=p||'';gw.textContent=who||'';bIn.hidden=!login;bOut.hidden=!logout;gnote.hidden=!login;};
   const open=()=>{$('gate').hidden=true;H.classList.remove('gate-wait');};
   const cfg=window.FIREBASE_CONFIG||{};
-  if(!window.firebase||!cfg.apiKey||/^ISI_/.test(cfg.apiKey)){show('Situs belum dikonfigurasi','Pemilik perlu mengisi firebase-config.js terlebih dahulu.');return;}
+  if(!window.firebase||!cfg.apiKey||/^ISI_/.test(cfg.apiKey)){show('Site not configured','The owner needs to complete the site configuration first.');return;}
   firebase.initializeApp(cfg);
   const auth=firebase.auth(),db=firebase.firestore();
   try{db.enablePersistence({synchronizeTabs:true}).catch(()=>{});}catch(e){}
@@ -848,7 +848,7 @@ window.__quiz={state};
   const CH=300000; // karakter per potongan dokumen bank (batas dokumen Firestore 1 MiB)
 
   bIn.onclick=async()=>{const p=new firebase.auth.GoogleAuthProvider();p.setCustomParameters({prompt:'select_account'});
-    try{await auth.signInWithPopup(p);}catch(e){if(e&&/popup-blocked|operation-not-supported/.test(e.code||''))auth.signInWithRedirect(p);else if(e&&e.code!=='auth/popup-closed-by-user'&&e.code!=='auth/cancelled-popup-request')gp.textContent='Gagal masuk: '+(e.message||e.code);}};
+    try{await auth.signInWithPopup(p);}catch(e){if(e&&/popup-blocked|operation-not-supported/.test(e.code||''))auth.signInWithRedirect(p);else if(e&&e.code!=='auth/popup-closed-by-user'&&e.code!=='auth/cancelled-popup-request')gp.textContent='Sign-in failed: '+(e.message||e.code);}};
   // Keluar menghapus jawaban sesi (benar/salah di kuis); tanda ✓/✗ di akun tetap tersimpan.
   window.__logout=()=>bOut.onclick();
   bOut.onclick=()=>{window.__keluar=true;try{localStorage.removeItem('tkbcakim-v12');}catch(e){}auth.signOut().then(()=>location.reload());};
@@ -926,9 +926,9 @@ window.__quiz={state};
       ()=>{$('tolist').innerHTML=isOwner?'<p class="note">Mock exam list unavailable.</p>':'';if(!isOwner)$('toket').textContent='There are no quizzes available right now.';});}
   async function start(){
     if(started)return;started=true;
-    show('Memuat bank soal…','Sekali muat pertama bisa beberapa detik.');
+    show('Loading question bank…','The first load may take a few seconds.');
     try{const arr=await loadBank();QB.push(...arr);await progres();startQuiz();open();tryoutKartu();}
-    catch(e){started=false;if(isOwner){open();$('adm').open=true;$('adm').scrollIntoView();return;}show(e.message==='kosong'?'Bank soal belum diunggah':'Gagal memuat bank soal',e.message==='kosong'?'Pemilik perlu mengunggah bank soal dari panel persetujuan.':'Periksa koneksi lalu muat ulang halaman. ('+(e.code||e.message)+')',null,false,true);}
+    catch(e){started=false;if(isOwner){open();$('adm').open=true;$('adm').scrollIntoView();return;}show(e.message==='kosong'?'Question bank not uploaded yet':'Could not load the question bank',e.message==='kosong'?'The owner needs to upload the question bank from the approval panel.':'Check your connection, then reload the page. ('+(e.code||e.message)+')',null,false,true);}
   }
   function posisi(){try{const s=window.__quiz&&window.__quiz.state;if(!s)return '';const c=s.cat;
     const cat=c==='all'?'Semua Kategori':(CATS[c]&&CATS[c].short)||'';const sub=c==='all'||s.sub==='all'?'Semua sub-materi':(SUBS[c]&&SUBS[c][s.sub-1])||'';
@@ -942,20 +942,20 @@ window.__quiz={state};
   auth.onAuthStateChanged(async u=>{
     if(unsub){unsub();unsub=null;}if(beat){clearInterval(beat);beat=null;}
     akunku(u);
-    if(!u){show('Latihan ini membutuhkan izin','Masuk dengan akun Google. Permintaan akses Anda akan dikirim ke pemilik untuk disetujui.',null,true,false);return;}
-    const who='Masuk sebagai '+(u.displayName?u.displayName+' · ':'')+u.email;
+    if(!u){show('Access required','Sign in with your Google account. Your access request will be sent to the owner for approval.',null,true,false);return;}
+    const who='Signed in as '+(u.displayName?u.displayName+' · ':'')+u.email;
     if(OWNER&&(u.email||'').toLowerCase()===OWNER&&u.emailVerified){isOwner=true;window.__isOwner=true;document.body.classList.add('bebas');
       window.__pindah=(id,list)=>db.doc('bank/pindah').set({m:{[id]:list}},{merge:true}).then(()=>pinfo());
       window.__edit=(id,rec)=>db.doc('bank/edit').set({m:{[id]:rec}},{merge:true}).then(()=>pinfo());admin();start();return;}
     const ref=db.doc('izin/'+u.uid);
     try{const s=await ref.get();
       if(!s.exists)await ref.set({email:u.email||'',nama:u.displayName||'',foto:u.photoURL||'',status:'menunggu',diminta:FV.serverTimestamp(),terakhir:FV.serverTimestamp(),posisi:''});
-    }catch(e){show('Akses belum dapat diperiksa','Muat ulang halaman. ('+(e.code||e.message)+')',who,false,true);return;}
+    }catch(e){show('Could not check access','Please reload the page. ('+(e.code||e.message)+')',who,false,true);return;}
     unsub=ref.onSnapshot(s=>{const st=s.exists?s.data().status:'menunggu';
       if(st==='disetujui'){if(!beat)heartbeat(ref);start();}
-      else if(st==='ditolak'){show('Akses ditolak','Pemilik belum memberi izin untuk akun ini.',who,false,true);}
-      else show('Menunggu persetujuan','Permintaan akses Anda sudah terkirim. Halaman terbuka otomatis setelah pemilik menyetujui.',who,false,true);
-    },e=>show('Akses belum dapat diperiksa','Muat ulang halaman. ('+(e.code||e.message)+')',who,false,true));
+      else if(st==='ditolak'){show('Access denied','The owner has not granted access to this account.',who,false,true);}
+      else show('Waiting for approval','Your access request has been sent. This page will open automatically once the owner approves it.',who,false,true);
+    },e=>show('Could not check access','Please reload the page. ('+(e.code||e.message)+')',who,false,true));
   });
 
   function pinfo(){return Promise.all([db.doc('bank/pindah').get(),db.doc('bank/edit').get()]).then(([d,e])=>{const n=d.exists?Object.keys(d.data().m||{}).length:0,ne=e.exists?Object.keys(e.data().m||{}).length:0;
