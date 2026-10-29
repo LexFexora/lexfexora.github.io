@@ -268,6 +268,7 @@ html.gate-wait .wrap{display:none}
 .tosub fieldset{border:0;margin:0 0 6px;padding:0}.tosub legend{font-weight:600;font-size:13px;padding:4px 0}
 .tosub label{flex-direction:row;align-items:flex-start;gap:8px;font-size:13px;color:var(--ink);padding:3px 0}.tosub label small{color:var(--muted)}
 .tolist{display:flex;flex-direction:column;gap:6px;margin:4px 0 8px}.tolist .tr{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:13px;border:1px solid var(--line);border-radius:8px;padding:6px 8px}.tolist .tr b{margin-right:auto}
+.tojoin{display:flex;flex-direction:column;gap:4px;border:1px solid color-mix(in srgb,var(--accent) 45%,var(--line));background:var(--accent-soft);border-radius:10px;padding:10px}.tojoin .linkrow{margin:2px 0}.tojoin .linkrow input{user-select:all;-webkit-user-select:all}
 .adm h4{margin:10px 0 2px;font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em}
 .brand{display:flex;align-items:center;gap:14px}
 .brand{font-size:clamp(26px,4.4vw,36px)}.brand .emb{width:2.35em;height:2.35em;flex:none;filter:drop-shadow(0 6px 12px rgba(0,0,0,.28))}
@@ -344,11 +345,12 @@ body.tertutup #tirai{display:flex}
     <details class="tobox" id="tobox"><summary class="btn copy">＋ Buat Mock Exam baru</summary>
       <div class="toform">
         <label>Judul<input id="tojudul" value="Mock Exam Seleksi Kemampuan Bidang"></label>
-        <div class="torow"><label>Jumlah soal<select id="tojml"><option value="50">50 soal</option><option value="75">75 soal</option><option value="100" selected>100 soal</option></select></label>
+        <div class="torow"><label>Jumlah soal<select id="tojml"><option value="25">25 soal</option><option value="50">50 soal</option><option value="75">75 soal</option><option value="100" selected>100 soal</option><option value="150">150 soal</option><option value="200">200 soal</option></select></label>
         <label>Waktu (menit)<input id="tomenit" type="number" min="5" max="300" value="90"></label></div>
         <p class="note" style="margin:4px 0 0">Pilih satu atau beberapa sub-materi. Soal diracik otomatis: jatah tiap sub-materi sebanding jumlah soalnya, seimbang antara dasar hukum, istilah &amp; prosedur, dan pendapat ahli, tanpa soal kembar, dengan urutan sub-materi diselang-seling.</p>
         <div class="tosub" id="tosub"></div>
         <p class="note" id="toinfo"></p>
+        <p class="note" style="margin:0">Soal yang belum atau paling jarang diujikan selalu diutamakan. <button class="btn copy" type="button" id="torst" style="padding:2px 8px;font-size:12px">Atur ulang rotasi</button></p>
         <div class="linkrow"><button class="btn primary" type="button" id="tobuat">Buat Mock Exam</button></div>
       </div>
     </details>
@@ -841,11 +843,16 @@ window.__quiz={state};
     db.collection('tryout').orderBy('dibuat','desc').limit(15).onSnapshot(qs=>{const rows=[];qs.forEach(d=>{const t=d.data(),u=location.origin+location.pathname.replace(/[^/]*$/,'')+'tryout.html?t='+d.id;
         if(!isOwner&&t.status==='selesai')return;
         rows.push(`<div class="tr"><b>${esc(t.judul||'Mock Exam')}</b><span class="muted">${(t.soal||[]).length} soal · ${ST[t.status]||t.status}</span><a class="btn copy${isOwner?'':' primary'}" href="${u}" target="_blank" rel="noopener">${isOwner?'Buka':'Ikut'}</a>${isOwner?`<button class="btn copy" type="button" data-salin="${u}">Salin tautan</button><button class="btn copy" type="button" data-hapus="${d.id}">Hapus</button>`:''}</div>`);});
-      $('tolist').innerHTML=rows.join('')||(isOwner?'<p class="note">Belum ada mock exam.</p>':'');
+      // Pemilik: tautan join mock exam terbaru yang belum selesai, siap disalin atau dibagikan.
+      let jl='',d0=null;qs.forEach(d=>{if(!d0&&d.data().status!=='selesai')d0=d;});if(isOwner){if(d0){const u0=location.origin+location.pathname.replace(/[^/]*$/,'')+'tryout.html?t='+d0.id;
+        jl=`<div class="tojoin"><b>Tautan join peserta</b><span class="muted">${esc(d0.data().judul||'Mock Exam')}</span><div class="linkrow"><input readonly value="${u0}" aria-label="Tautan join peserta" onclick="this.select()"><button class="btn copy" type="button" data-salin="${u0}">⧉ Salin tautan</button><button class="btn copy" type="button" data-bagi="${u0}">Bagikan</button></div><p class="note" style="margin:0">Kirim tautan ini ke peserta. Mereka masuk dengan Google lalu otomatis ke ruang tunggu, dan papan peringkat diurutkan menurut jumlah jawaban benar.</p></div>`;}}
+      $('tolist').innerHTML=jl+(rows.join('')||(isOwner?'<p class="note">Belum ada mock exam.</p>':''));
+      $('tolist').querySelectorAll('[data-bagi]').forEach(b=>b.onclick=()=>{const u=b.dataset.bagi,tx='Ikut Mock Exam bersama: '+u;if(navigator.share)navigator.share({title:'Mock Exam',text:'Ikut Mock Exam bersama',url:u}).catch(()=>{});else window.open('https://wa.me/?text='+encodeURIComponent(tx),'_blank');});
       // Peserta: teks kosong bila tidak ada mock exam yang dibuka, ajakan Ikut bila ada.
       if(!isOwner)$('toket').textContent=rows.length?'Mock exam yang sedang dibuka. Ketuk Ikut untuk bergabung.':'There are no quizzes available right now.';
       $('tolist').querySelectorAll('[data-salin]').forEach(b=>b.onclick=()=>navigator.clipboard&&navigator.clipboard.writeText(b.dataset.salin).then(()=>{b.textContent='✓ Tersalin';}));
-      $('tolist').querySelectorAll('[data-hapus]').forEach(b=>b.onclick=()=>{if(confirm('Hapus mock exam ini? Tautannya tidak bisa dibuka lagi.'))db.doc('tryout/'+b.dataset.hapus).delete();});},
+      $('tolist').querySelectorAll('[data-hapus]').forEach(b=>b.onclick=()=>{if(!confirm('Hapus mock exam ini? Tautannya tidak bisa dibuka lagi. Soalnya kembali dihitung belum diujikan.'))return;const id=b.dataset.hapus;
+        Promise.resolve(window.__toLepas&&window.__toLepas(id)).catch(()=>{}).then(()=>db.doc('tryout/'+id).delete());});},
       ()=>{$('tolist').innerHTML=isOwner?'<p class="note">Mock exam list unavailable.</p>':'';if(!isOwner)$('toket').textContent='There are no quizzes available right now.';});}
   async function start(){
     if(started)return;started=true;
@@ -884,9 +891,26 @@ window.__quiz={state};
     // Mock Exam bersama: pemilik memilih sub-materi dan jumlah soal; peserta ikut lewat tryout.html?t=<id>.
     const toPool=()=>{const sel=new Set([...document.querySelectorAll('#tosub input[data-cs]:checked')].map(i=>i.dataset.cs));
       return QB.filter(q=>q.mappings.some(m=>sel.has(m.c+'|'+m.s)));};
-    const toInfo=()=>{const n=toPool().length,j=+$('tojml').value;$('toinfo').textContent=n?`${n} soal tersedia dari sub-materi terpilih${n<j?`, kurang dari ${j}, jadi semua ${n} soal dipakai`:''}.`:'Belum ada sub-materi dipilih.';};
+    // Rotasi soal: bank/terpakai mencatat berapa kali tiap soal diujikan (m) dan mock exam yang sudah dihitung (x).
+    // Soal yang belum atau paling jarang diujikan diutamakan, jadi sisa yang tidak terpakai muncul di sesi berikutnya.
+    let PK=null;const pakaiRef=db.doc('bank/terpakai');
+    const pakaiMuat=async()=>{if(PK)return PK;let d={m:{},x:{}};try{const g=await pakaiRef.get();if(g.exists)d=Object.assign(d,g.data());}catch(e){}
+      try{const qs=await db.collection('tryout').get();let ubah=false;qs.forEach(t=>{if(d.x[t.id])return;(t.data().soal||[]).forEach(q=>d.m[q.id]=(d.m[q.id]||0)+1);d.x[t.id]=1;ubah=true;});
+        if(ubah)pakaiRef.set(d).catch(()=>{});}catch(e){}
+      return PK=d;};
+    const pakaiCatat=(id,ids,k)=>{if(!PK)return Promise.resolve();ids.forEach(q=>{PK.m[q]=Math.max(0,(PK.m[q]||0)+k);if(!PK.m[q])delete PK.m[q];});
+      if(k>0)PK.x[id]=1;else delete PK.x[id];return pakaiRef.set(PK);};
+    window.__toLepas=async id=>{await pakaiMuat();if(!PK.x[id])return;const t=await db.doc('tryout/'+id).get();if(t.exists)await pakaiCatat(id,(t.data().soal||[]).map(q=>q.id),-1);};
+    const toInfo=()=>{const pool=toPool(),j=+$('tojml').value,n=new Set(pool.map(q=>q.id)).size;
+      if(!n){$('toinfo').textContent='Belum ada sub-materi dipilih.';return;}
+      const baru=PK?pool.filter(q=>!PK.m[q.id]).length:null,pakai=Math.min(n,j);
+      $('toinfo').innerHTML=`<b>${n}</b> soal tersedia dari sub-materi terpilih`+(baru!==null?` (<b>${baru}</b> belum pernah diujikan)`:'')+`. `+
+        (n>j?`Diujikan <b>${j}</b> soal; sisa ${n-j} soal tidak dipakai sekarang dan diutamakan muncul di mock exam berikutnya.`:n<j?`Kurang dari ${j}, jadi semua ${n} soal dipakai.`:`Semua ${n} soal dipakai.`)+
+        ` Waktu ${$('tomenit').value} menit untuk ${pakai} soal.`;};
+    $('tomenit').oninput=toInfo;
+    $('torst').onclick=async()=>{if(!confirm('Atur ulang riwayat rotasi? Semua soal dianggap belum pernah diujikan.'))return;await pakaiMuat();PK.m={};try{await pakaiRef.set(PK);}catch(e){alert('Gagal: '+(e.code||e.message));}toInfo();};
     $('tojml').onchange=()=>{$('tomenit').value=Math.round(+$('tojml').value*54/60);toInfo();};
-    $('tobox').addEventListener('toggle',()=>{if(!$('tobox').open||$('tosub').childElementCount)return;
+    $('tobox').addEventListener('toggle',()=>{if(!$('tobox').open)return;pakaiMuat().then(toInfo);if($('tosub').childElementCount)return;
       if(!QB.length){$('tosub').textContent='Bank soal belum dimuat.';return;}
       $('tosub').innerHTML=Object.keys(CATS).map(c=>`<fieldset><legend><label><input type="checkbox" data-all="${c}"> ${esc(CATS[c].short)}</label></legend>`+
         SUBS[c].map((nm,i)=>{const k=QB.filter(q=>q.mappings.some(m=>m.c===+c&&m.s===i+1)).length;return `<label><input type="checkbox" data-cs="${c}|${i+1}"><span>${i+1}. ${esc(nm)} <small>(${k})</small></span></label>`;}).join('')+`</fieldset>`).join('');
@@ -904,15 +928,19 @@ window.__quiz={state};
       while(sisa>0){let best=-1,bv=-1;gs.forEach((g,i)=>{if(jatah[i]<g.length){const v=n*g.length/tot-jatah[i];if(v>bv){bv=v;best=i;}}});if(best<0)break;jatah[best]++;sisa--;}
       while(sisa<0){const i=jatah.indexOf(Math.max(...jatah));jatah[i]--;sisa++;}
       const pilih=gs.map((g,i)=>{const T={};g.forEach(q=>{const t=getQuestionTier(q);(T[t]=T[t]||[]).push(q);});
-        const kel=Object.values(T).map(acakArr),out=[];while(out.length<jatah[i]&&kel.some(k=>k.length))kel.forEach(k=>{if(k.length&&out.length<jatah[i])out.push(k.pop());});return out;});
+        const U=(PK&&PK.m)||{},kel=Object.values(T).map(k=>acakArr(k).sort((a,b)=>(U[b.id]||0)-(U[a.id]||0))),out=[];
+        // Putaran 1 hanya soal yang belum pernah diujikan; putaran 2 mengisi sisa jatah.
+        const ambil=ok=>{while(out.length<jatah[i]&&kel.some(k=>k.length&&ok(k[k.length-1])))kel.forEach(k=>{if(k.length&&ok(k[k.length-1])&&out.length<jatah[i])out.push(k.pop());});};
+        ambil(q=>!U[q.id]);ambil(()=>true);return out;});
       const hasil=[];for(let r=0;hasil.length<n&&pilih.some(p=>p.length);r++)acakArr(pilih).forEach(p=>{if(p.length&&hasil.length<n)hasil.push(p.shift());});
       return hasil;};
-    $('tobuat').onclick=async()=>{const pool=toPool();if(!pool.length){alert('Pilih minimal satu sub-materi.');return;}
+    $('tobuat').onclick=async()=>{const pool=toPool();if(!pool.length){alert('Pilih minimal satu sub-materi.');return;}await pakaiMuat();
       const j=+$('tojml').value,menit=Math.max(5,Math.min(300,+$('tomenit').value||90));
       const soal=racik(pool,j).map(q=>({id:q.id,q:q.q,o:q.o.slice(),a:q.a,p:q.p||'',d:q.d||''}));
       $('tobuat').disabled=true;
       try{const r=await db.collection('tryout').add({judul:($('tojudul').value||'Mock Exam').trim().slice(0,120),soal,durasi:menit*60,status:'menunggu',mulai:null,dibuat:FV.serverTimestamp()});
-        $('tobox').open=false;$('toinfo').textContent='';window.open('tryout.html?t='+r.id,'_blank');}
+        await pakaiCatat(r.id,soal.map(q=>q.id),1).catch(()=>{});
+        $('tobox').open=false;$('toinfo').textContent='';$('tocard').open=true;$('tolist').scrollIntoView({behavior:'smooth',block:'start'});}
       catch(e){alert('Gagal membuat mock exam: '+(e.code||e.message));}
       $('tobuat').disabled=false;};
     $('bankdl').onclick=()=>{if(!QB.length){alert('Bank soal belum dimuat.');return;}

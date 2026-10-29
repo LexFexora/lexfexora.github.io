@@ -86,7 +86,7 @@ header h1 span{display:block}header h1 .t2{letter-spacing:.1em}
 .lb .rk{font-family:var(--f-display);font-weight:650;font-size:18px;text-align:center}
 .lb .av{width:30px;height:30px;border-radius:50%;background:var(--ink);color:var(--surface);display:grid;place-items:center;font-size:13px;font-weight:700;overflow:hidden}.lb .av img{width:100%;height:100%;object-fit:cover}
 .lb .nm{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}.lb .nm small{display:block;font-weight:400;color:var(--muted);font-size:11.5px}
-.lb .sk{font-family:var(--f-display);font-weight:650;font-size:18px;font-variant-numeric:tabular-nums}
+.lb .sk{font-family:var(--f-display);font-weight:650;font-size:18px;font-variant-numeric:tabular-nums;white-space:nowrap}.lb .sk small{font-family:var(--f-body,inherit);font-weight:500;font-size:11px;color:var(--muted)}
 .lb .dl{font-size:12px;font-weight:700;text-align:right;font-variant-numeric:tabular-nums}.dl.naik{color:var(--ok)}.dl.turun{color:var(--bad)}
 .lb li.gap{display:block;text-align:center;border:0;background:none;padding:0;color:var(--muted)}
 .podium{display:grid;grid-template-columns:1fr 1.15fr 1fr;align-items:end;gap:10px;margin-top:6px}
@@ -288,7 +288,7 @@ function tunggu(){papan.hidden=false;main.innerHTML=`<div class="hasilku"><p cla
   if($("akhiri"))$("akhiri").onclick=akhiri;}
 
 // Peringkat: nilai tertinggi, lalu waktu pengerjaan tercepat, lalu nama.
-function urut(){return Object.entries(P).map(([uid,p])=>Object.assign({uid},p)).sort((a,b)=>(b.skor||0)-(a.skor||0)||(b.benar||0)-(a.benar||0)||(a.dur||0)-(b.dur||0)||String(a.nama).localeCompare(String(b.nama)));}
+function urut(){return Object.entries(P).map(([uid,p])=>Object.assign({uid},p)).sort((a,b)=>(b.benar||0)-(a.benar||0)||(b.skor||0)-(a.skor||0)||(a.dur||0)-(b.dur||0)||String(a.nama).localeCompare(String(b.nama)));}
 function av(p){return p.foto?`<img src="${esc(p.foto)}" alt="" referrerpolicy="no-referrer">`:esc((p.nama||"?").trim().charAt(0).toUpperCase());}
 function renderPapan(){if(!T||papan.hidden&&!(T.status==="mulai"))return;if(selesaiSemua()){papan.hidden=true;return;}
   const r=urut(),now=Date.now(),me=U&&U.uid;$("jmlp").textContent=r.length+" peserta";
@@ -296,7 +296,7 @@ function renderPapan(){if(!T||papan.hidden&&!(T.status==="mulai"))return;if(sele
   let tampil=r.slice(0,10);const iMe=r.findIndex(p=>p.uid===me);if(iMe>=10)tampil=tampil.concat([null,r[iMe]]);
   const before={};lb.querySelectorAll("li[data-u]").forEach(li=>before[li.dataset.u]=li.getBoundingClientRect().top);
   lb.innerHTML=tampil.map(p=>{if(!p)return '<li class="gap">⋯</li>';const rk=urutLama[p.uid],dl=deltaUntil[p.uid],ad=dl&&dl.s>now;
-    return `<li data-u="${esc(p.uid)}" class="${p.uid===me?"aku":""}"><span class="rk${rk<=3?" m"+rk:""}">${rk}</span><span class="av">${av(p)}</span><span class="nm">${esc(p.nama)}${p.uid===me?" (Anda)":""}<small>${p.dijawab||0}/${T.soal.length} terjawab${p.selesai?" · selesai":""}</small></span><span class="sk">${p.skor||0}</span><span class="dl ${ad?(dl.d>0?"naik":"turun"):""}">${ad?(dl.d>0?"▲"+dl.d:"▼"+(-dl.d)):""}</span></li>`;}).join("");
+    return `<li data-u="${esc(p.uid)}" class="${p.uid===me?"aku":""}"><span class="rk${rk<=3?" m"+rk:""}">${rk}</span><span class="av">${av(p)}</span><span class="nm">${esc(p.nama)}${p.uid===me?" (Anda)":""}<small>${p.dijawab||0}/${T.soal.length} terjawab${p.selesai?" · selesai":""}</small></span><span class="sk">${p.benar||0}<small> benar</small></span><span class="dl ${ad?(dl.d>0?"naik":"turun"):""}">${ad?(dl.d>0?"▲"+dl.d:"▼"+(-dl.d)):""}</span></li>`;}).join("");
   // Animasi FLIP: baris bergeser halus dari posisi lama ke posisi baru.
   if(!matchMedia("(prefers-reduced-motion: reduce)").matches)lb.querySelectorAll("li[data-u]").forEach(li=>{const b=before[li.dataset.u];if(b===undefined)return;const dy=b-li.getBoundingClientRect().top;if(!dy)return;
     li.style.transition="none";li.style.transform=`translateY(${dy}px)`;requestAnimationFrame(()=>{li.style.transition="transform .6s cubic-bezier(.2,.8,.2,1)";li.style.transform="";});});}
