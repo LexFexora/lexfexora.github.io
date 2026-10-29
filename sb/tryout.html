@@ -190,7 +190,8 @@ header .akun .av{background:#eef2ef;color:#1f2421}header .akun .nm{color:#eef2ef
   .wrap{padding-top:10px;gap:12px}
   header{grid-template-columns:auto minmax(0,1fr) auto;align-items:center;column-gap:10px;padding:8px 10px;border-radius:12px;text-align:left}
   header>.beranda{grid-column:1;grid-row:1;font-size:0;padding:0;width:34px;height:34px;display:grid;place-items:center;border-radius:50%}
-  header>.beranda::before{content:"←";font-size:16px}
+  header>/* Panah SVG (bukan karakter teks) agar benar-benar di tengah lingkaran. */
+.beranda::before{content:"";width:16px;height:16px;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 12H5M11 6l-6 6 6 6'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 12H5M11 6l-6 6 6 6'/%3E%3C/svg%3E") center/contain no-repeat}
   header .brand{grid-column:2;grid-row:1;font-size:15px;gap:8px;justify-content:center;min-width:0}header .brand .emb{width:2.1em;height:2.1em}
   header h1{white-space:nowrap}header .eyebrow{display:none}
   header>.akun{grid-column:3;grid-row:1;margin:0}.akun .nm{display:none}.akun .av{width:32px;height:32px}
