@@ -1031,8 +1031,8 @@ window.__quiz={state};
 <script>
 /* Pencegah salin & tangkapan layar: browser tidak bisa memblokir screenshot sepenuhnya,
    jadi ini hanya mempersulit. */
-// Pemilik (body.bebas) dikecualikan agar bisa screenshot untuk melaporkan kendala.
-(()=>{const bebas=()=>document.body.classList.contains("bebas");const no=e=>{if(bebas())return;const t=e.target;if(t&&t.closest&&t.closest('input,textarea,select,[contenteditable]'))return;e.preventDefault();};
+// Pemilik (body.bebas) dan layar masuk/menunggu izin (html.gate-wait, tanpa soal) dikecualikan agar bisa screenshot.
+(()=>{const bebas=()=>document.body.classList.contains("bebas")||document.documentElement.classList.contains("gate-wait");const no=e=>{if(bebas())return;const t=e.target;if(t&&t.closest&&t.closest('input,textarea,select,[contenteditable]'))return;e.preventDefault();};
   ["contextmenu","copy","cut","dragstart","selectstart"].forEach(k=>document.addEventListener(k,no));
   const tutup=()=>{if(!bebas())document.body.classList.add("tertutup");},buka=()=>document.body.classList.remove("tertutup");
   const kosongkan=()=>{try{navigator.clipboard&&navigator.clipboard.writeText("")}catch(e){}};
