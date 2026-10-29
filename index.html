@@ -307,9 +307,9 @@ html.gate-wait .wrap{display:none}
   <details class="setelan" id="setelan">
     <summary><span class="stl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg> Pengaturan Kuis</span><span class="ringkas" id="ringkas"></span></summary>
     <div class="controls">
-      <label class="ctl-sub" for="sub"><span id="sublbl">Detail Bagian</span><select id="sub"></select></label>
+      <label class="ctl-sub" for="sub"><span id="sublbl">Section Details</span><select id="sub"></select></label>
       <label class="ctl-sub" for="bag" id="bagwrap" hidden><span>Bagian Soal</span><select id="bag"></select></label>
-      <label for="order">Urutan <select id="order"><option value="seq">Berurutan</option><option value="rand">Acak</option></select></label>
+      <label for="order">Order <select id="order"><option value="seq">Berurutan</option><option value="rand">Acak</option></select></label>
       <label for="timer">Timer <select id="timer"><option value="off">Mati</option><option value="cum">Total (54 dtk × soal)</option><option value="cum45">Total (45 dtk × soal)</option><option value="per">Per soal (54 dtk)</option><option value="per45">Per soal (45 dtk)</option></select></label>
       <div class="siaprow" id="siaprow"><button class="btn primary" id="siapbtn" type="button">✓ Simpan Pengaturan</button></div>
     </div>
@@ -557,7 +557,7 @@ function renderTabs(){
 }
 function renderSub(){
   const s=$("sub");
-  $("sublbl").textContent=state.cat==="all"?"Detail Bagian":"Detail Bagian - "+CATS[state.cat].short;
+  $("sublbl").textContent=state.cat==="all"?"Section Details":"Section Details - "+CATS[state.cat].short;
   if(state.cat==="all"){s.innerHTML=`<option value="all">Semua bagian</option>`;s.disabled=true;return;}
   s.disabled=false;
   const c=state.cat;
