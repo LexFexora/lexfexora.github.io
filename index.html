@@ -692,7 +692,9 @@ function hitungNaik(){const el=$("angka");if(!el||matchMedia("(prefers-reduced-m
 function nilaiHTML(ok,n){const min=p=>Math.ceil(p*n/100-1e-9),cap=n?STANDAR.find(([p])=>ok>=min(p)):null;
   return `<p class="predikat ${cap?"lulus":"gagal"}">${cap?"Lulus · "+cap[1]+" · "+cap[0]+"%":"Belum lulus · di bawah Standar Cukup 50%"}</p>`;}
 function bagNext(){if(state.sub==="all"||state.bag==="all"||state.bag==="bonus")return false;const {k,bonus}=bagInfo(QB.filter(q=>inCat(q,state.cat,state.sub)).length);return +state.bag<k?+state.bag+1:bonus?"bonus":false;}
-function siapOK(){return state.cat==="all"||store.siapCat===state.cat;}
+// Pengaturan Kuis wajib disimpan setiap kali halaman dibuka; setelah itu tombol Mulai muncul.
+let siapCat=null;
+function siapOK(){return state.cat==="all"||siapCat===state.cat;}
 function timerActive(){return siapOK()&&state.mulai&&tMode!=="off"&&state.cat!=="all"&&state.list.length&&!state.timeUp&&state.pos<state.list.length;}
 function syncQ(){const id=state.list[state.pos];if(id!==state.qId){state.qId=id;state.qLeft=SEC;}}
 const TB=document.getElementById("timerbox");
@@ -733,7 +735,7 @@ $("sub").onchange=e=>{state.sub=e.target.value==="all"?"all":+e.target.value;sta
 $("order").onchange=e=>{state.order=e.target.value;buildSession(true);render();};
 $("fsexit").onclick=()=>fokus(false);
 $("timer").value=tMode;
-$("siapbtn").onclick=()=>{store.siapCat=state.cat;state.qLeft=SEC;state.qId=null;persist();$("setelan").open=false;render();window.scrollTo({top:Math.max(0,$("card").offsetTop-12),behavior:"smooth"});};
+$("siapbtn").onclick=()=>{siapCat=state.cat;state.mulai=false;state.qLeft=SEC;state.qId=null;persist();$("setelan").open=false;render();window.scrollTo({top:Math.max(0,$("card").offsetTop-12),behavior:"smooth"});};
 $("timer").onchange=e=>{tMode=e.target.value;store.timerMode=tMode;resetTimer();persist();render();};
 document.addEventListener("visibilitychange",()=>{if(document.hidden)persist();});
 
