@@ -234,6 +234,9 @@ html.gate-wait .wrap{display:none}
 .gate p{color:var(--muted);margin:6px 0}
 .gate .who{font-family:var(--f-mono);color:var(--ink);font-size:13px}
 .adm li{gap:6px 10px}
+.adm .admout{margin-left:auto;padding:4px 12px;font-size:12.5px;min-height:0;flex:none}
+.adm>summary>span:not(.dot){white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis;font-size:clamp(11.5px,3.2vw,13px)}
+.wrap:has(#adm:not([hidden])) #sbkeluar{display:none}
 .adm .acts{display:flex;gap:6px;margin-left:auto}
 .adm .acts .btn{padding:4px 10px;font-size:12px;min-height:0}
 .linkrow{display:flex;gap:6px;margin:8px 0 2px;flex-wrap:wrap}
@@ -284,7 +287,7 @@ html.gate-wait .wrap{display:none}
   </header>
 
   <details class="online adm" id="adm" hidden>
-    <summary><span class="dot" aria-hidden="true"></span><span>Access approvals: <strong id="admcount">0</strong> pending · <strong id="admon">0</strong> active</span></summary>
+    <summary><span class="dot" aria-hidden="true"></span><span>Access approvals: <strong id="admcount">0</strong> pending · <strong id="admon">0</strong> active</span><button class="btn keluar admout" type="button" id="adm-logout">Keluar</button></summary>
     <div class="linkrow"><input id="admlink" readonly aria-label="Tautan latihan"><button class="btn copy" type="button" id="admcopy">⧉ Salin tautan</button></div>
     <div id="admbody"></div>
     <h4>Bank soal</h4>
@@ -293,7 +296,6 @@ html.gate-wait .wrap{display:none}
     <p class="note" id="pindahinfo"></p>
     <div class="linkrow"><button class="btn copy" type="button" id="bankdl">⤓ Unduh bank-soal.json (termasuk perpindahan)</button></div>
     <p class="note">Kirim tautan di atas. Orang yang membukanya masuk dengan Google dan muncul di sini. Setujui agar bisa mengerjakan, Tolak atau Cabut untuk menutup aksesnya, Hapus agar ia bisa meminta ulang.</p>
-    <button class="btn copy" type="button" id="adm-logout">Keluar</button>
   </details>
 
 
@@ -780,7 +782,7 @@ window.__quiz={state};
   // Keluar menghapus jawaban sesi (benar/salah di kuis); tanda ✓/✗ di akun tetap tersimpan.
   window.__logout=()=>bOut.onclick();
   bOut.onclick=()=>{window.__keluar=true;try{localStorage.removeItem('tkbcakim-v12');}catch(e){}auth.signOut().then(()=>location.reload());};
-  $('adm-logout').onclick=bOut.onclick;
+  $('adm-logout').onclick=e=>{e.preventDefault();e.stopPropagation();bOut.onclick();};
 
   let started=false,unsub=null,beat=null;let isOwner=false;
   async function loadBank(){
