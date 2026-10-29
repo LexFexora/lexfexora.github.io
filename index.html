@@ -699,7 +699,7 @@ document.addEventListener("toggle",e=>{const k=e.target,c=$("card");if(!k.classL
 function renderCard(){
   const card=$("card");
   if(!state.list.length){card.innerHTML="<p>Tidak ada soal untuk pilihan ini.</p>";return;}
-  if(!siapOK()){card.innerHTML=`<div class="kunci"><span class="ik">🔒</span><b>Atur Quiz Options &amp; Sections dulu</b><p>Pilih detail bagian, urutan, dan timer, lalu tekan Keep it.</p><button class="btn primary" id="bukaset" type="button">Buka Quiz Options &amp; Sections</button></div>`;
+  if(!siapOK()){card.innerHTML=`<div class="kunci"><span class="ik">🔒</span>${state.cat==="all"?"<b>Pilih klaster dulu</b><p>Pilih salah satu klaster di Select Cluster - SKB, atur Quiz Options &amp; Sections, lalu tekan Keep it.</p>":"<b>Atur Quiz Options &amp; Sections dulu</b><p>Pilih detail bagian, urutan, dan timer, lalu tekan Keep it.</p>"}<button class="btn primary" id="bukaset" type="button">Buka Quiz Options &amp; Sections</button></div>`;
     $("bukaset").onclick=()=>{const st=$("setelan");st.open=true;st.scrollIntoView({behavior:"smooth",block:"start"});};return;}
   // Soal baru tampil dan timer baru berjalan setelah pengguna menekan Mulai.
   if(state.cat!=="all"&&!state.mulai&&state.pos<state.list.length){
@@ -766,7 +766,8 @@ function nilaiHTML(ok,n){const min=p=>Math.ceil(p*n/100-1e-9),cap=n?STANDAR.find
 function bagNext(){if(state.sub==="all"||state.bag==="all"||state.bag==="bonus")return false;const {k,bonus}=bagInfo(QB.filter(q=>inCat(q,state.cat,state.sub)).length);return +state.bag<k?+state.bag+1:bonus?"bonus":false;}
 // Quiz Options wajib disimpan setiap kali halaman dibuka; setelah itu tombol Mulai muncul.
 let siapCat=null;
-function siapOK(){return state.cat==="all"||siapCat===state.cat;}
+// Soal baru tampil setelah klaster dipilih dan Keep it ditekan (juga untuk pengguna baru tanpa pilihan tersimpan).
+function siapOK(){return siapCat===state.cat;}
 function timerActive(){return siapOK()&&state.mulai&&tMode!=="off"&&state.cat!=="all"&&state.list.length&&!state.timeUp&&state.pos<state.list.length;}
 function syncQ(){const id=state.list[state.pos];if(id!==state.qId){state.qId=id;state.qLeft=SEC;}}
 const TB=document.getElementById("timerbox");
