@@ -71,6 +71,10 @@ header h1 span{display:block}header h1 .t2{letter-spacing:.1em}
 .chips span.siap{background:var(--accent-soft);border-color:var(--accent);color:var(--ink);animation:cahaya 1.8s ease-in-out infinite}
 .chips span.belum{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
 .chips span.kosong{color:var(--muted)}
+/* Foto profil kecil di chip peserta dan baris room master. */
+.chips span:not(.kosong){display:inline-flex;align-items:center;gap:6px;padding:3px 11px 3px 3px}
+.cav{width:22px;height:22px;border-radius:50%;overflow:hidden;flex:none;display:inline-grid;place-items:center;background:var(--ink);color:var(--surface);font-size:11px;font-weight:700;font-style:normal;vertical-align:middle}
+.cav img{width:100%;height:100%;object-fit:cover;display:block}.master-h .cav{margin:0 6px 0 2px;width:24px;height:24px}
 @keyframes cahaya{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--accent) 0%,transparent)}50%{box-shadow:0 0 14px 2px color-mix(in srgb,var(--accent) 55%,transparent)}}
 @media (prefers-reduced-motion:reduce){.chips span.siap{animation:none;box-shadow:0 0 10px 1px color-mix(in srgb,var(--accent) 45%,transparent)}}
 .btn.besar{font-size:17px;padding:14px 28px;border-radius:12px}.btn.play{font-size:15px;padding:10px 22px}
@@ -332,7 +336,7 @@ function lanjutSemua(){if(!isMaster())return;const i=(T.idx||0)+1;
   if(i>=T.soal.length&&!confirm("Ini soal terakhir. Selesaikan mock exam untuk semua peserta?"))return;
   db.doc("tryout/"+TID).update({idx:i,idxMulai:FV.serverTimestamp()}).catch(e=>alert("Gagal: "+(e.code||e.message)));}
 function masterHTML(){const ps=Object.entries(P).filter(([,p])=>!p.selesai),sg=segar(),boleh=isMaster()||isOwner;
-  return `<div class="master"><div class="master-h"><span class="mk">🎩</span><span>Room master: <b>${esc(namaP(T.master))}</b>${T.master===(U&&U.uid)?" (Anda)":""}</span></div>
+  return `<div class="master"><div class="master-h"><span class="mk">🎩</span><span>Room master: ${P[T.master]?`<i class="cav">${av(P[T.master])}</i>`:""}<b>${esc(namaP(T.master))}</b>${T.master===(U&&U.uid)?" (Anda)":""}</span></div>
   ${boleh&&ps.length>1?`<div class="linkrow"><select id="mpilih" aria-label="Pindahkan room master">${ps.map(([u,p])=>`<option value="${esc(u)}"${u===T.master?" selected":""}>${esc(p.nama)}${sg.includes(u)?"":" (offline)"}</option>`).join("")}</select><button class="btn" id="mpindah" type="button">Jadikan room master</button></div>`:""}
   <p class="muted" style="margin:0;font-size:12.5px">Room master menekan Next untuk semua peserta. ${boleh?"Kewenangan bisa dipindahkan kapan saja; ":""}bila room master keluar atau terputus, kewenangan pindah otomatis.</p></div>`;}
 // Kendali ringkas room master di bawah tombol Next: pindahkan 🎩 dan (khusus pemilik) akhiri mock exam.
@@ -374,7 +378,7 @@ function tautan(){return location.origin+location.pathname+"?t="+TID;}
 // Ruang tunggu: peserta otomatis terdaftar. Setelah pemilik menekan Play, peserta menekan "Saya siap";
 // nama yang siap bercahaya, yang belum siap berwarna merah.
 function lobi(){const ps=Object.entries(P).map(([uid,p])=>Object.assign({uid},p)),cek=T.status==="siap",nSiap=ps.filter(p=>p.siap).length;papan.hidden=false;document.body.dataset.v="lobi";setTimeout(renderPapan,0);
-  const chip=p=>`<span class="${cek?(p.siap?"siap":"belum"):""}">${esc(p.nama)}${U&&p.uid===U.uid?" (Anda)":""}</span>`;
+  const chip=p=>`<span class="${cek?(p.siap?"siap":"belum"):""}"><i class="cav">${av(p)}</i>${esc(p.nama)}${U&&p.uid===U.uid?" (Anda)":""}</span>`;
   main.innerHTML=`<p class="eyebrow" style="margin:0">${cek?"Cek kesiapan":"Ruang tunggu"}</p><h2 class="judul">${esc(T.judul)}</h2>
   <div class="info"><span>${T.soal.length} soal</span><span>${SINK()?`${T.detikSoal||54} detik per soal`:`Waktu ${Math.round(T.durasi/60)} menit`}</span><span>${ps.length} peserta bergabung</span>${cek?`<span>${nSiap} siap · ${ps.length-nSiap} belum</span>`:""}</div>
   <div class="chips">${ps.map(chip).join("")||'<span class="kosong">Belum ada peserta</span>'}</div>
