@@ -378,7 +378,7 @@ body.tertutup #tirai{display:flex}
       <label class="ctl-sub" for="sub"><span id="sublbl">Section Details</span><select id="sub"></select></label>
       <label class="ctl-sub" for="bag" id="bagwrap" hidden><span>Bagian Soal</span><select id="bag"></select></label>
       <label for="order">Order <select id="order"><option value="seq">Sequential</option><option value="rand">Shuffle</option></select></label>
-      <select id="timer" hidden aria-hidden="true"><option value="off"></option><option value="cum"></option><option value="cum45"></option><option value="per"></option><option value="per45"></option></select><label for="tmode">Timer <select id="tmode"><option value="off">Off</option><option value="cum">Total</option><option value="per">Per question</option></select></label><label for="tsec">Duration <select id="tsec"><option value="54">54 sec</option><option value="45">45 sec</option></select></label>
+      <select id="timer" hidden aria-hidden="true"><option value="off"></option><option value="cum"></option><option value="cum45"></option><option value="cum35"></option><option value="cum30"></option><option value="per"></option><option value="per45"></option><option value="per35"></option><option value="per30"></option></select><label for="tmode">Timer <select id="tmode"><option value="off">Off</option><option value="cum">Total</option><option value="per">Per question</option></select></label><label for="tsec">Duration <select id="tsec"><option value="54">54 sec</option><option value="45">45 sec</option><option value="35">35 sec</option><option value="30">30 sec</option></select></label>
       <div class="siaprow" id="siaprow"><button class="btn primary" id="siapbtn" type="button">Keep it</button></div>
     </div>
   </details>
@@ -565,7 +565,7 @@ function save(){if(window.__keluar)return;try{localStorage.setItem(KEY,JSON.stri
 // Daftar Pilih Klaster terbuka saat halaman dibuka dan bisa ditutup kembali.
 const state={klOpen:true,cat:"all",sub:"all",bag:"all",order:"seq",list:[],pos:0,perm:{},ans:{},tLeft:0,timeUp:false,qLeft:0,qId:null,expired:{}};
 // Lama waktu per soal: 54 detik (bawaan) atau 45 detik, dipilih di Quiz Options.
-let SEC=store.timerSec===45?45:54;
+let SEC=[45,35,30].includes(store.timerSec)?store.timerSec:54;
 let tMode=store.timerMode||"off";
 const L="ABCDEF";
 
@@ -815,13 +815,13 @@ $("bag").onchange=e=>{state.bag=bagNum(e.target.value);restore();$("order").valu
 $("sub").onchange=e=>{state.sub=e.target.value==="all"?"all":+e.target.value;state.bag=state.sub==="all"?"all":1;renderBag();restore();$("order").value=state.order;render();};
 $("order").onchange=e=>{state.order=e.target.value;buildSession(true);render();};
 $("fsexit").onclick=()=>fokus(false);
-$("timer").value=tMode+(tMode!=="off"&&SEC===45?"45":"");
+$("timer").value=tMode+(tMode!=="off"&&SEC!==54?String(SEC):"");
 // Timer dipilih lewat dua menu (jenis dan durasi), lalu diteruskan ke #timer yang tersembunyi.
 function sinkronTimer(){$("tmode").value=tMode;$("tsec").value=String(SEC);$("tsec").disabled=tMode==="off";}
-const gantiTimer=()=>{const m=$("tmode").value;$("timer").value=m==="off"?"off":m+($("tsec").value==="45"?"45":"");$("timer").dispatchEvent(new Event("change"));sinkronTimer();};
+const gantiTimer=()=>{const m=$("tmode").value;$("timer").value=m==="off"?"off":m+($("tsec").value==="54"?"":$("tsec").value);$("timer").dispatchEvent(new Event("change"));sinkronTimer();};
 $("tmode").onchange=gantiTimer;$("tsec").onchange=gantiTimer;sinkronTimer();
 $("siapbtn").onclick=()=>{siapCat=state.cat;state.mulai=false;state.qLeft=SEC;state.qId=null;persist();$("setelan").open=false;render();window.scrollTo({top:Math.max(0,$("card").offsetTop-12),behavior:"smooth"});};
-$("timer").onchange=e=>{const v=e.target.value;tMode=v.replace("45","");SEC=v.endsWith("45")?45:54;store.timerMode=tMode;store.timerSec=SEC;resetTimer();persist();render();};
+$("timer").onchange=e=>{const v=e.target.value;tMode=v.replace(/\d+$/,"");SEC=+((v.match(/\d+$/)||[54])[0]);store.timerMode=tMode;store.timerSec=SEC;resetTimer();persist();render();};
 document.addEventListener("visibilitychange",()=>{if(document.hidden)persist();});
 
 (function init(){
