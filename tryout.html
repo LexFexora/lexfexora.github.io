@@ -129,8 +129,6 @@ footer{font-size:12px;color:var(--muted);text-align:center}footer span{white-spa
 /* Pencegah salin & tangkapan layar (deterensi, bukan jaminan) */
 body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 input,textarea,select,[contenteditable]{-webkit-user-select:text;user-select:text}
-#wm{position:fixed;inset:0;pointer-events:none;z-index:2147483646;overflow:hidden;opacity:.07;color:var(--ink,#888);font:600 13px/1 system-ui,sans-serif;display:flex;flex-wrap:wrap;align-content:flex-start;gap:70px 48px;padding:30px;transform:rotate(-22deg) scale(1.5);transform-origin:center}
-#wm[hidden]{display:none}#wm span{white-space:nowrap}
 #tirai{position:fixed;inset:0;z-index:2147483647;display:none;align-items:center;justify-content:center;text-align:center;padding:24px;background:var(--bg,#111);color:var(--muted,#999);font:500 15px/1.5 system-ui,sans-serif}
 body.tertutup #tirai{display:flex}
 @media print{body{display:none!important}}
@@ -178,7 +176,7 @@ if(!TID){gate("Tautan mock exam tidak lengkap","Buka tautan mock exam yang dibag
 
 auth.onAuthStateChanged(u=>{U=u;pMuat=false;aku=null;P={};if(unsubT){unsubT();unsubT=null;}if(unsubP){unsubP();unsubP=null;}
   if(!u){gate("Mock Exam","Masuk dengan akun Google untuk ikut mock exam. Nama akun Anda akan tampil di papan peringkat.",true);return;}
-  isOwner=!!OWNER&&(u.email||"").toLowerCase()===OWNER&&u.emailVerified;window.__wm&&window.__wm(u.email||u.uid);
+  isOwner=!!OWNER&&(u.email||"").toLowerCase()===OWNER&&u.emailVerified;
   unsubT=db.doc("tryout/"+TID).onSnapshot(s=>{if(!s.exists){gate("Mock exam tidak ditemukan","Periksa kembali tautannya.");return;}
       T=s.data({serverTimestamps:"estimate"});T.id=s.id;gabung();render();},
     e=>gate("Mock exam belum dapat dibuka","Muat ulang halaman. ("+(e.code||e.message)+")"));
@@ -328,10 +326,10 @@ function pembahasan(p){const j=(aku&&aku.jawab)||p.jawab||{},n=T.soal.length;let
   <div class="revf"><button class="btn on" type="button" data-f="semua">Semua soal</button><button class="btn" type="button" data-f="salah">Salah &amp; kosong saja</button></div><ol class="rv" id="rv">${it}</ol></details>`;}
 })();
 </script>
-<div id="wm" hidden aria-hidden="true"></div><div id="tirai" aria-hidden="true">Konten disembunyikan. Ketuk atau kembali ke halaman ini untuk melanjutkan.</div>
+<div id="tirai" aria-hidden="true">Konten disembunyikan. Ketuk atau kembali ke halaman ini untuk melanjutkan.</div>
 <script>
 /* Pencegah salin & tangkapan layar: browser tidak bisa memblokir screenshot sepenuhnya,
-   jadi ini mempersulit dan menandai tangkapan dengan watermark akun. */
+   jadi ini hanya mempersulit. */
 (()=>{const no=e=>{const t=e.target;if(t&&t.closest&&t.closest('input,textarea,select,[contenteditable]'))return;e.preventDefault();};
   ["contextmenu","copy","cut","dragstart","selectstart"].forEach(k=>document.addEventListener(k,no));
   const tutup=()=>document.body.classList.add("tertutup"),buka=()=>document.body.classList.remove("tertutup");
@@ -344,9 +342,6 @@ function pembahasan(p){const j=(aku&&aku.jawab)||p.jawab||{},n=T.soal.length;let
   window.addEventListener("blur",tutup);window.addEventListener("focus",buka);
   document.addEventListener("visibilitychange",()=>document.hidden?tutup():buka());
   document.addEventListener("pointerdown",buka,true);
-  window.__wm=t=>{const w=document.getElementById("wm");if(!t){w.hidden=true;w.innerHTML="";return;}
-    const s=String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-    w.innerHTML=Array(160).fill("<span>"+s+"</span>").join("");w.hidden=false;};
 })();
 </script>
 </body>

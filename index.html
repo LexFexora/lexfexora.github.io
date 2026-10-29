@@ -282,8 +282,6 @@ html.gate-wait .wrap{display:none}
 /* Pencegah salin & tangkapan layar (deterensi, bukan jaminan) */
 body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 input,textarea,select,[contenteditable]{-webkit-user-select:text;user-select:text}
-#wm{position:fixed;inset:0;pointer-events:none;z-index:2147483646;overflow:hidden;opacity:.07;color:var(--ink,#888);font:600 13px/1 system-ui,sans-serif;display:flex;flex-wrap:wrap;align-content:flex-start;gap:70px 48px;padding:30px;transform:rotate(-22deg) scale(1.5);transform-origin:center}
-#wm[hidden]{display:none}#wm span{white-space:nowrap}
 #tirai{position:fixed;inset:0;z-index:2147483647;display:none;align-items:center;justify-content:center;text-align:center;padding:24px;background:var(--bg,#111);color:var(--muted,#999);font:500 15px/1.5 system-ui,sans-serif}
 body.tertutup #tirai{display:flex}
 @media print{body{display:none!important}}
@@ -861,7 +859,6 @@ window.__quiz={state};
   auth.onAuthStateChanged(async u=>{
     if(unsub){unsub();unsub=null;}if(beat){clearInterval(beat);beat=null;}
     if(!u){show('Latihan ini membutuhkan izin','Masuk dengan akun Google. Permintaan akses Anda akan dikirim ke pemilik untuk disetujui.',null,true,false);return;}
-    window.__wm&&window.__wm(u.email||u.uid);
     const who='Masuk sebagai '+(u.displayName?u.displayName+' · ':'')+u.email;
     if(OWNER&&(u.email||'').toLowerCase()===OWNER&&u.emailVerified){isOwner=true;window.__isOwner=true;
       window.__pindah=(id,list)=>db.doc('bank/pindah').set({m:{[id]:list}},{merge:true}).then(()=>pinfo());
@@ -952,10 +949,10 @@ window.__quiz={state};
 })();
 
 </script>
-<div id="wm" hidden aria-hidden="true"></div><div id="tirai" aria-hidden="true">Konten disembunyikan. Ketuk atau kembali ke halaman ini untuk melanjutkan.</div>
+<div id="tirai" aria-hidden="true">Konten disembunyikan. Ketuk atau kembali ke halaman ini untuk melanjutkan.</div>
 <script>
 /* Pencegah salin & tangkapan layar: browser tidak bisa memblokir screenshot sepenuhnya,
-   jadi ini mempersulit dan menandai tangkapan dengan watermark akun. */
+   jadi ini hanya mempersulit. */
 (()=>{const no=e=>{const t=e.target;if(t&&t.closest&&t.closest('input,textarea,select,[contenteditable]'))return;e.preventDefault();};
   ["contextmenu","copy","cut","dragstart","selectstart"].forEach(k=>document.addEventListener(k,no));
   const tutup=()=>document.body.classList.add("tertutup"),buka=()=>document.body.classList.remove("tertutup");
@@ -968,9 +965,6 @@ window.__quiz={state};
   window.addEventListener("blur",tutup);window.addEventListener("focus",buka);
   document.addEventListener("visibilitychange",()=>document.hidden?tutup():buka());
   document.addEventListener("pointerdown",buka,true);
-  window.__wm=t=>{const w=document.getElementById("wm");if(!t){w.hidden=true;w.innerHTML="";return;}
-    const s=String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-    w.innerHTML=Array(160).fill("<span>"+s+"</span>").join("");w.hidden=false;};
 })();
 </script>
 </body>
