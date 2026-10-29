@@ -96,6 +96,11 @@ select{font:inherit;font-size:14px;padding:7px 10px;border-radius:8px;border:1px
 @keyframes perlu{0%,100%{box-shadow:0 0 0 0 rgb(220 80 70 / 0)}50%{box-shadow:0 0 14px 2px rgb(220 80 70 / .28)}}
 @media (prefers-reduced-motion:reduce){.setelan.perlu{animation:none;box-shadow:0 0 10px 1px rgb(220 80 70 / .25)}}
 .blmmulai #mapbox{display:none!important}
+/* Tombol Save dan Start: arang gelap serasi dengan logo, bukan hijau. */
+#siapbtn,#mulaibtn{background:linear-gradient(180deg,#2e2e2e,#121212);border:1px solid #3a3a3a;color:#f2f2f2;box-shadow:0 4px 12px rgb(0 0 0 / .18)}
+#siapbtn:hover,#mulaibtn:hover{background:linear-gradient(180deg,#3a3a3a,#1b1b1b)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #siapbtn,:root:not([data-theme="light"]) #mulaibtn{background:linear-gradient(180deg,#3b413e,#252a27);border-color:#4d5450;color:#eef1ee;box-shadow:0 4px 14px rgb(0 0 0 / .35)}}
+:root[data-theme="dark"] #siapbtn,:root[data-theme="dark"] #mulaibtn{background:linear-gradient(180deg,#3b413e,#252a27);border-color:#4d5450;color:#eef1ee;box-shadow:0 4px 14px rgb(0 0 0 / .35)}
 .mulaikartu .info{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}.mulaikartu .info span{font-size:12.5px;border:1px solid var(--line);border-radius:999px;padding:3px 10px;color:var(--muted)}
 .mulaikartu h2{font-family:var(--f-display);font-weight:650;font-size:21px;line-height:1.3;margin:0;max-width:30ch}
 .mulaikartu .btn.mulai{font-size:17px;padding:13px 34px;border-radius:12px;margin-top:4px}
@@ -311,7 +316,7 @@ html.gate-wait .wrap{display:none}
       <label class="ctl-sub" for="bag" id="bagwrap" hidden><span>Bagian Soal</span><select id="bag"></select></label>
       <label for="order">Order <select id="order"><option value="seq">Sequential</option><option value="rand">Shuffle</option></select></label>
       <select id="timer" hidden aria-hidden="true"><option value="off"></option><option value="cum"></option><option value="cum45"></option><option value="per"></option><option value="per45"></option></select><label for="tmode">Timer <select id="tmode"><option value="off">Off</option><option value="cum">Total</option><option value="per">Per question</option></select></label><label for="tsec">Duration <select id="tsec"><option value="54">54 sec</option><option value="45">45 sec</option></select></label>
-      <div class="siaprow" id="siaprow"><button class="btn primary" id="siapbtn" type="button">✓ Save</button></div>
+      <div class="siaprow" id="siaprow"><button class="btn primary" id="siapbtn" type="button">Keep it</button></div>
     </div>
   </details>
   <details class="setelan tocard" id="tocard" hidden>
@@ -636,7 +641,7 @@ document.addEventListener("toggle",e=>{const k=e.target,c=$("card");if(!k.classL
 function renderCard(){
   const card=$("card");
   if(!state.list.length){card.innerHTML="<p>Tidak ada soal untuk pilihan ini.</p>";return;}
-  if(!siapOK()){card.innerHTML=`<div class="kunci"><span class="ik">🔒</span><b>Atur Quiz Options dulu</b><p>Pilih detail bagian, urutan, dan timer, lalu tekan Save.</p><button class="btn primary" id="bukaset" type="button">Buka Quiz Options</button></div>`;
+  if(!siapOK()){card.innerHTML=`<div class="kunci"><span class="ik">🔒</span><b>Atur Quiz Options dulu</b><p>Pilih detail bagian, urutan, dan timer, lalu tekan Keep it.</p><button class="btn primary" id="bukaset" type="button">Buka Quiz Options</button></div>`;
     $("bukaset").onclick=()=>{const st=$("setelan");st.open=true;st.scrollIntoView({behavior:"smooth",block:"start"});};return;}
   // Soal baru tampil dan timer baru berjalan setelah pengguna menekan Mulai.
   if(state.cat!=="all"&&!state.mulai&&state.pos<state.list.length){
