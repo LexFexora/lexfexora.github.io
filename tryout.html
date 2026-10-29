@@ -212,7 +212,7 @@ body.tertutup #tirai{display:flex}
   <div class="arena">
   <aside class="kiri">
   <section class="card papan" id="papan" hidden>
-    <div class="papan-h"><b title="Skor = jumlah jawaban benar">Peringkat langsung</b><span class="muted" id="jmlp"></span></div>
+    <div class="papan-h"><b title="Skor = jumlah jawaban benar">Peringkat langsung</b></div>
     <ol class="lb" id="lb"></ol>
   </section>
   </aside>
@@ -432,7 +432,7 @@ function tandaSoal(p){if(!SINK()||T.status!=="mulai")return "";const q=T.soal[Ma
   const [c,t,l]=j!==undefined?(j===q.a?["ok","✓","benar"]:["no","✕","salah"]):soalSisaMs()>0?["tg","…","belum menjawab"]:["ks","–","tidak menjawab"];
   return `<i class="tq ${c}" title="Soal ${(T.idx||0)+1}: ${l}" aria-label="Soal ${(T.idx||0)+1}: ${l}">${t}</i>`;}
 function renderPapan(){if(!T||papan.hidden&&!(T.status==="mulai"))return;if(selesaiSemua()){papan.hidden=true;return;}
-  const r=urut(),now=Date.now(),me=U&&U.uid;$("jmlp").textContent=r.length+" peserta";
+  const r=urut(),now=Date.now(),me=U&&U.uid;
   r.forEach((p,i)=>{const lama=urutLama[p.uid];if(lama!==undefined&&lama!==i+1)deltaUntil[p.uid]={d:lama-(i+1),s:now+4000};urutLama[p.uid]=i+1;});
   let tampil=r.slice(0,10);const iMe=r.findIndex(p=>p.uid===me);if(iMe>=10)tampil=tampil.concat([null,r[iMe]]);
   const before={};lb.querySelectorAll("li[data-u]").forEach(li=>before[li.dataset.u]=li.getBoundingClientRect().top);
