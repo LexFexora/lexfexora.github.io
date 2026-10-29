@@ -351,7 +351,7 @@ body.tertutup #tirai{display:flex}
     <summary><span class="dot" aria-hidden="true"></span><span>Access approvals: <strong id="admcount">0</strong> pending · <strong id="admon">0</strong> active</span><button class="btn keluar admout" type="button" id="adm-logout">Keluar</button></summary>
     <div class="linkrow"><input id="admlink" readonly aria-label="Tautan latihan"><button class="btn copy" type="button" id="admcopy">⧉ Salin tautan</button></div>
     <div id="admbody"></div>
-    <div class="linkrow" id="izinsqlrow"><button class="btn copy" type="button" id="izinsql">⧉ Salin daftar izin (SQL untuk Supabase)</button></div>
+    <div class="linkrow" id="izinsqlrow" hidden><button class="btn copy" type="button" id="izinsql">⧉ Salin daftar izin (SQL untuk Supabase)</button></div>
     <h4>Bank soal</h4>
     <p class="note" id="bankinfo">Memeriksa…</p>
     <div class="linkrow"><input type="file" id="bankfile" accept=".json,application/json"><button class="btn copy" type="button" id="bankup">Unggah bank soal</button></div>
@@ -825,10 +825,9 @@ document.addEventListener("visibilitychange",()=>{if(document.hidden)persist();}
 window.__quiz={state};
 }
 </script>
-<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3/dist/umd/supabase.js"></script>
+<script src="sb/supabase-config.js"></script>
+<script src="sb/fb-shim.js"></script>
 <script>
 // Gerbang izin berbasis Firebase: login Google, permintaan akses di izin/<uid>, bank soal di bank/* hanya untuk akun yang disetujui.
 (function(){
