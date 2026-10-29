@@ -49,6 +49,9 @@ header h1 span{display:block}header h1 .t2{letter-spacing:.1em}
 .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--surface)}
 .btn.bahaya{border-color:var(--bad);color:var(--bad)}
 .btn:disabled{opacity:.5;cursor:default}
+#next{background:linear-gradient(180deg,#2e2e2e,#121212);border-color:#3a3a3a;color:#f2f2f2}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #next{background:linear-gradient(180deg,#3b413e,#252a27);border-color:#4d5450;color:#eef1ee}}
+:root[data-theme="dark"] #next{background:linear-gradient(180deg,#3b413e,#252a27);border-color:#4d5450;color:#eef1ee}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .judul{font-family:var(--f-display);font-size:24px;font-weight:650;margin:0;line-height:1.25}
 .info{display:flex;gap:8px;flex-wrap:wrap}.info span{font-size:12.5px;border:1px solid var(--line);border-radius:999px;padding:3px 10px;color:var(--muted)}
