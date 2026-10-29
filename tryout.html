@@ -103,18 +103,31 @@ header h1 span{display:block}header h1 .t2{letter-spacing:.1em}
 .arena,.kiri,.tengah,.kanan{display:contents}
 @media(max-width:1023px){body[data-v=lobi] #papan{display:none!important}}
 #main{order:1}#bahas{order:2}#papan{order:3}#chat{order:4}#alat{order:5}footer{order:6}
+/* Pita header gelap (sedikit lebih terang dari logo hitam), logo dan nama di tengah, Beranda/timer/akun di kanan. */
+header{background:linear-gradient(180deg,#323a35,#272d29);border:1px solid #3d4741;border-radius:14px;padding:12px 16px;display:grid;grid-template-columns:1fr;justify-items:center;text-align:center;row-gap:6px;color:#eef2ef}
+header .brand{justify-content:center}header h1,header h1 .t2{color:#f3f5f2}header .eyebrow{color:#c9b98f;margin:0}
+header .brand .emb{filter:drop-shadow(0 0 1px rgb(255 255 255 / .55)) drop-shadow(0 4px 10px rgb(0 0 0 / .35))!important}
+header .beranda{background:transparent;color:#eef2ef;border-color:#56625a}header .beranda:hover{border-color:#c9b98f}
+header .timer{background:#1f2421;border-color:#56625a;color:#eef2ef}header .timer.warn{border-color:#f08b83;color:#f08b83}
+header .akun .av{background:#eef2ef;color:#1f2421}header .akun .nm{color:#eef2ef}
 .akun{display:flex;align-items:center;gap:8px;margin-top:10px}.akun .av{width:30px;height:30px;border-radius:50%;background:var(--ink);color:var(--surface);display:grid;place-items:center;font-size:13px;font-weight:700;overflow:hidden;flex:none}
 .akun .akun{margin:0}.akun .akun[hidden]{display:none}.beranda{text-decoration:none;font-size:13px;padding:6px 12px;white-space:nowrap}
 .akun .av img{width:100%;height:100%;object-fit:cover}.akun .nm{font-weight:600;font-size:14px;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 @media(min-width:1024px){
   .wrap{max-width:1680px;height:100vh;height:100dvh;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:12px;padding:14px 20px 10px;overflow:hidden}
-  header{display:grid;grid-template-columns:auto 1fr auto;align-items:center;column-gap:16px}header .brand{font-size:24px}header .eyebrow{margin:0;align-self:end;padding-bottom:6px}
+  header{grid-template-columns:1fr auto 1fr;align-items:center;column-gap:16px;row-gap:2px;padding:10px 18px}header .brand{font-size:24px;grid-column:2;grid-row:1}header .eyebrow{grid-column:2;grid-row:2;font-size:11px}
+  header>.akun{grid-column:3;grid-row:1/3;justify-self:end;margin:0}
   .akun{margin:0;gap:10px}.akun .timer{font-size:18px;padding:6px 14px}.akun .av{width:38px;height:38px}
-  .arena{display:grid;grid-template-columns:minmax(290px,1.15fr) minmax(0,2.3fr) minmax(280px,1.1fr);gap:16px;min-height:0}
+  .arena{display:grid;grid-template-columns:minmax(270px,1fr) minmax(0,3fr) minmax(240px,.85fr);gap:16px;min-height:0}
   .kiri,.tengah,.kanan{display:flex;flex-direction:column;gap:12px;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
   .kiri>.papan,.kanan>.chat{flex:1;min-height:0}.kiri>.papan[hidden],.kanan>.chat[hidden]{display:none!important}
   .papan .lb{overflow-y:auto;min-height:0}.kanan>.chat{display:flex;flex-direction:column}.kanan .chatlist{flex:1;max-height:none;min-height:0}
-  .arena .lb li{grid-template-columns:22px 28px minmax(0,1fr) auto 12px;gap:7px;padding:7px 8px}.arena .lb .sk{font-size:16px}.arena .lb .sk small{display:none}.arena .lb .dl{font-size:10px}
+  .papan-h{white-space:nowrap;gap:8px}.arena .lb li{grid-template-columns:22px 28px minmax(0,1fr) auto 12px;gap:7px;padding:7px 8px}.arena .lb .sk{font-size:16px}.arena .lb .sk small{display:none}.arena .lb .dl{font-size:10px}
+  /* Soal dan Explanation berdampingan di kolom tengah agar pembahasan terlihat tanpa gulir. */
+  .tengah{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);align-content:start;align-items:start}
+  .tengah:has(>#bahas[hidden]){grid-template-columns:minmax(0,1fr)}.tengah>#alat{grid-column:1/-1}
+  .tengah>#bahas{padding:16px 18px;gap:10px}.tengah>#bahas .blok p{font-size:13.5px;line-height:1.6}
+  #main .qtext{font-size:18px;line-height:1.45}#main .opt{padding:8px 12px}#main .opts{gap:6px}
   #main .ujian-h .timer{display:none}#main{padding:18px 22px}
   footer{font-size:11px}
 }
@@ -369,7 +382,7 @@ function unduhCSV(){const r=urut(),n=T.soal.length,q=v=>'"'+String(v).replace(/"
 
 function ujian(){papan.hidden=false;$("toptimer").hidden=false;if(!aku){main.innerHTML='<p class="muted">Menyiapkan…</p>';return;}
   const n=T.soal.length,sk=SINK();if(sk)pos=T.idx||0;pos=Math.min(Math.max(0,pos),n-1);try{sessionStorage.setItem("to-pos-"+TID,pos);}catch(e){}const q=T.soal[pos],perm=acak(q.o.length,(sk?"":U.uid)+q.id),pil=(aku.jawab||{})[q.id],habis=sk&&soalSisaMs()<=0;
-  main.innerHTML=`<div class="ujian-h"><span class="qno">Soal ${pos+1} / ${n} · terjawab ${aku.dijawab||0}</span>${sk?`<span class="timer${soalSisaMs()<=10000?" warn":""}">⏱ <span id="sisaq">${fmt(soalSisaMs())}</span></span>`:`<span class="timer">⏱ <span id="sisa">${fmt(sisaMs())}</span></span>`}</div>
+  main.innerHTML=`<div class="ujian-h"><span class="qno">Soal ${pos+1} / ${n}</span>${sk?`<span class="timer${soalSisaMs()<=10000?" warn":""}">⏱ <span id="sisaq">${fmt(soalSisaMs())}</span></span>`:`<span class="timer">⏱ <span id="sisa">${fmt(sisaMs())}</span></span>`}</div>
   <p class="qtext">${esc(q.q)}</p><ol class="opts">${perm.map((oi,pi)=>{const jw=pil!==undefined||habis,cls=jw?(oi===q.a?" benar":oi===pil?" salah":" redup"):"";
     return `<li><button type="button" class="opt${cls}" data-o="${oi}"${jw?" disabled":""}><span class="l">${L[pi]}</span><span class="t">${esc(q.o[oi])}${jw&&oi===q.a?' <b class="mk">✓</b>':jw&&oi===pil?' <b class="mk">❌</b>':""}</span></button></li>`;}).join("")}</ol>
   ${sk?`<div class="nav sk">${isMaster()?`<button class="btn primary" id="next" type="button"${habis||semuaJawab(q)?"":" disabled"}>👑 ${pos<n-1?"Next → (untuk semua)":"Selesai untuk semua"}</button><p class="muted tunggum">${habis||semuaJawab(q)?"Anda room master. Tekan Next untuk lanjut ke soal berikutnya.":"Next aktif saat waktu habis atau semua peserta sudah menjawab."}</p>`:`<p class="muted tunggum">${habis?"Waktu habis. ":""}Menunggu room master <b id="mnama">${esc(namaP(T.master))}</b> menekan Next.</p>`}</div>`:`<div class="nav"><button class="btn" id="prev" type="button"${pos===0?" disabled":""}>← Previous</button>${pos<n-1?'<button class="btn primary" id="next" type="button">Next →</button>':'<button class="btn primary" id="kumpul" type="button">Selesai &amp; kumpulkan</button>'}</div>`}
