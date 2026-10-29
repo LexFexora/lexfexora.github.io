@@ -306,7 +306,7 @@ html.gate-wait .wrap{display:none}
       <label class="ctl-sub" for="sub"><span id="sublbl">Detail Bagian</span><select id="sub"></select></label>
       <label class="ctl-sub" for="bag" id="bagwrap" hidden><span>Bagian Soal</span><select id="bag"></select></label>
       <label for="order">Urutan <select id="order"><option value="seq">Berurutan</option><option value="rand">Acak</option></select></label>
-      <label for="timer">Timer <select id="timer"><option value="off">Mati</option><option value="cum">Total (54 dtk × soal)</option><option value="per">Per soal (54 dtk)</option></select></label>
+      <label for="timer">Timer <select id="timer"><option value="off">Mati</option><option value="cum">Total (54 dtk × soal)</option><option value="cum45">Total (45 dtk × soal)</option><option value="per">Per soal (54 dtk)</option><option value="per45">Per soal (45 dtk)</option></select></label>
       <div class="siaprow" id="siaprow"><button class="btn primary" id="siapbtn" type="button">✓ Simpan Pengaturan</button></div>
     </div>
   </details>
@@ -489,7 +489,8 @@ try{store=JSON.parse(localStorage.getItem(KEY)||"{}")||{};}catch(e){store={};}
 function save(){if(window.__keluar)return;try{localStorage.setItem(KEY,JSON.stringify(store));}catch(e){}}
 
 const state={cat:"all",sub:"all",bag:"all",order:"seq",list:[],pos:0,perm:{},ans:{},tLeft:0,timeUp:false,qLeft:0,qId:null,expired:{}};
-const SEC=54;
+// Lama waktu per soal: 54 detik (bawaan) atau 45 detik, dipilih di Pengaturan Kuis.
+let SEC=store.timerSec===45?45:54;
 let tMode=store.timerMode||"off";
 const L="ABCDEF";
 
@@ -637,7 +638,7 @@ function renderCard(){
     const n=state.list.length,sub=state.sub==="all"?CATS[state.cat].short:state.sub+". "+SUBS[state.cat][state.sub-1],bg=state.sub==="all"||state.bag==="all"?"":state.bag==="bonus"?"Soal Bonus":"Bagian "+state.bag;
     const tm={off:"Tanpa timer",cum:"Timer total "+fmt(SEC*n),per:"Timer "+SEC+" detik per soal"}[tMode]||"";
     card.innerHTML=`<div class="kunci mulaikartu"><div class="eyebrow">${esc(bg||"Siap mengerjakan")}</div><h2>${esc(sub)}</h2><div class="info"><span>${n} soal</span><span>${state.order==="rand"?"Acak":"Berurutan"}</span><span>${tm}</span></div><p>${tMode==="off"?"Soal pertama tampil setelah Anda menekan Mulai.":"Soal dan timer baru berjalan setelah Anda menekan Mulai."}</p><button class="btn primary mulai" id="mulaibtn" type="button">▶ Mulai</button></div>`;
-    $("mulaibtn").onclick=()=>{state.mulai=true;state.qLeft=SEC;state.qId=null;lastTick=Date.now();persist();render();window.scrollTo({top:Math.max(0,$("card").offsetTop-12)});};return;}
+    $("mulaibtn").onclick=()=>{if(tMode==="per"){const i=state.list.findIndex(id=>state.ans[id]===undefined&&!state.expired[id]);if(i>=0)state.pos=i;}state.mulai=true;state.qLeft=SEC;state.qId=null;lastTick=Date.now();persist();render();window.scrollTo({top:Math.max(0,$("card").offsetTop-12)});};return;}
   if(state.pos>=state.list.length){
     const {ok,bad,n}=tally();
     const nilai=n?Math.round(ok*100/n):0;
@@ -708,7 +709,7 @@ function renderTimer(){
   b.hidden=false;
   if(tMode==="cum"){b.className="timer"+(state.tLeft<=60||state.timeUp?" warn":"");b.innerHTML=`⏱ ${state.timeUp?"Waktu habis":fmt(state.tLeft)} <small>dari ${fmt(SEC*state.list.length)} · ${state.list.length} soal × ${SEC} detik</small>`;}
   else{const id=state.list[state.pos];const idle=state.pos>=state.list.length||state.ans[id]!==undefined||state.expired[id];
-    b.className="timer"+(!idle&&state.qLeft<=10?" warn":"");b.innerHTML=`⏱ ${idle?"--:--":fmt(state.qLeft)} <small>${SEC} detik per soal</small>`;}
+    b.className="timer"+(!idle&&state.qLeft<=10?" warn":"");b.innerHTML=`⏱ ${state.expired[id]&&state.ans[id]===undefined?"Waktu habis":idle?"--:--":fmt(state.qLeft)} <small>${SEC} detik per soal</small>`;}
 }
 let lastTick=Date.now(),tickN=0;
 setInterval(()=>{
@@ -737,9 +738,9 @@ $("bag").onchange=e=>{state.bag=bagNum(e.target.value);restore();$("order").valu
 $("sub").onchange=e=>{state.sub=e.target.value==="all"?"all":+e.target.value;state.bag=state.sub==="all"?"all":1;renderBag();restore();$("order").value=state.order;render();};
 $("order").onchange=e=>{state.order=e.target.value;buildSession(true);render();};
 $("fsexit").onclick=()=>fokus(false);
-$("timer").value=tMode;
+$("timer").value=tMode+(tMode!=="off"&&SEC===45?"45":"");
 $("siapbtn").onclick=()=>{siapCat=state.cat;state.mulai=false;state.qLeft=SEC;state.qId=null;persist();$("setelan").open=false;render();window.scrollTo({top:Math.max(0,$("card").offsetTop-12),behavior:"smooth"});};
-$("timer").onchange=e=>{tMode=e.target.value;store.timerMode=tMode;resetTimer();persist();render();};
+$("timer").onchange=e=>{const v=e.target.value;tMode=v.replace("45","");SEC=v.endsWith("45")?45:54;store.timerMode=tMode;store.timerSec=SEC;resetTimer();persist();render();};
 document.addEventListener("visibilitychange",()=>{if(document.hidden)persist();});
 
 (function init(){
