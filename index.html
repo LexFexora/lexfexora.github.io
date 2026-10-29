@@ -284,7 +284,7 @@ html.gate-wait .wrap{display:none}
   </header>
 
   <details class="online adm" id="adm" hidden>
-    <summary><span class="dot" aria-hidden="true"></span><span>Persetujuan akses: <strong id="admcount">0</strong> menunggu · <strong id="admon">0</strong> aktif</span></summary>
+    <summary><span class="dot" aria-hidden="true"></span><span>Access approvals: <strong id="admcount">0</strong> pending · <strong id="admon">0</strong> active</span></summary>
     <div class="linkrow"><input id="admlink" readonly aria-label="Tautan latihan"><button class="btn copy" type="button" id="admcopy">⧉ Salin tautan</button></div>
     <div id="admbody"></div>
     <h4>Bank soal</h4>
@@ -488,7 +488,8 @@ let store={};
 try{store=JSON.parse(localStorage.getItem(KEY)||"{}")||{};}catch(e){store={};}
 function save(){if(window.__keluar)return;try{localStorage.setItem(KEY,JSON.stringify(store));}catch(e){}}
 
-const state={cat:"all",sub:"all",bag:"all",order:"seq",list:[],pos:0,perm:{},ans:{},tLeft:0,timeUp:false,qLeft:0,qId:null,expired:{}};
+// Daftar Pilih Klaster terbuka saat halaman dibuka dan bisa ditutup kembali.
+const state={klOpen:true,cat:"all",sub:"all",bag:"all",order:"seq",list:[],pos:0,perm:{},ans:{},tLeft:0,timeUp:false,qLeft:0,qId:null,expired:{}};
 // Lama waktu per soal: 54 detik (bawaan) atau 45 detik, dipilih di Pengaturan Kuis.
 let SEC=store.timerSec===45?45:54;
 let tMode=store.timerMode||"off";
