@@ -315,20 +315,20 @@ html.gate-wait .wrap{display:none}
     </div>
   </details>
   <details class="setelan tocard" id="tocard" hidden>
-    <summary><span class="stl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4.5a2.5 2.5 0 0 0 2.6 3.4M17 6h2.5a2.5 2.5 0 0 1-2.6 3.4"/></svg> Try Out Bersama</span></summary>
+    <summary><span class="stl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4.5a2.5 2.5 0 0 0 2.6 3.4M17 6h2.5a2.5 2.5 0 0 1-2.6 3.4"/></svg> Mock Exam</span></summary>
     <div class="toisi">
-      <p class="note" id="toket">Try out yang sedang dibuka. Ketuk Ikut untuk bergabung.</p>
+      <p class="note" id="toket">Mock exam yang sedang dibuka. Ketuk Ikut untuk bergabung.</p>
       <div id="tolist" class="tolist"></div>
       <div id="toown" hidden>
-    <details class="tobox" id="tobox"><summary class="btn copy">＋ Buat Try Out baru</summary>
+    <details class="tobox" id="tobox"><summary class="btn copy">＋ Buat Mock Exam baru</summary>
       <div class="toform">
-        <label>Judul<input id="tojudul" value="Try Out Seleksi Kemampuan Bidang"></label>
+        <label>Judul<input id="tojudul" value="Mock Exam Seleksi Kemampuan Bidang"></label>
         <div class="torow"><label>Jumlah soal<select id="tojml"><option value="50">50 soal</option><option value="75">75 soal</option><option value="100" selected>100 soal</option></select></label>
         <label>Waktu (menit)<input id="tomenit" type="number" min="5" max="300" value="90"></label></div>
         <p class="note" style="margin:4px 0 0">Pilih satu atau beberapa sub-materi. Soal diracik otomatis: jatah tiap sub-materi sebanding jumlah soalnya, seimbang antara dasar hukum, istilah &amp; prosedur, dan pendapat ahli, tanpa soal kembar, dengan urutan sub-materi diselang-seling.</p>
         <div class="tosub" id="tosub"></div>
         <p class="note" id="toinfo"></p>
-        <div class="linkrow"><button class="btn primary" type="button" id="tobuat">Buat Try Out</button></div>
+        <div class="linkrow"><button class="btn primary" type="button" id="tobuat">Buat Mock Exam</button></div>
       </div>
     </details>
       </div>
@@ -809,16 +809,16 @@ window.__quiz={state};
     window.__sinkronBenar=m=>ref.set({b:m},{merge:true}).catch(()=>{});
     window.__simpanCoba=id=>ref.set({c:{[id]:1}},{merge:true}).catch(()=>{});
     window.__sinkronCoba=m=>ref.set({c:m},{merge:true}).catch(()=>{});}
-  // Kartu Try Out Bersama di halaman utama: semua pengguna melihat try out yang dibuka; pemilik juga bisa membuat dan menghapus.
-  function tryoutKartu(){$('tocard').hidden=false;if(isOwner){$('toown').hidden=false;$('toket').textContent='Try out terbaru Anda. Bagikan tautannya, lalu buka untuk menekan Play.';}
+  // Kartu Mock Exam di halaman utama: semua pengguna melihat mock exam yang dibuka; pemilik juga bisa membuat dan menghapus.
+  function tryoutKartu(){$('tocard').hidden=false;if(isOwner){$('toown').hidden=false;$('toket').textContent='Mock exam terbaru Anda. Bagikan tautannya, lalu buka untuk menekan Play.';}
     const ST={menunggu:'ruang tunggu',siap:'cek kesiapan',mulai:'sedang berjalan',selesai:'selesai'};
     db.collection('tryout').orderBy('dibuat','desc').limit(15).onSnapshot(qs=>{const rows=[];qs.forEach(d=>{const t=d.data(),u=location.origin+location.pathname.replace(/[^/]*$/,'')+'tryout.html?t='+d.id;
         if(!isOwner&&t.status==='selesai')return;
-        rows.push(`<div class="tr"><b>${esc(t.judul||'Try Out')}</b><span class="muted">${(t.soal||[]).length} soal · ${ST[t.status]||t.status}</span><a class="btn copy${isOwner?'':' primary'}" href="${u}" target="_blank" rel="noopener">${isOwner?'Buka':'Ikut'}</a>${isOwner?`<button class="btn copy" type="button" data-salin="${u}">Salin tautan</button><button class="btn copy" type="button" data-hapus="${d.id}">Hapus</button>`:''}</div>`);});
-      $('tolist').innerHTML=rows.join('')||`<p class="note">${isOwner?'Belum ada try out.':'Belum ada try out yang dibuka.'}</p>`;
+        rows.push(`<div class="tr"><b>${esc(t.judul||'Mock Exam')}</b><span class="muted">${(t.soal||[]).length} soal · ${ST[t.status]||t.status}</span><a class="btn copy${isOwner?'':' primary'}" href="${u}" target="_blank" rel="noopener">${isOwner?'Buka':'Ikut'}</a>${isOwner?`<button class="btn copy" type="button" data-salin="${u}">Salin tautan</button><button class="btn copy" type="button" data-hapus="${d.id}">Hapus</button>`:''}</div>`);});
+      $('tolist').innerHTML=rows.join('')||`<p class="note">${isOwner?'Belum ada mock exam.':'Belum ada mock exam yang dibuka.'}</p>`;
       $('tolist').querySelectorAll('[data-salin]').forEach(b=>b.onclick=()=>navigator.clipboard&&navigator.clipboard.writeText(b.dataset.salin).then(()=>{b.textContent='✓ Tersalin';}));
-      $('tolist').querySelectorAll('[data-hapus]').forEach(b=>b.onclick=()=>{if(confirm('Hapus try out ini? Tautannya tidak bisa dibuka lagi.'))db.doc('tryout/'+b.dataset.hapus).delete();});},
-      ()=>{$('tolist').innerHTML='<p class="note">Daftar try out belum bisa dimuat.</p>';});}
+      $('tolist').querySelectorAll('[data-hapus]').forEach(b=>b.onclick=()=>{if(confirm('Hapus mock exam ini? Tautannya tidak bisa dibuka lagi.'))db.doc('tryout/'+b.dataset.hapus).delete();});},
+      ()=>{$('tolist').innerHTML='<p class="note">Daftar mock exam belum bisa dimuat.</p>';});}
   async function start(){
     if(started)return;started=true;
     show('Memuat bank soal…','Sekali muat pertama bisa beberapa detik.');
@@ -853,7 +853,7 @@ window.__quiz={state};
     $('pindahinfo').textContent=`Soal yang Anda ubah lewat pojok kanan atas setiap soal: ${n} dipindahkan (⇄ Pindahkan), ${ne} diedit (✎ Edit). Tombolnya hanya terlihat oleh Anda, sedangkan perubahannya berlaku untuk semua pengguna dan tetap berlaku setelah bank diunggah ulang.`;}).catch(()=>{});}
   function admin(){
     pinfo();
-    // Try Out bersama: pemilik memilih sub-materi dan jumlah soal; peserta ikut lewat tryout.html?t=<id>.
+    // Mock Exam bersama: pemilik memilih sub-materi dan jumlah soal; peserta ikut lewat tryout.html?t=<id>.
     const toPool=()=>{const sel=new Set([...document.querySelectorAll('#tosub input[data-cs]:checked')].map(i=>i.dataset.cs));
       return QB.filter(q=>q.mappings.some(m=>sel.has(m.c+'|'+m.s)));};
     const toInfo=()=>{const n=toPool().length,j=+$('tojml').value;$('toinfo').textContent=n?`${n} soal tersedia dari sub-materi terpilih${n<j?`, kurang dari ${j}, jadi semua ${n} soal dipakai`:''}.`:'Belum ada sub-materi dipilih.';};
@@ -883,9 +883,9 @@ window.__quiz={state};
       const j=+$('tojml').value,menit=Math.max(5,Math.min(300,+$('tomenit').value||90));
       const soal=racik(pool,j).map(q=>({id:q.id,q:q.q,o:q.o.slice(),a:q.a,p:q.p||'',d:q.d||''}));
       $('tobuat').disabled=true;
-      try{const r=await db.collection('tryout').add({judul:($('tojudul').value||'Try Out').trim().slice(0,120),soal,durasi:menit*60,status:'menunggu',mulai:null,dibuat:FV.serverTimestamp()});
+      try{const r=await db.collection('tryout').add({judul:($('tojudul').value||'Mock Exam').trim().slice(0,120),soal,durasi:menit*60,status:'menunggu',mulai:null,dibuat:FV.serverTimestamp()});
         $('tobox').open=false;$('toinfo').textContent='';window.open('tryout.html?t='+r.id,'_blank');}
-      catch(e){alert('Gagal membuat try out: '+(e.code||e.message));}
+      catch(e){alert('Gagal membuat mock exam: '+(e.code||e.message));}
       $('tobuat').disabled=false;};
     $('bankdl').onclick=()=>{if(!QB.length){alert('Bank soal belum dimuat.');return;}
       const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(QB,null,1)],{type:'application/json'}));a.download='bank-soal.json';document.body.appendChild(a);a.click();a.remove();};
