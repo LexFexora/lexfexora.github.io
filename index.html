@@ -897,7 +897,7 @@ window.__quiz={state};
         if(nb||nc)await ref.set({b:x.b||{},c:x.c||{}},{merge:true});
         tandai();alert(nb||nc?`Riwayat dipulihkan: ${nc} soal pernah dijawab, ${nb} dijawab benar. Halaman dimuat ulang.`:'Tidak ada riwayat di versi lama untuk akun ini.');if(nb||nc)location.reload();
       }).catch(e=>{b.disabled=false;b.textContent='Pulihkan riwayat lama';const c=(e&&e.code)||'';if(c==='auth/popup-closed-by-user'||c==='auth/cancelled-popup-request')return;
-        if(/popup-blocked|operation-not-supported|web-storage-unsupported/.test(c)){alert('Browser ini memblokir jendela login Google (biasanya terjadi bila situs dibuka dari WhatsApp/Instagram). Buka lexfexora.github.io langsung di Safari atau Chrome, masuk, lalu ketuk "Pulihkan riwayat lama" lagi.');return;}
+        if(/popup-blocked|operation-not-supported|web-storage-unsupported/.test(c)){alert('Browser memblokir jendela login Google. Di iPhone: buka Pengaturan > Safari, matikan "Blokir Pop-up", lalu muat ulang halaman dan ketuk "Pulihkan riwayat lama" lagi. Bila situs dibuka dari WhatsApp/Instagram, buka dulu di Safari atau Chrome.');return;}
         alert('Gagal memulihkan: '+((e&&(e.message||e.code))||e));});};}
   // Kartu Mock Exam di halaman utama: semua pengguna melihat mock exam yang dibuka; pemilik juga bisa membuat dan menghapus.
   const jdl=j=>!j||j==='Mock Exam Seleksi Kemampuan Bidang'?'Mock Exam':j;
