@@ -1,6 +1,13 @@
--- CAT Lex Fexora: daftar email yang sudah disetujui di Firebase (pra-izin).
+-- CAT Lex Fexora: pembaruan 1 untuk Supabase. Jalankan sekali di SQL Editor (aman dijalankan ulang).
+-- (a) Kolom col jadi kolom biasa yang diisi trigger, agar filter realtime bisa membacanya.
+-- (b) Daftar email yang sudah disetujui di Firebase (pra-izin).
 -- Saat akun dengan email ini pertama kali masuk ke Supabase, permintaan izinnya otomatis berstatus "disetujui".
--- Jalankan sekali di SQL Editor, lalu tempel perintah INSERT dari tombol "Salin daftar izin (SQL)" di situs utama.
+-- Setelah ini, tempel perintah INSERT dari tombol "Salin daftar izin (SQL)" di situs utama.
+
+do $$ begin
+  alter table public.docs alter column col drop expression;
+exception when others then null; end $$;
+update public.docs set col = regexp_replace(path, '/[^/]+$', '') where col is distinct from regexp_replace(path, '/[^/]+$', '');
 
 create table if not exists public.izin_pra (email text primary key);
 alter table public.izin_pra enable row level security;
@@ -17,6 +24,7 @@ begin
   new.data := coalesce((select jsonb_object_agg(k, case when v = '"__now__"'::jsonb then now_ms else v end)
                         from jsonb_each(new.data) as e(k, v)), '{}'::jsonb);
   new.updated_at := now();
+  new.col := regexp_replace(new.path, '/[^/]+$', '');
   -- Pengguna lama (email ada di izin_pra) langsung disetujui saat pertama kali meminta izin.
   if tg_op = 'INSERT' and new.path = 'izin/' || public.cat_uid() and new.data ->> 'status' = 'menunggu'
      and public.cat_pra(auth.jwt() ->> 'email') then

@@ -47,17 +47,26 @@
 
   // ---------- Realtime: satu kanal per pendengar ----------
   let seq=0;const live=new Set();
-  function listen(filter,onRow,onDel,onReady){
+  // Cadangan bila realtime tidak mengirim apa pun: cek ringan (path + updated_at) berkala, muat ulang hanya bila berubah.
+  const DBG=/[?&]sbdebug=1/.test(location.search),stat=[];
+  function dbg(){if(!DBG)return;let el=document.getElementById('sbdbg');if(!el){el=document.createElement('pre');el.id='sbdbg';
+      el.style.cssText='position:fixed;left:6px;bottom:6px;z-index:99999;background:#000c;color:#0f0;font:11px monospace;padding:6px;margin:0;max-width:96vw;white-space:pre-wrap;pointer-events:none';(document.body||document.documentElement).appendChild(el);}
+    el.textContent=stat.map(x=>x.f+' | '+x.s+' | rt '+x.rt+' | poll '+x.pl+' | '+(x.e||'')).join('\n');}
+  function listen(filter,onRow,onDel,onReady,check){
+    const st={f:filter,s:'…',rt:0,pl:0,e:''};stat.push(st);dbg();
     const ch=sb.channel('l'+(++seq)+'-'+Math.random().toString(36).slice(2,8));
-    ch.on('postgres_changes',{event:'*',schema:'public',table:'docs',filter},p=>{
+    ch.on('postgres_changes',{event:'*',schema:'public',table:'docs',filter},p=>{st.rt++;dbg();
         if(p.eventType==='DELETE'){if(p.old&&p.old.path)onDel(p.old.path);return;}
-        const r=p.new;if(!r||!r.path)return;if(p.errors&&p.errors.length)onRow(r.path,null,true);else onRow(r.path,{path:r.path,data:r.data},false);})
+        const r=p.new;if(!r||!r.path)return;if(p.errors&&p.errors.length)onRow(r.path,null,true);else onRow(r.path,{path:r.path,data:r.data,updated_at:r.updated_at},false);})
       .on('postgres_changes',{event:'DELETE',schema:'public',table:'docs'},p=>{if(p.old&&p.old.path)onDel(p.old.path);})
-      .subscribe(s=>{if(s==='SUBSCRIBED')onReady();});
+      .subscribe((s,e)=>{st.s=s;if(e)st.e=String(e.message||e);dbg();if(s==='SUBSCRIBED')onReady();});
+    let tm=null,off=false;const tick=async()=>{if(off)return;
+      if(!document.hidden)try{if(await check()){st.pl++;dbg();}}catch(e){}
+      tm=setTimeout(tick,st.rt?15000:3000);};tm=setTimeout(tick,3000);
     const L={ch,touch:onRow};live.add(L);
-    return ()=>{live.delete(L);sb.removeChannel(ch);};}
+    return ()=>{off=true;clearTimeout(tm);live.delete(L);sb.removeChannel(ch);const i=stat.indexOf(st);if(i>=0)stat.splice(i,1);dbg();};}
   // Setelah menulis, segarkan pendengar yang memantau dokumen itu tanpa menunggu realtime.
-  async function local(path){if(!live.size)return;const r=await sb.from('docs').select('path,data').eq('path',path).maybeSingle();
+  async function local(path){if(!live.size)return;const r=await sb.from('docs').select('path,data,updated_at').eq('path',path).maybeSingle();
     if(r.error)return;live.forEach(L=>L.touch(path,r.data||null,false,true));}
 
   // ---------- Referensi dokumen ----------
@@ -67,16 +76,18 @@
     get parent(){return new Query(this.path.replace(/\/[^/]+$/,''));}
     async get(o){const src=o&&o.source;
       if(src==='cache'){const v=await cGet(this.path).catch(()=>null);if(!v)throw Object.assign(new Error('not in cache'),{code:'unavailable'});return new DocSnap(this.path,v);}
-      const r=await sb.from('docs').select('path,data').eq('path',this.path).maybeSingle();const row=chk(r);
+      const r=await sb.from('docs').select('path,data,updated_at').eq('path',this.path).maybeSingle();const row=chk(r);
       if(row)cPut(this.path,row);return new DocSnap(this.path,row);}
     async set(d,o){chk(await sb.rpc('doc_set',{p_path:this.path,p_data:encTop(d),p_merge:!!(o&&o.merge)}));local(this.path);}
     async update(d){chk(await sb.rpc('doc_update',{p_path:this.path,p_patch:encTop(d)}));local(this.path);}
     async delete(){chk(await sb.from('docs').delete().eq('path',this.path));live.forEach(L=>L.touch(this.path,null,false,true));}
     collection(c){return new Query(this.path+'/'+c);}
-    onSnapshot(a,b){const next=typeof a==='function'?a:a.next,fail=typeof a==='function'?b:a.error;let off=false,last='\u0000';
-      const emit=row=>{if(off)return;const s=JSON.stringify(row&&row.data);if(s===last)return;last=s;next(new DocSnap(this.path,row));};
-      const load=()=>sb.from('docs').select('path,data').eq('path',this.path).maybeSingle().then(r=>{if(r.error)throw err(r.error);emit(r.data);}).catch(e=>{if(!off&&fail)fail(err(e));});
-      const stop=listen('path=eq.'+this.path,(p,row,partial)=>{if(p!==this.path)return;if(partial)load();else emit(row);},p=>{if(p===this.path)emit(null);},load);
+    onSnapshot(a,b){const next=typeof a==='function'?a:a.next,fail=typeof a==='function'?b:a.error;let off=false,last='\u0000',ver;
+      const emit=row=>{if(off)return;ver=row?row.updated_at:null;const s=JSON.stringify(row&&row.data);if(s===last)return;last=s;next(new DocSnap(this.path,row));};
+      const load=()=>sb.from('docs').select('path,data,updated_at').eq('path',this.path).maybeSingle().then(r=>{if(r.error)throw err(r.error);emit(r.data);}).catch(e=>{if(!off&&fail)fail(err(e));});
+      const check=async()=>{const r=await sb.from('docs').select('updated_at').eq('path',this.path).maybeSingle();if(r.error)return false;
+        const v=r.data?r.data.updated_at:null;if(v===ver)return false;await load();return true;};
+      const stop=listen('path=eq.'+this.path,(p,row,partial)=>{if(p!==this.path)return;if(partial)load();else emit(row);},p=>{if(p===this.path)emit(null);},load,check);
       return ()=>{off=true;stop();};}
   }
   // ---------- Koleksi dan kueri (orderBy, limit) ----------
@@ -91,18 +102,22 @@
     _sort(rows){const o=this._o;if(o.length)rows.sort((x,y)=>{const a=dec(x.data),b=dec(y.data);for(const [f,desc] of o){const c=cmp(a[f],b[f]);if(c)return desc?-c:c;}return x.path<y.path?-1:x.path>y.path?1:0;});
       else rows.sort((x,y)=>x.path<y.path?-1:1);
       return this._l?rows.slice(0,this._l):rows;}
-    async _fetch(){let q=sb.from('docs').select('path,data').eq('col',this.col);
+    _q(cols){let q=sb.from('docs').select(cols).eq('col',this.col);
       for(const [f,desc] of this._o)q=q.order('data->'+f,{ascending:!desc,nullsFirst:!desc});
-      if(this._l)q=q.limit(this._l);return this._sort(chk(await q)||[]);}
+      return this._l?q.limit(this._l):q;}
+    async _fetch(){return this._sort(chk(await this._q('path,data,updated_at'))||[]);}
     async get(){return new QuerySnap(await this._fetch());}
     onSnapshot(a,b){const next=typeof a==='function'?a:a.next,fail=typeof a==='function'?b:a.error;let off=false,m=new Map(),last,tm=null;
       const emit=()=>{if(off)return;const rows=this._sort(Array.from(m.values()));const s=JSON.stringify(rows);if(s===last)return;last=s;next(new QuerySnap(rows));};
       const load=()=>this._fetch().then(rows=>{m=new Map(rows.map(r=>[r.path,r]));emit();}).catch(e=>{if(!off&&fail)fail(err(e));});
       const later=()=>{clearTimeout(tm);tm=setTimeout(load,150);};
       const mine=p=>p.slice(0,p.lastIndexOf('/'))===this.col;
+      const sig=rows=>rows.map(r=>r.path+'@'+r.updated_at).sort().join('|');
+      const check=async()=>{const r=await this._q('path,updated_at');if(r.error)return false;
+        if(sig(r.data||[])===sig(this._sort(Array.from(m.values()))))return false;await load();return true;};
       const stop=listen('col=eq.'+this.col,(p,row,partial)=>{if(!mine(p))return;if(partial){later();return;}
           if(row)m.set(p,row);else m.delete(p);if(!row&&this._l)later();else emit();},
-        p=>{if(!mine(p)||!m.has(p))return;m.delete(p);if(this._l)later();else emit();},load);
+        p=>{if(!mine(p)||!m.has(p))return;m.delete(p);if(this._l)later();else emit();},load,check);
       return ()=>{off=true;clearTimeout(tm);stop();};}
   }
 

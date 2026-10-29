@@ -6,7 +6,7 @@
 
 create table if not exists public.docs (
   path text primary key check (path ~ '^[A-Za-z0-9_-]+(/[A-Za-z0-9_-]+)*$'),
-  col  text generated always as (regexp_replace(path, '/[^/]+$', '')) stored,
+  col  text,  -- diisi trigger cat_before_write (kolom biasa agar bisa dipakai filter realtime)
   data jsonb not null default '{}'::jsonb,
   updated_at timestamptz not null default now()
 );
@@ -63,6 +63,7 @@ begin
   new.data := coalesce((select jsonb_object_agg(k, case when v = '"__now__"'::jsonb then now_ms else v end)
                         from jsonb_each(new.data) as e(k, v)), '{}'::jsonb);
   new.updated_at := now();
+  new.col := regexp_replace(new.path, '/[^/]+$', '');
   if tg_op = 'UPDATE' and not public.cat_is_owner() then
     if new.path ~ '^izin/[^/]+$'
        and (new.data - 'terakhir' - 'posisi') is distinct from (old.data - 'terakhir' - 'posisi') then
