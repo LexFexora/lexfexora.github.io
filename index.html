@@ -882,15 +882,21 @@ window.__quiz={state};
     $('imporx').onclick=tandai;
     // Modul Firebase dimuat lebih dulu agar popup Google terbuka langsung saat tombol diklik (tidak diblokir browser).
     const V='https://www.gstatic.com/firebasejs/10.12.5/',mods=Promise.all([import(V+'firebase-app.js'),import(V+'firebase-auth.js'),import(V+'firebase-firestore.js')]);mods.catch(()=>{});
-    $('imporgo').onclick=async()=>{const b=$('imporgo');b.disabled=true;b.textContent='Memulihkan…';
-      try{const [{initializeApp,getApps},A,F]=await mods;
-        const app=getApps().find(a=>a.name==='lama')||initializeApp(L,'lama'),fa=A.getAuth(app),pv=new A.GoogleAuthProvider();pv.setCustomParameters({login_hint:u.email||'',prompt:'select_account'});
-        const r=await A.signInWithPopup(fa,pv);if((r.user.email||'').toLowerCase()!==(u.email||'').toLowerCase())throw new Error('Pilih akun Google yang sama: '+u.email);
+    // Popup Google harus dibuka langsung di dalam klik (tanpa await sebelumnya), kalau tidak iPhone/Safari memblokirnya.
+    let M=null;mods.then(m=>{M=m;}).catch(()=>{});
+    $('imporgo').onclick=()=>{const b=$('imporgo');if(!M){alert('Sedang menyiapkan, coba ketuk lagi dalam beberapa detik.');return;}
+      const [{initializeApp,getApps},A,F]=M;let pop;
+      try{const app=getApps().find(a=>a.name==='lama')||initializeApp(L,'lama'),fa=A.getAuth(app),pv=new A.GoogleAuthProvider();pv.setCustomParameters({login_hint:u.email||'',prompt:'select_account'});
+        pop=A.signInWithPopup(fa,pv).then(r=>({r,app,fa}));}catch(e){pop=Promise.reject(e);}
+      b.disabled=true;b.textContent='Memulihkan…';
+      pop.then(async({r,app,fa})=>{if((r.user.email||'').toLowerCase()!==(u.email||'').toLowerCase())throw new Error('Pilih akun Google yang sama: '+u.email);
         const d=await F.getDoc(F.doc(F.getFirestore(app),'progres/'+r.user.uid));const x=d.exists()?d.data():{};A.signOut(fa).catch(()=>{});
         const nb=Object.keys(x.b||{}).length,nc=Object.keys(x.c||{}).length;
         if(nb||nc)await ref.set({b:x.b||{},c:x.c||{}},{merge:true});
         tandai();alert(nb||nc?`Riwayat dipulihkan: ${nc} soal pernah dijawab, ${nb} dijawab benar. Halaman dimuat ulang.`:'Tidak ada riwayat di versi lama untuk akun ini.');if(nb||nc)location.reload();
-      }catch(e){b.disabled=false;b.textContent='Pulihkan riwayat lama';if(e&&e.code==='auth/popup-closed-by-user')return;alert('Gagal memulihkan: '+((e&&(e.message||e.code))||e));}};}
+      }).catch(e=>{b.disabled=false;b.textContent='Pulihkan riwayat lama';const c=(e&&e.code)||'';if(c==='auth/popup-closed-by-user'||c==='auth/cancelled-popup-request')return;
+        if(/popup-blocked|operation-not-supported|web-storage-unsupported/.test(c)){alert('Browser ini memblokir jendela login Google (biasanya terjadi bila situs dibuka dari WhatsApp/Instagram). Buka lexfexora.github.io langsung di Safari atau Chrome, masuk, lalu ketuk "Pulihkan riwayat lama" lagi.');return;}
+        alert('Gagal memulihkan: '+((e&&(e.message||e.code))||e));});};}
   // Kartu Mock Exam di halaman utama: semua pengguna melihat mock exam yang dibuka; pemilik juga bisa membuat dan menghapus.
   const jdl=j=>!j||j==='Mock Exam Seleksi Kemampuan Bidang'?'Mock Exam':j;
   function tryoutKartu(){$('tocard').hidden=false;if(isOwner){$('toown').hidden=false;$('toket').hidden=true;}
