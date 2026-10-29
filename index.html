@@ -642,7 +642,7 @@ function renderCard(){
   if(state.cat!=="all"&&!state.mulai&&state.pos<state.list.length){
     const n=state.list.length,sub=state.sub==="all"?CATS[state.cat].short:state.sub+". "+SUBS[state.cat][state.sub-1],bg=state.sub==="all"||state.bag==="all"?"":state.bag==="bonus"?"Soal Bonus":"Bagian "+state.bag;
     const tm={off:"No timer",cum:"Total timer "+fmt(SEC*n),per:"Timer "+SEC+" sec per question"}[tMode]||"";
-    card.innerHTML=`<div class="kunci mulaikartu"><div class="eyebrow">${esc(bg||"Siap mengerjakan")}</div><h2>${esc(sub)}</h2><div class="info"><span>${n} soal</span><span>${state.order==="rand"?"Shuffle":"Sequential"}</span><span>${tm}</span></div><p>${tMode==="off"?"Soal pertama tampil setelah Anda menekan Mulai.":"Soal dan timer baru berjalan setelah Anda menekan Mulai."}</p><button class="btn primary mulai" id="mulaibtn" type="button">▶ Mulai</button></div>`;
+    card.innerHTML=`<div class="kunci mulaikartu"><div class="eyebrow">${esc(bg||"Ready to begin")}</div><h2>${esc(sub)}</h2><div class="info"><span>${n} questions</span><span>${state.order==="rand"?"Shuffle":"Sequential"}</span><span>${tm}</span></div><p>${tMode==="off"?"The first question appears once you press Start.":"Questions and the timer begin once you press Start."}</p><button class="btn primary mulai" id="mulaibtn" type="button">▶ Start</button></div>`;
     $("mulaibtn").onclick=()=>{if(tMode==="per"){const i=state.list.findIndex(id=>state.ans[id]===undefined&&!state.expired[id]);if(i>=0)state.pos=i;}state.mulai=true;state.qLeft=SEC;state.qId=null;lastTick=Date.now();persist();render();window.scrollTo({top:Math.max(0,$("card").offsetTop-12)});};return;}
   if(state.pos>=state.list.length){
     const {ok,bad,n}=tally();
