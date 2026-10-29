@@ -551,7 +551,7 @@ function renderTabs(){
   t.innerHTML=`<button class="tab pilih" type="button" id="pilih" aria-expanded="${!!state.klOpen}"${sel?` style="--kc:var(--k${state.cat})"`:""}><span class="ki ki4">${KOMPAS}</span><span class="kt"><b>Pilih Klaster - Seleksi Kemampuan Bidang</b>${sel?`<span class="sel">${esc(CATS[state.cat].short)}</span>`:`<small>Ketuk untuk memilih klaster</small>`}</span></button>`+
     (state.klOpen?Object.keys(CATS).map(n=>`<button class="tab kl" role="tab" type="button" data-k="${n}" aria-selected="${state.cat===+n}" style="--kc:var(--k${n})"><span class="ki">${ik(n)}</span><span class="kt"><b>${esc(CATS[n].short)}</b><small>${esc((KLIK[n]||[])[1]||"")}</small></span></button>`).join(""):"");
   $("pilih").onclick=()=>{state.klOpen=!state.klOpen;renderTabs();};
-  t.querySelectorAll(".tab[data-k]").forEach(b=>b.onclick=()=>{state.klOpen=false;selectCat(+b.dataset.k,"all");});
+  t.querySelectorAll(".tab[data-k]").forEach(b=>b.onclick=()=>{selectCat(+b.dataset.k,"all");});
 }
 function renderSub(){
   const s=$("sub");
