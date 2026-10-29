@@ -617,7 +617,7 @@ function moveQ(id,from,c,s){
   }).catch(e=>{$("mvok").disabled=false;$("mvmsg").textContent="Gagal menyimpan: "+(e.code||e.message);});
 }
 // Pembahasan dan sumber dibungkus "🕯️ Keterangan": di HP tertutup sampai diketuk, di layar lebar langsung terbuka.
-function ketHTML(q){return `<details class="ket"${matchMedia("(min-width:720px)").matches?" open":""}><summary>🕯️ Keterangan</summary><div class="explain"><div><h3>💡 Pembahasan:</h3><p>${esc(q.p)}</p></div><div class="dasar"><h3>📌 Sumber:</h3><p>${esc(q.d)}</p></div></div></details>`;}
+function ketHTML(q){return `<details class="ket"${matchMedia("(min-width:720px)").matches?" open":""}><summary>🕯️ Explanation</summary><div class="explain"><div><h3>💡 Pembahasan:</h3><p>${esc(q.p)}</p></div><div class="dasar"><h3>📌 Sumber:</h3><p>${esc(q.d)}</p></div></div></details>`;}
 // Mode layar penuh: hanya soal, pilihan, timer, dan tombol navigasi.
 function fokus(on){document.documentElement.classList.toggle("fokus",on);
   try{if(on&&document.documentElement.requestFullscreen&&!document.fullscreenElement)document.documentElement.requestFullscreen().catch(()=>{});
