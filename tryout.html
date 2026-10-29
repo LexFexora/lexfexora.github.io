@@ -179,6 +179,22 @@ header .akun .av{background:#eef2ef;color:#1f2421}header .akun .nm{color:#eef2ef
 .kiri,.tengah,.kanan,.chatlist,.lb{scrollbar-color:color-mix(in srgb,var(--ink) 18%,transparent) transparent}
 .chatlist li.aku p{background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 40%,var(--line))}
 .chatform{display:flex;gap:8px}.chatform input{flex:1;min-width:0;font:inherit;font-size:14px;padding:9px 12px;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--ink)}.lb .crown{margin-right:4px}.nav.sk{flex-direction:column;align-items:center;gap:6px}.mini{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:center}.mini select{font:inherit;font-size:12.5px;padding:5px 8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);max-width:200px}.nav.sk .tunggun{margin:0;font-size:12px;width:100%;text-align:center}
+.opt .mk.x{color:var(--bad);font-weight:700}
+/* HP: header satu baris ringkas, kartu soal lebih padat, kendali room master rapi. */
+@media(max-width:1023px){
+  .wrap{padding-top:10px;gap:12px}
+  header{grid-template-columns:auto minmax(0,1fr) auto;align-items:center;column-gap:10px;padding:8px 10px;border-radius:12px;text-align:left}
+  header>.beranda{grid-column:1;grid-row:1;font-size:0;padding:0;width:34px;height:34px;display:grid;place-items:center;border-radius:50%}
+  header>.beranda::before{content:"←";font-size:16px}
+  header .brand{grid-column:2;grid-row:1;font-size:15px;gap:8px;justify-content:center;min-width:0}header .brand .emb{width:2.1em;height:2.1em}
+  header h1{white-space:nowrap}header .eyebrow{display:none}
+  header>.akun{grid-column:3;grid-row:1;margin:0}.akun .nm{display:none}.akun .av{width:32px;height:32px}
+  #main{padding:16px 14px;gap:12px}#main .qtext{font-size:17px;line-height:1.45}
+  #main .opts{gap:7px}#main .opt{padding:9px 11px;font-size:14.5px;gap:9px;grid-template-columns:26px 1fr}#main .opt .l{width:24px;height:24px;font-size:12px}
+  .timer.jam{font-size:13px;padding:3px 11px 3px 5px}.jam .cincin{width:16px;height:16px}
+  .nav.sk .btn#next{min-width:0;width:100%}
+  .nav.sk .mini{width:100%;display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:6px}.nav.sk .mini select{min-width:0;max-width:none;font-size:13px;padding:6px 8px}
+}
 .btn.kecil,.nav.sk .mini .btn{font-size:12.5px;padding:5px 10px;min-width:0}
 .lb .tq{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;font-style:normal;font-size:11px;font-weight:700;margin-left:6px;vertical-align:1px;border:1px solid}
 .lb .tq.ok{color:var(--ok);background:var(--ok-soft);border-color:var(--ok)}.lb .tq.no{color:var(--bad);background:var(--bad-soft);border-color:var(--bad)}
@@ -450,7 +466,7 @@ function ujian(){papan.hidden=false;if(!aku){main.innerHTML='<p class="muted">Me
   const n=T.soal.length,sk=SINK();if(sk)pos=T.idx||0;pos=Math.min(Math.max(0,pos),n-1);try{sessionStorage.setItem("to-pos-"+TID,pos);}catch(e){}const q=T.soal[pos],perm=acak(q.o.length,(sk?"":U.uid)+q.id),pil=(aku.jawab||{})[q.id],habis=sk&&soalSisaMs()<=0;
   main.innerHTML=`<div class="ujian-h"><span class="qno">Soal ${pos+1} / ${n}</span>${sk?jamHTML("sisaq",soalSisaMs(),(T.detikSoal||54)*1000,10000):jamHTML("sisa",sisaMs(),T.durasi*1000,60000)}</div>
   <p class="qtext">${esc(q.q)}</p><ol class="opts">${perm.map((oi,pi)=>{const jw=pil!==undefined||habis,cls=jw?(oi===q.a?" benar":oi===pil?" salah":" redup"):"";
-    return `<li><button type="button" class="opt${cls}" data-o="${oi}"${jw?" disabled":""}><span class="l">${L[pi]}</span><span class="t">${esc(q.o[oi])}${jw&&oi===q.a?' <b class="mk">✓</b>':jw&&oi===pil?' <b class="mk">❌</b>':""}</span></button></li>`;}).join("")}</ol>
+    return `<li><button type="button" class="opt${cls}" data-o="${oi}"${jw?" disabled":""}><span class="l">${L[pi]}</span><span class="t">${esc(q.o[oi])}${jw&&oi===q.a?' <b class="mk">✓</b>':jw&&oi===pil?' <b class="mk x">✕</b>':""}</span></button></li>`;}).join("")}</ol>
   ${sk?`<div class="nav sk">${isMaster()?`<button class="btn primary" id="next" type="button"${habis||semuaJawab(q)?"":" disabled"}>${pos<n-1?"Next":"Selesai"}</button>${habis||semuaJawab(q)?"":`<p class="muted tunggun">Menunggu ${belumJawab(q)} peserta menjawab atau waktu habis</p>`}${miniMaster()}`:`<p class="muted tunggum">${habis?"Waktu habis. ":""}Menunggu room master <b id="mnama">${esc(namaP(T.master))}</b> menekan Next.</p>`}</div>`:`<div class="nav"><button class="btn" id="prev" type="button"${pos===0?" disabled":""}>← Previous</button>${pos<n-1?'<button class="btn primary" id="next" type="button">Next →</button>':'<button class="btn primary" id="kumpul" type="button">Selesai &amp; kumpulkan</button>'}</div>`}
 `;
   // Peta soal dan tombol kumpul di kartu terpisah di bawah peringkat & pembahasan.
