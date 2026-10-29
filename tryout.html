@@ -82,6 +82,20 @@ header h1 span{display:block}header h1 .t2{letter-spacing:.1em}
 .papan-h{display:flex;justify-content:space-between;align-items:baseline}
 .lb{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;position:relative}
 .lb li{display:grid;grid-template-columns:34px 30px 1fr auto 44px;gap:10px;align-items:center;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--surface);will-change:transform}
+.opt.benar{border-color:var(--ok);background:var(--ok-soft)}.opt.benar .l{background:var(--ok);color:var(--surface);border-color:var(--ok)}
+.opt.salah{border-color:var(--bad);background:var(--bad-soft)}.opt.salah .l{background:var(--bad);color:var(--surface);border-color:var(--bad)}
+.opt.redup{opacity:.6}.opt:disabled{cursor:default}.opt:disabled:hover{border-color:inherit}.opt .mk{font-weight:600;margin-left:4px}
+.bawah{display:grid;grid-template-columns:1fr;gap:16px;align-items:start}.bawah:not(:has(>:not([hidden]))){display:none}
+.bawah .bahas{order:-1}
+@media(min-width:720px){.bawah:has(>#papan:not([hidden])):has(>#bahas:not([hidden])){grid-template-columns:1fr 1fr}.bawah .bahas{order:0}}
+.bawah .lb li{grid-template-columns:26px 28px 1fr auto 30px;gap:8px;padding:7px 9px}
+.bahas{gap:12px}.bahas-h{display:flex;align-items:center;gap:8px;font-weight:600}.bahas-h>span:first-child{font-size:18px}
+.bahas .vonis{margin-left:auto;font-size:13px;font-weight:600;padding:2px 10px;border-radius:999px;border:1px solid}
+.bahas .vonis.ok{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 50%,transparent);background:var(--ok-soft)}
+.bahas .vonis.no{color:var(--bad);border-color:color-mix(in srgb,var(--bad) 50%,transparent);background:var(--bad-soft)}
+.bahas .kosong{margin:0;font-size:14px}.bahas .kunci-j{margin:0;font-size:14px}
+.bahas .blok{border-top:1px dashed var(--line);padding-top:10px}.bahas h3{font-family:var(--f-display);font-size:14.5px;font-weight:650;margin:0 0 4px;color:var(--brass)}
+.bahas .blok p{margin:0;font-size:14.5px;line-height:1.65;white-space:pre-line}
 .lb li.aku{border-color:var(--accent);background:var(--accent-soft)}
 .lb .rk{font-family:var(--f-display);font-weight:650;font-size:18px;text-align:center}
 .lb .av{width:30px;height:30px;border-radius:50%;background:var(--ink);color:var(--surface);display:grid;place-items:center;font-size:13px;font-weight:700;overflow:hidden}.lb .av img{width:100%;height:100%;object-fit:cover}
@@ -141,10 +155,14 @@ body.tertutup #tirai{display:flex}
     <div class="eyebrow">Latihan · Seleksi Kemampuan Bidang · Calon Hakim Peradilan Agama</div>
   </header>
   <section class="card" id="main"><p class="muted">Memuat…</p></section>
+  <div class="bawah">
   <section class="card papan" id="papan" hidden>
     <div class="papan-h"><b>Peringkat langsung</b><span class="muted" id="jmlp"></span></div>
     <ol class="lb" id="lb"></ol>
   </section>
+  <section class="card bahas" id="bahas" hidden aria-live="polite"></section>
+  </div>
+  <section class="card alat" id="alat" hidden></section>
   <footer><span>© 2026 CAT - Lex Fexora. All rights reserved.</span> | <span>Developed &amp; Curated by Febrillian Kusuma Raafi, S.H.</span></footer>
 </div>
 
@@ -158,7 +176,7 @@ body.tertutup #tirai{display:flex}
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const L="ABCDEFGH";
-const main=$("main"),papan=$("papan"),lb=$("lb");
+const main=$("main"),papan=$("papan"),lb=$("lb"),bahas=$("bahas"),alat=$("alat");
 const TID=new URLSearchParams(location.search).get("t");
 const cfg=window.FIREBASE_CONFIG||{};
 if(!window.firebase||!cfg.apiKey){main.innerHTML="<p>Situs belum dikonfigurasi.</p>";return;}
@@ -169,7 +187,7 @@ let U=null,isOwner=false,T=null,P={},aku=null,pos=0,urutLama={},deltaUntil={},si
 
 function login(){const p=new firebase.auth.GoogleAuthProvider();p.setCustomParameters({prompt:"select_account"});
   auth.signInWithPopup(p).catch(e=>{if(e&&/popup-blocked|operation-not-supported/.test(e.code||""))auth.signInWithRedirect(p);});}
-function gate(h,p,btn){papan.hidden=true;main.className="card gate";main.innerHTML=`<h2 class="judul">${esc(h)}</h2><p class="muted">${esc(p||"")}</p>${btn?'<div class="row" style="justify-content:center"><button class="btn primary" id="masuk" type="button">Masuk dengan Google</button></div>':""}`;
+function gate(h,p,btn){papan.hidden=true;bahas.hidden=true;alat.hidden=true;main.className="card gate";main.innerHTML=`<h2 class="judul">${esc(h)}</h2><p class="muted">${esc(p||"")}</p>${btn?'<div class="row" style="justify-content:center"><button class="btn primary" id="masuk" type="button">Masuk dengan Google</button></div>':""}`;
   if(btn)$("masuk").onclick=login;}
 
 if(!TID){gate("Tautan mock exam tidak lengkap","Buka tautan mock exam yang dibagikan penyelenggara.");return;}
@@ -181,7 +199,7 @@ auth.onAuthStateChanged(u=>{U=u;pMuat=false;aku=null;P={};if(unsubT){unsubT();un
       T=s.data({serverTimestamps:"estimate"});T.id=s.id;gabung();render();},
     e=>gate("Mock exam belum dapat dibuka","Muat ulang halaman. ("+(e.code||e.message)+")"));
   unsubP=db.collection("tryout/"+TID+"/peserta").onSnapshot(qs=>{const m={};qs.forEach(d=>{m[d.id]=d.data();});P=m;pMuat=true;if(T)gabung();
-      const baru=P[U.uid]&&!aku;if(baru){aku=Object.assign({jawab:{}},P[U.uid]);if(aku.selesai)selesaiKirim=true;}renderPapan();if(baru&&T&&T.status==='mulai'){render();return;}if(T&&(T.status==="menunggu"||T.status==="siap"||selesaiSemua()))render();else if($("stat"))$("stat").outerHTML=statHTML();},()=>{});
+      const baru=P[U.uid]&&!aku;if(baru){aku=Object.assign({jawab:{}},P[U.uid]);if(U.displayName)aku.nama=U.displayName;if(aku.selesai)selesaiKirim=true;}renderPapan();if(baru&&T&&T.status==='mulai'){render();return;}if(T&&(T.status==="menunggu"||T.status==="siap"||selesaiSemua()))render();else if($("stat"))$("stat").outerHTML=statHTML();},()=>{});
   if(!tick)tick=setInterval(()=>{if(!T)return;if(T.status==="mulai"){const pra=praMs(),cd=$("cdn");
       if(pra>0){if(cd)cd.textContent=Math.ceil(pra/1000);else render();return;}if(cd){render();return;}const sisa=sisaMs();const el=$("sisa");
       if(el){el.textContent=fmt(sisa);el.parentElement.classList.toggle("warn",sisa<=60000);}
@@ -218,7 +236,7 @@ function simpan(segera){clearTimeout(simpanT);const f=()=>db.doc("tryout/"+TID+"
 addEventListener("pagehide",()=>{if(simpanT&&aku&&!aku.selesai)simpan(true);});
 function kumpul(otomatis){if(!aku||aku.selesai||selesaiKirim)return;selesaiKirim=true;if(!otomatis)hitung();aku.selesai=true;simpan(true);}
 
-function render(){if(!T||!U)return;main.className="card";
+function render(){if(!T||!U)return;main.className="card";bahas.hidden=true;alat.hidden=true;
   if(selesaiSemua())return hasil();
   if(T.status==="menunggu"||T.status==="siap")return lobi();
   if(praMs()>0)return hitungMundur();
@@ -263,17 +281,25 @@ function unduhCSV(){const r=urut(),n=T.soal.length,q=v=>'"'+String(v).replace(/"
 function ujian(){papan.hidden=false;if(!aku){main.innerHTML='<p class="muted">Menyiapkan…</p>';return;}
   const n=T.soal.length;pos=Math.min(Math.max(0,pos),n-1);try{sessionStorage.setItem("to-pos-"+TID,pos);}catch(e){}const q=T.soal[pos],perm=acak(q.o.length,U.uid+q.id),pil=(aku.jawab||{})[q.id];
   main.innerHTML=`<div class="ujian-h"><span class="qno">Soal ${pos+1} / ${n} · terjawab ${aku.dijawab||0}</span><span class="timer">⏱ <span id="sisa">${fmt(sisaMs())}</span></span></div>
-  <p class="qtext">${esc(q.q)}</p><ol class="opts">${perm.map((oi,pi)=>`<li><button type="button" class="opt${pil===oi?" pilih":""}" data-o="${oi}"><span class="l">${L[pi]}</span><span class="t">${esc(q.o[oi])}</span></button></li>`).join("")}</ol>
+  <p class="qtext">${esc(q.q)}</p><ol class="opts">${perm.map((oi,pi)=>{const jw=pil!==undefined,cls=jw?(oi===q.a?" benar":oi===pil?" salah":" redup"):"";
+    return `<li><button type="button" class="opt${cls}" data-o="${oi}"${jw?" disabled":""}><span class="l">${L[pi]}</span><span class="t">${esc(q.o[oi])}${jw&&oi===q.a?' <b class="mk">✓</b>':jw&&oi===pil?' <b class="mk">❌</b>':""}</span></button></li>`;}).join("")}</ol>
   <div class="nav"><button class="btn" id="prev" type="button"${pos===0?" disabled":""}>← Previous</button>${pos<n-1?'<button class="btn primary" id="next" type="button">Next →</button>':'<button class="btn primary" id="kumpul" type="button">Selesai &amp; kumpulkan</button>'}</div>
-  <div class="peta">${T.soal.map((s,i)=>`<button type="button" data-i="${i}" class="${(aku.jawab||{})[s.id]!==undefined?"sdh":""}${i===pos?" ini":""}">${i+1}</button>`).join("")}</div>
+`;
+  // Peta soal dan tombol kumpul di kartu terpisah di bawah peringkat & pembahasan.
+  alat.hidden=false;alat.innerHTML=`<div class="peta">${T.soal.map((s,i)=>`<button type="button" data-i="${i}" class="${(aku.jawab||{})[s.id]!==undefined?"sdh":""}${i===pos?" ini":""}">${i+1}</button>`).join("")}</div>
   ${pos<n-1?'<div class="row" style="justify-content:flex-end"><button class="btn" id="kumpul" type="button">Kumpulkan sekarang</button></div>':""}
   ${isOwner?'<div class="row"><button class="btn bahaya" id="akhiri" type="button">Akhiri mock exam untuk semua</button></div>':""}
   <p class="muted kunci" style="margin:0;font-size:12px">Pintasan: <kbd>A</kbd>–<kbd>${L[q.o.length-1]}</kbd> memilih jawaban, <kbd>←</kbd> <kbd>→</kbd> pindah soal.</p>`;
-  main.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{aku.jawab=Object.assign({},aku.jawab,{[q.id]:+b.dataset.o});hitung();simpan();
-    if(pos<n-1){pos++;}render();});
-  main.querySelectorAll(".peta button").forEach(b=>b.onclick=()=>{pos=+b.dataset.i;render();});
+  // Jawaban terkunci setelah dipilih; pembahasan dan sumber langsung tampil di kolom kanan.
+  main.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{if((aku.jawab||{})[q.id]!==undefined)return;aku.jawab=Object.assign({},aku.jawab,{[q.id]:+b.dataset.o});hitung();simpan(true);render();});
+  bahas.hidden=false;bahas.innerHTML=pil===undefined?`<div class="bahas-h"><span>🕯️</span><b>Explanation</b></div><p class="muted kosong">Pembahasan dan sumber muncul di sini setelah Anda memilih jawaban.</p>`:
+    `<div class="bahas-h"><span>${pil===q.a?"🕯️":"📜"}</span><b>Explanation</b><span class="vonis ${pil===q.a?"ok":"no"}">${pil===q.a?"✓ Benar":"❌ Salah"}</span></div>`+
+    (pil!==q.a?`<p class="kunci-j">Jawaban benar: <b>${L[perm.indexOf(q.a)]}. ${esc(q.o[q.a])}</b></p>`:"")+
+    `<div class="blok"><h3>Pembahasan</h3><p>${q.p?esc(q.p):'<span class="muted">Belum ada pembahasan untuk soal ini.</span>'}</p></div>`+
+    `<div class="blok"><h3>Sumber</h3><p>${q.d?esc(q.d):'<span class="muted">—</span>'}</p></div>`;
+  alat.querySelectorAll(".peta button").forEach(b=>b.onclick=()=>{pos=+b.dataset.i;render();});
   if($("prev"))$("prev").onclick=()=>{pos--;render();};if($("next"))$("next").onclick=()=>{pos++;render();};
-  main.querySelectorAll("#kumpul").forEach(b=>b.onclick=()=>{const sisa=n-(aku.dijawab||0);if(!confirm(sisa?`Masih ada ${sisa} soal belum dijawab. Kumpulkan sekarang?`:"Kumpulkan jawaban sekarang?"))return;kumpul();render();});
+  document.querySelectorAll("#kumpul").forEach(b=>b.onclick=()=>{const sisa=n-(aku.dijawab||0);if(!confirm(sisa?`Masih ada ${sisa} soal belum dijawab. Kumpulkan sekarang?`:"Kumpulkan jawaban sekarang?"))return;kumpul();render();});
   if($("akhiri"))$("akhiri").onclick=akhiri;}
 document.addEventListener("keydown",e=>{if(e.ctrlKey||e.metaKey||e.altKey||/INPUT|TEXTAREA|SELECT/.test((e.target||{}).tagName||""))return;
   if(!main.querySelector(".opts"))return;const k=e.key.toUpperCase(),i=L.indexOf(k),opts=main.querySelectorAll(".opt");
