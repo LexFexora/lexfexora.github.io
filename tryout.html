@@ -360,9 +360,9 @@ function mulaiMs(){const m=T&&T.mulai;return m?(m.toMillis?m.toMillis():m.second
 function praMs(){return T&&T.status==="mulai"?mulaiMs()-Date.now():0;}
 function sisaMs(){return Math.max(0,Math.min(T.durasi*1000,mulaiMs()+T.durasi*1000-Date.now()));}
 // Predikat sama dengan kuis utama: ambang dibulatkan ke atas sesuai jumlah soal.
-const STANDAR=[[100,"Standar Sempurna"],[90,"Standar Istimewa"],[80,"Standar Sangat Ketat"],[70,"Standar Tinggi"],[60,"Standar KKM / Sedang"],[50,"Standar Cukup"]];
+const STANDAR=[[100,"Perfect Standard"],[90,"Distinction Standard"],[80,"Very Strict Standard"],[70,"High Standard"],[60,"Moderate Standard (KKM)"],[50,"Sufficient Standard"]];
 function predikat(ok,n){const cap=n?STANDAR.find(([p])=>ok>=Math.ceil(p*n/100-1e-9)):null;
-  return `<p class="predikat ${cap?"lulus":"gagal"}">${cap?"Lulus · "+cap[1]+" · "+cap[0]+"%":"Belum lulus · di bawah Standar Cukup 50%"}</p>`;}
+  return `<p class="predikat ${cap?"lulus":"gagal"}">${cap?"Passed · "+cap[1]+" · "+cap[0]+"%":"Not passed · below Sufficient Standard 50%"}</p>`;}
 function fmt(ms){const s=Math.ceil(ms/1000);return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");}
 function selesaiSemua(){return T.status==="selesai"||(T.status==="mulai"&&(SINK()?(T.idx||0)>=T.soal.length:sisaMs()<=0));}
 
@@ -451,7 +451,7 @@ function hitungMundur(){papan.hidden=true;main.className="card";
 
 // Pemilik memantau peringkat dan statistik selama mock exam berjalan.
 function statHTML(){const ps=Object.values(P),n=ps.length,sel=ps.filter(p=>p.selesai).length,rata=n?Math.round(ps.reduce((a,p)=>a+(p.skor||0),0)/n):0,top=n?Math.max(...ps.map(p=>p.skor||0)):0;
-  return `<div class="stat" id="stat"><div><b>${n}</b><small>peserta</small></div><div><b>${sel}</b><small>sudah kumpul</small></div><div><b>${rata}</b><small>rata-rata poin</small></div><div><b>${top}</b><small>poin tertinggi</small></div></div>`;}
+  return `<div class="stat" id="stat"><div><b>${n}</b><small>participants</small></div><div><b>${sel}</b><small>submitted</small></div><div><b>${rata}</b><small>average points</small></div><div><b>${top}</b><small>highest points</small></div></div>`;}
 function pantau(){papan.hidden=false;main.innerHTML=`<div class="ujian-h"><span class="qno">${esc(T.judul)} · berjalan</span><span class="timer">⏱ <span id="sisa">${fmt(sisaMs())}</span></span></div>
   ${statHTML()}
   <div class="linkrow"><input readonly value="${esc(tautan())}" aria-label="Tautan mock exam"></div>
@@ -523,12 +523,12 @@ function hasil(){papan.hidden=true;if(aku&&!aku.selesai&&T.status==="mulai")kump
   const r=urut(),me=U.uid,iMe=r.findIndex(p=>p.uid===me);
   // Nilai yang masuk belakangan memperbarui hasil tanpa mengulang animasi atau menutup pembahasan.
   const ulang=!!main.querySelector(".podium"),buka=!!main.querySelector(".rev[open]"),hanyaSalah=!!main.querySelector(".rv.salah");
-  const pd=(p,j)=>p?`<div class="pd j${j}"><div class="ats"><div class="av">${av(p)}</div><div class="nm">${esc(p.nama)}</div><div class="sk">${p.skor||0} <small class="muted" style="font-size:12px">poin</small></div></div><div class="tg">${j}</div></div>`:`<div class="pd j${j} kosong"><div class="tg">${j}</div></div>`;
-  main.innerHTML=`<p class="eyebrow" style="margin:0;text-align:center">Hasil akhir</p><h2 class="judul" style="text-align:center">${esc(T.judul)}</h2>
+  const pd=(p,j)=>p?`<div class="pd j${j}"><div class="ats"><div class="av">${av(p)}</div><div class="nm">${esc(p.nama)}</div><div class="sk">${p.skor||0} <small class="muted" style="font-size:12px">pts</small></div></div><div class="tg">${j}</div></div>`:`<div class="pd j${j} kosong"><div class="tg">${j}</div></div>`;
+  main.innerHTML=`<p class="eyebrow" style="margin:0;text-align:center">Final Results</p><h2 class="judul" style="text-align:center">${esc(T.judul)}</h2>
   <div class="podium${ulang?" diam":""}">${pd(r[1],2)}${pd(r[0],1)}${pd(r[2],3)}</div>
-  ${iMe>=0?`<p style="text-align:center;margin:4px 0 0">Peringkat Anda: <b>${iMe+1}</b> dari ${r.length} · <b>${r[iMe].skor||0} poin</b> (benar ${r[iMe].benar||0} dari ${T.soal.length})</p>${predikat(r[iMe].benar||0,T.soal.length)}`:""}
-  ${isOwner?`${statHTML()}<div class="row" style="justify-content:center"><button class="btn" id="csv" type="button">⤓ Unduh hasil (CSV)</button></div>`:""}
-  <ol class="lb">${r.map((p,i)=>`<li class="${p.uid===me?"aku":""}"><span class="rk${i<3?" m"+(i+1):""}">${i+1}</span><span class="av">${av(p)}</span><span class="nm">${esc(p.nama)}<small>benar ${p.benar||0} dari ${T.soal.length}</small></span><span class="sk">${p.skor||0}</span><span class="dl"></span></li>`).join("")}</ol>
+  ${iMe>=0?`<p style="text-align:center;margin:4px 0 0">Your rank: <b>${iMe+1}</b> of ${r.length} · <b>${r[iMe].skor||0} pts</b> (${r[iMe].benar||0} of ${T.soal.length} correct)</p>${predikat(r[iMe].benar||0,T.soal.length)}`:""}
+  ${isOwner?`${statHTML()}<div class="row" style="justify-content:center"><button class="btn" id="csv" type="button">⤓ Download results (CSV)</button></div>`:""}
+  <ol class="lb">${r.map((p,i)=>`<li class="${p.uid===me?"aku":""}"><span class="rk${i<3?" m"+(i+1):""}">${i+1}</span><span class="av">${av(p)}</span><span class="nm">${esc(p.nama)}<small>${p.benar||0} of ${T.soal.length} correct</small></span><span class="sk">${p.skor||0}</span><span class="dl"></span></li>`).join("")}</ol>
   ${iMe>=0?pembahasan(r[iMe]):""}`;
   if(buka)main.querySelector(".rev").open=true;if(hanyaSalah){$("rv").classList.add("salah");main.querySelectorAll(".revf button").forEach(x=>x.classList.toggle("on",x.dataset.f==="salah"));}
   if($("csv"))$("csv").onclick=unduhCSV;
@@ -536,11 +536,11 @@ function hasil(){papan.hidden=true;if(aku&&!aku.selesai&&T.status==="mulai")kump
 // Pembahasan dibuka setelah mock exam selesai: jawaban peserta, kunci, dan penjelasannya.
 function pembahasan(p){const j=(aku&&aku.jawab)||p.jawab||{},n=T.soal.length;let salah=0;
   const it=T.soal.map((q,i)=>{const perm=acak(q.o.length,U.uid+q.id),hur=oi=>L[perm.indexOf(oi)],pil=j[q.id],kos=pil===undefined,ok=pil===q.a;if(!ok)salah++;
-    return `<li class="${kos?"k":ok?"":"x"}"><span class="no">Soal ${i+1} · ${kos?"tidak dijawab":ok?"benar":"salah"}</span><p class="q">${esc(q.q)}</p>
-    <p class="jw">${!kos&&!ok?`Jawaban Anda: <span class="s">${hur(pil)}. ${esc(q.o[pil])}</span><br>`:""}Kunci: <span class="b">${hur(q.a)}. ${esc(q.o[q.a])}</span></p>
-    ${q.p||q.d?`<p class="pb">${esc(q.p)}${q.d?`<small>Sumber: ${esc(q.d)}</small>`:""}</p>`:""}</li>`;}).join("");
-  return `<details class="rev"><summary>Pembahasan soal <span class="muted" style="font-weight:400;font-size:13px">${salah} perlu dipelajari dari ${n}</span></summary>
-  <div class="revf"><button class="btn on" type="button" data-f="semua">Semua soal</button><button class="btn" type="button" data-f="salah">Salah &amp; kosong saja</button></div><ol class="rv" id="rv">${it}</ol></details>`;}
+    return `<li class="${kos?"k":ok?"":"x"}"><span class="no">Question ${i+1} · ${kos?"unanswered":ok?"correct":"wrong"}</span><p class="q">${esc(q.q)}</p>
+    <p class="jw">${!kos&&!ok?`Your answer: <span class="s">${hur(pil)}. ${esc(q.o[pil])}</span><br>`:""}Answer key: <span class="b">${hur(q.a)}. ${esc(q.o[q.a])}</span></p>
+    ${q.p||q.d?`<p class="pb">${esc(q.p)}${q.d?`<small>Source: ${esc(q.d)}</small>`:""}</p>`:""}</li>`;}).join("");
+  return `<details class="rev"><summary>Answer review <span class="muted" style="font-weight:400;font-size:13px">${salah} of ${n} to study</span></summary>
+  <div class="revf"><button class="btn on" type="button" data-f="semua">All questions</button><button class="btn" type="button" data-f="salah">Wrong &amp; unanswered only</button></div><ol class="rv" id="rv">${it}</ol></details>`;}
 })();
 </script>
 <div id="tirai" aria-hidden="true">Konten disembunyikan. Ketuk atau kembali ke halaman ini untuk melanjutkan.</div>
