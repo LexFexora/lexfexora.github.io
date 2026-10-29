@@ -881,10 +881,11 @@ window.__quiz={state};
   function tawarImpor(u,ref){const k='riwayat-impor-'+u.uid,box=$('impor'),L=window.FIREBASE_LAMA;let sudah='';try{sudah=localStorage.getItem(k)||'';}catch(e){}
     if(!box||!L||sudah)return;box.hidden=false;const tandai=()=>{try{localStorage.setItem(k,'1');}catch(e){}box.hidden=true;};
     $('imporx').onclick=tandai;
+    // Modul Firebase dimuat lebih dulu agar popup Google terbuka langsung saat tombol diklik (tidak diblokir browser).
+    const V='https://www.gstatic.com/firebasejs/10.12.5/',mods=Promise.all([import(V+'firebase-app.js'),import(V+'firebase-auth.js'),import(V+'firebase-firestore.js')]);mods.catch(()=>{});
     $('imporgo').onclick=async()=>{const b=$('imporgo');b.disabled=true;b.textContent='Memulihkan…';
-      try{const V='https://www.gstatic.com/firebasejs/10.12.5/';
-        const [{initializeApp},A,F]=await Promise.all([import(V+'firebase-app.js'),import(V+'firebase-auth.js'),import(V+'firebase-firestore.js')]);
-        const app=initializeApp(L,'lama'),fa=A.getAuth(app),pv=new A.GoogleAuthProvider();pv.setCustomParameters({login_hint:u.email||'',prompt:'select_account'});
+      try{const [{initializeApp,getApps},A,F]=await mods;
+        const app=getApps().find(a=>a.name==='lama')||initializeApp(L,'lama'),fa=A.getAuth(app),pv=new A.GoogleAuthProvider();pv.setCustomParameters({login_hint:u.email||'',prompt:'select_account'});
         const r=await A.signInWithPopup(fa,pv);if((r.user.email||'').toLowerCase()!==(u.email||'').toLowerCase())throw new Error('Pilih akun Google yang sama: '+u.email);
         const d=await F.getDoc(F.doc(F.getFirestore(app),'progres/'+r.user.uid));const x=d.exists()?d.data():{};A.signOut(fa).catch(()=>{});
         const nb=Object.keys(x.b||{}).length,nc=Object.keys(x.c||{}).length;
