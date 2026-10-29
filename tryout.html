@@ -238,7 +238,18 @@ header .akun .av{background:#eef2ef;color:#1f2421}header .akun .nm{color:#eef2ef
 .hitung .cd{font-family:var(--f-display);font-weight:650;font-size:96px;line-height:1;animation:denyut 1s ease-in-out infinite}
 @keyframes denyut{0%{transform:scale(1.25);opacity:.2}35%{transform:none;opacity:1}100%{opacity:.85}}
 @media (prefers-reduced-motion:reduce){.hitung .cd{animation:none}}
-.predikat{text-align:center;font-weight:600;margin:0}.predikat.lulus{color:var(--ok)}.predikat.gagal{color:var(--bad)}
+/* Baris hasil pribadi sebagai pil berwarna. */
+.pilrow{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:2px 0 0}
+.pil{display:inline-flex;align-items:baseline;gap:5px;font-size:13.5px;font-weight:600;padding:5px 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.pil b{font-family:var(--f-display);font-size:17px;font-weight:650}
+.pil.rank{border-color:color-mix(in srgb,var(--brass) 55%,var(--line));background:color-mix(in srgb,var(--brass) 12%,var(--surface))}.pil.rank b{color:var(--brass)}
+.pil.pts{border-color:color-mix(in srgb,var(--accent) 45%,var(--line));background:color-mix(in srgb,var(--accent) 10%,var(--surface))}.pil.pts b{color:var(--accent)}
+.pil.ok b{color:var(--ok)}
+.pil.lulus{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 55%,transparent);background:var(--ok-soft)}
+.pil.gagal{color:var(--bad);border-color:color-mix(in srgb,var(--bad) 55%,transparent);background:var(--bad-soft)}
+.pil.std{color:var(--muted);font-weight:600}
+.pil.s50{--pc:#c9a64a}.pil.s60{--pc:#a8b64a}.pil.s70{--pc:#4fae74}.pil.s80{--pc:#43a3ad}.pil.s90{--pc:#8a86d6}.pil.s100{--pc:#d9a849}
+.pil.lv{color:color-mix(in srgb,var(--pc) 62%,var(--ink));border-color:color-mix(in srgb,var(--pc) 60%,transparent);background:color-mix(in srgb,var(--pc) 13%,var(--surface))}
 .rev{border-top:1px solid var(--line);padding-top:10px}.rev>summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;gap:8px;align-items:center}
 .rev>summary::-webkit-details-marker{display:none}.rev>summary::after{content:"▾";color:var(--muted)}.rev[open]>summary::after{content:"▴"}
 .revf{display:flex;gap:6px;margin:10px 0}.revf button.on{background:var(--ink);color:var(--surface);border-color:var(--ink)}
@@ -286,7 +297,7 @@ header .tema .knop{background:linear-gradient(180deg,#c9b98f,#a8925c)}header .te
   <div class="arena">
   <aside class="kiri">
   <section class="card papan" id="papan" hidden>
-    <div class="papan-h"><b title="Skor = jumlah jawaban benar"><svg class="hik" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg>Peringkat langsung</b></div>
+    <div class="papan-h"><b title="Score = number of correct answers"><svg class="hik" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg>Live Ranking</b></div>
     <ol class="lb" id="lb"></ol>
   </section>
   </aside>
@@ -297,7 +308,7 @@ header .tema .knop{background:linear-gradient(180deg,#c9b98f,#a8925c)}header .te
   </div>
   <aside class="kanan">
   <section class="card chat" id="chat" hidden>
-    <div class="papan-h"><b><svg class="hik" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1.1-4.6A8 8 0 1 1 21 12z"/><path d="M8.5 11h.01M12 11h.01M15.5 11h.01"/></svg>Chat peserta</b></div>
+    <div class="papan-h"><b><svg class="hik" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1.1-4.6A8 8 0 1 1 21 12z"/><path d="M8.5 11h.01M12 11h.01M15.5 11h.01"/></svg>Participant Chat</b></div>
     <ol class="chatlist" id="chatlist" aria-live="polite"></ol>
     <form class="chatform" id="chatform" autocomplete="off"><input id="chatin" maxlength="500" placeholder="Tulis pesan untuk semua peserta…" aria-label="Pesan chat"><button class="btn primary" type="submit">Kirim</button></form>
   </section>
@@ -365,7 +376,7 @@ function sisaMs(){return Math.max(0,Math.min(T.durasi*1000,mulaiMs()+T.durasi*10
 // Predikat sama dengan kuis utama: ambang dibulatkan ke atas sesuai jumlah soal.
 const STANDAR=[[100,"Perfect Standard"],[90,"Distinction Standard"],[80,"Very Strict Standard"],[70,"High Standard"],[60,"Moderate Standard (KKM)"],[50,"Sufficient Standard"]];
 function predikat(ok,n){const cap=n?STANDAR.find(([p])=>ok>=Math.ceil(p*n/100-1e-9)):null;
-  return `<p class="predikat ${cap?"lulus":"gagal"}">${cap?"Passed · "+cap[1]+" · "+cap[0]+"%":"Not passed · below Sufficient Standard 50%"}</p>`;}
+  return `<div class="pilrow"><span class="pil ${cap?"lulus":"gagal"}">${cap?"✓ Passed":"✕ Not passed"}</span>${cap?`<span class="pil std lv s${cap[0]}">${cap[1]} · ${cap[0]}%</span>`:'<span class="pil std">below Sufficient Standard · 50%</span>'}</div>`;}
 function fmt(ms){const s=Math.ceil(ms/1000);return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");}
 function selesaiSemua(){return T.status==="selesai"||(T.status==="mulai"&&(SINK()?(T.idx||0)>=T.soal.length:sisaMs()<=0));}
 
@@ -454,7 +465,7 @@ function hitungMundur(){papan.hidden=true;main.className="card";
 
 // Pemilik memantau peringkat dan statistik selama mock exam berjalan.
 function statHTML(){const ps=Object.values(P),n=ps.length,sel=ps.filter(p=>p.selesai).length,rata=n?Math.round(ps.reduce((a,p)=>a+(p.skor||0),0)/n):0,top=n?Math.max(...ps.map(p=>p.skor||0)):0;
-  return `<div class="stat" id="stat"><div><b>${n}</b><small>participants</small></div><div><b>${sel}</b><small>submitted</small></div><div><b>${rata}</b><small>average points</small></div><div><b>${top}</b><small>highest points</small></div></div>`;}
+  return `<div class="stat" id="stat"><div><b>${n}</b><small>Participants</small></div><div><b>${sel}</b><small>Submitted</small></div><div><b>${rata}</b><small>Average Points</small></div><div><b>${top}</b><small>Highest Points</small></div></div>`;}
 function pantau(){papan.hidden=false;main.innerHTML=`<div class="ujian-h"><span class="qno">${esc(T.judul)} · berjalan</span><span class="timer">⏱ <span id="sisa">${fmt(sisaMs())}</span></span></div>
   ${statHTML()}
   <div class="linkrow"><input readonly value="${esc(tautan())}" aria-label="Tautan mock exam"></div>
@@ -516,7 +527,7 @@ function renderPapan(){if(!T||papan.hidden&&!(T.status==="mulai"))return;
   let tampil=r.slice(0,10);const iMe=r.findIndex(p=>p.uid===me);if(iMe>=10)tampil=tampil.concat([null,r[iMe]]);
   const before={};lb.querySelectorAll("li[data-u]").forEach(li=>before[li.dataset.u]=li.getBoundingClientRect().top);
   lb.innerHTML=tampil.map(p=>{if(!p)return '<li class="gap">⋯</li>';const rk=urutLama[p.uid],dl=deltaUntil[p.uid],ad=dl&&dl.s>now;
-    return `<li data-u="${esc(p.uid)}" class="${p.uid===me?"aku":""}"><span class="rk${rk<=3?" m"+rk:""}">${rk}</span><span class="av">${av(p)}</span><span class="nm">${SINK()&&p.uid===T.master?'<span class="crown" title="Room master">🎩</span>':""}${esc(p.nama)}${p.uid===me?" (Anda)":""}${tandaSoal(p)}<small>${p.dijawab||0}/${T.soal.length} terjawab${p.selesai?" · selesai":""}</small></span><span class="sk">${p.benar||0}<small> benar</small></span><span class="dl ${ad?(dl.d>0?"naik":"turun"):""}">${ad?(dl.d>0?"▲"+dl.d:"▼"+(-dl.d)):""}</span></li>`;}).join("");
+    return `<li data-u="${esc(p.uid)}" class="${p.uid===me?"aku":""}"><span class="rk${rk<=3?" m"+rk:""}">${rk}</span><span class="av">${av(p)}</span><span class="nm">${SINK()&&p.uid===T.master?'<span class="crown" title="Room master">🎩</span>':""}${esc(p.nama)}${p.uid===me?" (You)":""}${tandaSoal(p)}<small>${p.dijawab||0}/${T.soal.length} answered${p.selesai?" · finished":""}</small></span><span class="sk">${p.benar||0}<small> correct</small></span><span class="dl ${ad?(dl.d>0?"naik":"turun"):""}">${ad?(dl.d>0?"▲"+dl.d:"▼"+(-dl.d)):""}</span></li>`;}).join("");
   // Animasi FLIP: baris bergeser halus dari posisi lama ke posisi baru.
   if(!matchMedia("(prefers-reduced-motion: reduce)").matches)lb.querySelectorAll("li[data-u]").forEach(li=>{const b=before[li.dataset.u];if(b===undefined)return;const dy=b-li.getBoundingClientRect().top;if(!dy)return;
     li.style.transition="none";li.style.transform=`translateY(${dy}px)`;requestAnimationFrame(()=>{li.style.transition="transform .6s cubic-bezier(.2,.8,.2,1)";li.style.transform="";});});}
@@ -529,7 +540,7 @@ function hasil(){papan.hidden=false;document.body.dataset.v="hasil";if(aku&&!aku
   const pd=(p,j)=>p?`<div class="pd j${j}"><div class="ats"><div class="av">${av(p)}</div><div class="nm">${esc(p.nama)}</div><div class="sk">${p.skor||0} <small class="muted" style="font-size:12px">pts</small></div></div><div class="tg">${j}</div></div>`:`<div class="pd j${j} kosong"><div class="tg">${j}</div></div>`;
   main.innerHTML=`<h2 class="judul" style="text-align:center">${esc(T.judul)}</h2><p class="eyebrow" style="margin:-8px 0 0;text-align:center;letter-spacing:.16em">Final Results</p>
   <div class="podium${ulang?" diam":""}">${pd(r[1],2)}${pd(r[0],1)}${pd(r[2],3)}</div>
-  ${iMe>=0?`<p style="text-align:center;margin:4px 0 0">Your rank: <b>${iMe+1}</b> of ${r.length} · <b>${r[iMe].skor||0} pts</b> (${r[iMe].benar||0} of ${T.soal.length} correct)</p>${predikat(r[iMe].benar||0,T.soal.length)}`:""}
+  ${iMe>=0?`<div class="pilrow"><span class="pil rank">Your rank <b>${iMe+1}</b> of ${r.length}</span><span class="pil pts"><b>${r[iMe].skor||0}</b> pts</span><span class="pil ok"><b>${r[iMe].benar||0}</b> of ${T.soal.length} correct</span></div>${predikat(r[iMe].benar||0,T.soal.length)}`:""}
   ${isOwner?statHTML():""}${iMe>=0?`<div class="row" style="justify-content:center">${iMe>=0?'<button class="btn review" id="review" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12S6 5 12 5s9.5 7 9.5 7-3.5 7-9.5 7-9.5-7-9.5-7z"/><circle cx="12" cy="12" r="3"/></svg>Review</button>':""}</div>`:""}
   <ol class="lb">${r.map((p,i)=>`<li class="${p.uid===me?"aku":""}"><span class="rk${i<3?" m"+(i+1):""}">${i+1}</span><span class="av">${av(p)}</span><span class="nm">${esc(p.nama)}<small>${p.benar||0} of ${T.soal.length} correct</small></span><span class="sk">${p.skor||0}</span><span class="dl"></span></li>`).join("")}</ol>
   ${iMe>=0?pembahasan(r[iMe]):""}`;

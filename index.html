@@ -876,6 +876,8 @@ window.__quiz={state};
   // Kartu Mock Exam di halaman utama: semua pengguna melihat mock exam yang dibuka; pemilik juga bisa membuat dan menghapus.
   const jdl=j=>!j||j==='Mock Exam Seleksi Kemampuan Bidang'?'Mock Exam':j;
   function tryoutKartu(){$('tocard').hidden=false;if(isOwner){$('toown').hidden=false;$('toket').hidden=true;}
+    // Selain pemilik: panel tetap tampil, hanya keterangan; ikut mock exam lewat tautan join yang dibagikan pemilik.
+    else{$('toket').hidden=false;$('toket').innerHTML='🔒 <b>This feature is available to the site owner only.</b> To take part in a Mock Exam, open the join link shared by the owner.';$('tolist').innerHTML='';return;}
     const ST={menunggu:'ruang tunggu',siap:'cek kesiapan',mulai:'sedang berjalan',selesai:'selesai'};
     db.collection('tryout').orderBy('dibuat','desc').limit(15).onSnapshot(qs=>{const rows=[];qs.forEach(d=>{const t=d.data(),u=location.origin+location.pathname.replace(/[^/]*$/,'')+'tryout.html?t='+d.id;
         if(!isOwner&&t.status==='selesai')return;
