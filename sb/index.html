@@ -892,6 +892,9 @@ window.__quiz={state};
       try{const {app,fa}=P,pv=new A.GoogleAuthProvider();pv.setCustomParameters({login_hint:u.email||'',prompt:'select_account'});
         pop=A.signInWithPopup(fa,pv).then(r=>({r,app,fa}));}catch(e){pop=Promise.reject(e);}
       b.disabled=true;b.textContent='Memulihkan…';
+      // Safari iPhone kadang tidak pernah mengembalikan hasil login; setelah 45 detik beri jalan keluar.
+      const lama=setTimeout(()=>{if(!b.disabled)return;b.disabled=false;b.textContent='Pulihkan riwayat lama';alert('Login Google belum selesai. Bila di iPhone tidak ada tab Google yang terbuka, pulihkan dari laptop/komputer dengan akun yang sama; riwayat tersimpan di akun dan ikut muncul di HP.');},45000);
+      pop.finally(()=>clearTimeout(lama)).catch(()=>{});
       pop.then(async({r,app,fa})=>{if((r.user.email||'').toLowerCase()!==(u.email||'').toLowerCase())throw new Error('Pilih akun Google yang sama: '+u.email);
         const d=await F.getDoc(F.doc(F.getFirestore(app),'progres/'+r.user.uid));const x=d.exists()?d.data():{};A.signOut(fa).catch(()=>{});
         const nb=Object.keys(x.b||{}).length,nc=Object.keys(x.c||{}).length;
