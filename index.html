@@ -276,6 +276,8 @@ header{position:relative}.akunku{display:flex;align-items:center;justify-content
 .akunku .av{width:38px;height:38px;border-radius:50%;background:var(--ink);color:var(--surface);display:grid;place-items:center;font-size:15px;font-weight:700;overflow:hidden;flex:none;box-shadow:0 0 0 2px var(--line)}
 .akunku .av img{width:100%;height:100%;object-fit:cover}.akunku .nm{font-weight:600;font-size:14.5px;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 @media(min-width:1000px){.akunku{position:absolute;top:50%;right:0;transform:translateY(-50%);margin:0}}
+@media(max-width:999px){header{display:flex;flex-direction:column}header .akunku{order:3;justify-content:flex-start;gap:8px;margin:12px 0 0;padding-top:10px;border-top:1px solid var(--line)}
+  header .akunku .av{width:28px;height:28px;font-size:12px}header .akunku .nm{font-size:13px;font-weight:600;letter-spacing:.01em;color:var(--muted);max-width:70vw}}
 .brand{font-size:clamp(26px,4.4vw,36px)}.brand .emb{width:2.35em;height:2.35em;flex:none;filter:drop-shadow(0 6px 12px rgba(0,0,0,.28))}
 
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .brand .emb{filter:invert(1)}}
