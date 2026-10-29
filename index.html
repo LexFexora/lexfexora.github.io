@@ -108,7 +108,10 @@ select{font:inherit;font-size:14px;padding:7px 10px;border-radius:8px;border:1px
 .scorebar strong{color:var(--ink)}
 .fsexit{display:none}
 html.fokus .wrap>*:not(#timerbox):not(#card):not(#fsexit){display:none!important}
-html.fokus .card .qhead{display:contents}html.fokus .card .qno,html.fokus .card .qfs,html.fokus .card .owntools,html.fokus .card .verdict,html.fokus .card .edbox,html.fokus .card .mvbox,html.fokus .card>p.note{display:none!important}
+html.fokus .card .qhead{display:contents}html.fokus .card .qlbl,html.fokus .card .qfs,html.fokus .card .owntools,html.fokus .card .verdict,html.fokus .card .edbox,html.fokus .card .mvbox,html.fokus .card>p.note{display:none!important}
+html.fokus .card .qno{position:fixed;top:max(10px,env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);margin:0;height:38px;display:flex;align-items:center;padding:0 14px;border:1px solid var(--line);border-radius:999px;background:var(--bg);color:var(--ink);font-size:14px;font-variant-numeric:tabular-nums;z-index:2}
+html.fokus .card .qno .of{color:var(--muted);margin-left:4px}
+@media(max-width:719px){html.fokus .card .qno{left:calc(max(16px,env(safe-area-inset-left,0px)) + 46px);transform:none;padding:0 12px;font-size:13px}}
 html.fokus .fsexit{display:grid;place-items:center;align-self:flex-start;width:38px;height:38px;padding:0;border-radius:50%}
 html.fokus .timer{position:fixed;top:max(10px,env(safe-area-inset-top,0px));right:max(12px,env(safe-area-inset-right,0px));box-shadow:0 2px 12px rgb(0 0 0 / .25)}
 html.fokus,html.fokus body{height:100%;overflow:hidden;overscroll-behavior:none}
@@ -648,7 +651,7 @@ function renderCard(){
   const here=state.cat==="all"?q.mappings[0]:(q.mappings.find(m=>m.c===state.cat&&(state.sub==="all"||m.s===+state.sub))||q.mappings[0]);
   const also=q.mappings.filter(m=>m!==here).map(m=>`${CATS[m.c].short} ${m.s}`).join(", ");
   const own=!!window.__isOwner;
-  let html=`<div class="qhead"><span class="qno">Soal No. ${state.pos+1}${isPin(q)?" 📌":""} <span class="of">/ ${state.list.length}</span></span>`+(own?`<div class="owntools"><button class="btn mvbtn" id="ed" type="button" aria-expanded="${!!state.edOpen}">✎ Edit</button><button class="btn mvbtn" id="mv" type="button" aria-expanded="${!!state.mvOpen}">⇄ Pindahkan</button></div>`:"")+`<div class="qtools"><span id="tslot"></span><button class="btn qfs" id="cfs" type="button" title="Layar penuh" aria-label="Layar penuh">⛶</button></div></div>`;
+  let html=`<div class="qhead"><span class="qno"><span class="qlbl">Soal No. </span>${state.pos+1}${isPin(q)?" 📌":""} <span class="of">/ ${state.list.length}</span></span>`+(own?`<div class="owntools"><button class="btn mvbtn" id="ed" type="button" aria-expanded="${!!state.edOpen}">✎ Edit</button><button class="btn mvbtn" id="mv" type="button" aria-expanded="${!!state.mvOpen}">⇄ Pindahkan</button></div>`:"")+`<div class="qtools"><span id="tslot"></span><button class="btn qfs" id="cfs" type="button" title="Layar penuh" aria-label="Layar penuh">⛶</button></div></div>`;
   if(own&&state.mvOpen){const cs=Object.keys(CATS).map(Number);
     html+=`<div class="mvbox" id="mvbox"><span>Pindahkan dari <b>${esc(here.kategori_utama)} ${here.s}</b> ke:</span><select id="mvc" aria-label="Kategori tujuan">${cs.map(c=>`<option value="${c}"${c===here.c?" selected":""}>${esc(CATS[c].short)}</option>`).join("")}</select><select id="mvs" aria-label="Sub-materi tujuan"></select><button class="btn primary" id="mvok" type="button">Simpan</button><button class="btn" id="mvno" type="button">Batal</button><p class="note" id="mvmsg">Perpindahan disimpan di server dan berlaku untuk semua pengguna setelah mereka memuat ulang halaman.</p></div>`;}
   if(own&&state.edOpen){
