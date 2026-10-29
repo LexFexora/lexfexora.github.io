@@ -305,7 +305,7 @@ html.gate-wait .wrap{display:none}
   <nav class="tabs" role="tablist" id="tabs"></nav>
 
   <details class="setelan" id="setelan">
-    <summary><span class="stl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg> Pengaturan Kuis</span><span class="ringkas" id="ringkas"></span></summary>
+    <summary><span class="stl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg> Quiz Options</span><span class="ringkas" id="ringkas"></span></summary>
     <div class="controls">
       <label class="ctl-sub" for="sub"><span id="sublbl">Section Details</span><select id="sub"></select></label>
       <label class="ctl-sub" for="bag" id="bagwrap" hidden><span>Bagian Soal</span><select id="bag"></select></label>
@@ -494,7 +494,7 @@ function save(){if(window.__keluar)return;try{localStorage.setItem(KEY,JSON.stri
 
 // Daftar Pilih Klaster terbuka saat halaman dibuka dan bisa ditutup kembali.
 const state={klOpen:true,cat:"all",sub:"all",bag:"all",order:"seq",list:[],pos:0,perm:{},ans:{},tLeft:0,timeUp:false,qLeft:0,qId:null,expired:{}};
-// Lama waktu per soal: 54 detik (bawaan) atau 45 detik, dipilih di Pengaturan Kuis.
+// Lama waktu per soal: 54 detik (bawaan) atau 45 detik, dipilih di Quiz Options.
 let SEC=store.timerSec===45?45:54;
 let tMode=store.timerMode||"off";
 const L="ABCDEF";
@@ -636,7 +636,7 @@ document.addEventListener("toggle",e=>{const k=e.target,c=$("card");if(!k.classL
 function renderCard(){
   const card=$("card");
   if(!state.list.length){card.innerHTML="<p>Tidak ada soal untuk pilihan ini.</p>";return;}
-  if(!siapOK()){card.innerHTML=`<div class="kunci"><span class="ik">🔒</span><b>Atur Pengaturan Kuis dulu</b><p>Pilih detail bagian, urutan, dan timer, lalu tekan Simpan Pengaturan.</p><button class="btn primary" id="bukaset" type="button">Buka Pengaturan Kuis</button></div>`;
+  if(!siapOK()){card.innerHTML=`<div class="kunci"><span class="ik">🔒</span><b>Atur Quiz Options dulu</b><p>Pilih detail bagian, urutan, dan timer, lalu tekan Simpan Pengaturan.</p><button class="btn primary" id="bukaset" type="button">Buka Quiz Options</button></div>`;
     $("bukaset").onclick=()=>{const st=$("setelan");st.open=true;st.scrollIntoView({behavior:"smooth",block:"start"});};return;}
   // Soal baru tampil dan timer baru berjalan setelah pengguna menekan Mulai.
   if(state.cat!=="all"&&!state.mulai&&state.pos<state.list.length){
@@ -701,7 +701,7 @@ function hitungNaik(){const el=$("angka");if(!el||matchMedia("(prefers-reduced-m
 function nilaiHTML(ok,n){const min=p=>Math.ceil(p*n/100-1e-9),cap=n?STANDAR.find(([p])=>ok>=min(p)):null;
   return `<p class="predikat ${cap?"lulus":"gagal"}">${cap?"Lulus · "+cap[1]+" · "+cap[0]+"%":"Belum lulus · di bawah Standar Cukup 50%"}</p>`;}
 function bagNext(){if(state.sub==="all"||state.bag==="all"||state.bag==="bonus")return false;const {k,bonus}=bagInfo(QB.filter(q=>inCat(q,state.cat,state.sub)).length);return +state.bag<k?+state.bag+1:bonus?"bonus":false;}
-// Pengaturan Kuis wajib disimpan setiap kali halaman dibuka; setelah itu tombol Mulai muncul.
+// Quiz Options wajib disimpan setiap kali halaman dibuka; setelah itu tombol Mulai muncul.
 let siapCat=null;
 function siapOK(){return state.cat==="all"||siapCat===state.cat;}
 function timerActive(){return siapOK()&&state.mulai&&tMode!=="off"&&state.cat!=="all"&&state.list.length&&!state.timeUp&&state.pos<state.list.length;}
