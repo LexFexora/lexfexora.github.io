@@ -279,6 +279,14 @@ html.gate-wait .wrap{display:none}
 .gate-act{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:14px}
 .gate .note{font-size:12px;margin-top:12px}
 @media (max-width:552px){.gate{margin:12vh 16px}}
+/* Pencegah salin & tangkapan layar (deterensi, bukan jaminan) */
+body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+input,textarea,select,[contenteditable]{-webkit-user-select:text;user-select:text}
+#wm{position:fixed;inset:0;pointer-events:none;z-index:2147483646;overflow:hidden;opacity:.07;color:var(--ink,#888);font:600 13px/1 system-ui,sans-serif;display:flex;flex-wrap:wrap;align-content:flex-start;gap:70px 48px;padding:30px;transform:rotate(-22deg) scale(1.5);transform-origin:center}
+#wm[hidden]{display:none}#wm span{white-space:nowrap}
+#tirai{position:fixed;inset:0;z-index:2147483647;display:none;align-items:center;justify-content:center;text-align:center;padding:24px;background:var(--bg,#111);color:var(--muted,#999);font:500 15px/1.5 system-ui,sans-serif}
+body.tertutup #tirai{display:flex}
+@media print{body{display:none!important}}
 </style>
 </head>
 <body>
@@ -317,7 +325,7 @@ html.gate-wait .wrap{display:none}
   <nav class="tabs" role="tablist" id="tabs"></nav>
 
   <details class="setelan" id="setelan">
-    <summary><span class="stl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg> Quiz Options</span><span class="ringkas" id="ringkas"></span></summary>
+    <summary><span class="stl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg> Quiz Options &amp; Sections</span><span class="ringkas" id="ringkas"></span></summary>
     <div class="controls">
       <label class="ctl-sub" for="sub"><span id="sublbl">Section Details</span><select id="sub"></select></label>
       <label class="ctl-sub" for="bag" id="bagwrap" hidden><span>Bagian Soal</span><select id="bag"></select></label>
@@ -355,7 +363,7 @@ html.gate-wait .wrap{display:none}
 
   <details class="mapbox" id="mapbox"><summary id="mapsum">Peta soal</summary><div class="map" id="map"></div><p class="mapket"><i class="tk ok">✓</i> dijawab benar &nbsp; <i class="tk no">✗</i> dijawab salah atau waktu habis</p></details>
 
-  <footer><span>© 2026 CAT - Lex Fexora. All rights reserved.</span> | <span>Developed &amp; Curated by Febrillian Kusuma Raafi</span></footer>
+  <footer><span>© 2026 CAT - Lex Fexora. All rights reserved.</span> | <span>Developed &amp; Curated by Febrillian Kusuma Raafi, S.H.</span></footer>
 </div>
 
 <script>
@@ -649,7 +657,7 @@ document.addEventListener("toggle",e=>{const k=e.target,c=$("card");if(!k.classL
 function renderCard(){
   const card=$("card");
   if(!state.list.length){card.innerHTML="<p>Tidak ada soal untuk pilihan ini.</p>";return;}
-  if(!siapOK()){card.innerHTML=`<div class="kunci"><span class="ik">🔒</span><b>Atur Quiz Options dulu</b><p>Pilih detail bagian, urutan, dan timer, lalu tekan Keep it.</p><button class="btn primary" id="bukaset" type="button">Buka Quiz Options</button></div>`;
+  if(!siapOK()){card.innerHTML=`<div class="kunci"><span class="ik">🔒</span><b>Atur Quiz Options &amp; Sections dulu</b><p>Pilih detail bagian, urutan, dan timer, lalu tekan Keep it.</p><button class="btn primary" id="bukaset" type="button">Buka Quiz Options &amp; Sections</button></div>`;
     $("bukaset").onclick=()=>{const st=$("setelan");st.open=true;st.scrollIntoView({behavior:"smooth",block:"start"});};return;}
   // Soal baru tampil dan timer baru berjalan setelah pengguna menekan Mulai.
   if(state.cat!=="all"&&!state.mulai&&state.pos<state.list.length){
@@ -853,6 +861,7 @@ window.__quiz={state};
   auth.onAuthStateChanged(async u=>{
     if(unsub){unsub();unsub=null;}if(beat){clearInterval(beat);beat=null;}
     if(!u){show('Latihan ini membutuhkan izin','Masuk dengan akun Google. Permintaan akses Anda akan dikirim ke pemilik untuk disetujui.',null,true,false);return;}
+    window.__wm&&window.__wm(u.email||u.uid);
     const who='Masuk sebagai '+(u.displayName?u.displayName+' · ':'')+u.email;
     if(OWNER&&(u.email||'').toLowerCase()===OWNER&&u.emailVerified){isOwner=true;window.__isOwner=true;
       window.__pindah=(id,list)=>db.doc('bank/pindah').set({m:{[id]:list}},{merge:true}).then(()=>pinfo());
@@ -942,6 +951,27 @@ window.__quiz={state};
   }
 })();
 
+</script>
+<div id="wm" hidden aria-hidden="true"></div><div id="tirai" aria-hidden="true">Konten disembunyikan. Ketuk atau kembali ke halaman ini untuk melanjutkan.</div>
+<script>
+/* Pencegah salin & tangkapan layar: browser tidak bisa memblokir screenshot sepenuhnya,
+   jadi ini mempersulit dan menandai tangkapan dengan watermark akun. */
+(()=>{const no=e=>{const t=e.target;if(t&&t.closest&&t.closest('input,textarea,select,[contenteditable]'))return;e.preventDefault();};
+  ["contextmenu","copy","cut","dragstart","selectstart"].forEach(k=>document.addEventListener(k,no));
+  const tutup=()=>document.body.classList.add("tertutup"),buka=()=>document.body.classList.remove("tertutup");
+  const kosongkan=()=>{try{navigator.clipboard&&navigator.clipboard.writeText("")}catch(e){}};
+  document.addEventListener("keydown",e=>{const k=(e.key||"").toLowerCase(),m=e.ctrlKey||e.metaKey;
+    if(k==="printscreen"||e.keyCode===44){e.preventDefault();kosongkan();tutup();setTimeout(buka,1500);return;}
+    if(m&&["p","s","u"].includes(k)||m&&e.shiftKey&&["3","4","5","s","i","c","j"].includes(k)||k==="f12"){e.preventDefault();if(e.shiftKey)tutup();}
+    if(e.metaKey&&e.shiftKey)tutup();},true);
+  document.addEventListener("keyup",e=>{if((e.key||"").toLowerCase()==="printscreen"){kosongkan();setTimeout(buka,1500);}},true);
+  window.addEventListener("blur",tutup);window.addEventListener("focus",buka);
+  document.addEventListener("visibilitychange",()=>document.hidden?tutup():buka());
+  document.addEventListener("pointerdown",buka,true);
+  window.__wm=t=>{const w=document.getElementById("wm");if(!t){w.hidden=true;w.innerHTML="";return;}
+    const s=String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+    w.innerHTML=Array(160).fill("<span>"+s+"</span>").join("");w.hidden=false;};
+})();
 </script>
 </body>
 </html>
