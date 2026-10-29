@@ -40,6 +40,21 @@ service cloud.firestore {
     match /tryout/{id} {
       allow read: if signedIn();
       allow write: if isOwner();
+      // Mode serentak: peserta yang terdaftar boleh menggeser soal (idx, idxMulai) dan memindahkan room master.
+      allow update: if signedIn()
+        && exists(/databases/$(database)/documents/tryout/$(id)/peserta/$(request.auth.uid))
+        && resource.data.mode == "sinkron"
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["idx", "idxMulai", "master"]);
+      // Chat room: peserta terdaftar mengirim pesan atas namanya sendiri; hanya pemilik yang bisa menghapus.
+      match /chat/{msg} {
+        allow read: if signedIn();
+        allow create: if signedIn()
+          && exists(/databases/$(database)/documents/tryout/$(id)/peserta/$(request.auth.uid))
+          && request.resource.data.uid == request.auth.uid
+          && request.resource.data.keys().hasOnly(["uid", "nama", "foto", "teks", "t"])
+          && request.resource.data.teks is string && request.resource.data.teks.size() > 0 && request.resource.data.teks.size() <= 500;
+        allow delete: if isOwner();
+      }
       match /peserta/{uid} {
         allow read: if signedIn();
         allow create, update: if signedIn() && request.auth.uid == uid

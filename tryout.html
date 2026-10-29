@@ -97,6 +97,20 @@ header h1 span{display:block}header h1 .t2{letter-spacing:.1em}
 .bawah .bahas{order:-1}
 @media(min-width:720px){.bawah:has(>#papan:not([hidden])):has(>#bahas:not([hidden])){grid-template-columns:1fr 1fr}.bawah .bahas{order:0}}
 .bawah .lb li{grid-template-columns:26px 28px 1fr auto 30px;gap:8px;padding:7px 9px}
+.nav.sk{justify-content:center}.nav.sk .btn{min-width:60%}.tunggum{margin:0;text-align:center;font-size:14px}
+.master{display:flex;flex-direction:column;gap:6px;border:1px solid color-mix(in srgb,var(--brass) 45%,var(--line));background:var(--brass-soft);border-radius:10px;padding:10px 12px}
+.master-h{display:flex;align-items:center;gap:8px;font-size:14px}.master-h .mk{font-size:16px}
+.master select{flex:1;min-width:0;font:inherit;font-size:13.5px;padding:7px 8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+.kunci-peta button{cursor:default}
+.chatlist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;max-height:280px;overflow-y:auto;overscroll-behavior:contain}
+.chatlist li{display:grid;grid-template-columns:28px 1fr;gap:8px;align-items:start}.chatlist li.kosong{display:block;font-size:13.5px}
+.chatlist .av{width:28px;height:28px;border-radius:50%;background:var(--ink);color:var(--surface);display:grid;place-items:center;font-size:12px;font-weight:700;overflow:hidden}.chatlist .av img{width:100%;height:100%;object-fit:cover}
+.chatlist b{font-size:13px}.chatlist small{font-size:11px}.chatlist p{margin:2px 0 0;font-size:14px;line-height:1.5;word-break:break-word;background:var(--bg);border:1px solid var(--line);border-radius:4px 10px 10px 10px;padding:6px 10px;display:inline-block}
+.chatlist li.aku p{background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 40%,var(--line))}
+.chatform{display:flex;gap:8px}.chatform input{flex:1;min-width:0;font:inherit;font-size:14px;padding:9px 12px;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--ink)}.lb .crown{margin-right:4px}.nav.sk{flex-direction:column;align-items:center;gap:6px}
+.lb .tq{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;font-style:normal;font-size:11px;font-weight:700;margin-left:6px;vertical-align:1px;border:1px solid}
+.lb .tq.ok{color:var(--ok);background:var(--ok-soft);border-color:var(--ok)}.lb .tq.no{color:var(--bad);background:var(--bad-soft);border-color:var(--bad)}
+.lb .tq.tg{color:var(--muted);border-color:var(--line);border-style:dashed}.lb .tq.ks{color:var(--muted);background:var(--bg);border-color:var(--line)}
 .bahas{gap:12px}.bahas-h{display:flex;align-items:center;gap:8px;font-weight:600}.bahas-h>span:first-child{font-size:18px}
 .bahas .vonis{margin-left:auto;font-size:13px;font-weight:600;padding:2px 10px;border-radius:999px;border:1px solid}
 .bahas .vonis.ok{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 50%,transparent);background:var(--ok-soft)}
@@ -149,11 +163,11 @@ header h1 span{display:block}header h1 .t2{letter-spacing:.1em}
 kbd{font-family:var(--f-mono);font-size:11px;border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:0 4px}
 footer{font-size:12px;color:var(--muted);text-align:center}footer span{white-space:nowrap}
 /* Pencegah salin & tangkapan layar (deterensi, bukan jaminan) */
-body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+body:not(.bebas){-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 input,textarea,select,[contenteditable]{-webkit-user-select:text;user-select:text}
 #tirai{position:fixed;inset:0;z-index:2147483647;display:none;align-items:center;justify-content:center;text-align:center;padding:24px;background:var(--bg,#111);color:var(--muted,#999);font:500 15px/1.5 system-ui,sans-serif}
 body.tertutup #tirai{display:flex}
-@media print{body{display:none!important}}
+@media print{body:not(.bebas){display:none!important}}
 </style>
 </head>
 <body>
@@ -170,6 +184,11 @@ body.tertutup #tirai{display:flex}
   </section>
   <section class="card bahas" id="bahas" hidden aria-live="polite"></section>
   </div>
+  <section class="card chat" id="chat" hidden>
+    <div class="papan-h"><b>💬 Chat peserta</b><span class="muted" id="chatn"></span></div>
+    <ol class="chatlist" id="chatlist" aria-live="polite"></ol>
+    <form class="chatform" id="chatform" autocomplete="off"><input id="chatin" maxlength="500" placeholder="Tulis pesan untuk semua peserta…" aria-label="Pesan chat"><button class="btn primary" type="submit">Kirim</button></form>
+  </section>
   <section class="card alat" id="alat" hidden></section>
   <footer><span>© 2026 CAT - Lex Fexora. All rights reserved.</span> | <span>Developed &amp; Curated by Febrillian Kusuma Raafi, S.H.</span></footer>
 </div>
@@ -184,7 +203,7 @@ body.tertutup #tirai{display:flex}
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const L="ABCDEFGH";
-const main=$("main"),papan=$("papan"),lb=$("lb"),bahas=$("bahas"),alat=$("alat");
+const main=$("main"),papan=$("papan"),lb=$("lb"),bahas=$("bahas"),alat=$("alat"),chat=$("chat");
 const TID=new URLSearchParams(location.search).get("t");
 const cfg=window.FIREBASE_CONFIG||{};
 if(!window.firebase||!cfg.apiKey){main.innerHTML="<p>Situs belum dikonfigurasi.</p>";return;}
@@ -195,25 +214,33 @@ let U=null,isOwner=false,T=null,P={},aku=null,pos=0,urutLama={},deltaUntil={},si
 
 function login(){const p=new firebase.auth.GoogleAuthProvider();p.setCustomParameters({prompt:"select_account"});
   auth.signInWithPopup(p).catch(e=>{if(e&&/popup-blocked|operation-not-supported/.test(e.code||""))auth.signInWithRedirect(p);});}
-function gate(h,p,btn){papan.hidden=true;bahas.hidden=true;alat.hidden=true;main.className="card gate";main.innerHTML=`<h2 class="judul">${esc(h)}</h2><p class="muted">${esc(p||"")}</p>${btn?'<div class="row" style="justify-content:center"><button class="btn primary" id="masuk" type="button">Masuk dengan Google</button></div>':""}`;
+function gate(h,p,btn){papan.hidden=true;bahas.hidden=true;alat.hidden=true;chat.hidden=true;main.className="card gate";main.innerHTML=`<h2 class="judul">${esc(h)}</h2><p class="muted">${esc(p||"")}</p>${btn?'<div class="row" style="justify-content:center"><button class="btn primary" id="masuk" type="button">Masuk dengan Google</button></div>':""}`;
   if(btn)$("masuk").onclick=login;}
 
 if(!TID){gate("Tautan mock exam tidak lengkap","Buka tautan mock exam yang dibagikan penyelenggara.");return;}
 
-auth.onAuthStateChanged(u=>{U=u;pMuat=false;aku=null;P={};if(unsubT){unsubT();unsubT=null;}if(unsubP){unsubP();unsubP=null;}
+auth.onAuthStateChanged(u=>{U=u;pMuat=false;aku=null;P={};if(unsubT){unsubT();unsubT=null;}if(unsubP){unsubP();unsubP=null;}if(unsubC){unsubC();unsubC=null;}
   if(!u){gate("Mock Exam","Masuk dengan akun Google untuk ikut mock exam. Nama akun Anda akan tampil di papan peringkat.",true);return;}
-  isOwner=!!OWNER&&(u.email||"").toLowerCase()===OWNER&&u.emailVerified;
+  isOwner=!!OWNER&&(u.email||"").toLowerCase()===OWNER&&u.emailVerified;document.body.classList.toggle("bebas",isOwner);
   unsubT=db.doc("tryout/"+TID).onSnapshot(s=>{if(!s.exists){gate("Mock exam tidak ditemukan","Periksa kembali tautannya.");return;}
       T=s.data({serverTimestamps:"estimate"});T.id=s.id;gabung();render();},
     e=>gate("Mock exam belum dapat dibuka","Muat ulang halaman. ("+(e.code||e.message)+")"));
   unsubP=db.collection("tryout/"+TID+"/peserta").onSnapshot(qs=>{const m={};qs.forEach(d=>{m[d.id]=d.data();});P=m;pMuat=true;if(T)gabung();
-      const baru=P[U.uid]&&!aku;if(baru){aku=Object.assign({jawab:{}},P[U.uid]);if(U.displayName)aku.nama=U.displayName;if(aku.selesai)selesaiKirim=true;}renderPapan();if(baru&&T&&T.status==='mulai'){render();return;}if(T&&(T.status==="menunggu"||T.status==="siap"||selesaiSemua()))render();else if($("stat"))$("stat").outerHTML=statHTML();},()=>{});
+      // Heartbeat (kolom t) saja tidak perlu menggambar ulang layar, agar tombol tidak "lari" saat diklik.
+      const sig=JSON.stringify(Object.keys(m).sort().map(k=>[k,m[k].nama,m[k].siap,m[k].selesai,m[k].dijawab,m[k].jawab])),sama=sig===sigP;sigP=sig;
+      const baru=P[U.uid]&&!aku;if(baru){aku=Object.assign({jawab:{}},P[U.uid]);if(U.displayName)aku.nama=U.displayName;if(aku.selesai)selesaiKirim=true;}renderPapan();if(baru&&T&&T.status==='mulai'){render();return;}if(sama&&!baru)return;if(T&&(T.status==="menunggu"||T.status==="siap"||selesaiSemua())){if((document.activeElement||{}).id!=="mpilih")render();}else if(SINK()&&T.status==="mulai"&&praMs()<=0&&(document.activeElement||{}).id!=="mpilih")render();else if($("stat"))$("stat").outerHTML=statHTML();},()=>{});
+  // Chat room: 80 pesan terakhir, nama dan foto dari akun Google pengirim.
+  unsubC=db.collection("tryout/"+TID+"/chat").orderBy("t","desc").limit(80).onSnapshot(qs=>{const m=[];qs.forEach(d=>m.push(d.data({serverTimestamps:"estimate"})));renderChat(m.reverse());},()=>{});
   if(!tick)tick=setInterval(()=>{if(!T)return;if(T.status==="mulai"){const pra=praMs(),cd=$("cdn");
       if(pra>0){if(cd)cd.textContent=Math.ceil(pra/1000);else render();return;}if(cd){render();return;}const sisa=sisaMs();const el=$("sisa");
       if(el){el.textContent=fmt(sisa);el.parentElement.classList.toggle("warn",sisa<=60000);}
-      if(sisa<=0&&!habisDitangani){habisDitangani=true;kumpul(true);render();}}},250);
+      if(sisa<=0&&!habisDitangani&&!SINK()){habisDitangani=true;kumpul(true);render();}
+      if(SINK()){const q=$("sisaq"),sq=soalSisaMs();if(q){q.textContent=fmt(sq);q.parentElement.classList.toggle("warn",sq<=10000);}
+        if(sq<=0&&habisIdx!==(T.idx||0)){habisIdx=T.idx||0;render();}}}
+    if(SINK()&&Date.now()-cekT>5000){cekT=Date.now();cekMaster();}},250);
+  if(!detak)detak=setInterval(()=>{if(SINK()&&aku&&!aku.selesai&&T&&T.status!=="selesai")db.doc("tryout/"+TID+"/peserta/"+U.uid).update({t:FV.serverTimestamp()}).catch(()=>{});},10000);
 });
-let habisDitangani=false;
+let unsubC=null,sigP="",habisDitangani=false,habisIdx=-1,cekT=0,detak=null;
 try{pos=+sessionStorage.getItem("to-pos-"+TID)||0;}catch(e){}
 
 // Hitung mundur 3 detik setelah pemilik menekan Mulai; waktu pengerjaan dihitung sesudahnya.
@@ -226,7 +253,29 @@ const STANDAR=[[100,"Standar Sempurna"],[90,"Standar Istimewa"],[80,"Standar San
 function predikat(ok,n){const cap=n?STANDAR.find(([p])=>ok>=Math.ceil(p*n/100-1e-9)):null;
   return `<p class="predikat ${cap?"lulus":"gagal"}">${cap?"Lulus · "+cap[1]+" · "+cap[0]+"%":"Belum lulus · di bawah Standar Cukup 50%"}</p>`;}
 function fmt(ms){const s=Math.ceil(ms/1000);return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");}
-function selesaiSemua(){return T.status==="selesai"||(T.status==="mulai"&&sisaMs()<=0);}
+function selesaiSemua(){return T.status==="selesai"||(T.status==="mulai"&&(SINK()?(T.idx||0)>=T.soal.length:sisaMs()<=0));}
+
+// Mode serentak: semua peserta melihat soal ke-idx; tiap soal dibatasi detikSoal, room master (T.master) menekan Next.
+// Kehadiran dibaca dari kolom t (heartbeat tiap 10 detik); bila room master tidak terlihat >25 detik, kewenangan pindah otomatis.
+function SINK(){return !!T&&T.mode==="sinkron";}
+function tms(t){return t?(t.toMillis?t.toMillis():t.seconds*1000):0;}
+function soalSisaMs(){const det=(T.detikSoal||54)*1000,st=(T.idx||0)===0||!T.idxMulai?mulaiMs():tms(T.idxMulai);return Math.max(0,st+det-Date.now());}
+function semuaJawab(q){const ps=Object.values(P).filter(p=>!p.selesai);return ps.length>0&&ps.every(p=>(p.jawab||{})[q.id]!==undefined);}
+function isMaster(){return SINK()&&!!U&&T.master===U.uid;}
+function namaP(uid){const p=P[uid];return p?p.nama:"(belum bergabung)";}
+function segar(){const ps=Object.entries(P).filter(([,p])=>!p.selesai);if(!ps.length)return [];const mx=Math.max(...ps.map(([,p])=>tms(p.t)));
+  return ps.filter(([,p])=>mx-tms(p.t)<25000).map(([u])=>u);}
+function pilihMaster(uid){if(!uid||uid===T.master)return;db.doc("tryout/"+TID).update({master:uid}).catch(e=>alert("Gagal memindahkan: "+(e.code||e.message)));}
+function cekMaster(){if(!SINK()||!U||!aku||T.status==="selesai"||selesaiSemua())return;const sg=segar();if(!sg.length||sg.includes(T.master))return;
+  const calon=sg.includes(T.pembuat)?T.pembuat:sg.sort()[0];if(calon===U.uid)db.doc("tryout/"+TID).update({master:U.uid}).catch(()=>{});}
+function lanjutSemua(){if(!isMaster())return;const i=(T.idx||0)+1;
+  if(i>=T.soal.length&&!confirm("Ini soal terakhir. Selesaikan mock exam untuk semua peserta?"))return;
+  db.doc("tryout/"+TID).update({idx:i,idxMulai:FV.serverTimestamp()}).catch(e=>alert("Gagal: "+(e.code||e.message)));}
+function masterHTML(){const ps=Object.entries(P).filter(([,p])=>!p.selesai),sg=segar(),boleh=isMaster()||isOwner;
+  return `<div class="master"><div class="master-h"><span class="mk">👑</span><span>Room master: <b>${esc(namaP(T.master))}</b>${T.master===(U&&U.uid)?" (Anda)":""}</span></div>
+  ${boleh&&ps.length>1?`<div class="linkrow"><select id="mpilih" aria-label="Pindahkan room master">${ps.map(([u,p])=>`<option value="${esc(u)}"${u===T.master?" selected":""}>${esc(p.nama)}${sg.includes(u)?"":" (offline)"}</option>`).join("")}</select><button class="btn" id="mpindah" type="button">Jadikan room master</button></div>`:""}
+  <p class="muted" style="margin:0;font-size:12.5px">Room master menekan Next untuk semua peserta. ${boleh?"Kewenangan bisa dipindahkan kapan saja; ":""}bila room master keluar atau terputus, kewenangan pindah otomatis.</p></div>`;}
+function pasangMaster(){if($("mpindah"))$("mpindah").onclick=()=>pilihMaster($("mpilih").value);}
 
 // Bergabung otomatis: dokumen peserta dibuat sekali saat mock exam belum selesai.
 // Pemilik juga ikut mengerjakan sebagai peserta (otomatis siap), sambil tetap memegang kendali mulai/akhiri.
@@ -245,21 +294,28 @@ function simpan(segera){clearTimeout(simpanT);const f=()=>db.doc("tryout/"+TID+"
 addEventListener("pagehide",()=>{if(simpanT&&aku&&!aku.selesai)simpan(true);});
 function kumpul(otomatis){if(!aku||aku.selesai||selesaiKirim)return;selesaiKirim=true;if(!otomatis)hitung();aku.selesai=true;simpan(true);}
 
-function render(){if(!T||!U)return;main.className="card";bahas.hidden=true;alat.hidden=true;
+function render(){if(!T||!U)return;main.className="card";bahas.hidden=true;alat.hidden=true;chat.hidden=!aku;
   if(selesaiSemua())return hasil();
   if(T.status==="menunggu"||T.status==="siap")return lobi();
   if(praMs()>0)return hitungMundur();
   if(isOwner&&!aku)return pantau();
   if(aku&&aku.selesai)tunggu();else ujian();renderPapan();}
 
+function renderChat(m){const el=$("chatlist"),bawah=el.scrollHeight-el.scrollTop-el.clientHeight<40;$("chatn").textContent=m.length?m.length+" pesan":"";
+  el.innerHTML=m.map(c=>{const me=U&&c.uid===U.uid,jam=c.t&&c.t.toDate?c.t.toDate().toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"}):"";
+    return `<li class="${me?"aku":""}"><span class="av">${av(c)}</span><div><b>${esc(c.nama||"Peserta")}${T&&c.uid===T.master?" 👑":""}</b> <small class="muted">${jam}</small><p>${esc(c.teks)}</p></div></li>`;}).join("")||'<li class="kosong muted">Belum ada pesan. Sapa peserta lain!</li>';
+  if(bawah)el.scrollTop=el.scrollHeight;}
+$("chatform").onsubmit=e=>{e.preventDefault();const i=$("chatin"),t=i.value.trim().slice(0,500);if(!t||!U||!aku)return;i.value="";
+  db.collection("tryout/"+TID+"/chat").add({uid:U.uid,nama:aku.nama||U.displayName||"Peserta",foto:aku.foto||U.photoURL||"",teks:t,t:FV.serverTimestamp()}).catch(er=>{i.value=t;alert("Pesan gagal dikirim: "+(er.code||er.message));});};
 function tautan(){return location.origin+location.pathname+"?t="+TID;}
 // Ruang tunggu: peserta otomatis terdaftar. Setelah pemilik menekan Play, peserta menekan "Saya siap";
 // nama yang siap bercahaya, yang belum siap berwarna merah.
 function lobi(){const ps=Object.entries(P).map(([uid,p])=>Object.assign({uid},p)),cek=T.status==="siap",nSiap=ps.filter(p=>p.siap).length;papan.hidden=true;
   const chip=p=>`<span class="${cek?(p.siap?"siap":"belum"):""}">${esc(p.nama)}${U&&p.uid===U.uid?" (Anda)":""}</span>`;
   main.innerHTML=`<p class="eyebrow" style="margin:0">${cek?"Cek kesiapan":"Ruang tunggu"}</p><h2 class="judul">${esc(T.judul)}</h2>
-  <div class="info"><span>${T.soal.length} soal</span><span>Waktu ${Math.round(T.durasi/60)} menit</span><span>${ps.length} peserta bergabung</span>${cek?`<span>${nSiap} siap · ${ps.length-nSiap} belum</span>`:""}</div>
+  <div class="info"><span>${T.soal.length} soal</span><span>${SINK()?`${T.detikSoal||54} detik per soal`:`Waktu ${Math.round(T.durasi/60)} menit`}</span><span>${ps.length} peserta bergabung</span>${cek?`<span>${nSiap} siap · ${ps.length-nSiap} belum</span>`:""}</div>
   <div class="chips">${ps.map(chip).join("")||'<span class="kosong">Belum ada peserta</span>'}</div>
+  ${SINK()?`<div class="info"><span>Serentak · ${T.detikSoal||54} detik per soal</span></div>${masterHTML()}`:""}
   ${isOwner?`<div class="linkrow"><input readonly value="${esc(tautan())}" aria-label="Tautan mock exam"><button class="btn" id="salin" type="button">Salin tautan</button></div>
   <div class="row">${cek?`<button class="btn primary" id="mulai" type="button">Mulai sekarang (${nSiap}/${ps.length} siap)</button><button class="btn" id="batal" type="button">Kembali ke ruang tunggu</button>`:'<button class="btn primary play" id="play" type="button">▶ Play</button>'}</div>
   <p class="muted" style="margin:0;font-size:13px">${cek?"Nama yang bercahaya sudah siap, yang merah belum. Tekan Mulai untuk memulai serentak.":"Bagikan tautan di atas. Setiap orang yang membukanya otomatis masuk daftar. Tekan Play untuk meminta peserta bersiap."}</p>`
@@ -269,7 +325,7 @@ function lobi(){const ps=Object.entries(P).map(([uid,p])=>Object.assign({uid},p)
     if($("play"))$("play").onclick=()=>db.doc("tryout/"+TID).update({status:"siap"});
     if($("batal"))$("batal").onclick=()=>db.doc("tryout/"+TID).update({status:"menunggu"});
     if($("mulai"))$("mulai").onclick=()=>{const b=ps.length-nSiap;if(!confirm(b?`Mulai mock exam sekarang? ${b} peserta belum siap.`:"Mulai mock exam sekarang? Semua peserta sudah siap."))return;db.doc("tryout/"+TID).update({status:"mulai",mulai:FV.serverTimestamp()});};}
-  else if($("siapku"))$("siapku").onclick=()=>{if(!aku)return;aku.siap=!aku.siap;simpan(true);render();};}
+  else if($("siapku"))$("siapku").onclick=()=>{if(!aku)return;aku.siap=!aku.siap;simpan(true);render();};pasangMaster();}
 
 function hitungMundur(){papan.hidden=true;main.className="card";
   main.innerHTML=`<div class="hitung"><p class="eyebrow" style="margin:0">${esc(T.judul)}</p><div class="cd" id="cdn">${Math.ceil(praMs()/1000)}</div><p class="muted" style="margin:0">${T.soal.length} soal · ${Math.round(T.durasi/60)} menit. Bersiaplah.</p></div>`;}
@@ -288,26 +344,28 @@ function unduhCSV(){const r=urut(),n=T.soal.length,q=v=>'"'+String(v).replace(/"
   a.download=("hasil-"+(T.judul||"tryout")).replace(/[^\w\- ]+/g,"").trim().replace(/\s+/g,"-")+".csv";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500);}
 
 function ujian(){papan.hidden=false;if(!aku){main.innerHTML='<p class="muted">Menyiapkan…</p>';return;}
-  const n=T.soal.length;pos=Math.min(Math.max(0,pos),n-1);try{sessionStorage.setItem("to-pos-"+TID,pos);}catch(e){}const q=T.soal[pos],perm=acak(q.o.length,U.uid+q.id),pil=(aku.jawab||{})[q.id];
-  main.innerHTML=`<div class="ujian-h"><span class="qno">Soal ${pos+1} / ${n} · terjawab ${aku.dijawab||0}</span><span class="timer">⏱ <span id="sisa">${fmt(sisaMs())}</span></span></div>
-  <p class="qtext">${esc(q.q)}</p><ol class="opts">${perm.map((oi,pi)=>{const jw=pil!==undefined,cls=jw?(oi===q.a?" benar":oi===pil?" salah":" redup"):"";
+  const n=T.soal.length,sk=SINK();if(sk)pos=T.idx||0;pos=Math.min(Math.max(0,pos),n-1);try{sessionStorage.setItem("to-pos-"+TID,pos);}catch(e){}const q=T.soal[pos],perm=acak(q.o.length,(sk?"":U.uid)+q.id),pil=(aku.jawab||{})[q.id],habis=sk&&soalSisaMs()<=0;
+  main.innerHTML=`<div class="ujian-h"><span class="qno">Soal ${pos+1} / ${n} · terjawab ${aku.dijawab||0}</span>${sk?`<span class="timer${soalSisaMs()<=10000?" warn":""}">⏱ <span id="sisaq">${fmt(soalSisaMs())}</span></span>`:`<span class="timer">⏱ <span id="sisa">${fmt(sisaMs())}</span></span>`}</div>
+  <p class="qtext">${esc(q.q)}</p><ol class="opts">${perm.map((oi,pi)=>{const jw=pil!==undefined||habis,cls=jw?(oi===q.a?" benar":oi===pil?" salah":" redup"):"";
     return `<li><button type="button" class="opt${cls}" data-o="${oi}"${jw?" disabled":""}><span class="l">${L[pi]}</span><span class="t">${esc(q.o[oi])}${jw&&oi===q.a?' <b class="mk">✓</b>':jw&&oi===pil?' <b class="mk">❌</b>':""}</span></button></li>`;}).join("")}</ol>
-  <div class="nav"><button class="btn" id="prev" type="button"${pos===0?" disabled":""}>← Previous</button>${pos<n-1?'<button class="btn primary" id="next" type="button">Next →</button>':'<button class="btn primary" id="kumpul" type="button">Selesai &amp; kumpulkan</button>'}</div>
+  ${sk?`<div class="nav sk">${isMaster()?`<button class="btn primary" id="next" type="button"${habis||semuaJawab(q)?"":" disabled"}>👑 ${pos<n-1?"Next → (untuk semua)":"Selesai untuk semua"}</button><p class="muted tunggum">${habis||semuaJawab(q)?"Anda room master. Tekan Next untuk lanjut ke soal berikutnya.":"Next aktif saat waktu habis atau semua peserta sudah menjawab."}</p>`:`<p class="muted tunggum">${habis?"Waktu habis. ":""}Menunggu room master <b id="mnama">${esc(namaP(T.master))}</b> menekan Next.</p>`}</div>`:`<div class="nav"><button class="btn" id="prev" type="button"${pos===0?" disabled":""}>← Previous</button>${pos<n-1?'<button class="btn primary" id="next" type="button">Next →</button>':'<button class="btn primary" id="kumpul" type="button">Selesai &amp; kumpulkan</button>'}</div>`}
 `;
   // Peta soal dan tombol kumpul di kartu terpisah di bawah peringkat & pembahasan.
-  alat.hidden=false;alat.innerHTML=`<div class="peta">${T.soal.map((s,i)=>`<button type="button" data-i="${i}" class="${(aku.jawab||{})[s.id]!==undefined?"sdh":""}${i===pos?" ini":""}">${i+1}</button>`).join("")}</div>
-  ${pos<n-1?'<div class="row" style="justify-content:flex-end"><button class="btn" id="kumpul" type="button">Kumpulkan sekarang</button></div>':""}
+  alat.hidden=false;alat.innerHTML=`${sk?masterHTML():""}<div class="peta${sk?" kunci-peta":""}">${T.soal.map((s,i)=>`<button type="button" data-i="${i}"${sk?" disabled":""} class="${(aku.jawab||{})[s.id]!==undefined?"sdh":""}${i===pos?" ini":""}">${i+1}</button>`).join("")}</div>
+  ${pos<n-1&&!sk?'<div class="row" style="justify-content:flex-end"><button class="btn" id="kumpul" type="button">Kumpulkan sekarang</button></div>':""}
   ${isOwner?statHTML()+'<div class="row"><button class="btn bahaya" id="akhiri" type="button">Akhiri mock exam untuk semua</button></div>':""}
-  <p class="muted kunci" style="margin:0;font-size:12px">Pintasan: <kbd>A</kbd>–<kbd>${L[q.o.length-1]}</kbd> memilih jawaban, <kbd>←</kbd> <kbd>→</kbd> pindah soal.</p>`;
+  <p class="muted kunci" style="margin:0;font-size:12px">Pintasan: <kbd>A</kbd>–<kbd>${L[q.o.length-1]}</kbd> memilih jawaban${sk?(isMaster()?", <kbd>→</kbd> Next untuk semua":""):", <kbd>←</kbd> <kbd>→</kbd> pindah soal"}.</p>`;pasangMaster();
   // Jawaban terkunci setelah dipilih; pembahasan dan sumber langsung tampil di kolom kanan.
-  main.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{if((aku.jawab||{})[q.id]!==undefined)return;aku.jawab=Object.assign({},aku.jawab,{[q.id]:+b.dataset.o});hitung();simpan(true);render();});
-  bahas.hidden=false;bahas.innerHTML=pil===undefined?`<div class="bahas-h"><span>🕯️</span><b>Explanation</b></div><p class="muted kosong">Pembahasan dan sumber muncul di sini setelah Anda memilih jawaban.</p>`:
+  main.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{if((aku.jawab||{})[q.id]!==undefined||(sk&&soalSisaMs()<=0))return;aku.jawab=Object.assign({},aku.jawab,{[q.id]:+b.dataset.o});hitung();simpan(true);render();});
+  bahas.hidden=false;bahas.innerHTML=pil===undefined&&habis?`<div class="bahas-h"><span>⌛</span><b>Explanation</b><span class="vonis no">Waktu habis</span></div><p class="kunci-j">Jawaban benar: <b>${L[perm.indexOf(q.a)]}. ${esc(q.o[q.a])}</b></p>`+
+    `<div class="blok"><h3>Pembahasan</h3><p>${q.p?esc(q.p):'<span class="muted">Belum ada pembahasan untuk soal ini.</span>'}</p></div><div class="blok"><h3>Sumber</h3><p>${q.d?esc(q.d):'<span class="muted">—</span>'}</p></div>`:
+    pil===undefined?`<div class="bahas-h"><span>🕯️</span><b>Explanation</b></div><p class="muted kosong">Pembahasan dan sumber muncul di sini setelah Anda memilih jawaban.</p>`:
     `<div class="bahas-h"><span>${pil===q.a?"🕯️":"📜"}</span><b>Explanation</b><span class="vonis ${pil===q.a?"ok":"no"}">${pil===q.a?"✓ Benar":"❌ Salah"}</span></div>`+
     (pil!==q.a?`<p class="kunci-j">Jawaban benar: <b>${L[perm.indexOf(q.a)]}. ${esc(q.o[q.a])}</b></p>`:"")+
     `<div class="blok"><h3>Pembahasan</h3><p>${q.p?esc(q.p):'<span class="muted">Belum ada pembahasan untuk soal ini.</span>'}</p></div>`+
     `<div class="blok"><h3>Sumber</h3><p>${q.d?esc(q.d):'<span class="muted">—</span>'}</p></div>`;
   alat.querySelectorAll(".peta button").forEach(b=>b.onclick=()=>{pos=+b.dataset.i;render();});
-  if($("prev"))$("prev").onclick=()=>{pos--;render();};if($("next"))$("next").onclick=()=>{pos++;render();};
+  if($("prev"))$("prev").onclick=()=>{pos--;render();};if($("next"))$("next").onclick=()=>{if(sk)lanjutSemua();else{pos++;render();}};
   document.querySelectorAll("#kumpul").forEach(b=>b.onclick=()=>{const sisa=n-(aku.dijawab||0);if(!confirm(sisa?`Masih ada ${sisa} soal belum dijawab. Kumpulkan sekarang?`:"Kumpulkan jawaban sekarang?"))return;kumpul();render();});
   if($("akhiri"))$("akhiri").onclick=akhiri;}
 document.addEventListener("keydown",e=>{if(e.ctrlKey||e.metaKey||e.altKey||/INPUT|TEXTAREA|SELECT/.test((e.target||{}).tagName||""))return;
@@ -325,13 +383,17 @@ function tunggu(){papan.hidden=false;main.innerHTML=`<div class="hasilku"><p cla
 // Peringkat: nilai tertinggi, lalu waktu pengerjaan tercepat, lalu nama.
 function urut(){return Object.entries(P).map(([uid,p])=>Object.assign({uid},p)).sort((a,b)=>(b.benar||0)-(a.benar||0)||(b.skor||0)-(a.skor||0)||(a.dur||0)-(b.dur||0)||String(a.nama).localeCompare(String(b.nama)));}
 function av(p){return p.foto?`<img src="${esc(p.foto)}" alt="" referrerpolicy="no-referrer">`:esc((p.nama||"?").trim().charAt(0).toUpperCase());}
+// Mode serentak: tanda jawaban tiap peserta untuk soal yang sedang berjalan (benar, salah, belum, atau tidak menjawab).
+function tandaSoal(p){if(!SINK()||T.status!=="mulai")return "";const q=T.soal[Math.min(T.idx||0,T.soal.length-1)],j=(p.jawab||{})[q.id];
+  const [c,t,l]=j!==undefined?(j===q.a?["ok","✓","benar"]:["no","✕","salah"]):soalSisaMs()>0?["tg","…","belum menjawab"]:["ks","–","tidak menjawab"];
+  return `<i class="tq ${c}" title="Soal ${(T.idx||0)+1}: ${l}" aria-label="Soal ${(T.idx||0)+1}: ${l}">${t}</i>`;}
 function renderPapan(){if(!T||papan.hidden&&!(T.status==="mulai"))return;if(selesaiSemua()){papan.hidden=true;return;}
   const r=urut(),now=Date.now(),me=U&&U.uid;$("jmlp").textContent=r.length+" peserta";
   r.forEach((p,i)=>{const lama=urutLama[p.uid];if(lama!==undefined&&lama!==i+1)deltaUntil[p.uid]={d:lama-(i+1),s:now+4000};urutLama[p.uid]=i+1;});
   let tampil=r.slice(0,10);const iMe=r.findIndex(p=>p.uid===me);if(iMe>=10)tampil=tampil.concat([null,r[iMe]]);
   const before={};lb.querySelectorAll("li[data-u]").forEach(li=>before[li.dataset.u]=li.getBoundingClientRect().top);
   lb.innerHTML=tampil.map(p=>{if(!p)return '<li class="gap">⋯</li>';const rk=urutLama[p.uid],dl=deltaUntil[p.uid],ad=dl&&dl.s>now;
-    return `<li data-u="${esc(p.uid)}" class="${p.uid===me?"aku":""}"><span class="rk${rk<=3?" m"+rk:""}">${rk}</span><span class="av">${av(p)}</span><span class="nm">${esc(p.nama)}${p.uid===me?" (Anda)":""}<small>${p.dijawab||0}/${T.soal.length} terjawab${p.selesai?" · selesai":""}</small></span><span class="sk">${p.benar||0}<small> benar</small></span><span class="dl ${ad?(dl.d>0?"naik":"turun"):""}">${ad?(dl.d>0?"▲"+dl.d:"▼"+(-dl.d)):""}</span></li>`;}).join("");
+    return `<li data-u="${esc(p.uid)}" class="${p.uid===me?"aku":""}"><span class="rk${rk<=3?" m"+rk:""}">${rk}</span><span class="av">${av(p)}</span><span class="nm">${SINK()&&p.uid===T.master?'<span class="crown" title="Room master">👑</span>':""}${esc(p.nama)}${p.uid===me?" (Anda)":""}${tandaSoal(p)}<small>${p.dijawab||0}/${T.soal.length} terjawab${p.selesai?" · selesai":""}</small></span><span class="sk">${p.benar||0}<small> benar</small></span><span class="dl ${ad?(dl.d>0?"naik":"turun"):""}">${ad?(dl.d>0?"▲"+dl.d:"▼"+(-dl.d)):""}</span></li>`;}).join("");
   // Animasi FLIP: baris bergeser halus dari posisi lama ke posisi baru.
   if(!matchMedia("(prefers-reduced-motion: reduce)").matches)lb.querySelectorAll("li[data-u]").forEach(li=>{const b=before[li.dataset.u];if(b===undefined)return;const dy=b-li.getBoundingClientRect().top;if(!dy)return;
     li.style.transition="none";li.style.transform=`translateY(${dy}px)`;requestAnimationFrame(()=>{li.style.transition="transform .6s cubic-bezier(.2,.8,.2,1)";li.style.transform="";});});}
@@ -365,15 +427,16 @@ function pembahasan(p){const j=(aku&&aku.jawab)||p.jawab||{},n=T.soal.length;let
 <script>
 /* Pencegah salin & tangkapan layar: browser tidak bisa memblokir screenshot sepenuhnya,
    jadi ini hanya mempersulit. */
-(()=>{const no=e=>{const t=e.target;if(t&&t.closest&&t.closest('input,textarea,select,[contenteditable]'))return;e.preventDefault();};
+// Pemilik (body.bebas) dikecualikan agar bisa screenshot untuk melaporkan kendala.
+(()=>{const bebas=()=>document.body.classList.contains("bebas");const no=e=>{if(bebas())return;const t=e.target;if(t&&t.closest&&t.closest('input,textarea,select,[contenteditable]'))return;e.preventDefault();};
   ["contextmenu","copy","cut","dragstart","selectstart"].forEach(k=>document.addEventListener(k,no));
-  const tutup=()=>document.body.classList.add("tertutup"),buka=()=>document.body.classList.remove("tertutup");
+  const tutup=()=>{if(!bebas())document.body.classList.add("tertutup");},buka=()=>document.body.classList.remove("tertutup");
   const kosongkan=()=>{try{navigator.clipboard&&navigator.clipboard.writeText("")}catch(e){}};
-  document.addEventListener("keydown",e=>{const k=(e.key||"").toLowerCase(),m=e.ctrlKey||e.metaKey;
+  document.addEventListener("keydown",e=>{if(bebas())return;const k=(e.key||"").toLowerCase(),m=e.ctrlKey||e.metaKey;
     if(k==="printscreen"||e.keyCode===44){e.preventDefault();kosongkan();tutup();setTimeout(buka,1500);return;}
     if(m&&["p","s","u"].includes(k)||m&&e.shiftKey&&["3","4","5","s","i","c","j"].includes(k)||k==="f12"){e.preventDefault();if(e.shiftKey)tutup();}
     if(e.metaKey&&e.shiftKey)tutup();},true);
-  document.addEventListener("keyup",e=>{if((e.key||"").toLowerCase()==="printscreen"){kosongkan();setTimeout(buka,1500);}},true);
+  document.addEventListener("keyup",e=>{if(bebas())return;if((e.key||"").toLowerCase()==="printscreen"){kosongkan();setTimeout(buka,1500);}},true);
   window.addEventListener("blur",tutup);window.addEventListener("focus",buka);
   document.addEventListener("visibilitychange",()=>document.hidden?tutup():buka());
   document.addEventListener("pointerdown",buka,true);

@@ -284,11 +284,11 @@ html.gate-wait .wrap{display:none}
 .gate .note{font-size:12px;margin-top:12px}
 @media (max-width:552px){.gate{margin:12vh 16px}}
 /* Pencegah salin & tangkapan layar (deterensi, bukan jaminan) */
-body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+body:not(.bebas){-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 input,textarea,select,[contenteditable]{-webkit-user-select:text;user-select:text}
 #tirai{position:fixed;inset:0;z-index:2147483647;display:none;align-items:center;justify-content:center;text-align:center;padding:24px;background:var(--bg,#111);color:var(--muted,#999);font:500 15px/1.5 system-ui,sans-serif}
 body.tertutup #tirai{display:flex}
-@media print{body{display:none!important}}
+@media print{body:not(.bebas){display:none!important}}
 </style>
 </head>
 <body>
@@ -346,7 +346,7 @@ body.tertutup #tirai{display:flex}
       <div class="toform">
         <label>Judul<input id="tojudul" value="Mock Exam Seleksi Kemampuan Bidang"></label>
         <div class="torow"><label>Jumlah soal<select id="tojml"><option value="25">25 soal</option><option value="50">50 soal</option><option value="75">75 soal</option><option value="100" selected>100 soal</option><option value="150">150 soal</option><option value="200">200 soal</option></select></label>
-        <label>Waktu (menit)<input id="tomenit" type="number" min="5" max="300" value="90"></label></div>
+        <label>Detik per soal<input id="todetik" type="number" min="10" max="600" value="54"></label></div>
         <p class="note" style="margin:4px 0 0">Pilih satu atau beberapa sub-materi. Soal diracik otomatis: jatah tiap sub-materi sebanding jumlah soalnya, seimbang antara dasar hukum, istilah &amp; prosedur, dan pendapat ahli, tanpa soal kembar, dengan urutan sub-materi diselang-seling.</p>
         <div class="tosub" id="tosub"></div>
         <p class="note" id="toinfo"></p>
@@ -870,7 +870,7 @@ window.__quiz={state};
     if(unsub){unsub();unsub=null;}if(beat){clearInterval(beat);beat=null;}
     if(!u){show('Latihan ini membutuhkan izin','Masuk dengan akun Google. Permintaan akses Anda akan dikirim ke pemilik untuk disetujui.',null,true,false);return;}
     const who='Masuk sebagai '+(u.displayName?u.displayName+' · ':'')+u.email;
-    if(OWNER&&(u.email||'').toLowerCase()===OWNER&&u.emailVerified){isOwner=true;window.__isOwner=true;
+    if(OWNER&&(u.email||'').toLowerCase()===OWNER&&u.emailVerified){isOwner=true;window.__isOwner=true;document.body.classList.add('bebas');
       window.__pindah=(id,list)=>db.doc('bank/pindah').set({m:{[id]:list}},{merge:true}).then(()=>pinfo());
       window.__edit=(id,rec)=>db.doc('bank/edit').set({m:{[id]:rec}},{merge:true}).then(()=>pinfo());admin();start();return;}
     const ref=db.doc('izin/'+u.uid);
@@ -906,10 +906,11 @@ window.__quiz={state};
       const baru=PK?pool.filter(q=>!PK.m[q.id]).length:null,pakai=Math.min(n,j);
       $('toinfo').innerHTML=`<b>${n}</b> soal tersedia dari sub-materi terpilih`+(baru!==null?` (<b>${baru}</b> belum pernah diujikan)`:'')+`. `+
         (n>j?`Diujikan <b>${j}</b> soal; sisa ${n-j} soal tidak dipakai sekarang dan diutamakan muncul di mock exam berikutnya.`:n<j?`Kurang dari ${j}, jadi semua ${n} soal dipakai.`:`Semua ${n} soal dipakai.`)+
-        ` Waktu ${$('tomenit').value} menit untuk ${pakai} soal.`;};
-    $('tomenit').oninput=toInfo;
+        ` Semua peserta mengerjakan soal yang sama secara serentak: ${+$('todetik').value||54} detik per soal (sekitar ${Math.ceil(pakai*(+$('todetik').value||54)/60)} menit), lalu room master 👑 menekan Next.`;};
+    // Mock exam selalu serentak: semua peserta di soal yang sama, tiap soal dibatasi detik, room master menekan Next.
+    $('todetik').oninput=toInfo;
     $('torst').onclick=async()=>{if(!confirm('Atur ulang riwayat rotasi? Semua soal dianggap belum pernah diujikan.'))return;await pakaiMuat();PK.m={};try{await pakaiRef.set(PK);}catch(e){alert('Gagal: '+(e.code||e.message));}toInfo();};
-    $('tojml').onchange=()=>{$('tomenit').value=Math.round(+$('tojml').value*54/60);toInfo();};
+    $('tojml').onchange=toInfo;
     $('tobox').addEventListener('toggle',()=>{if(!$('tobox').open)return;pakaiMuat().then(toInfo);if($('tosub').childElementCount)return;
       if(!QB.length){$('tosub').textContent='Bank soal belum dimuat.';return;}
       $('tosub').innerHTML=Object.keys(CATS).map(c=>`<fieldset><legend><label><input type="checkbox" data-all="${c}"> ${esc(CATS[c].short)}</label></legend>`+
@@ -935,10 +936,13 @@ window.__quiz={state};
       const hasil=[];for(let r=0;hasil.length<n&&pilih.some(p=>p.length);r++)acakArr(pilih).forEach(p=>{if(p.length&&hasil.length<n)hasil.push(p.shift());});
       return hasil;};
     $('tobuat').onclick=async()=>{const pool=toPool();if(!pool.length){alert('Pilih minimal satu sub-materi.');return;}await pakaiMuat();
-      const j=+$('tojml').value,menit=Math.max(5,Math.min(300,+$('tomenit').value||90));
+      const j=+$('tojml').value;
       const soal=racik(pool,j).map(q=>({id:q.id,q:q.q,o:q.o.slice(),a:q.a,p:q.p||'',d:q.d||''}));
       $('tobuat').disabled=true;
-      try{const r=await db.collection('tryout').add({judul:($('tojudul').value||'Mock Exam').trim().slice(0,120),soal,durasi:menit*60,status:'menunggu',mulai:null,dibuat:FV.serverTimestamp()});
+      const det=Math.max(10,Math.min(600,+$('todetik').value||54)),me=auth.currentUser.uid;
+      // Serentak: batas total longgar (tiap soal + jeda Next); yang mengatur tempo adalah detik per soal.
+      const ext={mode:'sinkron',detikSoal:det,idx:0,idxMulai:null,master:me,pembuat:me};
+      try{const r=await db.collection('tryout').add(Object.assign({judul:($('tojudul').value||'Mock Exam').trim().slice(0,120),soal,durasi:soal.length*(det+60)+600,status:'menunggu',mulai:null,dibuat:FV.serverTimestamp()},ext));
         await pakaiCatat(r.id,soal.map(q=>q.id),1).catch(()=>{});
         $('tobox').open=false;$('toinfo').textContent='';$('tocard').open=true;$('tolist').scrollIntoView({behavior:'smooth',block:'start'});}
       catch(e){alert('Gagal membuat mock exam: '+(e.code||e.message));}
@@ -984,15 +988,16 @@ window.__quiz={state};
 <script>
 /* Pencegah salin & tangkapan layar: browser tidak bisa memblokir screenshot sepenuhnya,
    jadi ini hanya mempersulit. */
-(()=>{const no=e=>{const t=e.target;if(t&&t.closest&&t.closest('input,textarea,select,[contenteditable]'))return;e.preventDefault();};
+// Pemilik (body.bebas) dikecualikan agar bisa screenshot untuk melaporkan kendala.
+(()=>{const bebas=()=>document.body.classList.contains("bebas");const no=e=>{if(bebas())return;const t=e.target;if(t&&t.closest&&t.closest('input,textarea,select,[contenteditable]'))return;e.preventDefault();};
   ["contextmenu","copy","cut","dragstart","selectstart"].forEach(k=>document.addEventListener(k,no));
-  const tutup=()=>document.body.classList.add("tertutup"),buka=()=>document.body.classList.remove("tertutup");
+  const tutup=()=>{if(!bebas())document.body.classList.add("tertutup");},buka=()=>document.body.classList.remove("tertutup");
   const kosongkan=()=>{try{navigator.clipboard&&navigator.clipboard.writeText("")}catch(e){}};
-  document.addEventListener("keydown",e=>{const k=(e.key||"").toLowerCase(),m=e.ctrlKey||e.metaKey;
+  document.addEventListener("keydown",e=>{if(bebas())return;const k=(e.key||"").toLowerCase(),m=e.ctrlKey||e.metaKey;
     if(k==="printscreen"||e.keyCode===44){e.preventDefault();kosongkan();tutup();setTimeout(buka,1500);return;}
     if(m&&["p","s","u"].includes(k)||m&&e.shiftKey&&["3","4","5","s","i","c","j"].includes(k)||k==="f12"){e.preventDefault();if(e.shiftKey)tutup();}
     if(e.metaKey&&e.shiftKey)tutup();},true);
-  document.addEventListener("keyup",e=>{if((e.key||"").toLowerCase()==="printscreen"){kosongkan();setTimeout(buka,1500);}},true);
+  document.addEventListener("keyup",e=>{if(bebas())return;if((e.key||"").toLowerCase()==="printscreen"){kosongkan();setTimeout(buka,1500);}},true);
   window.addEventListener("blur",tutup);window.addEventListener("focus",buka);
   document.addEventListener("visibilitychange",()=>document.hidden?tutup():buka());
   document.addEventListener("pointerdown",buka,true);
