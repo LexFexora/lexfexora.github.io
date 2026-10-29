@@ -1045,8 +1045,8 @@ window.__quiz={state};
       $('admcount').textContent=g.menunggu.length;$('admon').textContent=on;
       body.innerHTML=Object.keys(g).filter(k=>g[k].length).map(k=>`<h4>${TTL[k]} (${g[k].length})</h4><ul>`+g[k].map(([id,x])=>
         `<li><button class="siapa" type="button" aria-expanded="false" title="Ketuk untuk melihat email"><span class="av">${x.foto?`<img src="${esc(x.foto)}" alt="" referrerpolicy="no-referrer" onerror="this.replaceWith(document.createTextNode('${esc((x.nama||x.email||'?')[0].toUpperCase()).replace(/'/g,'')}'))">`:esc((x.nama||x.email||'?')[0].toUpperCase())}</span><span class="nm">${esc(x.nama||(x.email||'').split('@')[0])}</span></button><span class="acts">${ACT[k].map(([v,l,c])=>`<button class="btn ${c}" data-id="${id}" data-v="${v}" type="button">${l}</button>`).join('')}</span>`+
-        `<span class="em" hidden>${esc(x.email)}</span><span class="dur">${k==='menunggu'?'Meminta '+fmt(x.diminta):'Terakhir '+(fmt(x.terakhir)||'-')}${x.posisi&&k==='disetujui'?' · '+esc(x.posisi):''}</span></li>`).join('')+'</ul>').join('')||'<p class="note">Belum ada yang meminta akses.</p>';
-      // Foto dan nama tampil; email muncul saat nama diketuk.
+        `<span class="em"${k==='disetujui'?' hidden':''}>${esc(x.email)}</span><span class="dur">${k==='menunggu'?'Meminta '+fmt(x.diminta):'Terakhir '+(fmt(x.terakhir)||'-')}${x.posisi&&k==='disetujui'?' · '+esc(x.posisi):''}</span></li>`).join('')+'</ul>').join('')||'<p class="note">Belum ada yang meminta akses.</p>';
+      // Akun disetujui: foto dan nama saja, email muncul saat nama diketuk.
       body.querySelectorAll('.siapa').forEach(b=>b.onclick=()=>{const e=b.parentElement.querySelector('.em');e.hidden=!e.hidden;b.setAttribute('aria-expanded',String(!e.hidden));});
       body.querySelectorAll('button[data-id]').forEach(b=>b.onclick=()=>{const r=db.doc('izin/'+b.dataset.id);b.disabled=true;
         (b.dataset.v==='hapus'?r.delete():r.update({status:b.dataset.v})).catch(e=>{alert('Gagal: '+(e.code||e.message));b.disabled=false;});});
