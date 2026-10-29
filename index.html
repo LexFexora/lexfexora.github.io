@@ -277,15 +277,19 @@ html.gate-wait .wrap{display:none}
 .linkrow{display:flex;gap:6px;margin:8px 0 2px;flex-wrap:wrap}
 .linkrow input{flex:1 1 220px;min-width:0;font:12.5px var(--f-mono);padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink)}
 .btn.copy{padding:4px 10px;font-size:12px;min-height:0}
-/* Panel Mock Exam: aksen emas dengan kilau halus agar menonjol. */
-.setelan.tocard{border:1px solid color-mix(in srgb,var(--brass) 65%,transparent);background:linear-gradient(135deg,color-mix(in srgb,var(--brass) 18%,var(--surface)) 0%,var(--surface) 55%,color-mix(in srgb,var(--brass) 12%,var(--surface)) 100%);box-shadow:inset 0 1px 0 color-mix(in srgb,#fff3cf 25%,transparent),0 8px 24px -12px color-mix(in srgb,var(--brass) 70%,transparent)}
-.setelan.tocard>summary{color:var(--brass);font-weight:700;letter-spacing:.02em}
+/* Panel Mock Exam: fitur istimewa, bingkai emas berkilau bergerak, label Special, dan kilau pada judul. */
+.setelan.tocard{--g1:#7a5410;--g2:#d9a849;--g3:#fff1c2;border:1.5px solid transparent;border-radius:14px;
+  background:linear-gradient(135deg,color-mix(in srgb,var(--brass) 22%,var(--surface)) 0%,var(--surface) 50%,color-mix(in srgb,var(--brass) 16%,var(--surface)) 100%) padding-box,
+  linear-gradient(115deg,var(--g1),var(--g2) 25%,var(--g3) 40%,var(--g2) 55%,var(--g1) 75%,var(--g2)) border-box;background-size:100% 100%,300% 100%;
+  animation:bingkai 6s linear infinite;box-shadow:0 10px 28px -12px color-mix(in srgb,var(--g2) 75%,transparent),0 0 0 4px color-mix(in srgb,var(--g2) 10%,transparent)}
+@keyframes bingkai{to{background-position:0 0,300% 0}}
+.setelan.tocard>summary{color:var(--brass);font-weight:700;letter-spacing:.02em;padding:13px 14px}
 .setelan.tocard>summary::after{color:var(--brass)}
-.setelan.tocard>summary .stl svg{width:19px;height:19px;color:var(--brass);filter:drop-shadow(0 0 4px color-mix(in srgb,var(--brass) 55%,transparent))}
-.setelan.tocard>summary .stl{background:linear-gradient(100deg,var(--brass) 0%,var(--brass) 40%,#fff1c2 50%,var(--brass) 60%,var(--brass) 100%);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:kilau 4.5s ease-in-out infinite}
-.setelan.tocard>summary .stl svg{-webkit-text-fill-color:initial}
+.setelan.tocard>summary .stl{font-family:var(--f-display,inherit);font-size:16px;background:linear-gradient(100deg,var(--brass) 0%,var(--brass) 40%,var(--g3) 50%,var(--brass) 60%,var(--brass) 100%);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:kilau 4.5s ease-in-out infinite}
+.setelan.tocard>summary .stl svg{width:20px;height:20px;color:var(--brass);-webkit-text-fill-color:initial;filter:drop-shadow(0 0 5px color-mix(in srgb,var(--g2) 60%,transparent))}
+.setelan.tocard>summary .spesial{margin-left:2px;padding:2px 9px;border-radius:999px;font-size:10.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#2b1d04;background:linear-gradient(135deg,#f6dc8e,#d9a849 45%,#a8761c);box-shadow:0 1px 0 #fff4cc inset,0 2px 8px -2px rgb(169 118 28 / .6)}
 @keyframes kilau{0%,30%{background-position:100% 0}70%,100%{background-position:0 0}}
-@media (prefers-reduced-motion:reduce){.setelan.tocard>summary .stl{animation:none}}
+@media (prefers-reduced-motion:reduce){.setelan.tocard,.setelan.tocard>summary .stl{animation:none}}
 .tocard .toisi{padding:2px 14px 14px}.tocard .toisi>.note{margin:0 0 6px;font-size:12.5px;color:var(--muted)}.tocard .tobox>summary{list-style:none;display:inline-block;margin:6px 0}.tocard .tobox>summary::-webkit-details-marker{display:none}.tolist .btn.primary{color:var(--surface)}
 .adm .tobox>summary{list-style:none;display:inline-block;margin:6px 0}.adm .tobox>summary::-webkit-details-marker{display:none}
 .toform{display:flex;flex-direction:column;gap:8px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;margin:4px 0 8px}
@@ -392,7 +396,7 @@ body.tertutup #tirai{display:flex}
     </div>
   </details>
   <details class="setelan tocard" id="tocard" hidden>
-    <summary><span class="stl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4.5a2.5 2.5 0 0 0 2.6 3.4M17 6h2.5a2.5 2.5 0 0 1-2.6 3.4"/></svg> Mock Exam</span></summary>
+    <summary><span class="stl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4.5a2.5 2.5 0 0 0 2.6 3.4M17 6h2.5a2.5 2.5 0 0 1-2.6 3.4"/></svg> Mock Exam</span><span class="spesial">✦ Special</span></summary>
     <div class="toisi">
       <p class="note" id="toket">There are no quizzes available right now.</p>
       <div id="tolist" class="tolist"></div>
