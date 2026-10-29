@@ -375,7 +375,7 @@ body.tertutup #tirai{display:flex}
   </header>
 
   <details class="online adm" id="adm" hidden>
-    <summary><span class="dot" aria-hidden="true"></span><span>Access approvals: <strong id="admcount">0</strong> pending · <strong id="admon">0</strong> active</span><button class="btn keluar admout" type="button" id="adm-logout">Keluar</button></summary>
+    <summary><span class="dot" aria-hidden="true"></span><span>Access approvals: <strong id="admcount">0</strong> pending · <strong id="admon">0</strong> active</span><button class="btn keluar admout" type="button" id="adm-logout">EXIT</button></summary>
     <div class="linkrow"><input id="admlink" readonly aria-label="Tautan latihan"><button class="btn copy" type="button" id="admcopy">⧉ Salin tautan</button></div>
     <div id="admbody"></div>
     <div class="linkrow" id="izinsqlrow" style="display:none"><button class="btn copy" type="button" id="izinsql">⧉ Salin daftar izin (SQL untuk Supabase)</button></div>
@@ -675,7 +675,7 @@ function tally(){let ok=0,bad=0;for(const id of state.list){const a=state.ans[id
 function renderScore(){
   const {ok,bad,n}=tally();const done=ok+bad;
   const pct=done?Math.round(ok*100/done):0;
-  $("score").innerHTML=`<span class="st"><small>Answered</small> <strong>${done}/${n}</strong></span><span class="st"><small>Correct</small> <strong>${ok}</strong></span><span class="st"><small>Wrong</small> <strong>${bad}</strong></span><span class="st" title="Questions in this selection you have answered correctly, saved to your account"><small>Mastered</small> <strong>${fmtPct(state.list.filter(i=>BENAR[i]).length,n)}</strong></span><div class="sbrow"><span class="meter" aria-hidden="true"><i class="m-ok" style="width:${n?ok*100/n:0}%"></i><i class="m-bad" style="width:${n?bad*100/n:0}%"></i></span>${window.__logout?'<button class="btn keluar" id="sbkeluar" type="button">Keluar</button>':""}</div>`;
+  $("score").innerHTML=`<span class="st"><small>Answered</small> <strong>${done}/${n}</strong></span><span class="st"><small>Correct</small> <strong>${ok}</strong></span><span class="st"><small>Wrong</small> <strong>${bad}</strong></span><span class="st" title="Questions in this selection you have answered correctly, saved to your account"><small>Mastered</small> <strong>${fmtPct(state.list.filter(i=>BENAR[i]).length,n)}</strong></span><div class="sbrow"><span class="meter" aria-hidden="true"><i class="m-ok" style="width:${n?ok*100/n:0}%"></i><i class="m-bad" style="width:${n?bad*100/n:0}%"></i></span>${window.__logout?'<button class="btn keluar" id="sbkeluar" type="button">EXIT</button>':""}</div>`;
   if($("sbkeluar"))$("sbkeluar").onclick=()=>window.__logout();
 }
 function renderMap(){
