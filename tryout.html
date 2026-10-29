@@ -229,8 +229,9 @@ function fmt(ms){const s=Math.ceil(ms/1000);return String(Math.floor(s/60)).padS
 function selesaiSemua(){return T.status==="selesai"||(T.status==="mulai"&&sisaMs()<=0);}
 
 // Bergabung otomatis: dokumen peserta dibuat sekali saat mock exam belum selesai.
-function gabung(){if(!U||!pMuat||isOwner||P[U.uid]||aku||T.status==="selesai")return;
-  aku={nama:U.displayName||(U.email||"Peserta").split("@")[0],foto:U.photoURL||"",jawab:{},benar:0,dijawab:0,skor:0,dur:0,selesai:false,siap:false};
+// Pemilik juga ikut mengerjakan sebagai peserta (otomatis siap), sambil tetap memegang kendali mulai/akhiri.
+function gabung(){if(!U||!pMuat||P[U.uid]||aku||T.status==="selesai")return;
+  aku={nama:U.displayName||(U.email||"Peserta").split("@")[0],foto:U.photoURL||"",jawab:{},benar:0,dijawab:0,skor:0,dur:0,selesai:false,siap:isOwner};
   db.doc("tryout/"+TID+"/peserta/"+U.uid).set(Object.assign({},aku,{t:FV.serverTimestamp()})).catch(()=>{});}
 
 // Urutan pilihan diacak per peserta, tetap sama setiap kali dimuat ulang.
@@ -248,7 +249,7 @@ function render(){if(!T||!U)return;main.className="card";bahas.hidden=true;alat.
   if(selesaiSemua())return hasil();
   if(T.status==="menunggu"||T.status==="siap")return lobi();
   if(praMs()>0)return hitungMundur();
-  if(isOwner)return pantau();
+  if(isOwner&&!aku)return pantau();
   if(aku&&aku.selesai)tunggu();else ujian();renderPapan();}
 
 function tautan(){return location.origin+location.pathname+"?t="+TID;}
@@ -296,7 +297,7 @@ function ujian(){papan.hidden=false;if(!aku){main.innerHTML='<p class="muted">Me
   // Peta soal dan tombol kumpul di kartu terpisah di bawah peringkat & pembahasan.
   alat.hidden=false;alat.innerHTML=`<div class="peta">${T.soal.map((s,i)=>`<button type="button" data-i="${i}" class="${(aku.jawab||{})[s.id]!==undefined?"sdh":""}${i===pos?" ini":""}">${i+1}</button>`).join("")}</div>
   ${pos<n-1?'<div class="row" style="justify-content:flex-end"><button class="btn" id="kumpul" type="button">Kumpulkan sekarang</button></div>':""}
-  ${isOwner?'<div class="row"><button class="btn bahaya" id="akhiri" type="button">Akhiri mock exam untuk semua</button></div>':""}
+  ${isOwner?statHTML()+'<div class="row"><button class="btn bahaya" id="akhiri" type="button">Akhiri mock exam untuk semua</button></div>':""}
   <p class="muted kunci" style="margin:0;font-size:12px">Pintasan: <kbd>A</kbd>–<kbd>${L[q.o.length-1]}</kbd> memilih jawaban, <kbd>←</kbd> <kbd>→</kbd> pindah soal.</p>`;
   // Jawaban terkunci setelah dipilih; pembahasan dan sumber langsung tampil di kolom kanan.
   main.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{if((aku.jawab||{})[q.id]!==undefined)return;aku.jawab=Object.assign({},aku.jawab,{[q.id]:+b.dataset.o});hitung();simpan(true);render();});
