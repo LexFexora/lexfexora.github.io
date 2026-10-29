@@ -286,10 +286,11 @@ html.gate-wait .wrap{display:none}
 .setelan.tocard>summary{color:var(--brass);font-weight:700;letter-spacing:.02em;padding:13px 14px}
 .setelan.tocard>summary::after{color:var(--brass)}
 .setelan.tocard>summary .stl{font-family:var(--f-display,inherit);font-size:16px;background:linear-gradient(100deg,var(--brass) 0%,var(--brass) 40%,var(--g3) 50%,var(--brass) 60%,var(--brass) 100%);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:kilau 4.5s ease-in-out infinite}
-.setelan.tocard>summary .stl svg{width:20px;height:20px;color:var(--brass);-webkit-text-fill-color:initial;filter:drop-shadow(0 0 5px color-mix(in srgb,var(--g2) 60%,transparent))}
+.setelan.tocard>summary .stl svg.piala{width:28px;height:28px;-webkit-text-fill-color:initial;filter:drop-shadow(0 0 6px color-mix(in srgb,var(--g2) 70%,transparent));animation:pendar 3.2s ease-in-out infinite}
+@keyframes pendar{0%,100%{filter:drop-shadow(0 0 4px color-mix(in srgb,var(--g2) 55%,transparent))}50%{filter:drop-shadow(0 0 10px color-mix(in srgb,var(--g3) 90%,transparent))}}
 .setelan.tocard>summary .spesial{margin-left:2px;padding:2px 9px;border-radius:999px;font-size:10.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#2b1d04;background:linear-gradient(135deg,#f6dc8e,#d9a849 45%,#a8761c);box-shadow:0 1px 0 #fff4cc inset,0 2px 8px -2px rgb(169 118 28 / .6)}
 @keyframes kilau{0%,30%{background-position:100% 0}70%,100%{background-position:0 0}}
-@media (prefers-reduced-motion:reduce){.setelan.tocard,.setelan.tocard>summary .stl{animation:none}}
+@media (prefers-reduced-motion:reduce){.setelan.tocard,.setelan.tocard>summary .stl,.setelan.tocard .piala{animation:none}}
 .tocard .toisi{padding:2px 14px 14px}.tocard .toisi>.note{margin:0 0 6px;font-size:12.5px;color:var(--muted)}.tocard .tobox>summary{list-style:none;display:inline-block;margin:6px 0}.tocard .tobox>summary::-webkit-details-marker{display:none}.tolist .btn.primary{color:var(--surface)}
 .adm .tobox>summary{list-style:none;display:inline-block;margin:6px 0}.adm .tobox>summary::-webkit-details-marker{display:none}
 .toform{display:flex;flex-direction:column;gap:8px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;margin:4px 0 8px}
@@ -396,7 +397,7 @@ body.tertutup #tirai{display:flex}
     </div>
   </details>
   <details class="setelan tocard" id="tocard" hidden>
-    <summary><span class="stl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4.5a2.5 2.5 0 0 0 2.6 3.4M17 6h2.5a2.5 2.5 0 0 1-2.6 3.4"/></svg> Mock Exam</span></summary>
+    <summary><span class="stl"><svg class="piala" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="pialaEmas" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff3c4"/><stop offset=".35" stop-color="#e9b949"/><stop offset=".7" stop-color="#b07a16"/><stop offset="1" stop-color="#f3cf6b"/></linearGradient><linearGradient id="pialaKilap" x1="0" y1="0" x2="1" y2="0" gradientUnits="objectBoundingBox"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".95"/><stop offset="1" stop-color="#fff" stop-opacity="0"/><animateTransform attributeName="gradientTransform" type="translate" values="-1.2 0;1.2 0;1.2 0" keyTimes="0;.45;1" dur="3.2s" repeatCount="indefinite"/></linearGradient></defs><g stroke="#8a5d10" stroke-width=".6" stroke-linejoin="round"><path fill="url(#pialaEmas)" d="M7 3.5h10v5.5a5 5 0 0 1-10 0z"/><path fill="none" stroke="url(#pialaEmas)" stroke-width="1.8" stroke-linecap="round" d="M7 5.5H4.6a2.6 2.6 0 0 0 2.7 3.6M17 5.5h2.4a2.6 2.6 0 0 1-2.7 3.6"/><path fill="url(#pialaEmas)" d="M10.8 13.6h2.4v3.6h-2.4z"/><path fill="url(#pialaEmas)" d="M8 17.2h8l.8 3.3H7.2z"/></g><path fill="url(#pialaKilap)" opacity=".85" d="M7 3.5h10v5.5a5 5 0 0 1-10 0z"/><path fill="#fff" opacity=".7" d="M9 5h1.2v3.6a2.6 2.6 0 0 0 .6 1.7l-.7.6A3.6 3.6 0 0 1 9 8.6z"/></svg> Mock Exam</span></summary>
     <div class="toisi">
       <p class="note" id="toket">There are no quizzes available right now.</p>
       <div id="tolist" class="tolist"></div>
