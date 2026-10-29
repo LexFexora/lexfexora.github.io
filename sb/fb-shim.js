@@ -120,7 +120,11 @@
   let lastUid;
   sb.auth.onAuthStateChange((ev,ses)=>{const u=toUser(ses&&ses.user);auth.currentUser=u;
     // Perpanjangan token tidak dianggap login ulang, agar halaman tidak dimuat ulang tiap jam.
-    const uid=u?u.uid:null;if(auth._ready&&uid===lastUid)return;auth._ready=true;lastUid=uid;
+    const uid=u?u.uid:null;if(auth._ready&&uid===lastUid)return;
+    // Akun berganti di tab lain: muat ulang agar data akun sebelumnya tidak terbawa.
+    if(auth._ready&&lastUid&&uid){location.reload();return;}
+    try{const k='sb-uid',was=localStorage.getItem(k);if(uid&&was&&was!==uid)localStorage.removeItem('tkbcakim-v12');if(uid)localStorage.setItem(k,uid);}catch(e){}
+    auth._ready=true;lastUid=uid;
     setTimeout(()=>auth._subs.forEach(f=>{try{f(u);}catch(e){console.error(e);}}));});
   class GoogleAuthProvider{constructor(){this._q={};}setCustomParameters(q){this._q=Object.assign({},q);return this;}addScope(){return this;}}
 
