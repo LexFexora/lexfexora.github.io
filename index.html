@@ -317,7 +317,7 @@ html.gate-wait .wrap{display:none}
   <details class="setelan tocard" id="tocard" hidden>
     <summary><span class="stl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4.5a2.5 2.5 0 0 0 2.6 3.4M17 6h2.5a2.5 2.5 0 0 1-2.6 3.4"/></svg> Mock Exam</span></summary>
     <div class="toisi">
-      <p class="note" id="toket">Mock exam yang sedang dibuka. Ketuk Ikut untuk bergabung.</p>
+      <p class="note" id="toket">There are no quizzes available right now.</p>
       <div id="tolist" class="tolist"></div>
       <div id="toown" hidden>
     <details class="tobox" id="tobox"><summary class="btn copy">＋ Buat Mock Exam baru</summary>
@@ -815,10 +815,12 @@ window.__quiz={state};
     db.collection('tryout').orderBy('dibuat','desc').limit(15).onSnapshot(qs=>{const rows=[];qs.forEach(d=>{const t=d.data(),u=location.origin+location.pathname.replace(/[^/]*$/,'')+'tryout.html?t='+d.id;
         if(!isOwner&&t.status==='selesai')return;
         rows.push(`<div class="tr"><b>${esc(t.judul||'Mock Exam')}</b><span class="muted">${(t.soal||[]).length} soal · ${ST[t.status]||t.status}</span><a class="btn copy${isOwner?'':' primary'}" href="${u}" target="_blank" rel="noopener">${isOwner?'Buka':'Ikut'}</a>${isOwner?`<button class="btn copy" type="button" data-salin="${u}">Salin tautan</button><button class="btn copy" type="button" data-hapus="${d.id}">Hapus</button>`:''}</div>`);});
-      $('tolist').innerHTML=rows.join('')||`<p class="note">${isOwner?'Belum ada mock exam.':'Belum ada mock exam yang dibuka.'}</p>`;
+      $('tolist').innerHTML=rows.join('')||(isOwner?'<p class="note">Belum ada mock exam.</p>':'');
+      // Peserta: teks kosong bila tidak ada mock exam yang dibuka, ajakan Ikut bila ada.
+      if(!isOwner)$('toket').textContent=rows.length?'Mock exam yang sedang dibuka. Ketuk Ikut untuk bergabung.':'There are no quizzes available right now.';
       $('tolist').querySelectorAll('[data-salin]').forEach(b=>b.onclick=()=>navigator.clipboard&&navigator.clipboard.writeText(b.dataset.salin).then(()=>{b.textContent='✓ Tersalin';}));
       $('tolist').querySelectorAll('[data-hapus]').forEach(b=>b.onclick=()=>{if(confirm('Hapus mock exam ini? Tautannya tidak bisa dibuka lagi.'))db.doc('tryout/'+b.dataset.hapus).delete();});},
-      ()=>{$('tolist').innerHTML='<p class="note">Daftar mock exam belum bisa dimuat.</p>';});}
+      ()=>{$('tolist').innerHTML=isOwner?'<p class="note">Mock exam list unavailable.</p>':'';if(!isOwner)$('toket').textContent='There are no quizzes available right now.';});}
   async function start(){
     if(started)return;started=true;
     show('Memuat bank soal…','Sekali muat pertama bisa beberapa detik.');
