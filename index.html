@@ -309,7 +309,7 @@ html.gate-wait .wrap{display:none}
     <div class="controls">
       <label class="ctl-sub" for="sub"><span id="sublbl">Section Details</span><select id="sub"></select></label>
       <label class="ctl-sub" for="bag" id="bagwrap" hidden><span>Bagian Soal</span><select id="bag"></select></label>
-      <label for="order">Order <select id="order"><option value="seq">Berurutan</option><option value="rand">Acak</option></select></label>
+      <label for="order">Order <select id="order"><option value="seq">Sequential</option><option value="rand">Shuffle</option></select></label>
       <label for="timer">Timer <select id="timer"><option value="off">Mati</option><option value="cum">Total (54 dtk × soal)</option><option value="cum45">Total (45 dtk × soal)</option><option value="per">Per soal (54 dtk)</option><option value="per45">Per soal (45 dtk)</option></select></label>
       <div class="siaprow" id="siaprow"><button class="btn primary" id="siapbtn" type="button">✓ Simpan Pengaturan</button></div>
     </div>
@@ -558,10 +558,10 @@ function renderTabs(){
 function renderSub(){
   const s=$("sub");
   $("sublbl").textContent=state.cat==="all"?"Section Details":"Section Details - "+CATS[state.cat].short;
-  if(state.cat==="all"){s.innerHTML=`<option value="all">Semua bagian</option>`;s.disabled=true;return;}
+  if(state.cat==="all"){s.innerHTML=`<option value="all">All Sections</option>`;s.disabled=true;return;}
   s.disabled=false;
   const c=state.cat;
-  s.innerHTML=`<option value="all">Semua bagian</option>`+SUBS[c].map((n,i)=>`<option value="${i+1}">${i+1}. ${esc(n)}</option>`).join("");
+  s.innerHTML=`<option value="all">All Sections</option>`+SUBS[c].map((n,i)=>`<option value="${i+1}">${i+1}. ${esc(n)}</option>`).join("");
   s.value=String(state.sub);
   renderBag();
 }
@@ -642,7 +642,7 @@ function renderCard(){
   if(state.cat!=="all"&&!state.mulai&&state.pos<state.list.length){
     const n=state.list.length,sub=state.sub==="all"?CATS[state.cat].short:state.sub+". "+SUBS[state.cat][state.sub-1],bg=state.sub==="all"||state.bag==="all"?"":state.bag==="bonus"?"Soal Bonus":"Bagian "+state.bag;
     const tm={off:"Tanpa timer",cum:"Timer total "+fmt(SEC*n),per:"Timer "+SEC+" detik per soal"}[tMode]||"";
-    card.innerHTML=`<div class="kunci mulaikartu"><div class="eyebrow">${esc(bg||"Siap mengerjakan")}</div><h2>${esc(sub)}</h2><div class="info"><span>${n} soal</span><span>${state.order==="rand"?"Acak":"Berurutan"}</span><span>${tm}</span></div><p>${tMode==="off"?"Soal pertama tampil setelah Anda menekan Mulai.":"Soal dan timer baru berjalan setelah Anda menekan Mulai."}</p><button class="btn primary mulai" id="mulaibtn" type="button">▶ Mulai</button></div>`;
+    card.innerHTML=`<div class="kunci mulaikartu"><div class="eyebrow">${esc(bg||"Siap mengerjakan")}</div><h2>${esc(sub)}</h2><div class="info"><span>${n} soal</span><span>${state.order==="rand"?"Shuffle":"Sequential"}</span><span>${tm}</span></div><p>${tMode==="off"?"Soal pertama tampil setelah Anda menekan Mulai.":"Soal dan timer baru berjalan setelah Anda menekan Mulai."}</p><button class="btn primary mulai" id="mulaibtn" type="button">▶ Mulai</button></div>`;
     $("mulaibtn").onclick=()=>{if(tMode==="per"){const i=state.list.findIndex(id=>state.ans[id]===undefined&&!state.expired[id]);if(i>=0)state.pos=i;}state.mulai=true;state.qLeft=SEC;state.qId=null;lastTick=Date.now();persist();render();window.scrollTo({top:Math.max(0,$("card").offsetTop-12)});};return;}
   if(state.pos>=state.list.length){
     const {ok,bad,n}=tally();
@@ -733,8 +733,8 @@ setInterval(()=>{
   if(++tickN%5===0)persist();
   renderTimer();
 },1000);
-function renderRingkas(){const st=$("setelan");if(st){st.hidden=state.cat==="all";st.classList.toggle("perlu",!siapOK());document.querySelector(".wrap").classList.toggle("blmsiap",!siapOK());document.querySelector(".wrap").classList.toggle("blmmulai",state.cat!=="all"&&siapOK()&&!state.mulai&&state.pos<state.list.length);const sr=$("siaprow");if(sr)sr.hidden=siapOK();}const r=$("ringkas");if(!r)return;const s=state.cat==="all"||state.sub==="all"?"Semua bagian":state.sub+". "+SUBS[state.cat][state.sub-1]+(state.bag==="bonus"?" · Soal Bonus":state.bag!=="all"?" · Bagian "+state.bag:"");
-  r.textContent=s+" · "+(state.order==="rand"?"Acak":"Berurutan")+" · "+({off:"Timer mati",cum:"Timer total",per:"Timer per soal"}[tMode]||"");}
+function renderRingkas(){const st=$("setelan");if(st){st.hidden=state.cat==="all";st.classList.toggle("perlu",!siapOK());document.querySelector(".wrap").classList.toggle("blmsiap",!siapOK());document.querySelector(".wrap").classList.toggle("blmmulai",state.cat!=="all"&&siapOK()&&!state.mulai&&state.pos<state.list.length);const sr=$("siaprow");if(sr)sr.hidden=siapOK();}const r=$("ringkas");if(!r)return;const s=state.cat==="all"||state.sub==="all"?"All Sections":state.sub+". "+SUBS[state.cat][state.sub-1]+(state.bag==="bonus"?" · Soal Bonus":state.bag!=="all"?" · Bagian "+state.bag:"");
+  r.textContent=s+" · "+(state.order==="rand"?"Shuffle":"Sequential")+" · "+({off:"Timer mati",cum:"Timer total",per:"Timer per soal"}[tMode]||"");}
 function render(){if(tMode==="per")syncQ();renderScore();renderCard();renderMap();renderTimer();renderRingkas();}
 function retake(){buildSession(true);render();}
 function retryWrong(){const w=state.list.filter(isBad);if(!w.length)return;buildSession(true,w);render();}
