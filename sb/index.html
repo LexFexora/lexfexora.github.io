@@ -880,15 +880,17 @@ window.__quiz={state};
   }
   // Soal yang pernah dijawab benar disimpan di progres/<uid> agar tetap ada setelah keluar atau ganti perangkat.
   async function progres(){const u=auth.currentUser;if(!u)return;window.__UID=u.uid;const ref=db.doc('progres/'+u.uid);
-    try{const s=await ref.get();window.__BENAR_AWAL=(s.exists&&s.data().b)||{};window.__COBA_AWAL=(s.exists&&s.data().c)||{};}catch(e){window.__BENAR_AWAL={};window.__COBA_AWAL={};}
+    let imporSudah=false;try{const s=await ref.get();window.__BENAR_AWAL=(s.exists&&s.data().b)||{};window.__COBA_AWAL=(s.exists&&s.data().c)||{};imporSudah=!!(s.exists&&s.data().impor);}catch(e){window.__BENAR_AWAL={};window.__COBA_AWAL={};}
     window.__simpanBenar=id=>ref.set({b:{[id]:1}},{merge:true}).catch(()=>{});
     window.__sinkronBenar=m=>ref.set({b:m},{merge:true}).catch(()=>{});
     window.__simpanCoba=id=>ref.set({c:{[id]:1}},{merge:true}).catch(()=>{});
     window.__sinkronCoba=m=>ref.set({c:m},{merge:true}).catch(()=>{});
-    if(window.__sb)tawarImpor(u,ref);}
+    if(window.__sb)tawarImpor(u,ref,imporSudah);}
   // Versi Supabase: salin riwayat progres/<uid> dari Firebase lama (sekali, atas klik pengguna; butuh masuk Google via popup).
-  function tawarImpor(u,ref){const k='riwayat-impor-'+u.uid,box=$('impor'),L=window.FIREBASE_LAMA;let sudah='';try{sudah=localStorage.getItem(k)||'';}catch(e){}
-    if(!box||!L||sudah)return;box.hidden=false;const tandai=()=>{try{localStorage.setItem(k,'1');}catch(e){}box.hidden=true;};
+  // Tanda "impor" disimpan di progres akun (bukan hanya di perangkat), jadi kotak ini cukup muncul sekali per akun.
+  function tawarImpor(u,ref,imporSudah){const k='riwayat-impor-'+u.uid,box=$('impor'),L=window.FIREBASE_LAMA;let sudah='';try{sudah=localStorage.getItem(k)||'';}catch(e){}
+    if(!box||!L)return;if(sudah||imporSudah){if(!imporSudah)ref.set({impor:1},{merge:true}).catch(()=>{});return;}
+    box.hidden=false;const tandai=()=>{try{localStorage.setItem(k,'1');}catch(e){}box.hidden=true;ref.set({impor:1},{merge:true}).catch(()=>{});};
     $('imporx').onclick=tandai;
     // Modul Firebase dimuat lebih dulu agar popup Google terbuka langsung saat tombol diklik (tidak diblokir browser).
     const V='https://www.gstatic.com/firebasejs/10.12.5/',mods=Promise.all([import(V+'firebase-app.js'),import(V+'firebase-auth.js'),import(V+'firebase-firestore.js')]);mods.catch(()=>{});
