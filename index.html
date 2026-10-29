@@ -79,9 +79,9 @@ header p{margin:6px 0 0;color:var(--muted);max-width:68ch}
 @media (max-width:720px){.tab.kl{flex-direction:column;align-items:flex-start;gap:8px;padding:12px 28px 12px 12px}.tab.kl .ki{width:36px;height:36px;border-radius:10px}
 .tab.pilih{gap:10px}.tab.pilih .ki{width:34px;height:34px;border-radius:10px}.tab.pilih .kt>b{white-space:nowrap;font-size:clamp(11.5px,3.3vw,14px);letter-spacing:-.005em}}
 .tab:focus-visible,.opt:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
-.controls{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:12px}.controls label[for=order]{grid-column:1/-1}
 .controls label{font-size:12px;color:var(--muted);display:flex;flex-direction:column;gap:4px;min-width:0}.controls select{width:100%}.controls .btn{width:100%;min-height:40px;white-space:nowrap;padding:8px 6px;font-size:13px}
-@media(min-width:720px){.controls{grid-template-columns:2fr 1fr 1fr}.controls .ctl-sub{grid-column:auto}}
+@media(min-width:720px){.controls{grid-template-columns:1.6fr 1fr 1fr 1fr}.controls label[for=order]{grid-column:auto}.controls .ctl-sub{grid-column:auto}}
 select{font:inherit;font-size:14px;padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);max-width:100%;min-width:0}
 .ctl-sub{grid-column:1/-1}#bagwrap{grid-column:1/-1}#bagwrap[hidden]{display:none}
 .setelan{border:1px solid var(--line);border-radius:12px;background:var(--surface)}
@@ -310,7 +310,7 @@ html.gate-wait .wrap{display:none}
       <label class="ctl-sub" for="sub"><span id="sublbl">Section Details</span><select id="sub"></select></label>
       <label class="ctl-sub" for="bag" id="bagwrap" hidden><span>Bagian Soal</span><select id="bag"></select></label>
       <label for="order">Order <select id="order"><option value="seq">Sequential</option><option value="rand">Shuffle</option></select></label>
-      <label for="timer">Timer <select id="timer"><option value="off">Off</option><option value="cum">Total (54 sec × question)</option><option value="cum45">Total (45 sec × question)</option><option value="per">Per question (54 sec)</option><option value="per45">Per question (45 sec)</option></select></label>
+      <select id="timer" hidden aria-hidden="true"><option value="off"></option><option value="cum"></option><option value="cum45"></option><option value="per"></option><option value="per45"></option></select><label for="tmode">Timer <select id="tmode"><option value="off">Off</option><option value="cum">Total</option><option value="per">Per question</option></select></label><label for="tsec">Duration <select id="tsec"><option value="54">54 sec</option><option value="45">45 sec</option></select></label>
       <div class="siaprow" id="siaprow"><button class="btn primary" id="siapbtn" type="button">✓ Simpan Pengaturan</button></div>
     </div>
   </details>
@@ -744,6 +744,10 @@ $("sub").onchange=e=>{state.sub=e.target.value==="all"?"all":+e.target.value;sta
 $("order").onchange=e=>{state.order=e.target.value;buildSession(true);render();};
 $("fsexit").onclick=()=>fokus(false);
 $("timer").value=tMode+(tMode!=="off"&&SEC===45?"45":"");
+// Timer dipilih lewat dua menu (jenis dan durasi), lalu diteruskan ke #timer yang tersembunyi.
+function sinkronTimer(){$("tmode").value=tMode;$("tsec").value=String(SEC);$("tsec").disabled=tMode==="off";}
+const gantiTimer=()=>{const m=$("tmode").value;$("timer").value=m==="off"?"off":m+($("tsec").value==="45"?"45":"");$("timer").dispatchEvent(new Event("change"));sinkronTimer();};
+$("tmode").onchange=gantiTimer;$("tsec").onchange=gantiTimer;sinkronTimer();
 $("siapbtn").onclick=()=>{siapCat=state.cat;state.mulai=false;state.qLeft=SEC;state.qId=null;persist();$("setelan").open=false;render();window.scrollTo({top:Math.max(0,$("card").offsetTop-12),behavior:"smooth"});};
 $("timer").onchange=e=>{const v=e.target.value;tMode=v.replace("45","");SEC=v.endsWith("45")?45:54;store.timerMode=tMode;store.timerSec=SEC;resetTimer();persist();render();};
 document.addEventListener("visibilitychange",()=>{if(document.hidden)persist();});
