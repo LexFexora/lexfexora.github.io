@@ -93,15 +93,31 @@ header h1 span{display:block}header h1 .t2{letter-spacing:.1em}
 .opt.benar{border-color:var(--ok);background:var(--ok-soft)}.opt.benar .l{background:var(--ok);color:var(--surface);border-color:var(--ok)}
 .opt.salah{border-color:var(--bad);background:var(--bad-soft)}.opt.salah .l{background:var(--bad);color:var(--surface);border-color:var(--bad)}
 .opt.redup{opacity:.6}.opt:disabled{cursor:default}.opt:disabled:hover{border-color:inherit}.opt .mk{font-weight:600;margin-left:4px}
-.bawah{display:grid;grid-template-columns:1fr;gap:16px;align-items:start}.bawah:not(:has(>:not([hidden]))){display:none}
-.bawah .bahas{order:-1}
-@media(min-width:720px){.bawah:has(>#papan:not([hidden])):has(>#bahas:not([hidden])){grid-template-columns:1fr 1fr}.bawah .bahas{order:0}}
-.bawah .lb li{grid-template-columns:26px 28px 1fr auto 30px;gap:8px;padding:7px 9px}
+.arena .lb li{grid-template-columns:26px 28px 1fr auto 30px;gap:8px;padding:7px 9px}
 .nav.sk{justify-content:center}.nav.sk .btn{min-width:60%}.tunggum{margin:0;text-align:center;font-size:14px}
 .master{display:flex;flex-direction:column;gap:6px;border:1px solid color-mix(in srgb,var(--brass) 45%,var(--line));background:var(--brass-soft);border-radius:10px;padding:10px 12px}
 .master-h{display:flex;align-items:center;gap:8px;font-size:14px}.master-h .mk{font-size:16px}
 .master select{flex:1;min-width:0;font:inherit;font-size:13.5px;padding:7px 8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
 .kunci-peta button{cursor:default}
+/* Tata letak: HP ditumpuk (soal, pembahasan, peringkat, chat, peta); desktop tiga kolom setinggi layar tanpa gulir halaman. */
+.arena,.kiri,.tengah,.kanan{display:contents}
+@media(max-width:1023px){body[data-v=lobi] #papan{display:none!important}}
+#main{order:1}#bahas{order:2}#papan{order:3}#chat{order:4}#alat{order:5}footer{order:6}
+.akun{display:flex;align-items:center;gap:8px;margin-top:10px}.akun .av{width:30px;height:30px;border-radius:50%;background:var(--ink);color:var(--surface);display:grid;place-items:center;font-size:13px;font-weight:700;overflow:hidden;flex:none}
+.akun .akun{margin:0}.akun .akun[hidden]{display:none}.beranda{text-decoration:none;font-size:13px;padding:6px 12px;white-space:nowrap}
+.akun .av img{width:100%;height:100%;object-fit:cover}.akun .nm{font-weight:600;font-size:14px;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media(min-width:1024px){
+  .wrap{max-width:1680px;height:100vh;height:100dvh;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:12px;padding:14px 20px 10px;overflow:hidden}
+  header{display:grid;grid-template-columns:auto 1fr auto;align-items:center;column-gap:16px}header .brand{font-size:24px}header .eyebrow{margin:0;align-self:end;padding-bottom:6px}
+  .akun{margin:0;gap:10px}.akun .timer{font-size:18px;padding:6px 14px}.akun .av{width:38px;height:38px}
+  .arena{display:grid;grid-template-columns:minmax(290px,1.15fr) minmax(0,2.3fr) minmax(280px,1.1fr);gap:16px;min-height:0}
+  .kiri,.tengah,.kanan{display:flex;flex-direction:column;gap:12px;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
+  .kiri>.papan,.kanan>.chat{flex:1;min-height:0}.kiri>.papan[hidden],.kanan>.chat[hidden]{display:none!important}
+  .papan .lb{overflow-y:auto;min-height:0}.kanan>.chat{display:flex;flex-direction:column}.kanan .chatlist{flex:1;max-height:none;min-height:0}
+  .arena .lb li{grid-template-columns:22px 28px minmax(0,1fr) auto 12px;gap:7px;padding:7px 8px}.arena .lb .sk{font-size:16px}.arena .lb .sk small{display:none}.arena .lb .dl{font-size:10px}
+  #main .ujian-h .timer{display:none}#main{padding:18px 22px}
+  footer{font-size:11px}
+}
 .chatlist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;max-height:280px;overflow-y:auto;overscroll-behavior:contain}
 .chatlist li{display:grid;grid-template-columns:28px 1fr;gap:8px;align-items:start}.chatlist li.kosong{display:block;font-size:13.5px}
 .chatlist .av{width:28px;height:28px;border-radius:50%;background:var(--ink);color:var(--surface);display:grid;place-items:center;font-size:12px;font-weight:700;overflow:hidden}.chatlist .av img{width:100%;height:100%;object-fit:cover}
@@ -175,21 +191,28 @@ body.tertutup #tirai{display:flex}
   <header>
     <div class="brand"><svg class="emb" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" aria-hidden="true"><defs><linearGradient id="lgG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2a2a2a"/><stop offset="1" stop-color="#000000"/></linearGradient></defs><rect width="256" height="256" rx="60" fill="url(#lgG)"/><g transform="translate(146 100) rotate(45)"><rect x="-8" y="20" width="16" height="104" rx="8" fill="#ffffff"/><rect x="-56" y="-26" width="112" height="52" rx="12" fill="#ffffff"/><rect x="-64" y="-31" width="14" height="62" rx="6" fill="#ffffff"/><rect x="50" y="-31" width="14" height="62" rx="6" fill="#ffffff"/><rect x="-46" y="-26" width="5" height="52" fill="#000" opacity=".28"/><rect x="41" y="-26" width="5" height="52" fill="#000" opacity=".28"/></g><rect x="132" y="190" width="96" height="14" rx="7" fill="#ffffff"/><rect x="144" y="178" width="72" height="14" rx="7" fill="#d4d4d4"/></svg><h1><span class="t1">Computer Assisted Test</span><span class="t2">LEX FEXORA.</span></h1></div>
     <div class="eyebrow">Latihan · Seleksi Kemampuan Bidang · Calon Hakim Peradilan Agama</div>
+    <div class="akun"><a class="btn beranda" href="./" title="Kembali ke beranda CAT">← Beranda</a><span class="akun" id="akun" hidden><span class="timer" id="toptimer" hidden>⏱ <span id="topsisa">00:00</span></span><span class="av" id="akunav"></span><span class="nm" id="akunnm"></span></span></div>
   </header>
-  <section class="card" id="main"><p class="muted">Memuat…</p></section>
-  <div class="bawah">
+  <div class="arena">
+  <aside class="kiri">
   <section class="card papan" id="papan" hidden>
-    <div class="papan-h"><b>Peringkat langsung</b><span class="muted" id="jmlp"></span></div>
+    <div class="papan-h"><b title="Skor = jumlah jawaban benar">Peringkat langsung</b><span class="muted" id="jmlp"></span></div>
     <ol class="lb" id="lb"></ol>
   </section>
+  </aside>
+  <div class="tengah">
+  <section class="card" id="main"><p class="muted">Memuat…</p></section>
   <section class="card bahas" id="bahas" hidden aria-live="polite"></section>
+  <section class="card alat" id="alat" hidden></section>
   </div>
+  <aside class="kanan">
   <section class="card chat" id="chat" hidden>
     <div class="papan-h"><b>💬 Chat peserta</b><span class="muted" id="chatn"></span></div>
     <ol class="chatlist" id="chatlist" aria-live="polite"></ol>
     <form class="chatform" id="chatform" autocomplete="off"><input id="chatin" maxlength="500" placeholder="Tulis pesan untuk semua peserta…" aria-label="Pesan chat"><button class="btn primary" type="submit">Kirim</button></form>
   </section>
-  <section class="card alat" id="alat" hidden></section>
+  </aside>
+  </div>
   <footer><span>© 2026 CAT - Lex Fexora. All rights reserved.</span> | <span>Developed &amp; Curated by Febrillian Kusuma Raafi, S.H.</span></footer>
 </div>
 
@@ -214,14 +237,14 @@ let U=null,isOwner=false,T=null,P={},aku=null,pos=0,urutLama={},deltaUntil={},si
 
 function login(){const p=new firebase.auth.GoogleAuthProvider();p.setCustomParameters({prompt:"select_account"});
   auth.signInWithPopup(p).catch(e=>{if(e&&/popup-blocked|operation-not-supported/.test(e.code||""))auth.signInWithRedirect(p);});}
-function gate(h,p,btn){papan.hidden=true;bahas.hidden=true;alat.hidden=true;chat.hidden=true;main.className="card gate";main.innerHTML=`<h2 class="judul">${esc(h)}</h2><p class="muted">${esc(p||"")}</p>${btn?'<div class="row" style="justify-content:center"><button class="btn primary" id="masuk" type="button">Masuk dengan Google</button></div>':""}`;
+function gate(h,p,btn){$("toptimer").hidden=true;if(!U)$("akun").hidden=true;papan.hidden=true;bahas.hidden=true;alat.hidden=true;chat.hidden=true;main.className="card gate";main.innerHTML=`<h2 class="judul">${esc(h)}</h2><p class="muted">${esc(p||"")}</p>${btn?'<div class="row" style="justify-content:center"><button class="btn primary" id="masuk" type="button">Masuk dengan Google</button></div>':""}`;
   if(btn)$("masuk").onclick=login;}
 
 if(!TID){gate("Tautan mock exam tidak lengkap","Buka tautan mock exam yang dibagikan penyelenggara.");return;}
 
 auth.onAuthStateChanged(u=>{U=u;pMuat=false;aku=null;P={};if(unsubT){unsubT();unsubT=null;}if(unsubP){unsubP();unsubP=null;}if(unsubC){unsubC();unsubC=null;}
   if(!u){gate("Mock Exam","Masuk dengan akun Google untuk ikut mock exam. Nama akun Anda akan tampil di papan peringkat.",true);return;}
-  isOwner=!!OWNER&&(u.email||"").toLowerCase()===OWNER&&u.emailVerified;document.body.classList.toggle("bebas",isOwner);
+  isOwner=!!OWNER&&(u.email||"").toLowerCase()===OWNER&&u.emailVerified;$("akun").hidden=false;$("akunav").innerHTML=av({foto:u.photoURL,nama:u.displayName||u.email});$("akunnm").textContent=u.displayName||(u.email||"").split("@")[0];document.body.classList.toggle("bebas",isOwner);
   unsubT=db.doc("tryout/"+TID).onSnapshot(s=>{if(!s.exists){gate("Mock exam tidak ditemukan","Periksa kembali tautannya.");return;}
       T=s.data({serverTimestamps:"estimate"});T.id=s.id;gabung();render();},
     e=>gate("Mock exam belum dapat dibuka","Muat ulang halaman. ("+(e.code||e.message)+")"));
@@ -235,6 +258,7 @@ auth.onAuthStateChanged(u=>{U=u;pMuat=false;aku=null;P={};if(unsubT){unsubT();un
       if(pra>0){if(cd)cd.textContent=Math.ceil(pra/1000);else render();return;}if(cd){render();return;}const sisa=sisaMs();const el=$("sisa");
       if(el){el.textContent=fmt(sisa);el.parentElement.classList.toggle("warn",sisa<=60000);}
       if(sisa<=0&&!habisDitangani&&!SINK()){habisDitangani=true;kumpul(true);render();}
+      const tt=$("toptimer");if(!tt.hidden){const v=SINK()?soalSisaMs():sisaMs();$("topsisa").textContent=fmt(v);tt.classList.toggle("warn",v<=(SINK()?10000:60000));}
       if(SINK()){const q=$("sisaq"),sq=soalSisaMs();if(q){q.textContent=fmt(sq);q.parentElement.classList.toggle("warn",sq<=10000);}
         if(sq<=0&&habisIdx!==(T.idx||0)){habisIdx=T.idx||0;render();}}}
     if(SINK()&&Date.now()-cekT>5000){cekT=Date.now();cekMaster();}},250);
@@ -294,7 +318,7 @@ function simpan(segera){clearTimeout(simpanT);const f=()=>db.doc("tryout/"+TID+"
 addEventListener("pagehide",()=>{if(simpanT&&aku&&!aku.selesai)simpan(true);});
 function kumpul(otomatis){if(!aku||aku.selesai||selesaiKirim)return;selesaiKirim=true;if(!otomatis)hitung();aku.selesai=true;simpan(true);}
 
-function render(){if(!T||!U)return;main.className="card";bahas.hidden=true;alat.hidden=true;chat.hidden=!aku;
+function render(){if(!T||!U)return;main.className="card";$("toptimer").hidden=true;document.body.dataset.v="";bahas.hidden=true;alat.hidden=true;chat.hidden=!aku;
   if(selesaiSemua())return hasil();
   if(T.status==="menunggu"||T.status==="siap")return lobi();
   if(praMs()>0)return hitungMundur();
@@ -310,7 +334,7 @@ $("chatform").onsubmit=e=>{e.preventDefault();const i=$("chatin"),t=i.value.trim
 function tautan(){return location.origin+location.pathname+"?t="+TID;}
 // Ruang tunggu: peserta otomatis terdaftar. Setelah pemilik menekan Play, peserta menekan "Saya siap";
 // nama yang siap bercahaya, yang belum siap berwarna merah.
-function lobi(){const ps=Object.entries(P).map(([uid,p])=>Object.assign({uid},p)),cek=T.status==="siap",nSiap=ps.filter(p=>p.siap).length;papan.hidden=true;
+function lobi(){const ps=Object.entries(P).map(([uid,p])=>Object.assign({uid},p)),cek=T.status==="siap",nSiap=ps.filter(p=>p.siap).length;papan.hidden=false;document.body.dataset.v="lobi";setTimeout(renderPapan,0);
   const chip=p=>`<span class="${cek?(p.siap?"siap":"belum"):""}">${esc(p.nama)}${U&&p.uid===U.uid?" (Anda)":""}</span>`;
   main.innerHTML=`<p class="eyebrow" style="margin:0">${cek?"Cek kesiapan":"Ruang tunggu"}</p><h2 class="judul">${esc(T.judul)}</h2>
   <div class="info"><span>${T.soal.length} soal</span><span>${SINK()?`${T.detikSoal||54} detik per soal`:`Waktu ${Math.round(T.durasi/60)} menit`}</span><span>${ps.length} peserta bergabung</span>${cek?`<span>${nSiap} siap · ${ps.length-nSiap} belum</span>`:""}</div>
@@ -343,7 +367,7 @@ function unduhCSV(){const r=urut(),n=T.soal.length,q=v=>'"'+String(v).replace(/"
   const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+baris.join("\r\n")],{type:"text/csv;charset=utf-8"}));
   a.download=("hasil-"+(T.judul||"tryout")).replace(/[^\w\- ]+/g,"").trim().replace(/\s+/g,"-")+".csv";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500);}
 
-function ujian(){papan.hidden=false;if(!aku){main.innerHTML='<p class="muted">Menyiapkan…</p>';return;}
+function ujian(){papan.hidden=false;$("toptimer").hidden=false;if(!aku){main.innerHTML='<p class="muted">Menyiapkan…</p>';return;}
   const n=T.soal.length,sk=SINK();if(sk)pos=T.idx||0;pos=Math.min(Math.max(0,pos),n-1);try{sessionStorage.setItem("to-pos-"+TID,pos);}catch(e){}const q=T.soal[pos],perm=acak(q.o.length,(sk?"":U.uid)+q.id),pil=(aku.jawab||{})[q.id],habis=sk&&soalSisaMs()<=0;
   main.innerHTML=`<div class="ujian-h"><span class="qno">Soal ${pos+1} / ${n} · terjawab ${aku.dijawab||0}</span>${sk?`<span class="timer${soalSisaMs()<=10000?" warn":""}">⏱ <span id="sisaq">${fmt(soalSisaMs())}</span></span>`:`<span class="timer">⏱ <span id="sisa">${fmt(sisaMs())}</span></span>`}</div>
   <p class="qtext">${esc(q.q)}</p><ol class="opts">${perm.map((oi,pi)=>{const jw=pil!==undefined||habis,cls=jw?(oi===q.a?" benar":oi===pil?" salah":" redup"):"";
