@@ -316,6 +316,14 @@ header{position:relative}.akunku{display:flex;align-items:center;justify-content
 /* Label VIP: emas lembut (lebih tenang dari panel Mock Exam), tanpa animasi bingkai. */
 .akunku .nmrow{display:flex;align-items:center;gap:6px;min-width:0}
 .akunku .vip{flex:none;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;height:17px;padding:0 7px 0 calc(7px + .12em);border-radius:999px;font-size:9.5px;font-weight:800;letter-spacing:.12em;line-height:1;font-variant-numeric:normal;font-feature-settings:'kern' 1;-webkit-font-smoothing:antialiased;color:#5a3d07;background:linear-gradient(135deg,#f7e6b0,#e2bd63 55%,#c8963a);box-shadow:inset 0 1px 0 rgb(255 255 255 / .6),0 1px 4px -1px rgb(160 110 25 / .45)}
+/* Chip akun bernuansa emas VVIP: latar keemasan, bingkai dan cincin foto emas, nama emas. */
+html .akunku .chip{border:1px solid color-mix(in srgb,#d4ab52 60%,transparent)!important;background:linear-gradient(135deg,color-mix(in srgb,#e2bd63 22%,var(--surface)),color-mix(in srgb,#e2bd63 8%,var(--surface)) 60%,color-mix(in srgb,#c8963a 18%,var(--surface)))!important;box-shadow:inset 0 1px 0 rgb(255 244 204 / .35),0 4px 14px -6px rgb(180 130 40 / .5)!important}
+html .akunku .av{box-shadow:0 0 0 2px var(--surface),0 0 0 3.5px #d4ab52,0 0 10px -2px rgb(212 171 82 / .7)!important}
+html .akunku .nm{color:#8a5f12!important;font-weight:700!important}
+html .akunku .em{color:color-mix(in srgb,#8a5f12 65%,var(--muted))!important}
+html[data-theme="dark"] .akunku .nm{color:#ecd08a!important}
+html[data-theme="dark"] .akunku .em{color:color-mix(in srgb,#ecd08a 55%,var(--muted))!important}
+@media (prefers-color-scheme:dark){html:not([data-theme="light"]) .akunku .nm{color:#ecd08a!important}html:not([data-theme="light"]) .akunku .em{color:color-mix(in srgb,#ecd08a 55%,var(--muted))!important}}
 html[data-theme="dark"] .akunku .vip{color:#3b2905;background:linear-gradient(135deg,#efd99a,#d4ab52 55%,#b58430)}.akunku .tx{display:flex;flex-direction:column;min-width:0;line-height:1.25}.akunku .em{display:none}
 /* Desktop: chip akun rapi di kanan, sejajar baris judul atas. */
 @media(min-width:1000px){.akunku{position:absolute;top:calc(1.175em - 23px);right:0;margin:0;gap:8px;font-size:clamp(26px,4.4vw,36px)}
