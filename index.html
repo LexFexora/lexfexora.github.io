@@ -321,6 +321,10 @@ header{position:relative}.akunku{display:flex;align-items:center;justify-content
 .akunku .vip{flex:none;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;height:17px;padding:0 7px 0 calc(7px + .12em);border-radius:999px;font-size:9.5px;font-weight:800;letter-spacing:.12em;line-height:1;font-variant-numeric:normal;font-feature-settings:'kern' 1;-webkit-font-smoothing:antialiased;color:#5a3d07;background:linear-gradient(135deg,#f7e6b0,#e2bd63 55%,#c8963a);box-shadow:inset 0 1px 0 rgb(255 255 255 / .6),0 1px 4px -1px rgb(160 110 25 / .45)}
 /* Chip akun bernuansa emas VVIP: latar keemasan, bingkai dan cincin foto emas, nama emas. */
 html .akunku .chip{border:1px solid color-mix(in srgb,#d4ab52 60%,transparent)!important;background:linear-gradient(135deg,color-mix(in srgb,#e2bd63 22%,var(--surface)),color-mix(in srgb,#e2bd63 8%,var(--surface)) 60%,color-mix(in srgb,#c8963a 18%,var(--surface)))!important;box-shadow:inset 0 1px 0 rgb(255 244 204 / .35),0 4px 14px -6px rgb(180 130 40 / .5)!important}
+/* EXIT dipindah ke atas, di kanan chip nama; tombol EXIT lain disembunyikan. */
+.akunku .akunexit{flex:none;padding:6px 12px;font-size:12px;min-height:0}
+html .akunku .chip{flex:0 1 auto;min-width:0}html .akunku .tx,html .akunku .nmrow{min-width:0}html .akunku .nm{min-width:0;max-width:none!important;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#sbkeluar,#adm-logout{display:none!important}
 html .akunku .av{box-shadow:0 0 0 2px var(--surface),0 0 0 3.5px #d4ab52,0 0 10px -2px rgb(212 171 82 / .7)!important}
 html .akunku .nm{color:#8a5f12!important;font-weight:700!important}
 html .akunku .em{color:color-mix(in srgb,#8a5f12 65%,var(--muted))!important}
@@ -384,7 +388,7 @@ body.tertutup #tirai{display:flex}
 
 <div class="wrap">
   <header>
-    <div class="akunku" id="akunku" hidden><button class="tema" id="tema" type="button" role="switch" aria-label="Mode gelap"><span class="knop"></span><svg class="ik sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg><svg class="ik moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7z"/></svg></button><span class="chip"><span class="av" id="akunav"></span><span class="tx"><span class="nmrow"><span class="nm" id="akunnm"></span><span class="vip" aria-label="VVIP">VVIP</span></span><small class="em" id="akunem"></small></span></span></div>
+    <div class="akunku" id="akunku" hidden><button class="tema" id="tema" type="button" role="switch" aria-label="Mode gelap"><span class="knop"></span><svg class="ik sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg><svg class="ik moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7z"/></svg></button><span class="chip"><span class="av" id="akunav"></span><span class="tx"><span class="nmrow"><span class="nm" id="akunnm"></span><span class="vip" aria-label="VVIP">VVIP</span></span><small class="em" id="akunem"></small></span></span><button class="btn keluar akunexit" id="akunexit" type="button">EXIT</button></div>
     <div class="brand"><svg class="emb" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" aria-hidden="true"><defs><linearGradient id="lgG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2a2a2a"/><stop offset="1" stop-color="#000000"/></linearGradient></defs><rect width="256" height="256" rx="60" fill="url(#lgG)"/><g transform="translate(146 100) rotate(45)"><rect x="-8" y="20" width="16" height="104" rx="8" fill="#ffffff"/><rect x="-56" y="-26" width="112" height="52" rx="12" fill="#ffffff"/><rect x="-64" y="-31" width="14" height="62" rx="6" fill="#ffffff"/><rect x="50" y="-31" width="14" height="62" rx="6" fill="#ffffff"/><rect x="-46" y="-26" width="5" height="52" fill="#000" opacity=".28"/><rect x="41" y="-26" width="5" height="52" fill="#000" opacity=".28"/></g><rect x="132" y="190" width="96" height="14" rx="7" fill="#ffffff"/><rect x="144" y="178" width="72" height="14" rx="7" fill="#d4d4d4"/></svg><h1><span class="t1">Computer Assisted Test</span><span class="sep"> - </span><span class="t2">LEX FEXORA.</span></h1></div>
     <div class="eyebrow">Latihan · Seleksi Kemampuan Bidang · Calon Hakim Peradilan Agama</div>
   </header>
@@ -892,6 +896,7 @@ window.__quiz={state};
     try{await auth.signInWithPopup(p);}catch(e){if(e&&/popup-blocked|operation-not-supported/.test(e.code||''))auth.signInWithRedirect(p);else if(e&&e.code!=='auth/popup-closed-by-user'&&e.code!=='auth/cancelled-popup-request')gp.textContent='Sign-in failed: '+(e.message||e.code);}};
   // Keluar menghapus jawaban sesi (benar/salah di kuis); tanda ✓/✗ di akun tetap tersimpan.
   window.__logout=()=>bOut.onclick();
+  $('akunexit').onclick=()=>bOut.onclick();
   bOut.onclick=()=>{window.__keluar=true;try{localStorage.removeItem('tkbcakim-v12');}catch(e){}auth.signOut().then(()=>location.reload());};
   $('adm-logout').onclick=e=>{e.preventDefault();e.stopPropagation();bOut.onclick();};
 
