@@ -109,7 +109,7 @@ select{font:inherit;font-size:14px;padding:7px 10px;border-radius:8px;border:1px
 .fsexit{display:none}
 html.fokus .wrap>*:not(#timerbox):not(#card):not(#fsexit){display:none!important}
 html.fokus .card .qhead{display:contents}html.fokus .card .qno,html.fokus .card .qfs,html.fokus .card .owntools,html.fokus .card .verdict,html.fokus .card .edbox,html.fokus .card .mvbox,html.fokus .card>p.note{display:none!important}
-html.fokus .fsexit{display:block;align-self:flex-start;font-size:12px;padding:6px 12px}
+html.fokus .fsexit{display:grid;place-items:center;align-self:flex-start;width:38px;height:38px;padding:0;border-radius:50%}
 html.fokus .timer{position:fixed;top:max(10px,env(safe-area-inset-top,0px));right:max(12px,env(safe-area-inset-right,0px));box-shadow:0 2px 12px rgb(0 0 0 / .25)}
 html.fokus,html.fokus body{height:100%;overflow:hidden;overscroll-behavior:none}
 html.fokus body{position:fixed;inset:0;width:100%}
@@ -328,7 +328,7 @@ html.gate-wait .wrap{display:none}
     </div>
   </details>
 
-  <button class="btn fsexit" id="fsexit" type="button">✕ Tutup layar penuh</button>
+  <button class="btn fsexit" id="fsexit" type="button" aria-label="Tutup layar penuh" title="Tutup layar penuh"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
   <div class="timer" id="timerbox" role="timer" aria-live="off" hidden></div>
   <div class="scorebar" id="score"></div>
 
