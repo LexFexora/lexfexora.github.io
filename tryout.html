@@ -77,6 +77,11 @@ header h1 span{display:block}header h1 .t2{letter-spacing:.1em}
 .ujian-h{display:flex;align-items:center;gap:10px}.ujian-h .qno{font-family:var(--f-mono);font-size:12px;color:var(--muted);margin-right:auto}
 .timer{display:flex;gap:6px;align-items:center;border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-family:var(--f-mono);font-size:14px;font-variant-numeric:tabular-nums;background:var(--bg)}
 .timer.warn{border-color:var(--bad);color:var(--bad)}
+/* Timer di kartu soal: merah berkedip saat waktu hampir habis (belum nol). */
+.ujian-h .timer{font-size:13px;padding:4px 11px;font-weight:600}
+.timer.kedip{background:var(--bad);color:#fff;border-color:var(--bad);animation:kedip 1s steps(1) infinite}
+@keyframes kedip{50%{background:transparent;color:var(--bad)}}
+@media(prefers-reduced-motion:reduce){.timer.kedip{animation:none}}
 .qtext{font-family:var(--f-display);font-size:clamp(18px,2.4vw,21px);font-weight:500;line-height:1.45;margin:0}
 .opts{display:flex;flex-direction:column;gap:8px;margin:0;padding:0;list-style:none}
 .opt{appearance:none;width:100%;text-align:left;font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:11px 14px;display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:start;cursor:pointer}
@@ -128,7 +133,7 @@ header .akun .av{background:#eef2ef;color:#1f2421}header .akun .nm{color:#eef2ef
   .tengah:has(>#bahas[hidden]){grid-template-columns:minmax(0,1fr)}.tengah>#alat{grid-column:1/-1}
   .tengah>#bahas{padding:16px 18px;gap:10px}.tengah>#bahas .blok p{font-size:13.5px;line-height:1.6}
   #main .qtext{font-size:18px;line-height:1.45}#main .opt{padding:8px 12px}#main .opts{gap:6px}
-  #main .ujian-h .timer{display:none}#main{padding:18px 22px}
+  #main{padding:18px 22px}
   footer{font-size:11px}
 }
 .chatlist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;max-height:280px;overflow-y:auto;overscroll-behavior:contain}
@@ -272,10 +277,10 @@ auth.onAuthStateChanged(u=>{U=u;pMuat=false;aku=null;P={};if(unsubT){unsubT();un
   unsubC=db.collection("tryout/"+TID+"/chat").orderBy("t","desc").limit(80).onSnapshot(qs=>{const m=[];qs.forEach(d=>m.push(d.data({serverTimestamps:"estimate"})));renderChat(m.reverse());},()=>{});
   if(!tick)tick=setInterval(()=>{if(!T)return;if(T.status==="mulai"){const pra=praMs(),cd=$("cdn");
       if(pra>0){if(cd)cd.textContent=Math.ceil(pra/1000);else render();return;}if(cd){render();return;}const sisa=sisaMs();const el=$("sisa");
-      if(el){el.textContent=fmt(sisa);el.parentElement.classList.toggle("warn",sisa<=60000);}
+      if(el){el.textContent=fmt(sisa);el.parentElement.classList.toggle("warn",sisa<=60000);el.parentElement.classList.toggle("kedip",sisa>0&&sisa<=60000&&!!el.closest(".ujian-h"));}
       if(sisa<=0&&!habisDitangani&&!SINK()){habisDitangani=true;kumpul(true);render();}
       const tt=$("toptimer");if(!tt.hidden){const v=SINK()?soalSisaMs():sisaMs();$("topsisa").textContent=fmt(v);tt.classList.toggle("warn",v<=(SINK()?10000:60000));}
-      if(SINK()){const q=$("sisaq"),sq=soalSisaMs();if(q){q.textContent=fmt(sq);q.parentElement.classList.toggle("warn",sq<=10000);}
+      if(SINK()){const q=$("sisaq"),sq=soalSisaMs();if(q){q.textContent=fmt(sq);q.parentElement.classList.toggle("warn",sq<=10000);q.parentElement.classList.toggle("kedip",sq>0&&sq<=10000);}
         if(sq<=0&&habisIdx!==(T.idx||0)){habisIdx=T.idx||0;render();}}}
     if(SINK()&&Date.now()-cekT>5000){cekT=Date.now();cekMaster();}},250);
   if(!detak)detak=setInterval(()=>{if(SINK()&&aku&&!aku.selesai&&T&&T.status!=="selesai")db.doc("tryout/"+TID+"/peserta/"+U.uid).update({t:FV.serverTimestamp()}).catch(()=>{});},10000);
@@ -386,9 +391,9 @@ function unduhCSV(){const r=urut(),n=T.soal.length,q=v=>'"'+String(v).replace(/"
   const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+baris.join("\r\n")],{type:"text/csv;charset=utf-8"}));
   a.download=("hasil-"+(T.judul||"tryout")).replace(/[^\w\- ]+/g,"").trim().replace(/\s+/g,"-")+".csv";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500);}
 
-function ujian(){papan.hidden=false;$("toptimer").hidden=false;if(!aku){main.innerHTML='<p class="muted">Menyiapkan…</p>';return;}
+function ujian(){papan.hidden=false;if(!aku){main.innerHTML='<p class="muted">Menyiapkan…</p>';return;}
   const n=T.soal.length,sk=SINK();if(sk)pos=T.idx||0;pos=Math.min(Math.max(0,pos),n-1);try{sessionStorage.setItem("to-pos-"+TID,pos);}catch(e){}const q=T.soal[pos],perm=acak(q.o.length,(sk?"":U.uid)+q.id),pil=(aku.jawab||{})[q.id],habis=sk&&soalSisaMs()<=0;
-  main.innerHTML=`<div class="ujian-h"><span class="qno">Soal ${pos+1} / ${n}</span>${sk?`<span class="timer${soalSisaMs()<=10000?" warn":""}">⏱ <span id="sisaq">${fmt(soalSisaMs())}</span></span>`:`<span class="timer">⏱ <span id="sisa">${fmt(sisaMs())}</span></span>`}</div>
+  main.innerHTML=`<div class="ujian-h"><span class="qno">Soal ${pos+1} / ${n}</span>${sk?`<span class="timer${soalSisaMs()<=10000?" warn":""}${soalSisaMs()>0&&soalSisaMs()<=10000?" kedip":""}">⏱ <span id="sisaq">${fmt(soalSisaMs())}</span></span>`:`<span class="timer${sisaMs()<=60000?" warn":""}${sisaMs()>0&&sisaMs()<=60000?" kedip":""}">⏱ <span id="sisa">${fmt(sisaMs())}</span></span>`}</div>
   <p class="qtext">${esc(q.q)}</p><ol class="opts">${perm.map((oi,pi)=>{const jw=pil!==undefined||habis,cls=jw?(oi===q.a?" benar":oi===pil?" salah":" redup"):"";
     return `<li><button type="button" class="opt${cls}" data-o="${oi}"${jw?" disabled":""}><span class="l">${L[pi]}</span><span class="t">${esc(q.o[oi])}${jw&&oi===q.a?' <b class="mk">✓</b>':jw&&oi===pil?' <b class="mk">❌</b>':""}</span></button></li>`;}).join("")}</ol>
   ${sk?`<div class="nav sk">${isMaster()?`<button class="btn primary" id="next" type="button"${habis||semuaJawab(q)?"":" disabled"}>${pos<n-1?"Next":"Selesai"}</button>${miniMaster()}`:`<p class="muted tunggum">${habis?"Waktu habis. ":""}Menunggu room master <b id="mnama">${esc(namaP(T.master))}</b> menekan Next.</p>`}</div>`:`<div class="nav"><button class="btn" id="prev" type="button"${pos===0?" disabled":""}>← Previous</button>${pos<n-1?'<button class="btn primary" id="next" type="button">Next →</button>':'<button class="btn primary" id="kumpul" type="button">Selesai &amp; kumpulkan</button>'}</div>`}
