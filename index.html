@@ -350,6 +350,7 @@ body.tertutup #tirai{display:flex}
     <summary><span class="dot" aria-hidden="true"></span><span>Access approvals: <strong id="admcount">0</strong> pending · <strong id="admon">0</strong> active</span><button class="btn keluar admout" type="button" id="adm-logout">Keluar</button></summary>
     <div class="linkrow"><input id="admlink" readonly aria-label="Tautan latihan"><button class="btn copy" type="button" id="admcopy">⧉ Salin tautan</button></div>
     <div id="admbody"></div>
+    <div class="linkrow" id="izinsqlrow"><button class="btn copy" type="button" id="izinsql">⧉ Salin daftar izin (SQL untuk Supabase)</button></div>
     <h4>Bank soal</h4>
     <p class="note" id="bankinfo">Memeriksa…</p>
     <div class="linkrow"><input type="file" id="bankfile" accept=".json,application/json"><button class="btn copy" type="button" id="bankup">Unggah bank soal</button></div>
@@ -1000,9 +1001,14 @@ window.__quiz={state};
     const esc=s=>String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
     const ACT={menunggu:[['disetujui','Setujui','primary'],['ditolak','Tolak','']],disetujui:[['ditolak','Cabut','']],ditolak:[['disetujui','Setujui','primary'],['hapus','Hapus','']]};
     const TTL={menunggu:'Menunggu persetujuan',disetujui:'Disetujui',ditolak:'Ditolak / dicabut'};
+    // Pindah ke Supabase: salin email yang sudah disetujui sebagai perintah SQL untuk tabel izin_pra.
+    let izinOK=[];$('izinsql').onclick=()=>{if(!izinOK.length){alert('Belum ada akun yang disetujui.');return;}
+      const q='insert into public.izin_pra (email) values\n'+izinOK.map(e=>"  ('"+e+"')").join(',\n')+'\non conflict do nothing;';
+      navigator.clipboard&&navigator.clipboard.writeText(q).then(()=>{$('izinsql').textContent='✓ Tersalin ('+izinOK.length+' email)';});};
     db.collection('izin').onSnapshot(qs=>{const g={menunggu:[],disetujui:[],ditolak:[]};let on=0;
       qs.forEach(d=>{const x=d.data();(g[x.status]||g.menunggu).push([d.id,x]);if(x.status==='disetujui'&&x.terakhir&&x.terakhir.toDate&&Date.now()-x.terakhir.toDate()<180000)on++;});
       for(const k in g)g[k].sort((a,b)=>((b[1].terakhir&&b[1].terakhir.seconds)||0)-((a[1].terakhir&&a[1].terakhir.seconds)||0));
+      izinOK=g.disetujui.map(([,x])=>String(x.email||'').trim().toLowerCase()).filter(e=>/^[^@\s']+@[^@\s']+$/.test(e));
       $('admcount').textContent=g.menunggu.length;$('admon').textContent=on;
       body.innerHTML=Object.keys(g).filter(k=>g[k].length).map(k=>`<h4>${TTL[k]} (${g[k].length})</h4><ul>`+g[k].map(([id,x])=>
         `<li><span class="em">${esc(x.email)}</span><span class="nm">${esc(x.nama)}</span><span class="acts">${ACT[k].map(([v,l,c])=>`<button class="btn ${c}" data-id="${id}" data-v="${v}" type="button">${l}</button>`).join('')}</span>`+
