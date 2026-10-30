@@ -115,6 +115,15 @@ body .card .nav>#prev.btn,body .card .nav>#next.btn{color:var(--ink);border:1px 
 body .card .nav>#prev.btn:hover:not(:disabled),body .card .nav>#next.btn:hover{border-color:color-mix(in srgb,var(--accent) 55%,transparent);background:linear-gradient(180deg,color-mix(in srgb,var(--accent) 24%,transparent),color-mix(in srgb,var(--accent) 10%,transparent)),color-mix(in srgb,var(--surface) 55%,transparent)}
 body .card .nav>#prev.btn:active:not(:disabled),body .card .nav>#next.btn:active{transform:translateY(1px)}
 body .card .nav>#prev.btn:disabled{opacity:.45}
+/* Pemilik saja: Previous dan Next agak ke tengah, berjarak, kaca bening ala iPhone. */
+body.bebas .card .nav{justify-content:center;gap:clamp(20px,8vw,48px);flex-wrap:nowrap}
+body.bebas .card .nav>#prev.btn,body.bebas .card .nav>#next.btn{flex:0 1 126px;min-width:0;justify-content:center;text-align:center;border-radius:999px;color:var(--ink);
+  border:1px solid rgb(255 255 255 / .22);background:linear-gradient(180deg,rgb(255 255 255 / .16),rgb(255 255 255 / .05));
+  -webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%);
+  box-shadow:inset 0 1px 0 rgb(255 255 255 / .35),inset 0 -1px 0 rgb(255 255 255 / .06),0 8px 24px rgb(0 0 0 / .18)}
+body.bebas .card .nav>#prev.btn:hover:not(:disabled),body.bebas .card .nav>#next.btn:hover{border-color:rgb(255 255 255 / .34);background:linear-gradient(180deg,rgb(255 255 255 / .22),rgb(255 255 255 / .08))}
+:root[data-theme="light"] body.bebas .card .nav>#prev.btn,:root[data-theme="light"] body.bebas .card .nav>#next.btn{border-color:rgb(0 0 0 / .10);background:linear-gradient(180deg,rgb(255 255 255 / .75),rgb(255 255 255 / .45));box-shadow:inset 0 1px 0 rgb(255 255 255 / .9),0 6px 18px rgb(0 0 0 / .10)}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) body.bebas .card .nav>#prev.btn,:root:not([data-theme="dark"]) body.bebas .card .nav>#next.btn{border-color:rgb(0 0 0 / .10);background:linear-gradient(180deg,rgb(255 255 255 / .75),rgb(255 255 255 / .45));box-shadow:inset 0 1px 0 rgb(255 255 255 / .9),0 6px 18px rgb(0 0 0 / .10)}}
 .mulaikartu .info{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}.mulaikartu .info span{font-size:12.5px;border:1px solid var(--line);border-radius:999px;padding:3px 10px;color:var(--muted)}
 .mulaikartu h2{font-family:var(--f-display);font-weight:650;font-size:21px;line-height:1.3;margin:0;max-width:30ch;color:color-mix(in srgb,var(--brass) 45%,var(--ink))}
 .mulaikartu .narasi{list-style:none;margin:2px 0 4px;padding:14px 16px;display:flex;flex-direction:column;gap:14px;text-align:center;max-width:46ch;border:1px solid color-mix(in srgb,var(--brass) 35%,var(--line));border-radius:14px;background:linear-gradient(180deg,color-mix(in srgb,var(--brass) 9%,var(--bg)),color-mix(in srgb,var(--brass) 4%,var(--bg)))}
