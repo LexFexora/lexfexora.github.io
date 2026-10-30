@@ -562,6 +562,13 @@ html:not(.fokus) .tabs .tab.pilih{padding-top:9px;padding-bottom:9px}html:not(.f
 .qhead .qkoin{gap:12px}
 /* Android: daftar pilihan bergaya iPhone (melayang, gelap, blur, teks membungkus, centang). */
 .apick-bg{position:fixed;inset:0;z-index:9998;background:rgb(0 0 0 / .18)}
+label.ctl-sub{position:relative}.subtap{display:none}
+body.bebas label.ctl-sub .subtap{display:block;position:absolute;inset:0;cursor:pointer;z-index:2}
+.apick.cari{padding-top:0}.apick.cari button{font-size:15px;padding-top:9px;padding-bottom:9px}
+.apick .apcari{position:sticky;top:0;z-index:1;display:block;width:100%;box-sizing:border-box;margin:0 0 4px;padding:12px 14px;border:0;border-bottom:1px solid rgb(127 127 127 / .25);background:inherit;-webkit-backdrop-filter:blur(22px);backdrop-filter:blur(22px);color:inherit;font:inherit;font-size:16px;outline:none;border-radius:22px 22px 0 0}
+.apick .apcari::placeholder{color:rgb(160 165 162)}
+.apick .apcari{color:#f2f4f3}:root[data-theme="light"] .apick .apcari{color:#111}@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .apick .apcari{color:#111}}
+.apick button[hidden]{display:none}.apick .apkosong{margin:10px 18px;font-size:14px;opacity:.7}
 .apick{position:fixed;z-index:9999;box-sizing:border-box;max-height:min(62vh,520px);overflow-y:auto;overscroll-behavior:contain;padding:6px 0;border-radius:22px;background:rgb(32 35 33 / .82);-webkit-backdrop-filter:blur(22px) saturate(1.4);backdrop-filter:blur(22px) saturate(1.4);box-shadow:0 0 0 .5px rgb(255 255 255 / .12),0 18px 50px rgb(0 0 0 / .55);font-family:var(--f-sans,system-ui,sans-serif);transform-origin:50% 0;animation:apickin .16s ease-out}
 .apick button{display:grid;grid-template-columns:26px 1fr;align-items:start;gap:4px;width:100%;margin:0;padding:11px 18px 11px 12px;border:0;background:none;color:#f2f4f3;font:inherit;font-size:17px;line-height:1.25;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .apick button+button{box-shadow:inset 0 .5px 0 rgb(255 255 255 / .08)}
@@ -1457,18 +1464,32 @@ function inkTengah(v,t){if(!v||!t)return;
 </script>
 <script>
 // Android: ganti daftar pilihan bawaan dengan pemilih bergaya iPhone. Keyboard tetap memakai select asli.
-(function(){if(!/Android/i.test(navigator.userAgent))return;let terbuka=null;
+// Pemilik: daftar Section Details dibuka dengan pemilih yang sama plus kolom cari, di semua perangkat.
+(function(){const ANDROID=/Android/i.test(navigator.userAgent);let terbuka=null;
   function tutup(){if(!terbuka)return;terbuka.bg.remove();terbuka.box.remove();const s=terbuka.sel;terbuka=null;removeEventListener('resize',tutup);s.focus({preventScroll:true});}
-  function buka(sel){tutup();const bg=document.createElement('div');bg.className='apick-bg';const box=document.createElement('div');box.className='apick';box.setAttribute('role','listbox');
+  function buka(sel,cari){tutup();const bg=document.createElement('div');bg.className='apick-bg';const box=document.createElement('div');box.className='apick'+(cari?' cari':'');box.setAttribute('role','listbox');
+    let inp=null;if(cari){inp=document.createElement('input');inp.type='search';inp.className='apcari';inp.placeholder='Cari sub materi…';inp.autocomplete='off';inp.setAttribute('aria-label','Cari sub materi');box.appendChild(inp);}
     [...sel.options].forEach((o,i)=>{if(o.hidden)return;const b=document.createElement('button');b.type='button';b.setAttribute('role','option');b.setAttribute('aria-selected',String(i===sel.selectedIndex));b.disabled=o.disabled;
       b.innerHTML='<span class="ck">✓</span><span></span>';b.lastChild.textContent=o.textContent;
       b.onclick=()=>{if(sel.selectedIndex!==i){sel.selectedIndex=i;sel.dispatchEvent(new Event('input',{bubbles:true}));sel.dispatchEvent(new Event('change',{bubbles:true}));}tutup();};box.appendChild(b);});
-    document.body.append(bg,box);const r=sel.getBoundingClientRect(),vw=innerWidth,vh=innerHeight,w=Math.min(Math.max(r.width*.78,240),vw-24,380);
+    let kos=null;if(cari){kos=document.createElement('p');kos.className='apkosong';kos.hidden=true;box.appendChild(kos);
+      const norm=t=>t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ');
+      inp.oninput=()=>{const ks=norm(inp.value).split(' ').filter(Boolean);let n=0;box.querySelectorAll('button').forEach(b=>{const ok=ks.every(k=>norm(b.textContent).includes(k));b.hidden=!ok;if(ok)n++;});
+        kos.hidden=!!n;kos.textContent='Tidak ada sub materi yang cocok.';};
+      inp.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();const b=box.querySelector('button:not([hidden])');if(b)b.click();}};}
+    document.body.append(bg,box);const r=sel.getBoundingClientRect(),vw=innerWidth,vh=innerHeight,w=cari?Math.min(vw-24,Math.max(r.width,440)):Math.min(Math.max(r.width*.78,240),vw-24,380);
     box.style.width=w+'px';box.style.left=Math.round(Math.min(Math.max(12,r.left+(r.width-w)/2),vw-w-12))+'px';
     const h=box.offsetHeight,atas=r.top-8,bawah=vh-r.bottom-8;let top;
     if(bawah>=h)top=r.bottom+6;else if(atas>=h)top=r.top-h-6;else top=Math.max(12,Math.min(vh-h-12,r.top+r.height/2-h/2));
     box.style.top=Math.round(top)+'px';const cur=box.querySelector('[aria-selected="true"]');if(cur)box.scrollTop=cur.offsetTop-box.clientHeight/2+cur.offsetHeight/2;
-    bg.onclick=tutup;terbuka={bg,box,sel};addEventListener('resize',tutup);}
+    bg.onclick=tutup;terbuka={bg,box,sel};if(!inp)addEventListener('resize',tutup);else{// Dengan kolom cari: tempel di bawah select (atau di atasnya bila ruang bawah sempit), agar select tidak tertutup saat daftar menyusut.
+      const bw=vh-r.bottom-18,at=r.top-18;if(bw>=Math.min(300,at)){box.style.top=Math.round(r.bottom+6)+'px';box.style.maxHeight=Math.round(Math.min(bw,520))+'px';}
+      else{box.style.top='auto';box.style.bottom=Math.round(vh-r.top+6)+'px';box.style.maxHeight=Math.round(Math.min(at,520))+'px';}
+      box.scrollTop=0;inp.focus({preventScroll:true});}}
+  // Lapisan tembus pandang di atas select #sub: hanya aktif untuk pemilik (body.bebas), pengguna lain tetap memakai select biasa.
+  (function(){const sel=document.getElementById('sub');if(!sel)return;const t=document.createElement('span');t.className='subtap';t.setAttribute('aria-hidden','true');sel.parentNode.appendChild(t);
+    t.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();if(document.body.classList.contains('bebas')&&!sel.disabled)buka(sel,true);});})();
+  if(!ANDROID){document.addEventListener('keydown',e=>{if(terbuka&&e.key==='Escape')tutup();});return;}
   document.addEventListener('keydown',e=>{if(terbuka&&e.key==='Escape')tutup();});
   const pas=e=>{const sel=e.target.closest&&e.target.closest('select');return sel&&!sel.multiple&&!sel.disabled&&!(sel.size>1)?sel:null;};
   // Cegah daftar bawaan saat disentuh; pemilih dibuka setelah ketukan selesai agar tidak langsung tertutup.
