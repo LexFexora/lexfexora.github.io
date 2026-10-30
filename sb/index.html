@@ -342,6 +342,11 @@ html.gate-wait .wrap{display:none}
 #tosub label>span{text-align:left!important;justify-self:stretch}
 #tosub legend label{font-size:13px;font-weight:600;align-items:center}#tosub legend label>input{margin-top:0}
 #tosub legend{width:100%;padding:4px 0}
+#tosub label[hidden],#tosub fieldset[hidden]{display:none!important}
+#tobox input.tocari{width:100%;box-sizing:border-box;font:inherit;font-size:14px;padding:9px 12px 9px 34px;margin:8px 0 6px;border:1px solid var(--line);border-radius:9px;color:var(--ink);
+  background:var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3.5-3.5'/%3E%3C/svg%3E") no-repeat 11px center/16px}
+#tobox input.tocari:focus{outline:none;border-color:color-mix(in srgb,var(--ink) 40%,var(--line))}
+@media (hover:none) and (pointer:coarse){#tobox input.tocari{font-size:16px}}
 .tolist{display:flex;flex-direction:column;gap:6px;margin:4px 0 8px}.tolist .tr{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:13px;border:1px solid var(--line);border-radius:8px;padding:6px 8px}.tolist .tr b{margin-right:auto}.tr .trm{margin-left:auto}.tr .trbr{flex-basis:100%;height:0}
 .tojoin{display:flex;flex-direction:column;gap:4px;border:1px solid color-mix(in srgb,var(--accent) 45%,var(--line));background:var(--accent-soft);border-radius:10px;padding:10px}.tojoin .linkrow{margin:2px 0}.tojoin .linkrow input{user-select:all;-webkit-user-select:all}
 .adm h4{margin:10px 0 2px;font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em}
@@ -653,6 +658,7 @@ html:not(.fokus) .tabs .tab.pilih{padding-top:9px;padding-bottom:9px}html:not(.f
         <div class="torow"><label>Number of Questions<select id="tojml"><option value="25">25 questions</option><option value="50">50 questions</option><option value="75">75 questions</option><option value="100" selected>100 questions</option><option value="150">150 questions</option><option value="200">200 questions</option></select></label>
         <label>Seconds per Question<input id="todetik" type="number" min="10" max="600" value="54"></label></div>
         <p class="note" style="margin:4px 0 0">Pilih satu atau beberapa sub-materi. Soal diracik otomatis: jatah tiap sub-materi sebanding jumlah soalnya, seimbang antara dasar hukum, istilah &amp; prosedur, dan pendapat ahli, tanpa soal kembar, dengan urutan sub-materi diselang-seling.</p>
+        <input type="search" id="tocari" class="tocari" placeholder="Cari sub-materi (mis. waris, kasasi, mediasi)…" autocomplete="off" aria-label="Cari sub-materi">
         <div class="tosub" id="tosub"></div>
         <p class="note" id="toinfo"></p>
         <p class="note" style="margin:0">Soal yang belum atau paling jarang diujikan selalu diutamakan. <button class="btn copy" type="button" id="torst" style="padding:2px 8px;font-size:12px">Atur ulang rotasi</button></p>
@@ -1322,7 +1328,16 @@ window.__quiz={state};
       if(!QB.length){$('tosub').textContent='Bank soal belum dimuat.';return;}
       $('tosub').innerHTML=Object.keys(CATS).map(c=>`<fieldset><legend><label><input type="checkbox" data-all="${c}"> ${esc(CATS[c].short)}</label></legend>`+
         SUBS[c].map((nm,i)=>{const k=QB.filter(q=>q.mappings.some(m=>m.c===+c&&m.s===i+1)).length;return `<label><input type="checkbox" data-cs="${c}|${i+1}"><span>${i+1}. ${esc(nm)} <small>(${k})</small></span></label>`;}).join('')+`</fieldset>`).join('');
-      $('tosub').querySelectorAll('input[data-all]').forEach(a=>a.onchange=()=>{$('tosub').querySelectorAll(`input[data-cs^="${a.dataset.all}|"]`).forEach(i=>i.checked=a.checked);toInfo();});
+      // Centang kategori hanya mengenai sub-materi yang sedang tampil (hasil pencarian), atau semuanya bila kolom cari kosong.
+      $('tosub').querySelectorAll('input[data-all]').forEach(a=>a.onchange=()=>{$('tosub').querySelectorAll(`input[data-cs^="${a.dataset.all}|"]`).forEach(i=>{if(!i.closest('label').hidden)i.checked=a.checked;});toInfo();});
+      // Cari sub-materi: semua kata kunci harus ada (tanpa beda huruf besar/kecil dan tanda baca).
+      const norm=t=>t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ');
+      $('tocari').oninput=()=>{const ks=norm($('tocari').value).split(' ').filter(Boolean);let ada=0;
+        $('tosub').querySelectorAll('fieldset').forEach(f=>{const kat=norm(f.querySelector('legend').textContent);let n=0;
+          f.querySelectorAll('label:not(legend label)').forEach(l=>{const t=kat+' '+norm(l.textContent),ok=ks.every(k=>t.includes(k));l.hidden=!ok;if(ok)n++;});
+          f.hidden=!n;ada+=n;});
+        let k=$('tokosong');if(!k){k=document.createElement('p');k.id='tokosong';k.className='note';k.style.margin='6px 0';$('tosub').appendChild(k);}
+        k.textContent=ada?'':'Tidak ada sub-materi yang cocok dengan "'+$('tocari').value.trim()+'".';k.hidden=!!ada;};
       $('tosub').querySelectorAll('input[data-cs]').forEach(i=>i.onchange=toInfo);toInfo();});
     // Racik otomatis: jatah tiap sub-materi sebanding jumlah soalnya (minimal 1), di dalam sub seimbang antar jenis soal
     // (dasar hukum, istilah & prosedur, pendapat ahli), tanpa soal kembar, lalu urutan sub-materi diselang-seling.
