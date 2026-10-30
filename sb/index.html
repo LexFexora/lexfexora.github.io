@@ -1078,7 +1078,7 @@ window.__quiz={state};
       // Pemilik: tautan join mock exam terbaru yang belum selesai, siap disalin atau dibagikan.
       let jl='',d0=null;qs.forEach(d=>{if(!d0&&d.data().status!=='selesai')d0=d;});if(isOwner){if(d0){const u0=location.origin+location.pathname.replace(/[^/]*$/,'')+'tryout.html?t='+d0.id;
         jl=`<div class="tojoin"><b>Tautan join peserta</b><span class="muted">${esc(jdl(d0.data().judul))}</span><div class="linkrow"><input readonly value="${u0}" aria-label="Tautan join peserta" onclick="this.select()"><button class="btn copy" type="button" data-salin="${u0}">⧉ Salin tautan</button><button class="btn copy" type="button" data-bagi="${u0}">Bagikan</button></div><p class="note" style="margin:0">Kirim tautan ini ke peserta. Mereka masuk dengan Google lalu otomatis ke ruang tunggu, dan papan peringkat diurutkan menurut jumlah jawaban benar.</p></div>`;}}
-      $('tolist').innerHTML=(rows.join('')||(isOwner?'<p class="note">Belum ada mock exam.</p>':''))+jl;
+      $('tolist').innerHTML=rows.join('')+jl;
       $('tolist').querySelectorAll('[data-bagi]').forEach(b=>b.onclick=()=>{const u=b.dataset.bagi,tx='Ikut Mock Exam bersama: '+u;if(navigator.share)navigator.share({title:'Mock Exam',text:'Ikut Mock Exam bersama',url:u}).catch(()=>{});else window.open('https://wa.me/?text='+encodeURIComponent(tx),'_blank');});
       // Peserta: teks kosong bila tidak ada mock exam yang dibuka, ajakan Ikut bila ada.
       if(!isOwner)$('toket').textContent=rows.length?'Mock exam yang sedang dibuka. Ketuk Ikut untuk bergabung.':'There are no quizzes available right now.';
