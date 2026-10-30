@@ -1171,7 +1171,7 @@ window.__quiz={state};
   // Keluar menghapus jawaban sesi (benar/salah di kuis); tanda ✓/✗ di akun tetap tersimpan.
   window.__logout=()=>bOut.onclick();
   $('akunexit').onclick=()=>bOut.onclick();$('akunexit2').onclick=()=>bOut.onclick();
-  bOut.onclick=()=>{window.__keluar=true;try{localStorage.removeItem('tkbcakim-v12');}catch(e){}auth.signOut().then(()=>location.reload());};
+  bOut.onclick=()=>{if(!confirm('Keluar dari akun ini?'))return;window.__keluar=true;try{localStorage.removeItem('tkbcakim-v12');}catch(e){}auth.signOut().then(()=>location.reload());};
   $('adm-logout').onclick=e=>{e.preventDefault();e.stopPropagation();bOut.onclick();};
 
   let started=false,unsub=null,beat=null;let isOwner=false;
@@ -1265,7 +1265,11 @@ window.__quiz={state};
     if(unsub){unsub();unsub=null;}if(beat){clearInterval(beat);beat=null;}
     akunku(u);
     if(!u){show('Access required','Sign in with your Google account. Your access request will be sent to the owner for approval.',null,true,false);
-      setTimeout(()=>{if(window.__sbAuthErr&&!auth.currentUser)gp.textContent='Sign-in failed: '+window.__sbAuthErr;},800);return;}
+      setTimeout(()=>{if(window.__sbAuthErr&&!auth.currentUser)gp.textContent='Sign-in failed: '+window.__sbAuthErr;},800);
+      // Bila sesi berakhir sendiri (bukan lewat tombol Exit), tampilkan catatan singkatnya agar penyebabnya bisa dilacak.
+      try{const l=JSON.parse(localStorage.getItem('sb-authlog')||'[]'),k=l.filter(x=>Date.now()-x.t<864e5);const o=k.reverse().find(x=>/otomatis/.test(x.ev));
+        if(o){const h=k.find(x=>/^http/.test(x.ev)&&Math.abs(x.t-o.t)<6e4);gw.textContent='Session ended on its own at '+new Date(o.t).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})+(h?' · '+h.ev+' '+h.info.slice(0,120):'');}}catch(e){}
+      return;}
     const who='Signed in as '+(u.displayName?u.displayName+' · ':'')+u.email;
     if(OWNER&&(u.email||'').toLowerCase()===OWNER&&u.emailVerified){isOwner=true;window.__isOwner=true;document.body.classList.add('bebas');
       window.__pindah=(id,list)=>db.doc('bank/pindah').set({m:{[id]:list}},{merge:true}).then(()=>pinfo());

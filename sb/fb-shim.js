@@ -7,7 +7,12 @@
   try{const q=new URLSearchParams(location.search),h=new URLSearchParams(location.hash.replace(/^#/,''));
     const e=q.get('error_description')||h.get('error_description')||q.get('error')||h.get('error');
     if(e)window.__sbAuthErr=e.replace(/\+/g,' ');window.__sbHadCode=q.has('code');}catch(e){}
-  const sb=window.supabase.createClient(cfg.url,cfg.key,{auth:{flowType:'pkce',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+  // Catatan kejadian login (10 terakhir, di perangkat ini) untuk melacak keluar sendiri: siapa yang mengakhiri sesi dan kenapa.
+  const LOG='sb-authlog',catat=(ev,info)=>{try{const l=JSON.parse(localStorage.getItem(LOG)||'[]');l.push({t:Date.now(),ev,info:String(info||'').slice(0,200)});localStorage.setItem(LOG,JSON.stringify(l.slice(-10)));}catch(e){}};
+  window.__sbCatat=catat;
+  // Pantau balasan perpanjangan token: bila ditolak server, alasannya ikut dicatat.
+  const pantau=async(u,o)=>{const r=await fetch(u,o);try{const us=String(u&&u.url||u);if(/\/auth\/v1\/(token|logout|user)/.test(us)&&!r.ok){const t=await r.clone().text();catat('http '+r.status,us.replace(/^.*\/auth\/v1\//,'')+' '+t);}}catch(e){}return r;};
+  const sb=window.supabase.createClient(cfg.url,cfg.key,{global:{fetch:pantau},auth:{flowType:'pkce',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
   window.__sb=sb;
   if(sb.auth.getSession)sb.auth.getSession().then(r=>{if(r&&r.error&&!window.__sbAuthErr)window.__sbAuthErr=r.error.message||String(r.error);if(window.__sbHadCode&&!(r&&r.data&&r.data.session)&&!window.__sbAuthErr)window.__sbAuthErr='Login code could not be exchanged for a session.';}).catch(e=>{window.__sbAuthErr=(e&&e.message)||String(e);});
 
@@ -139,6 +144,7 @@
     async signOut(){await sb.auth.signOut().catch(()=>{});}};
   let lastUid;
   sb.auth.onAuthStateChange((ev,ses)=>{const u=toUser(ses&&ses.user);auth.currentUser=u;
+    if(ev!=='TOKEN_REFRESHED'||!u)catat(ev+(ev==='SIGNED_OUT'?(window.__keluar?' (tombol Exit)':' (otomatis)'):''),u?u.email:'');
     // Perpanjangan token tidak dianggap login ulang, agar halaman tidak dimuat ulang tiap jam.
     const uid=u?u.uid:null;if(auth._ready&&uid===lastUid)return;
     // Akun berganti di tab lain: muat ulang agar data akun sebelumnya tidak terbawa.
