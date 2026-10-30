@@ -1448,9 +1448,9 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       if(document.hidden&&window.Notification&&Notification.permission==='granted'){try{new Notification('CAT Lex Fexora',{body:nama+' '+ket,icon:foto||undefined});}catch(e){}}};
     const pantauLogin=qs=>{const now=Date.now(),me=auth.currentUser&&auth.currentUser.uid;
       qs.forEach(d=>{const x=d.data(),t=x.terakhir&&x.terakhir.toDate?+x.terakhir.toDate():0,prev=LOGIN[d.id];
-        if(!loginAwal&&d.id!==me&&t&&now-t<120000){const nama=x.nama||String(x.email||'Pengguna').split('@')[0];
-          if(prev===undefined)toastLogin(nama,x.foto,x.status==='menunggu'?'meminta akses masuk':'baru saja login');
-          else if(t-prev>150000)toastLogin(nama,x.foto,'baru saja login');}
+        // Hanya pengguna yang sudah diizinkan; permintaan akses baru tidak dinotifikasi.
+        if(!loginAwal&&d.id!==me&&x.status==='disetujui'&&t&&now-t<120000&&prev!==undefined&&t-prev>150000)
+          toastLogin(x.nama||String(x.email||'Pengguna').split('@')[0],x.foto,'baru saja login');
         if(t)LOGIN[d.id]=t;else if(prev===undefined)LOGIN[d.id]=0;});
       loginAwal=false;};
     if(window.Notification&&Notification.permission==='default')document.addEventListener('click',()=>{try{Notification.requestPermission();}catch(e){}},{once:true});
