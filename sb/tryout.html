@@ -299,6 +299,17 @@ header .tema .knop{background:linear-gradient(180deg,#c9b98f,#a8925c)}header .te
 .nav.sk .mini select,.nav.sk .mini .btn{height:32px;box-sizing:border-box;margin:0;border-radius:9px;line-height:1;vertical-align:middle}
 .nav.sk .mini .btn{flex:none;display:inline-flex;align-items:center;justify-content:center;white-space:nowrap}
 .nav.sk .mini:has(>:nth-child(4)){grid-template-columns:minmax(0,1fr) auto auto auto}
+
+/* Notifikasi login untuk pemilik */
+#lgtoast{position:fixed;right:16px;bottom:16px;z-index:9500;display:flex;flex-direction:column;gap:8px;align-items:flex-end;pointer-events:none;max-width:calc(100vw - 32px)}
+#lgtoast .lgt{pointer-events:auto;display:flex;align-items:center;gap:10px;padding:10px 10px 10px 12px;border-radius:12px;background:var(--surface,#fff);color:var(--ink,#111);border:1px solid var(--line,#ddd);box-shadow:0 8px 24px rgba(0,0,0,.18);font-size:13.5px;max-width:340px;animation:lgmasuk .3s ease-out}
+#lgtoast .lgt.pergi{opacity:0;transform:translateY(6px);transition:.3s}
+#lgtoast .lgav{flex:none;width:32px;height:32px;border-radius:50%;overflow:hidden;display:grid;place-items:center;background:var(--ok,#17733f);color:#fff;font-weight:700}
+#lgtoast .lgav img{width:100%;height:100%;object-fit:cover}
+#lgtoast .lgtx{display:flex;flex-direction:column;line-height:1.35;min-width:0}#lgtoast .lgtx small{color:var(--muted,#777);font-size:11.5px}
+#lgtoast button{flex:none;background:none;border:0;color:var(--muted,#777);font-size:18px;line-height:1;cursor:pointer;padding:2px 4px}
+@keyframes lgmasuk{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media(max-width:600px){#lgtoast{left:16px;right:16px;bottom:auto;top:12px;align-items:stretch}#lgtoast .lgt{max-width:none}}
 </style>
 </head>
 <body>
@@ -346,6 +357,24 @@ const main=$("main"),papan=$("papan"),lb=$("lb"),bahas=$("bahas"),alat=$("alat")
 const TID=new URLSearchParams(location.search).get("t");
 // ✎ Edit soal (pemilik): suntingan dikunci di bank/edit dan langsung dipakai di mock exam ini untuk semua peserta.
 const DIKUNCI=new Set();let edSiap=false;
+// Notifikasi login pengguna yang sudah diizinkan (khusus pemilik), sama seperti di beranda.
+let loginDipantau=false;
+function pantauLoginMulai(){if(loginDipantau)return;loginDipantau=true;
+    // Notifikasi login (khusus pemilik): muncul di pojok layar tanpa mengganggu soal atau timer.
+    const LOGIN={};let loginAwal=true;
+    const toastLogin=(nama,foto,ket)=>{let w=document.getElementById('lgtoast');if(!w){w=document.createElement('div');w.id='lgtoast';w.setAttribute('aria-live','polite');document.body.appendChild(w);}
+      const t=document.createElement('div');t.className='lgt';t.innerHTML=`<span class="lgav">${foto?`<img src="${esc(foto)}" alt="" referrerpolicy="no-referrer">`:esc((nama[0]||'?').toUpperCase())}</span><span class="lgtx"><b>${esc(nama)}</b> ${esc(ket)}<small>${new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})}</small></span><button type="button" aria-label="Tutup">×</button>`;
+      const hapus=()=>{t.classList.add('pergi');setTimeout(()=>t.remove(),300);};t.querySelector('button').onclick=hapus;w.appendChild(t);while(w.children.length>4)w.firstChild.remove();setTimeout(hapus,8000);
+      if(document.hidden&&window.Notification&&Notification.permission==='granted'){try{new Notification('CAT Lex Fexora',{body:nama+' '+ket,icon:foto||undefined});}catch(e){}}};
+    const pantauLogin=qs=>{const now=Date.now(),me=(U)&&(U).uid;
+      qs.forEach(d=>{const x=d.data(),t=x.terakhir&&x.terakhir.toDate?+x.terakhir.toDate():0,prev=LOGIN[d.id];
+        // Hanya pengguna yang sudah diizinkan; permintaan akses baru tidak dinotifikasi.
+        if(!loginAwal&&d.id!==me&&x.status==='disetujui'&&t&&now-t<120000&&prev!==undefined&&t-prev>150000)
+          toastLogin(x.nama||String(x.email||'Pengguna').split('@')[0],x.foto,'baru saja login');
+        if(t)LOGIN[d.id]=t;else if(prev===undefined)LOGIN[d.id]=0;});
+      loginAwal=false;};
+    if(window.Notification&&Notification.permission==='default')document.addEventListener('click',()=>{try{Notification.requestPermission();}catch(e){}},{once:true});
+    db.collection('izin').onSnapshot(pantauLogin,()=>{});}
 function siapkanEdit(){if(edSiap)return;edSiap=true;document.addEventListener("click",e=>{if(e.target.closest&&e.target.closest("[data-eds]"))$("edsoal").click();});db.doc("bank/edit").get().then(d=>{Object.keys((d.exists&&d.data().m)||{}).forEach(k=>DIKUNCI.add(k));}).catch(()=>{});
   $("edsoal").onclick=()=>window.EditSoal&&EditSoal.cari({ambil:()=>(T&&T.soal)||[],kini:()=>window.__soalKini&&window.__soalKini()||null,terkunci:id=>DIKUNCI.has(id),
     ket:"Perubahan langsung terlihat oleh semua peserta mock exam ini dan dipakai di seluruh situs.",
@@ -379,7 +408,7 @@ if(!TID){gate("Tautan mock exam tidak lengkap","Buka tautan mock exam yang dibag
 
 auth.onAuthStateChanged(u=>{U=u;pMuat=false;aku=null;P={};if(unsubT){unsubT();unsubT=null;}if(unsubP){unsubP();unsubP=null;}if(unsubC){unsubC();unsubC=null;}
   if(!u){gate("Mock Exam","Masuk dengan akun Google untuk ikut mock exam. Nama akun Anda akan tampil di papan peringkat.",true);return;}
-  isOwner=!!OWNER&&(u.email||"").toLowerCase()===OWNER&&u.emailVerified;$("edsoal").hidden=!isOwner;if(isOwner)siapkanEdit();$("akun").hidden=false;$("akunav").innerHTML=av({foto:u.photoURL,nama:u.displayName||u.email});$("akunnm").textContent=u.displayName||(u.email||"").split("@")[0];document.body.classList.toggle("bebas",isOwner);
+  isOwner=!!OWNER&&(u.email||"").toLowerCase()===OWNER&&u.emailVerified;$("edsoal").hidden=!isOwner;if(isOwner){siapkanEdit();pantauLoginMulai();}$("akun").hidden=false;$("akunav").innerHTML=av({foto:u.photoURL,nama:u.displayName||u.email});$("akunnm").textContent=u.displayName||(u.email||"").split("@")[0];document.body.classList.toggle("bebas",isOwner);
   unsubT=db.doc("tryout/"+TID).onSnapshot(s=>{if(!s.exists){gate("Mock exam tidak ditemukan","Periksa kembali tautannya.");return;}
       T=s.data({serverTimestamps:"estimate"});T.id=s.id;if(!T.judul||T.judul==="Mock Exam Seleksi Kemampuan Bidang")T.judul="Mock Exam";gabung();render();},
     e=>gate("Mock exam belum dapat dibuka","Muat ulang halaman. ("+(e.code||e.message)+")"));
