@@ -909,7 +909,12 @@ function renderTabs(){
   const sel=state.cat!=="all",ik=n=>(KLIK[n]||[KOMPAS])[0];
   t.innerHTML=`<button class="tab pilih" type="button" id="pilih" aria-expanded="${!!state.klOpen}"${sel?` style="--kc:var(--k${state.cat})"`:""}><span class="ki ki4">${KOMPAS}</span><span class="kt"><b>Select Cluster - SKB</b>${sel?`<span class="sel">${esc(CATS[state.cat].short)}</span>`:`<small>Tap to choose a cluster</small>`}</span></button>`+
     (state.klOpen?Object.keys(CATS).map(n=>`<button class="tab kl" role="tab" type="button" data-k="${n}" aria-selected="${state.cat===+n}" style="--kc:var(--k${n})"><span class="ki">${ik(n)}</span><span class="kt"><b>${esc(CATS[n].short)}</b></span></button>`).join(""):"");
-  $("pilih").onclick=()=>{const t=$("tabs"),h0=t.offsetHeight;state.klOpen=!state.klOpen;renderTabs();if(state.klOpen)turunPerlahan(t,h0,[...t.querySelectorAll(".tab.kl")]);};
+  $("pilih").onclick=()=>{const t=$("tabs"),h0=t.offsetHeight;if(t.dataset.anim)return;
+    // Menutup: ukur tinggi akhir dulu, lalu daftar cluster naik dan memudar sambil tingginya menyusut.
+    if(state.klOpen&&t.animate&&!matchMedia("(prefers-reduced-motion:reduce)").matches){state.klOpen=false;renderTabs();const h1=t.offsetHeight;state.klOpen=true;renderTabs();
+      t.dataset.anim="1";t.style.overflow="hidden";[...t.querySelectorAll(".tab.kl")].forEach(x=>x.animate([{opacity:1,transform:"none"},{opacity:0,transform:"translateY(-14px)"}],Object.assign({},EZ_PELAN,{fill:"forwards"})));
+      const an=t.animate([{height:h0+"px"},{height:h1+"px"}],EZ_PELAN);an.onfinish=an.oncancel=()=>{t.style.overflow="";delete t.dataset.anim;state.klOpen=false;renderTabs();};return;}
+    state.klOpen=!state.klOpen;renderTabs();if(state.klOpen)turunPerlahan(t,h0,[...t.querySelectorAll(".tab.kl")]);};
   // Khusus pemilik: klaster langsung membuka sub-materi yang terakhir dikerjakan; pengguna lain mulai dari All Sections.
   t.querySelectorAll(".tab[data-k]").forEach(b=>b.onclick=()=>{const k=+b.dataset.k,ak=window.__isOwner&&store.subAkhir&&store.subAkhir[k];
     if(ak&&SUBS[k]&&SUBS[k][ak.sub-1])selectCat(k,ak.sub,ak.bag);else selectCat(k,"all");requestAnimationFrame(bukaSetelan);});
@@ -1153,11 +1158,21 @@ function turunPerlahan(el,h0,isi){if(matchMedia("(prefers-reduced-motion:reduce)
   const h1=el.offsetHeight,ez={duration:1300,easing:"cubic-bezier(.45,.05,.3,1)"};if(h1<=h0)return;
   el.style.overflow="hidden";const an=el.animate([{height:h0+"px"},{height:h1+"px"}],ez);an.onfinish=an.oncancel=()=>{el.style.overflow="";};
   (isi||[]).forEach((x,i)=>x.animate([{opacity:0,transform:"translateY(-14px)"},{opacity:1,transform:"none"}],Object.assign({},ez,{delay:i*90,fill:"backwards"})));}
+// Menutup bagian dengan gerak yang sama, terbalik: isi naik dan memudar, tinggi menyusut sampai tinggal judulnya.
+const EZ_PELAN={duration:1300,easing:"cubic-bezier(.45,.05,.3,1)"};
+function tutupPerlahan(d,isi){if(d.dataset.anim)return;if(matchMedia("(prefers-reduced-motion:reduce)").matches||!d.animate){d.open=false;return;}
+  const sm=d.querySelector(":scope>summary"),cs=getComputedStyle(d),h0=d.offsetHeight;
+  const h1=sm.offsetHeight+parseFloat(cs.borderTopWidth)+parseFloat(cs.borderBottomWidth)+parseFloat(cs.paddingTop)+parseFloat(cs.paddingBottom);
+  d.dataset.anim="1";d.style.overflow="hidden";const xs=(isi||[]).map(x=>x.animate([{opacity:1,transform:"none"},{opacity:0,transform:"translateY(-14px)"}],Object.assign({},EZ_PELAN,{fill:"forwards"})));
+  const an=d.animate([{height:h0+"px"},{height:h1+"px"}],EZ_PELAN);an.onfinish=an.oncancel=()=>{d.open=false;d.style.overflow="";xs.forEach(a=>a.cancel());delete d.dataset.anim;};}
+// Judul Quiz Options & Sections: buka dan tutup sama-sama perlahan.
+document.querySelector("#setelan>summary").addEventListener("click",e=>{const st=$("setelan");e.preventDefault();if(st.dataset.anim)return;const c=[st.querySelector(".controls")].filter(Boolean);
+  if(st.open)tutupPerlahan(st,c);else{const h0=st.offsetHeight;st.open=true;turunPerlahan(st,h0,c);}});
 // Klik kategori: Quiz Options & Sections terbuka sendiri, turun perlahan dari atas ke bawah.
 function bukaSetelan(){const st=$("setelan");if(!st||st.hidden||st.open)return;
   const h0=st.offsetHeight;st.open=true;turunPerlahan(st,h0,[st.querySelector(".controls")].filter(Boolean));}
-// Bar Mock Exam: dibuka dengan gerak turun yang sama; ditutup seperti biasa.
-document.querySelector("#tocard>summary").addEventListener("click",e=>{const d=$("tocard");if(d.open)return;e.preventDefault();
+// Bar Mock Exam: dibuka dan ditutup dengan gerak perlahan yang sama.
+document.querySelector("#tocard>summary").addEventListener("click",e=>{const d=$("tocard");e.preventDefault();if(d.dataset.anim)return;if(d.open){tutupPerlahan(d,[d.querySelector(".toisi")].filter(Boolean));return;}
   const h0=d.offsetHeight;d.open=true;turunPerlahan(d,h0,[d.querySelector(".toisi")].filter(Boolean));});
 function renderRingkas(){const st=$("setelan");if(st){st.hidden=state.cat==="all";st.classList.toggle("perlu",!siapOK());document.querySelector(".wrap").classList.toggle("blmsiap",!siapOK()&&!(window.__gulTutup&&state.cat!=="all"));document.querySelector(".wrap").classList.toggle("blmmulai",state.cat!=="all"&&siapOK()&&!state.mulai&&state.pos<state.list.length);const sr=$("siaprow");if(sr)sr.hidden=siapOK();}const r=$("ringkas");if(!r)return;const s=state.cat==="all"||state.sub==="all"?"All Sections":state.sub+". "+SUBS[state.cat][state.sub-1]+(state.bag==="bonus"?" · Soal Bonus":state.bag!=="all"?" · Bagian "+state.bag:"");
   r.textContent=s+" · "+(state.order==="rand"?"Shuffle":"Sequential")+" · "+({off:"Timer off",cum:"Total timer",per:"Timer per question"}[tMode]||"");}
