@@ -336,6 +336,12 @@ html.gate-wait .wrap{display:none}
 .tosub{max-height:320px;overflow:auto;border:1px solid var(--line);border-radius:8px;padding:6px 10px}
 .tosub fieldset{border:0;margin:0 0 6px;padding:0}.tosub legend{font-weight:600;font-size:13px;padding:4px 0}
 .tosub label{flex-direction:row;align-items:flex-start;gap:8px;font-size:13px;color:var(--ink);padding:3px 0}.tosub label small{color:var(--muted)}
+/* Daftar centang sub materi: kotak satu kolom di kiri, teks rata kiri di sampingnya (juga di layar komputer). */
+#tosub label{display:grid!important;grid-template-columns:18px minmax(0,1fr);column-gap:10px;align-items:start;justify-items:start;justify-content:stretch;text-align:left!important;width:100%;margin:0;box-sizing:border-box}
+#tosub label>input{margin:2px 0 0;width:16px;height:16px;justify-self:start}
+#tosub label>span{text-align:left!important;justify-self:stretch}
+#tosub legend label{font-size:13px;font-weight:600;align-items:center}#tosub legend label>input{margin-top:0}
+#tosub legend{width:100%;padding:4px 0}
 .tolist{display:flex;flex-direction:column;gap:6px;margin:4px 0 8px}.tolist .tr{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:13px;border:1px solid var(--line);border-radius:8px;padding:6px 8px}.tolist .tr b{margin-right:auto}.tr .trm{margin-left:auto}.tr .trbr{flex-basis:100%;height:0}
 .tojoin{display:flex;flex-direction:column;gap:4px;border:1px solid color-mix(in srgb,var(--accent) 45%,var(--line));background:var(--accent-soft);border-radius:10px;padding:10px}.tojoin .linkrow{margin:2px 0}.tojoin .linkrow input{user-select:all;-webkit-user-select:all}
 .adm h4{margin:10px 0 2px;font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em}
