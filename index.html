@@ -567,6 +567,15 @@ html:not(.fokus) .tabs .tab.pilih{padding-top:9px;padding-bottom:9px}html:not(.f
 @keyframes mkrolturun{0%{top:-9px}62%,100%{top:calc(100% - 7px)}}
 .mk .mkbox.gulung~.mkrol-b{animation:mkrolturun 2.2s cubic-bezier(.3,.1,.3,1) both!important}
 @media (prefers-reduced-motion:reduce){.mk .mkbox.gulung~.mkrol-b{animation:none!important}}
+/* Pemilik ganti sub-materi: gulungan menggulung tertutup sampai Keep it ditekan. */
+.mk .mkhint{display:none}
+.mk.tertutup .mkhint{display:block;margin:10px 16px 14px;font-family:"Alegreya Sans",sans-serif;font-size:14px;color:#a99a7c;text-align:center}
+.mk.tertutup #mulaibtn,.mk.tertutup .info{display:none}
+@keyframes mktutup{from{max-height:560px}to{max-height:6px;padding-top:0;padding-bottom:0}}
+@keyframes mkrolnaik{from{top:calc(100% - 7px)}to{top:3px}}
+.kunci.mulaikartu.mk.tertutup .mkbox{overflow:hidden;animation:mktutup 1.1s cubic-bezier(.45,.05,.35,1) both!important}
+
+@media (prefers-reduced-motion:reduce){.kunci.mulaikartu.mk.tertutup .mkbox{animation:none!important;max-height:6px;padding-top:0;padding-bottom:0}}
 </style>
 </head>
 <body>
@@ -949,13 +958,13 @@ document.addEventListener("toggle",e=>{const k=e.target,c=$("card");if(!k.classL
 function renderCard(){
   const card=$("card");
   if(!state.list.length){card.innerHTML="<p>Tidak ada soal untuk pilihan ini.</p>";return;}
-  if(!siapOK()){card.innerHTML=`<div class="kunci"><span class="ik">🔒</span>${state.cat==="all"?"<b>Pilih klaster dulu</b><p>Pilih salah satu klaster di Select Cluster - SKB, atur Quiz Options &amp; Sections, lalu tekan Keep it.</p>":"<b>Atur Quiz Options &amp; Sections dulu</b><p>Pilih detail bagian, urutan, dan timer, lalu tekan Keep it.</p>"}<button class="btn primary" id="bukaset" type="button">Buka Quiz Options &amp; Sections</button></div>`;
+  if(!siapOK()&&!(window.__gulTutup&&state.cat!=="all")){card.innerHTML=`<div class="kunci"><span class="ik">🔒</span>${state.cat==="all"?"<b>Pilih klaster dulu</b><p>Pilih salah satu klaster di Select Cluster - SKB, atur Quiz Options &amp; Sections, lalu tekan Keep it.</p>":"<b>Atur Quiz Options &amp; Sections dulu</b><p>Pilih detail bagian, urutan, dan timer, lalu tekan Keep it.</p>"}<button class="btn primary" id="bukaset" type="button">Buka Quiz Options &amp; Sections</button></div>`;
     $("bukaset").onclick=()=>{const st=$("setelan");st.open=true;st.scrollIntoView({behavior:"smooth",block:"start"});};return;}
   // Soal baru tampil dan timer baru berjalan setelah pengguna menekan Mulai.
   if(state.cat!=="all"&&!state.mulai&&state.pos<state.list.length){
     const n=state.list.length,sub=state.sub==="all"?CATS[state.cat].short:SUBS[state.cat][state.sub-1],bg=state.sub==="all"||state.bag==="all"?"":state.bag==="bonus"?"Bonus Questions":"Part "+state.bag;
     const tm={off:"No timer",cum:"Total timer "+fmt(SEC*n),per:"Timer "+SEC+" sec per question"}[tMode]||"";
-    card.innerHTML=`<div class="kunci mulaikartu mk"><svg class="mkscene" viewBox="0 0 400 800" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs>
+    card.innerHTML=`<div class="kunci mulaikartu mk${window.__gulTutup?" tertutup":""}"><svg class="mkscene" viewBox="0 0 400 800" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs>
 <linearGradient id="mkSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0c1016"/><stop offset=".5" stop-color="#18212b"/><stop offset="1" stop-color="#0a0d11"/></linearGradient>
 <linearGradient id="mkBeam" x1="1" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfe2ff" stop-opacity=".5"/><stop offset="1" stop-color="#cfe2ff" stop-opacity="0"/></linearGradient>
 <linearGradient id="mkPil" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#0b0e12"/><stop offset=".55" stop-color="#2a333b"/><stop offset="1" stop-color="#11161b"/></linearGradient>
@@ -1002,7 +1011,7 @@ function renderCard(){
 <path d="M14 18H26V42H14Z" fill="url(#mkWax)"/><path d="M14 18c2 0 2 6 4 6s1-6 3-6 1 4 3 4 2-4 2-4" fill="#fffaf0"/><path d="M20 15V18" stroke="#333"/>
 <ellipse cx="20" cy="44" rx="14" ry="4" fill="#8f939a"/><ellipse cx="20" cy="42.5" rx="11" ry="3" fill="#c9ccd1"/><path d="M33 44c4 0 5 3 2 4" fill="none" stroke="#8f939a" stroke-width="1.6"/></svg><b class="mkb1">Cahaya Lilin</b><p>Terpancar saat analisismu tepat sasaran. Rawat apinya, jangan biarkan ia padam di tengah jalan.</p><div class="mkchain" aria-hidden="true"></div><svg class="mkico" viewBox="0 0 44 44" aria-hidden="true"><defs><linearGradient id="mkPp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f3e2bb"/><stop offset="1" stop-color="#c9a873"/></linearGradient><linearGradient id="mkRl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e8d1a2"/><stop offset=".5" stop-color="#b38d55"/><stop offset="1" stop-color="#7c5f33"/></linearGradient></defs>
 <rect x="9" y="8" width="26" height="28" fill="url(#mkPp)"/><path d="M13 14h18M13 18h16M13 22h18M13 26h14M13 30h17" stroke="#9b7d4f" stroke-width=".9"/>
-<rect x="6" y="5" width="32" height="5" rx="2.5" fill="url(#mkRl)"/><rect x="6" y="34" width="32" height="5" rx="2.5" fill="url(#mkRl)"/></svg><b class="mkb2">Gulungan Naskah</b><p>Muncul saat langkahmu keliru. Bukan tanda kekalahan, melainkan isyarat bagimu untuk membuka kembali lembaran naskah kuno dan meluruskan pemahaman.</p></div><span class="mkrol mkrol-b" aria-hidden="true"></span></div><button class="btn primary mulai" id="mulaibtn" type="button">START</button><div class="info"><span>${n} questions</span><span>${state.order==="rand"?"Shuffle":"Sequential"}</span><span>${tm}</span></div></div>`;
+<rect x="6" y="5" width="32" height="5" rx="2.5" fill="url(#mkRl)"/><rect x="6" y="34" width="32" height="5" rx="2.5" fill="url(#mkRl)"/></svg><b class="mkb2">Gulungan Naskah</b><p>Muncul saat langkahmu keliru. Bukan tanda kekalahan, melainkan isyarat bagimu untuk membuka kembali lembaran naskah kuno dan meluruskan pemahaman.</p></div><span class="mkrol mkrol-b" aria-hidden="true"></span></div><p class="mkhint">Tekan <b>Keep it</b> untuk membuka gulungan.</p><button class="btn primary mulai" id="mulaibtn" type="button">START</button><div class="info"><span>${n} questions</span><span>${state.order==="rand"?"Shuffle":"Sequential"}</span><span>${tm}</span></div></div>`;
     $("mulaibtn").onclick=()=>{if(tMode==="per"){const i=state.list.findIndex(id=>state.ans[id]===undefined&&!state.expired[id]);if(i>=0)state.pos=i;}state.mulai=true;state.qLeft=SEC;state.qId=null;lastTick=Date.now();persist();render();window.scrollTo({top:Math.max(0,$("card").offsetTop-12)});};return;}
   if(state.pos>=state.list.length){
     const {ok,bad,n}=tally();
@@ -1096,14 +1105,16 @@ setInterval(()=>{
   if(++tickN%5===0)persist();
   renderTimer();
 },1000);
-function renderRingkas(){const st=$("setelan");if(st){st.hidden=state.cat==="all";st.classList.toggle("perlu",!siapOK());document.querySelector(".wrap").classList.toggle("blmsiap",!siapOK());document.querySelector(".wrap").classList.toggle("blmmulai",state.cat!=="all"&&siapOK()&&!state.mulai&&state.pos<state.list.length);const sr=$("siaprow");if(sr)sr.hidden=siapOK();}const r=$("ringkas");if(!r)return;const s=state.cat==="all"||state.sub==="all"?"All Sections":state.sub+". "+SUBS[state.cat][state.sub-1]+(state.bag==="bonus"?" · Soal Bonus":state.bag!=="all"?" · Bagian "+state.bag:"");
+function renderRingkas(){const st=$("setelan");if(st){st.hidden=state.cat==="all";st.classList.toggle("perlu",!siapOK());document.querySelector(".wrap").classList.toggle("blmsiap",!siapOK()&&!(window.__gulTutup&&state.cat!=="all"));document.querySelector(".wrap").classList.toggle("blmmulai",state.cat!=="all"&&siapOK()&&!state.mulai&&state.pos<state.list.length);const sr=$("siaprow");if(sr)sr.hidden=siapOK();}const r=$("ringkas");if(!r)return;const s=state.cat==="all"||state.sub==="all"?"All Sections":state.sub+". "+SUBS[state.cat][state.sub-1]+(state.bag==="bonus"?" · Soal Bonus":state.bag!=="all"?" · Bagian "+state.bag:"");
   r.textContent=s+" · "+(state.order==="rand"?"Shuffle":"Sequential")+" · "+({off:"Timer off",cum:"Total timer",per:"Timer per question"}[tMode]||"");}
 function render(){if(tMode==="per")syncQ();renderScore();renderCard();renderMap();renderTimer();renderRingkas();}
 function retake(){buildSession(true);render();}
 function retryWrong(){const w=state.list.filter(isBad);if(!w.length)return;buildSession(true,w);render();}
 
 $("bag").onchange=e=>{state.bag=bagNum(e.target.value);restore();$("order").value=state.order;render();};
-$("sub").onchange=e=>{state.sub=e.target.value==="all"?"all":+e.target.value;state.bag=state.sub==="all"?"all":1;renderBag();restore();$("order").value=state.order;render();};
+$("sub").onchange=e=>{state.sub=e.target.value==="all"?"all":+e.target.value;state.bag=state.sub==="all"?"all":1;renderBag();restore();$("order").value=state.order;
+  // Khusus pemilik: ganti sub-materi saat mengerjakan, gulungan menutup dan baru terbuka lagi setelah Keep it.
+  if(window.__isOwner&&siapOK()){siapCat=null;state.mulai=false;window.__gulTutup=true;}render();};
 $("order").onchange=e=>{state.order=e.target.value;buildSession(true);render();};
 $("fsexit").onclick=()=>fokus(false);
 $("timer").value=tMode+(tMode!=="off"&&SEC!==54?String(SEC):"");
@@ -1111,7 +1122,7 @@ $("timer").value=tMode+(tMode!=="off"&&SEC!==54?String(SEC):"");
 function sinkronTimer(){$("tmode").value=tMode;$("tsec").value=String(SEC);$("tsec").disabled=tMode==="off";}
 const gantiTimer=()=>{const m=$("tmode").value;$("timer").value=m==="off"?"off":m+($("tsec").value==="54"?"":$("tsec").value);$("timer").dispatchEvent(new Event("change"));sinkronTimer();};
 $("tmode").onchange=gantiTimer;$("tsec").onchange=gantiTimer;sinkronTimer();
-$("siapbtn").onclick=()=>{siapCat=state.cat;state.mulai=false;state.qLeft=SEC;state.qId=null;persist();$("setelan").open=false;render();window.scrollTo({top:Math.max(0,$("card").offsetTop-12),behavior:"smooth"});};
+$("siapbtn").onclick=()=>{window.__gulTutup=false;siapCat=state.cat;state.mulai=false;state.qLeft=SEC;state.qId=null;persist();$("setelan").open=false;render();window.scrollTo({top:Math.max(0,$("card").offsetTop-12),behavior:"smooth"});};
 $("timer").onchange=e=>{const v=e.target.value;tMode=v.replace(/\d+$/,"");SEC=+((v.match(/\d+$/)||[54])[0]);store.timerMode=tMode;store.timerSec=SEC;resetTimer();persist();render();};
 document.addEventListener("visibilitychange",()=>{if(document.hidden)persist();});
 
