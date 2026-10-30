@@ -989,7 +989,8 @@ window.__quiz={state};
   auth.onAuthStateChanged(async u=>{
     if(unsub){unsub();unsub=null;}if(beat){clearInterval(beat);beat=null;}
     akunku(u);
-    if(!u){show('Access required','Sign in with your Google account. Your access request will be sent to the owner for approval.',null,true,false);return;}
+    if(!u){show('Access required','Sign in with your Google account. Your access request will be sent to the owner for approval.',null,true,false);
+      setTimeout(()=>{if(window.__sbAuthErr&&!auth.currentUser)gp.textContent='Sign-in failed: '+window.__sbAuthErr;},800);return;}
     const who='Signed in as '+(u.displayName?u.displayName+' · ':'')+u.email;
     if(OWNER&&(u.email||'').toLowerCase()===OWNER&&u.emailVerified){isOwner=true;window.__isOwner=true;document.body.classList.add('bebas');
       window.__pindah=(id,list)=>db.doc('bank/pindah').set({m:{[id]:list}},{merge:true}).then(()=>pinfo());

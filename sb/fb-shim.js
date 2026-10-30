@@ -3,8 +3,13 @@
 (function(){
   'use strict';
   const cfg=window.SUPABASE_CONFIG||{};
+  // Simpan pesan galat login dari URL balik Google/Supabase agar bisa ditampilkan di layar masuk.
+  try{const q=new URLSearchParams(location.search),h=new URLSearchParams(location.hash.replace(/^#/,''));
+    const e=q.get('error_description')||h.get('error_description')||q.get('error')||h.get('error');
+    if(e)window.__sbAuthErr=e.replace(/\+/g,' ');window.__sbHadCode=q.has('code');}catch(e){}
   const sb=window.supabase.createClient(cfg.url,cfg.key,{auth:{flowType:'pkce',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
   window.__sb=sb;
+  if(sb.auth.getSession)sb.auth.getSession().then(r=>{if(r&&r.error&&!window.__sbAuthErr)window.__sbAuthErr=r.error.message||String(r.error);if(window.__sbHadCode&&!(r&&r.data&&r.data.session)&&!window.__sbAuthErr)window.__sbAuthErr='Login code could not be exchanged for a session.';}).catch(e=>{window.__sbAuthErr=(e&&e.message)||String(e);});
 
   // ---------- Timestamp ----------
   class Timestamp{constructor(ms){this._ms=ms;this.seconds=Math.floor(ms/1000);this.nanoseconds=(ms%1000)*1e6;}
