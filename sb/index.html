@@ -1034,6 +1034,8 @@ function renderCard(){
   perm.forEach((oi,pi)=>{
     let cls="",mark="";
     if(answered){ if(oi===q.a){cls="correct";mark="✅";} else if(oi===chosen){cls="wrong";mark="❌";} }
+    // Khusus pemilik: saat waktu habis, jawaban benar langsung ditandai tanpa perlu diketuk.
+    else if(locked&&own&&oi===q.a){cls="correct";mark="✅";}
     html+=`<li><button type="button" class="opt ${cls}" data-o="${oi}" ${answered||locked?"disabled":""}><span class="l">${L[pi]}</span><span class="t">${esc(q.o[oi])}</span><span class="mark">${mark}</span></button></li>`;
   });
   html+="</ol>";
@@ -1089,7 +1091,7 @@ setInterval(()=>{
     syncQ();const id=state.qId;
     if(state.ans[id]===undefined&&!state.expired[id]){
       state.qLeft-=dt;
-      if(state.qLeft<=0){state.expired[id]=true;tandaiCoba(id);state.qLeft=0;state.pos++;persist();render();window.scrollTo({top:Math.max(0,$("card").offsetTop-12)});return;}
+      if(state.qLeft<=0){state.expired[id]=true;tandaiCoba(id);state.qLeft=0;if(!window.__isOwner)state.pos++;persist();render();window.scrollTo({top:Math.max(0,$("card").offsetTop-12)});return;}
     }
   }
   if(++tickN%5===0)persist();
