@@ -362,6 +362,7 @@ header{position:relative}.akunku{display:flex;align-items:center;justify-content
 /* Chip akun bernuansa emas VVIP: latar keemasan, bingkai dan cincin foto emas, nama emas. */
 html .akunku .chip{border:0!important;background:none!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;padding-left:0!important;padding-right:0!important}
 /* EXIT dipindah ke atas, di kanan chip nama; tombol EXIT lain disembunyikan. */
+.akunku .edsbtn{display:none}body.bebas .akunku .edsbtn{display:inline-flex;flex:none;align-items:center;min-height:0;height:34px;padding:0 12px;border-radius:999px;font-size:13px;font-weight:600;white-space:nowrap;letter-spacing:0}
 html .akunku .akunexit{flex:none;width:34px;height:34px;padding:0!important;gap:0;border-radius:50%;min-height:0;font-size:0;letter-spacing:0}html .akunku .akunexit::before{width:16px;height:16px;margin-left:2px}
 html .akunku .chip{flex:0 1 auto;min-width:0}html .akunku .tx,html .akunku .nmrow{min-width:0}html .akunku .nm{min-width:0;max-width:none!important;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #sbkeluar,#adm-logout{display:none!important}
@@ -621,7 +622,7 @@ body.bebas label.ctl-sub .subtap{display:block;position:absolute;inset:0;cursor:
 
 <div class="wrap">
   <header>
-    <div class="akunku" id="akunku" hidden><button class="tema" id="tema" type="button" role="switch" aria-label="Mode gelap"><span class="knop"></span><svg class="ik sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg><svg class="ik moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7z"/></svg></button><span class="chip"><span class="av" id="akunav"></span><span class="tx"><span class="nmrow"><span class="nm" id="akunnm"></span><span class="vip" aria-label="VVIP"><span class="vipt">VVIP</span></span></span><small class="em" id="akunem"></small></span></span><button class="btn keluar akunexit" id="akunexit" type="button" aria-label="Exit" title="Exit"></button></div>
+    <div class="akunku" id="akunku" hidden><button class="tema" id="tema" type="button" role="switch" aria-label="Mode gelap"><span class="knop"></span><svg class="ik sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg><svg class="ik moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7z"/></svg></button><span class="chip"><span class="av" id="akunav"></span><span class="tx"><span class="nmrow"><span class="nm" id="akunnm"></span><span class="vip" aria-label="VVIP"><span class="vipt">VVIP</span></span></span><small class="em" id="akunem"></small></span></span><button class="btn edsbtn" id="edsoal" type="button" title="Edit soal (hanya pemilik)">✎ Edit soal</button><button class="btn keluar akunexit" id="akunexit" type="button" aria-label="Exit" title="Exit"></button></div>
     <div class="brand"><svg class="emb" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" aria-hidden="true"><defs><linearGradient id="lgG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2a2a2a"/><stop offset="1" stop-color="#000000"/></linearGradient></defs><rect width="256" height="256" rx="60" fill="url(#lgG)"/><g transform="translate(146 100) rotate(45)"><rect x="-8" y="20" width="16" height="104" rx="8" fill="#ffffff"/><rect x="-56" y="-26" width="112" height="52" rx="12" fill="#ffffff"/><rect x="-64" y="-31" width="14" height="62" rx="6" fill="#ffffff"/><rect x="50" y="-31" width="14" height="62" rx="6" fill="#ffffff"/><rect x="-46" y="-26" width="5" height="52" fill="#000" opacity=".28"/><rect x="41" y="-26" width="5" height="52" fill="#000" opacity=".28"/></g><rect x="132" y="190" width="96" height="14" rx="7" fill="#ffffff"/><rect x="144" y="178" width="72" height="14" rx="7" fill="#d4d4d4"/></svg><h1><span class="t1">Computer Assisted Test</span><span class="sep"> - </span><span class="t2">LEX FEXORA.</span></h1></div>
     <div class="eyebrow">Latihan · Seleksi Kemampuan Bidang · Calon Hakim Peradilan Agama</div>
   </header>
@@ -693,6 +694,8 @@ body.bebas label.ctl-sub .subtap{display:block;position:absolute;inset:0;cursor:
 const QB=[];
 // Perpindahan soal oleh pemilik (dokumen bank/pindah): id -> ["c|s|nama sub", ...], mapping pertama = kamar utama. Diabaikan bila nama sub tidak lagi cocok dengan meta.
 // Suntingan soal oleh pemilik (dokumen bank/edit): id -> {q,o,a,p,d}. Diabaikan bila jumlah pilihan berbeda dari soal asli.
+// Soal yang sudah diedit pemilik: dikunci, isinya menang atas bank yang diunggah ulang.
+const DIKUNCI=new Set();
 function applyEdit(q,r){if(!r||typeof r.q!=="string"||!Array.isArray(r.o)||r.o.length!==q.o.length||!Number.isInteger(r.a)||r.a<0||r.a>=r.o.length)return false;
   Object.assign(q,{q:r.q,o:r.o.slice(),a:r.a,p:String(r.p||""),d:String(r.d||"")});return true;}
 // Nama sub lama yang hanya berganti nama (nomor tetap), agar perpindahan pemilik yang tersimpan tetap berlaku.
@@ -942,11 +945,11 @@ function renderMap(){
 function editQ(id){
   const q=BYID[id],o=q.o.slice();$("edbox").querySelectorAll("textarea[data-o]").forEach(x=>o[+x.dataset.o]=x.value.trim());
   const ch=$("edbox").querySelector("input[name=eda]:checked");
-  const rec={q:$("edq").value.trim(),o,a:ch?+ch.value:q.a,p:$("edp").value.trim(),d:$("edd").value.trim()};
+  const rec={q:$("edq").value.trim(),o,a:ch?+ch.value:q.a,p:$("edp").value.trim(),d:$("edd").value.trim(),kunci:true,t:Date.now()};
   if(!rec.q||o.some(x=>!x)){$("edmsg").textContent="Teks soal dan semua pilihan wajib diisi.";return;}
   $("edok").disabled=true;$("edmsg").textContent="Menyimpan…";
   Promise.resolve(window.__edit?window.__edit(id,rec):Promise.reject(new Error("tidak tersedia"))).then(()=>{
-    applyEdit(q,rec);state.edOpen=false;render();
+    applyEdit(q,rec);DIKUNCI.add(id);state.edOpen=false;render();
     const n=$("card").querySelector(".qhead");if(n){const tip=document.createElement("p");tip.className="note";tip.style.margin="0";tip.textContent=`✓ Soal ${id} tersimpan.`;n.after(tip);}
   }).catch(e=>{$("edok").disabled=false;$("edmsg").textContent="Gagal menyimpan: "+(e.code||e.message);});
 }
@@ -1055,7 +1058,7 @@ function renderCard(){
   const here=state.cat==="all"?q.mappings[0]:(q.mappings.find(m=>m.c===state.cat&&(state.sub==="all"||m.s===+state.sub))||q.mappings[0]);
   const also=q.mappings.filter(m=>m!==here).map(m=>`${CATS[m.c].short} ${m.s}`).join(", ");
   const own=!!window.__isOwner;
-  let html=`<div class="qhead"><span class="qno"><span class="qlbl">Soal No. </span>${state.pos+1}${isPin(q)?" 📌":""} <span class="of">/ ${state.list.length}</span></span>`+(own?`<div class="owntools"><button class="btn mvbtn" id="ed" type="button" aria-expanded="${!!state.edOpen}">✎ Edit</button><button class="btn mvbtn" id="mv" type="button" aria-expanded="${!!state.mvOpen}">⇄ Pindahkan</button></div>`:"")+(t=>`<span class="qkoin" title="Lilin: jawaban benar · Gulungan naskah: jawaban salah"><span class="kn" aria-label="${t.ok} lilin">🕯️<b>${t.ok}</b></span><span class="kn" aria-label="${t.bad} gulungan naskah">📜<b>${t.bad}</b></span></span>`)(tally())+`<div class="qtools"><span id="tslot"></span><button class="btn qfs" id="cfs" type="button" title="Layar penuh" aria-label="Layar penuh">⛶</button></div></div>`;
+  let html=`<div class="qhead"><span class="qno"><span class="qlbl">Soal No. </span>${state.pos+1}${isPin(q)?" 📌":""}${own&&DIKUNCI.has(id)?' <span title="Diedit pemilik: dikunci dari perubahan otomatis">🔒</span>':""} <span class="of">/ ${state.list.length}</span></span>`+(own?`<div class="owntools"><button class="btn mvbtn" id="ed" type="button" aria-expanded="${!!state.edOpen}">✎ Edit</button><button class="btn mvbtn" id="mv" type="button" aria-expanded="${!!state.mvOpen}">⇄ Pindahkan</button></div>`:"")+(t=>`<span class="qkoin" title="Lilin: jawaban benar · Gulungan naskah: jawaban salah"><span class="kn" aria-label="${t.ok} lilin">🕯️<b>${t.ok}</b></span><span class="kn" aria-label="${t.bad} gulungan naskah">📜<b>${t.bad}</b></span></span>`)(tally())+`<div class="qtools"><span id="tslot"></span><button class="btn qfs" id="cfs" type="button" title="Layar penuh" aria-label="Layar penuh">⛶</button></div></div>`;
   if(own&&state.mvOpen){const cs=Object.keys(CATS).map(Number);
     html+=`<div class="mvbox" id="mvbox"><span>Pindahkan dari <b>${esc(here.kategori_utama)} ${here.s}</b> ke:</span><select id="mvc" aria-label="Kategori tujuan">${cs.map(c=>`<option value="${c}"${c===here.c?" selected":""}>${esc(CATS[c].short)}</option>`).join("")}</select><select id="mvs" aria-label="Sub-materi tujuan"></select><button class="btn primary" id="mvok" type="button">Simpan</button><button class="btn" id="mvno" type="button">Batal</button><p class="note" id="mvmsg">Perpindahan disimpan di server dan berlaku untuk semua pengguna setelah mereka memuat ulang halaman.</p></div>`;}
   if(own&&state.edOpen){
@@ -1174,9 +1177,10 @@ document.addEventListener("visibilitychange",()=>{if(document.hidden)persist();}
   else selectCat("all","all");
 })();
 window.__quiz={state};window.__soalKini=()=>BYID[state.list[state.pos]];
+window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add(id);state.edOpen=false;render();};
 }
 </script>
-<script src="/istilah.js"></script>
+<script src="/istilah.js"></script><script src="/editsoal.js"></script>
 <script>window.IstilahCari&&IstilahCari.sumber(()=>QB);</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3/dist/umd/supabase.js"></script>
 <script src="supabase-config.js"></script>
@@ -1218,7 +1222,7 @@ window.__quiz={state};window.__soalKini=()=>BYID[state.list[state.pos]];
     try{const pd=await db.doc('bank/pindah').get();const mp=(pd.exists&&pd.data().m)||{};
       arr.forEach(q=>{if(mp[q.id])applyPindah(q,mp[q.id]);});}catch(e){}
     try{const ed=await db.doc('bank/edit').get();const me=(ed.exists&&ed.data().m)||{};
-      arr.forEach(q=>{if(me[q.id])applyEdit(q,me[q.id]);});}catch(e){}
+      arr.forEach(q=>{if(me[q.id]&&applyEdit(q,me[q.id]))DIKUNCI.add(q.id);});}catch(e){}
     try{localStorage.setItem('bank-versi',String(versi));}catch(e){}
     return arr;
   }
@@ -1305,7 +1309,11 @@ window.__quiz={state};window.__soalKini=()=>BYID[state.list[state.pos]];
     const who='Signed in as '+(u.displayName?u.displayName+' · ':'')+u.email;
     if(OWNER&&(u.email||'').toLowerCase()===OWNER&&u.emailVerified){isOwner=true;window.__isOwner=true;document.body.classList.add('bebas');
       window.__pindah=(id,list)=>db.doc('bank/pindah').set({m:{[id]:list}},{merge:true}).then(()=>pinfo());
-      window.__edit=(id,rec)=>db.doc('bank/edit').set({m:{[id]:rec}},{merge:true}).then(()=>pinfo());admin();start();return;}
+      window.__edit=(id,rec)=>db.doc('bank/edit').set({m:{[id]:rec}},{merge:true}).then(()=>pinfo());
+      // ✎ Edit soal di kartu akun: cari soal mana pun di bank lalu sunting tanpa harus membuka kategorinya.
+      if($('edsoal'))$('edsoal').onclick=()=>window.EditSoal&&EditSoal.cari({ambil:()=>QB,kini:()=>{try{return (window.__soalKini&&window.__soalKini())||null;}catch(e){return null;}},terkunci:id=>DIKUNCI.has(id),
+        simpan:(rec,q)=>window.__edit(q.id,rec).then(()=>{if(window.__terapkanEdit)window.__terapkanEdit(q.id,rec);else{applyEdit(q,rec);DIKUNCI.add(q.id);}})});
+      admin();start();return;}
     const ref=db.doc('izin/'+u.uid);
     try{const s=await ref.get();
       if(!s.exists)await ref.set({email:u.email||'',nama:u.displayName||'',foto:u.photoURL||'',status:'menunggu',diminta:FV.serverTimestamp(),terakhir:FV.serverTimestamp(),posisi:''});
