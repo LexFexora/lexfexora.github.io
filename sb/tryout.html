@@ -135,7 +135,7 @@ header .timer{background:#1f2421;border-color:#56625a;color:#eef2ef}header .time
 header .akun .av{background:#eef2ef;color:#1f2421}header .akun .nm{color:#eef2ef}
 .akun{display:flex;align-items:center;gap:8px;margin-top:10px}.akun .av{width:30px;height:30px;border-radius:50%;background:var(--ink);color:var(--surface);display:grid;place-items:center;font-size:13px;font-weight:700;overflow:hidden;flex:none}
 .akun .akun{margin:0}.akun .akun[hidden]{display:none}.beranda{text-decoration:none;font-size:13px;padding:6px 12px;white-space:nowrap}
-.akun .edsbtn{flex:none;white-space:nowrap}.akun .edsbtn[hidden]{display:none}
+/* Edit soal dibuka dari tombol ✎ Edit di kartu soal, bukan dari header. */.akun .edsbtn{display:none!important}
 .akun .av img{width:100%;height:100%;object-fit:cover}.akun .nm{font-weight:600;font-size:14px;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 @media(min-width:1024px){
   .wrap{max-width:1680px;height:100vh;height:100dvh;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:12px;padding:14px 20px 10px;overflow:hidden}
