@@ -519,6 +519,24 @@ html.fokus .card .qkoin.melayang{position:fixed;top:max(10px,env(safe-area-inset
 html:not(.fokus) .tabs .tab.kl{padding-top:9px;padding-bottom:9px;gap:6px}
 html:not(.fokus) header .akunku{margin-top:10px;padding-top:8px}
 .exitbawah:not([hidden]){padding-top:6px}.exitbawah:not([hidden])~footer{margin-top:6px}}
+/* Beranda: tidak ada oranye/emas selain VVIP dan piala. */
+:root{--k1:#aeb6b1;--k2:#aeb6b1;--k3:#aeb6b1;--k4:#aeb6b1}
+:root[data-theme="dark"] #setelan,:root[data-theme="dark"] #tocard.setelan.tocard{box-shadow:0 0 0 1px #3c433f,0 0 0 3px #070807,0 0 0 4px #2a302c,0 10px 24px rgb(0 0 0 / .6)!important;background:linear-gradient(180deg,#111413,#0a0b0b)!important;animation:none!important}
+:root[data-theme="dark"] #tocard.setelan.tocard{box-shadow:0 0 0 1px #59615c,0 0 0 3px #070807,0 0 0 4px #3a413d,0 10px 24px rgb(0 0 0 / .7)!important}
+:root[data-theme="dark"] #setelan>summary,:root[data-theme="dark"] #setelan.perlu>summary{color:#e3e7e4!important;text-shadow:0 1px 0 #000!important}:root[data-theme="dark"] #tocard.setelan.tocard>summary .stl{color:#e3e7e4!important;-webkit-text-fill-color:#e3e7e4!important;text-shadow:0 1px 0 #000!important}
+:root[data-theme="dark"] #setelan>summary svg{color:#aeb6b1}
+:root[data-theme="dark"] #setelan>summary::after,:root[data-theme="dark"] #tocard.setelan.tocard>summary::after{color:#8a948e!important}
+:root[data-theme="dark"] #setelan .controls label,:root[data-theme="dark"] #setelan .controls .lbl{color:#9aa39e}
+:root[data-theme="dark"] #setelan select,:root[data-theme="dark"] #setelan input{border-color:#353b37}
+:root[data-theme="dark"] #siapbtn{color:#e3e7e4;box-shadow:inset 0 0 0 2px #110906,inset 0 0 0 3px #59615c,0 0 0 1px #000,0 4px 10px rgb(0 0 0 / .8)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #setelan,:root:not([data-theme="light"]) #tocard.setelan.tocard{box-shadow:0 0 0 1px #3c433f,0 0 0 3px #070807,0 0 0 4px #2a302c,0 10px 24px rgb(0 0 0 / .6)!important;background:linear-gradient(180deg,#111413,#0a0b0b)!important;animation:none!important}:root:not([data-theme="light"]) #tocard.setelan.tocard{box-shadow:0 0 0 1px #59615c,0 0 0 3px #070807,0 0 0 4px #3a413d,0 10px 24px rgb(0 0 0 / .7)!important}:root:not([data-theme="light"]) #setelan>summary,:root:not([data-theme="light"]) #setelan.perlu>summary{color:#e3e7e4!important;text-shadow:0 1px 0 #000!important}:root:not([data-theme="light"]) #tocard.setelan.tocard>summary .stl{color:#e3e7e4!important;-webkit-text-fill-color:#e3e7e4!important;text-shadow:0 1px 0 #000!important}:root:not([data-theme="light"]) #setelan>summary svg{color:#aeb6b1}:root:not([data-theme="light"]) #setelan>summary::after,:root:not([data-theme="light"]) #tocard.setelan.tocard>summary::after{color:#8a948e!important}:root:not([data-theme="light"]) #setelan .controls label,:root:not([data-theme="light"]) #setelan .controls .lbl{color:#9aa39e}:root:not([data-theme="light"]) #setelan select,:root:not([data-theme="light"]) #setelan input{border-color:#353b37}:root:not([data-theme="light"]) #siapbtn{color:#e3e7e4;box-shadow:inset 0 0 0 2px #110906,inset 0 0 0 3px #59615c,0 0 0 1px #000,0 4px 10px rgb(0 0 0 / .8)}}
+@keyframes perluk2{0%,100%{box-shadow:0 0 0 1px #3c433f,0 0 0 3px #070807,0 0 0 4px #2a302c,0 10px 24px rgb(0 0 0 / .6)}50%{box-shadow:0 0 0 1px #8a948e,0 0 0 3px #070807,0 0 0 4px #4a524d,0 0 18px rgb(220 230 225 / .12)}}
+:root[data-theme="dark"] #setelan.perlu{animation:perluk2 2.8s ease-in-out infinite!important}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #setelan.perlu{animation:perluk2 2.8s ease-in-out infinite!important}}@media (prefers-reduced-motion:reduce){#setelan.perlu{animation:none!important}}
+/* HP: header dan kotak klaster lebih ringkas agar footer muat di atas bilah Safari. */
+@media (max-width:560px){html:not(.fokus) .brand{font-size:22px;gap:12px}html:not(.fokus) header .brand+.eyebrow{margin-top:8px}
+html:not(.fokus) .wrap{gap:10px}
+html:not(.fokus) .tabs .tab.kl{padding-top:7px;padding-bottom:7px}html:not(.fokus) .tab.kl .ki{width:30px;height:30px;border-radius:9px}
+html:not(.fokus) .tabs .tab.pilih{padding-top:9px;padding-bottom:9px}html:not(.fokus) .tab.pilih .ki{width:30px;height:30px}}
 </style>
 </head>
 <body>
