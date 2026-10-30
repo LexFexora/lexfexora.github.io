@@ -663,7 +663,7 @@ body.bebas label.ctl-sub .subtap{display:block;position:absolute;inset:0;cursor:
     <details class="tobox" id="tobox"><summary class="btn copy">＋ Buat Mock Exam baru</summary>
       <div class="toform">
         <label>Title<input id="tojudul" value="Mock Exam"></label>
-        <div class="torow"><label>Number of Questions<select id="tojml"><option value="25">25 questions</option><option value="50">50 questions</option><option value="75">75 questions</option><option value="100" selected>100 questions</option><option value="150">150 questions</option><option value="200">200 questions</option></select></label>
+        <div class="torow"><label>Number of Questions<input type="number" id="tojml" min="1" max="1000" step="1" value="100" inputmode="numeric" list="tojmlsaran" aria-label="Jumlah soal (ketik bebas)"><datalist id="tojmlsaran"><option value="25"></option><option value="50"></option><option value="75"></option><option value="100"></option><option value="150"></option><option value="200"></option></datalist></label>
         <label>Seconds per Question<input id="todetik" type="number" min="10" max="600" value="54"></label></div>
         <p class="note" style="margin:4px 0 0">Pilih satu atau beberapa sub-materi. Soal diracik otomatis: jatah tiap sub-materi sebanding jumlah soalnya, seimbang antara dasar hukum, istilah &amp; prosedur, dan pendapat ahli, tanpa soal kembar, dengan urutan sub-materi diselang-seling.</p>
         <input type="search" id="tocari" class="tocari" placeholder="Cari sub-materi (mis. waris, kasasi, mediasi)…" autocomplete="off" aria-label="Cari sub-materi">
@@ -1342,7 +1342,8 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
     const pakaiCatat=(id,ids,k)=>{if(!PK)return Promise.resolve();ids.forEach(q=>{PK.m[q]=Math.max(0,(PK.m[q]||0)+k);if(!PK.m[q])delete PK.m[q];});
       if(k>0)PK.x[id]=1;else delete PK.x[id];return pakaiRef.set(PK);};
     window.__toLepas=async id=>{await pakaiMuat();if(!PK.x[id])return;const t=await db.doc('tryout/'+id).get();if(t.exists)await pakaiCatat(id,(t.data().soal||[]).map(q=>q.id),-1);};
-    const toInfo=()=>{const pool=toPool(),j=+$('tojml').value,n=new Set(pool.map(q=>q.id)).size;
+    const jmlSoal=()=>Math.max(1,Math.min(1000,Math.round(+$('tojml').value)||0));
+    const toInfo=()=>{const pool=toPool(),j=jmlSoal(),n=new Set(pool.map(q=>q.id)).size;
       if(!n){$('toinfo').textContent='Belum ada sub-materi dipilih.';return;}
       const baru=PK?pool.filter(q=>!PK.m[q.id]).length:null,pakai=Math.min(n,j);
       $('toinfo').innerHTML=`<b>${n}</b> soal tersedia dari sub-materi terpilih`+(baru!==null?` (<b>${baru}</b> belum pernah diujikan)`:'')+`. `+
@@ -1351,7 +1352,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
     // Mock exam selalu serentak: semua peserta di soal yang sama, tiap soal dibatasi detik, room master menekan Next.
     $('todetik').oninput=toInfo;
     $('torst').onclick=async()=>{if(!confirm('Atur ulang riwayat rotasi? Semua soal dianggap belum pernah diujikan.'))return;await pakaiMuat();PK.m={};try{await pakaiRef.set(PK);}catch(e){alert('Gagal: '+(e.code||e.message));}toInfo();};
-    $('tojml').onchange=toInfo;
+    $('tojml').oninput=toInfo;$('tojml').onchange=()=>{const v=Math.round(+$('tojml').value);if(!(v>=1))$('tojml').value=100;else if(v>1000)$('tojml').value=1000;else $('tojml').value=v;toInfo();};
     $('tobox').addEventListener('toggle',()=>{if(!$('tobox').open)return;pakaiMuat().then(toInfo);if($('tosub').childElementCount)return;
       if(!QB.length){$('tosub').textContent='Bank soal belum dimuat.';return;}
       $('tosub').innerHTML=Object.keys(CATS).map(c=>`<fieldset><legend><label><input type="checkbox" data-all="${c}"> ${esc(CATS[c].short)}</label></legend>`+
@@ -1386,7 +1387,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       const hasil=[];for(let r=0;hasil.length<n&&pilih.some(p=>p.length);r++)acakArr(pilih).forEach(p=>{if(p.length&&hasil.length<n)hasil.push(p.shift());});
       return hasil;};
     $('tobuat').onclick=async()=>{const pool=toPool();if(!pool.length){alert('Pilih minimal satu sub-materi.');return;}await pakaiMuat();
-      const j=+$('tojml').value;
+      const j=jmlSoal();
       const soal=racik(pool,j).map(q=>({id:q.id,q:q.q,o:q.o.slice(),a:q.a,p:q.p||'',d:q.d||''}));
       $('tobuat').disabled=true;
       const det=Math.max(10,Math.min(600,+$('todetik').value||54)),me=auth.currentUser.uid;
