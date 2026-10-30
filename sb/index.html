@@ -605,6 +605,17 @@ body.bebas label.ctl-sub .subtap{display:block;position:absolute;inset:0;cursor:
 .kunci.mulaikartu.mk.tertutup .mkbox{overflow:hidden;animation:mktutup 1.1s cubic-bezier(.45,.05,.35,1) both!important}
 
 @media (prefers-reduced-motion:reduce){.kunci.mulaikartu.mk.tertutup .mkbox{animation:none!important;max-height:6px;padding-top:0;padding-bottom:0}}
+
+/* Notifikasi login untuk pemilik */
+#lgtoast{position:fixed;right:16px;bottom:16px;z-index:9500;display:flex;flex-direction:column;gap:8px;align-items:flex-end;pointer-events:none;max-width:calc(100vw - 32px)}
+#lgtoast .lgt{pointer-events:auto;display:flex;align-items:center;gap:10px;padding:10px 10px 10px 12px;border-radius:12px;background:var(--surface,#fff);color:var(--ink,#111);border:1px solid var(--line,#ddd);box-shadow:0 8px 24px rgba(0,0,0,.18);font-size:13.5px;max-width:340px;animation:lgmasuk .3s ease-out}
+#lgtoast .lgt.pergi{opacity:0;transform:translateY(6px);transition:.3s}
+#lgtoast .lgav{flex:none;width:32px;height:32px;border-radius:50%;overflow:hidden;display:grid;place-items:center;background:var(--ok,#17733f);color:#fff;font-weight:700}
+#lgtoast .lgav img{width:100%;height:100%;object-fit:cover}
+#lgtoast .lgtx{display:flex;flex-direction:column;line-height:1.35;min-width:0}#lgtoast .lgtx small{color:var(--muted,#777);font-size:11.5px}
+#lgtoast button{flex:none;background:none;border:0;color:var(--muted,#777);font-size:18px;line-height:1;cursor:pointer;padding:2px 4px}
+@keyframes lgmasuk{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media(max-width:600px){#lgtoast{left:16px;right:16px;bottom:auto;top:12px;align-items:stretch}#lgtoast .lgt{max-width:none}}
 </style>
 </head>
 <body>
@@ -1429,7 +1440,21 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       body.querySelectorAll('button[data-id]').forEach(b=>b.onclick=()=>{const r=db.doc('izin/'+b.dataset.id);b.disabled=true;
         (b.dataset.v==='hapus'?r.delete():r.update({status:b.dataset.v})).catch(e=>{alert('Gagal: '+(e.code||e.message));b.disabled=false;});});
     };
-    db.collection('izin').onSnapshot(izinRender,e=>{body.innerHTML='<p class="note">Gagal membaca daftar izin ('+esc(e.code||e.message)+'). Periksa Firestore Rules.</p>';});
+    // Notifikasi login (khusus pemilik): muncul di pojok layar tanpa mengganggu soal atau timer.
+    const LOGIN={};let loginAwal=true;
+    const toastLogin=(nama,foto,ket)=>{let w=document.getElementById('lgtoast');if(!w){w=document.createElement('div');w.id='lgtoast';w.setAttribute('aria-live','polite');document.body.appendChild(w);}
+      const t=document.createElement('div');t.className='lgt';t.innerHTML=`<span class="lgav">${foto?`<img src="${esc(foto)}" alt="" referrerpolicy="no-referrer">`:esc((nama[0]||'?').toUpperCase())}</span><span class="lgtx"><b>${esc(nama)}</b> ${esc(ket)}<small>${new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})}</small></span><button type="button" aria-label="Tutup">×</button>`;
+      const hapus=()=>{t.classList.add('pergi');setTimeout(()=>t.remove(),300);};t.querySelector('button').onclick=hapus;w.appendChild(t);while(w.children.length>4)w.firstChild.remove();setTimeout(hapus,8000);
+      if(document.hidden&&window.Notification&&Notification.permission==='granted'){try{new Notification('CAT Lex Fexora',{body:nama+' '+ket,icon:foto||undefined});}catch(e){}}};
+    const pantauLogin=qs=>{const now=Date.now(),me=auth.currentUser&&auth.currentUser.uid;
+      qs.forEach(d=>{const x=d.data(),t=x.terakhir&&x.terakhir.toDate?+x.terakhir.toDate():0,prev=LOGIN[d.id];
+        if(!loginAwal&&d.id!==me&&t&&now-t<120000){const nama=x.nama||String(x.email||'Pengguna').split('@')[0];
+          if(prev===undefined)toastLogin(nama,x.foto,x.status==='menunggu'?'meminta akses masuk':'baru saja login');
+          else if(t-prev>150000)toastLogin(nama,x.foto,'baru saja login');}
+        if(t)LOGIN[d.id]=t;else if(prev===undefined)LOGIN[d.id]=0;});
+      loginAwal=false;};
+    if(window.Notification&&Notification.permission==='default')document.addEventListener('click',()=>{try{Notification.requestPermission();}catch(e){}},{once:true});
+    db.collection('izin').onSnapshot(qs=>{pantauLogin(qs);izinRender(qs);},e=>{body.innerHTML='<p class="note">Gagal membaca daftar izin ('+esc(e.code||e.message)+'). Periksa Firestore Rules.</p>';});
     const info=()=>db.doc('bank/meta').get().then(m=>{$('bankinfo').textContent=m.exists?`Terunggah: ${m.data().total} soal, ${m.data().chunks} bagian, versi ${new Date(m.data().versi).toLocaleString('id-ID')}.`:'Belum ada bank soal. Pilih file bank-soal.json lalu ketuk Unggah.';}).catch(e=>$('bankinfo').textContent='Gagal memeriksa ('+(e.code||e.message)+').');
     info();
     $('bankup').onclick=async()=>{const f=$('bankfile').files[0];if(!f){alert('Pilih file bank-soal.json dulu.');return;}
