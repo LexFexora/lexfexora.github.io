@@ -514,6 +514,11 @@ html .tojoin>b{color:var(--brass)}
 html.fokus .card .qhead .qkoin{grid-area:auto}
 @media(max-width:430px){.qhead:has(.qkoin) .qlbl{display:none}.qhead .qkoin{gap:4px}.qhead .qkoin .kn{height:26px;padding:0 7px;gap:3px;font-size:13px}.qhead:has(.qkoin){flex-wrap:wrap}.qhead:has(.qkoin) .qno,.qhead:has(.qkoin) .qkoin,.qhead:has(.qkoin) .qtools{order:0}.qhead:has(.qkoin) .owntools{order:1;flex-basis:100%;justify-content:flex-end}}
 html.fokus .card .qkoin.melayang{position:fixed;top:max(10px,env(safe-area-inset-top,0px));height:38px;margin:0;z-index:2}
+/* HP: halaman awal dirapatkan supaya footer hak cipta terlihat utuh tanpa menggulir. */
+@media (max-width:560px){html:not(.fokus) .wrap{padding-top:max(14px,env(safe-area-inset-top,0px));gap:12px;padding-bottom:max(10px,env(safe-area-inset-bottom,0px))}
+html:not(.fokus) .tabs .tab.kl{padding-top:9px;padding-bottom:9px;gap:6px}
+html:not(.fokus) header .akunku{margin-top:10px;padding-top:8px}
+.exitbawah:not([hidden]){padding-top:6px}.exitbawah:not([hidden])~footer{margin-top:6px}}
 </style>
 </head>
 <body>
