@@ -124,6 +124,45 @@
       h+=pre+(x===hit?'<span class="cariist-hit">'+isi+'</span>':isi)+' ';});
     return h;}
 
+  // Salah ketik dan imbuhan: kata yang tidak dikenal diganti kata terdekat dari kosakata peraturan dan bank soal ("dasadr" → "dasar", "hukumnya" → "hukum").
+  let KAMUS=null;
+  function kamus(){if(KAMUS&&KAMUS.hk===!!HK&&KAMUS.bk===!!bank)return KAMUS.m;const m=new Map(),tambah=t=>String(t).split(' ').forEach(w=>{if(w.length>=3&&!/^\d+$/.test(w))m.set(w,(m.get(w)||0)+1);});
+    if(HK)HK.e.forEach(e=>tambah(e.nt));(bank||[]).forEach(b=>{tambah(b.np);tambah(b.nd);tambah(b.nq);});KAMUS={m,hk:!!HK,bk:!!bank};return m;}
+  function jarak(a,b,maks){if(Math.abs(a.length-b.length)>maks)return maks+1;let p=Array.from({length:b.length+1},(_,j)=>j),pp=null;
+    for(let i=1;i<=a.length;i++){const c=[i];let min=i;for(let j=1;j<=b.length;j++){let v=Math.min(p[j]+1,c[j-1]+1,p[j-1]+(a[i-1]===b[j-1]?0:1));
+        if(pp&&i>1&&j>1&&a[i-1]===b[j-2]&&a[i-2]===b[j-1])v=Math.min(v,pp[j-2]+1);c[j]=v;if(v<min)min=v;}if(min>maks)return maks+1;pp=p;p=c;}
+    return p[b.length];}
+  function perbaiki(teks){const m=kamus();let ubah=false;
+    const w=norm(teks).split(' ').filter(Boolean).map(k=>{if(k.length<4||/\d/.test(k)||STOP.has(k)||m.has(k)||alt(k).some(a=>m.has(a)))return k;
+      for(const sf of ['nya','kah','lah','pun','ku','mu']){const r=k.slice(0,-sf.length);if(k.endsWith(sf)&&r.length>=3&&(m.has(r)||STOP.has(r))){ubah=true;return r;}}
+      const maks=k.length<=5?1:2;let best=null,bj=maks+1,bf=0;
+      m.forEach((f,x)=>{if(Math.abs(x.length-k.length)>maks)return;const j=jarak(k,x,maks);if(j<bj||(j===bj&&f>bf)){best=x;bj=j;bf=f;}});
+      if(best&&bj<=maks){ubah=true;return best;}return k;});
+    return {teks:w.join(' '),ubah};}
+
+  // Pertanyaan tentang soal yang sedang tampil ("dasar hukumnya apa", "kenapa jawabannya B", "jelaskan").
+  const NIAT=/\b(dasar|dasar hukum|landasan|sumber|pasal berapa|pasalnya|aturan|aturannya|kenapa|mengapa|jelaskan|jelasin|penjelasan|pembahasan|bahas|maksud|maksudnya|jawaban|jawabannya|kunci|alasan|alasannya|kok|benar|salah|soal ini|soalnya)\b/;
+  const KATANIAT=new Set('dasar hukum landasan sumber pasal berapa aturan kenapa mengapa jelaskan jelasin penjelasan pembahasan bahas maksud jawaban kunci alasan kok benar salah soal opsi pilihan bisa tolong mohon dong sih ya'.split(' '));
+  function soalAktif(){try{const q=window.__soalKini&&window.__soalKini();return q&&q.q?q:null;}catch(e){return null;}}
+  function tanyaSoal(t,q){if(!q||!NIAT.test(t))return false;const sisa=t.split(' ').filter(k=>k&&!STOP.has(k)&&!KATANIAT.has(k)&&!KATANIAT.has(k.replace(/(nya|kah|lah)$/,''))&&!/^[a-e]$/.test(k));
+    if(!sisa.length)return true;const isi=norm(q.q+' '+(q.o||[]).join(' ')+' '+q.p+' '+q.d);return sisa.every(k=>isi.includes(k));}
+  // Pasal yang disebut di dasar hukum soal (beserta ayat/hurufnya bila disebut) → bunyi resminya dari indeks.
+  function kutipan(d){const out=[];String(d||'').split(';').forEach(bg=>{const nb=norm(bg),re=/\bpasal (\d+[a-z]?)(?: ayat (\d+[a-z]?))?(?: huruf ([a-z]))?\b/g;let m;
+      while((m=re.exec(nb))){const dk=dokDi(nb,m.index+m[0].length);if(dk<0)continue;const e=HK.e.find(z=>z.d===dk&&z.nl==='pasal '+m[1]);if(!e||out.some(o=>o.e===e&&o.ay==m[2]&&o.hf==m[3]))continue;
+        const x=(m[2]||m[3])?segs(e).find(z=>(!m[2]||z.ay===m[2])&&(m[3]?z.hf===m[3]:!z.hf)):null;out.push({e,x,ay:m[2],hf:m[3]});}});
+    return out;}
+  function kartuSoal(q){const huruf='ABCDE',jw=(q.o||[])[q.a],b={q,np:norm(q.p),nd:norm(q.d),nq:norm(q.q+' '+(jw||''))};
+    const kt=HK?kutipan(q.d):[];
+    let h='<article class="cariist-it soal"><p class="cariist-sec">Tentang soal ini</p>';
+    if(jw!=null)h+='<p class="cariist-d"><b>Jawaban:</b> '+(typeof q.a==='number'?huruf[q.a]+'. ':'')+esc(jw)+'</p>';
+    if(q.p)h+='<p class="cariist-p"><b class="cariist-lbl">Alasannya:</b> '+esc(q.p)+'</p>';
+    if(q.d)h+='<p class="cariist-d"><b>Dasar hukum:</b> '+esc(q.d)+'</p>';
+    kt.forEach(({e,x})=>{const lb=labelSeg(x);h+='<div class="cariist-pt"><p class="cariist-d"><b>Bunyi '+esc(e.l+(lb?' '+lb:''))+'</b> '+esc(HK.docs[e.d].n)+'</p>'+
+      (x?'<p class="cariist-kut">'+esc(x.t)+'</p>':'')+'<p class="cariist-p'+(e.t.length>700?' pj':'')+'">'+bunyi(e,[],x)+'</p>'+(e.t.length>700?'<button type="button" class="cariist-full">Baca selengkapnya</button>':'')+'</div>';});
+    if(!kt.length)h+=htmlPasalTerkait(b);
+    if(!q.d&&!kt.length)h+='<p class="cariist-ket">Soal ini belum mencantumkan dasar hukum.</p>';
+    return h+'</article>';}
+
   let tampilH=0,hasilH=[];
   function kartuHukum({e},ks){const dn=HK.docs[e.d],pj=e.t.length>900,hit=lokasi(e,ks),lb=labelSeg(hit);
     const tag=e.s==='x'?'<span class="cariist-tag x">Tidak berlaku (dihapus/dibatalkan)</span>':e.s.startsWith('u:')?'<span class="cariist-tag u">Bunyi setelah diubah '+esc(e.s.slice(2))+'</span>':dn.n.startsWith('Rumusan Hukum Kamar')?'<span class="cariist-tag u" title="'+esc(dn.s)+'">Rumusan SEMA</span>':'<span class="cariist-tag ok" title="'+esc(dn.s)+'">Berlaku</span>';
@@ -131,8 +170,8 @@
       (pj?'<button type="button" class="cariist-full">Baca selengkapnya</button>':'')+'<p class="cariist-q">'+esc(dn.n)+'</p></article>';}
   function gambar(){const ks=hasil.ks||[],r=hasil.r||[],kh=hasil.kh||ks;
     if(!kataTerakhir){out.innerHTML='';return;}
-    let h='';
-    h+='<p class="cariist-sec">Hukum positif'+(hasilH.length?' · '+hasilH.length+' cocok':'')+'</p>';
+    let h=(hasil.koreksi?'<p class="cariist-ket">Menampilkan hasil untuk <b>'+esc(hasil.koreksi)+'</b></p>':'')+(hasil.soal||'');
+    if(!hasil.murni){h+='<p class="cariist-sec">Hukum positif'+(hasilH.length?' · '+hasilH.length+' cocok':'')+'</p>';
     h+=HK?(hasilH.length?hasilH.slice(0,tampilH).map(x=>kartuHukum(x,kh)).join('')+(hasilH.length>tampilH?'<button type="button" class="cariist-lagi" data-k="h">Tampilkan '+Math.min(4,hasilH.length-tampilH)+' pasal lagi</button>':''):'<p class="cariist-nol">Tidak ada pasal atau rumusan yang memuat "'+esc(kataTerakhir)+'" di peraturan yang sudah tersedia.</p>')
       :'<p class="cariist-nol">Teks peraturan belum bisa dimuat. Periksa koneksi lalu tekan Search lagi.</p>';
     h+='<p class="cariist-sec">Dari pembahasan bank soal'+(r.length?' · '+r.length+' cocok':'')+'</p>';
@@ -140,23 +179,26 @@
       (b.q.d?'<p class="cariist-d"><b>Dasar hukum:</b> '+tandai(b.q.d,ks)+'</p>':'')+htmlPasalTerkait(b)+
       '<p class="cariist-q">Dari soal: '+tandai(String(b.q.q||'').slice(0,140)+(String(b.q.q||'').length>140?'…':''),ks)+'</p></article>').join('')+
       (r.length>tampil?'<button type="button" class="cariist-lagi" data-k="b">Tampilkan '+Math.min(5,r.length-tampil)+' lagi</button>':'')
-      :'<p class="cariist-nol">Belum ada pembahasan di bank soal yang memuat "'+esc(kataTerakhir)+'".</p>';
+      :'<p class="cariist-nol">Belum ada pembahasan di bank soal yang memuat "'+esc(kataTerakhir)+'".</p>';}
     // Penelusuran lanjutan di situs resmi (membuka tab baru): kata tanya dibuang agar hasilnya tepat sasaran.
     const kw=(hasil.ks&&hasil.ks.length?hasil.ks.join(' '):kataTerakhir),g=x=>'https://www.google.com/search?q='+encodeURIComponent(kw+' '+x);
     const L=[['Semua situs hukum resmi',g('(site:peraturan.go.id OR site:jdih.mahkamahagung.go.id OR site:peraturan.bpk.go.id OR site:badilag.mahkamahagung.go.id OR site:mahkamahagung.go.id)')],
       ['JDIH Mahkamah Agung',g('site:jdih.mahkamahagung.go.id')],['Peraturan BPK',g('site:peraturan.bpk.go.id')],['peraturan.go.id',g('site:peraturan.go.id')],
       ['Badilag',g('site:badilag.mahkamahagung.go.id')],['Putusan MA','https://putusan3.mahkamahagung.go.id/search.html?q='+encodeURIComponent(kw)]];
     const web='<p class="cariist-sec">Telusuri sumber resmi di internet</p><div class="cariist-web">'+L.map(([t,u])=>'<a href="'+esc(u)+'" target="_blank" rel="noopener">'+esc(t)+' ↗</a>').join('')+'</div>';
-    h=(!hasilH.length&&!r.length?web+h:h+web);
+    h=(!hasilH.length&&!r.length&&!hasil.soal?web+h:h+web);
     out.innerHTML=h;
     out.querySelectorAll('.cariist-lagi').forEach(l=>l.onclick=()=>{if(l.dataset.k==='h')tampilH+=4;else tampil+=5;gambar();});
     out.querySelectorAll('.cariist-full').forEach(b=>b.onclick=()=>{b.previousElementSibling.classList.remove('pj');b.remove();});}
 
   async function jalan(){const t=inp.value.trim();kataTerakhir=t;if(t.length<2){hasil={};hasilH=[];gambar();return;}
     if(!bank||!HK){out.innerHTML='<p class="cariist-ket">Memuat teks peraturan dan bank soal…</p>';await Promise.all([siapkan(),siapkanHukum()]);if(inp.value.trim()!==t)return;}
-    hasil=cari(t);tampil=3;hasilH=cariHukum(t);tampilH=4;
+    const pb=perbaiki(t),tq=pb.teks,q=soalAktif();
+    hasil=cari(tq);tampil=3;hasilH=cariHukum(tq);tampilH=4;hasil.koreksi=pb.ubah?tq:'';hasil.soal=tanyaSoal(tq,q)?kartuSoal(q):'';
+    // Pertanyaan tentang soal: hasil pencarian umum dibatasi agar jawaban soal tetap paling atas.
+    if(hasil.soal&&!tq.split(' ').some(k=>k&&!STOP.has(k)&&!KATANIAT.has(k)&&!KATANIAT.has(k.replace(/(nya|kah|lah)$/,'')))){hasil.r=[];hasilH=[];hasil.murni=1;}
     const nq=norm(t);let kh=hasil.ks.slice();ALIAS.forEach(([re])=>{kh=kh.filter(k=>!re.test(k));});hasil.kh=kh.filter(k=>k!=='pasal');gambar();}
-  inp.addEventListener('input',()=>{clearTimeout(tKetik);tKetik=setTimeout(jalan,260);});
+  inp.addEventListener('input',()=>{clearTimeout(tKetik);tKetik=setTimeout(jalan,260);if(!aiJalan&&!aiOut.querySelector('.cariist-aitext'))aiOut.innerHTML='';});
   inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();clearTimeout(tKetik);jalan();inp.blur&&matchMedia('(pointer:coarse)').matches&&inp.blur();}if(e.key==='Escape'){inp.value='';jalan();}});
   // Asisten AI (fungsi Edge Supabase "tanya-hukum"): pasal terkait dari indeks dikirim sebagai pijakan, kunci API tetap di server.
   const aiOut=node.querySelector('.cariist-aiout'),aiBtn=node.querySelector('.cariist-ai');let aiJalan=false;
@@ -164,16 +206,23 @@
   async function tanyaAI(){const t=inp.value.trim();if(t.length<3){aiOut.innerHTML='<p class="cariist-nol">Tulis pertanyaan Anda dulu di kolom cari.</p>';inp.focus();return;}
     if(aiJalan)return;const sb=window.__sb;if(!sb||!sb.functions){aiOut.innerHTML='<p class="cariist-nol">Asisten AI belum tersedia di halaman ini.</p>';return;}
     aiJalan=true;aiBtn.disabled=true;aiOut.innerHTML='<div class="cariist-it ai"><p class="cariist-sec">Jawaban asisten AI</p><p class="cariist-ket">Asisten sedang menelusuri peraturan yang berlaku… (biasanya 20–60 detik)</p></div>';
-    try{await siapkanHukum();const kh=cariHukum(t).slice(0,8).map(({e})=>({l:e.l,n:HK.docs[e.d].n+(e.s==='x'?' [TIDAK BERLAKU]':e.s.startsWith('u:')?' [bunyi setelah diubah '+e.s.slice(2)+']':''),t:e.t}));
-      const sq=window.__soalKini&&window.__soalKini();
-      const {data,error}=await sb.functions.invoke('tanya-hukum',{body:{q:t,konteks:kh,soal:sq?{q:sq.q,p:sq.p,d:sq.d}:null}});
+    try{await Promise.all([siapkan(),siapkanHukum()]);const tq=perbaiki(t).teks,sq=soalAktif();
+      // Pijakan: pasal yang dirujuk soal aktif lebih dulu, lalu pasal hasil pencarian atas pertanyaan.
+      const pj=(sq?kutipan(sq.d).map(k=>k.e):[]).concat(cariHukum(tq).slice(0,8).map(r=>r.e)).filter((e,i,a)=>a.indexOf(e)===i).slice(0,8);
+      const kh=pj.map(e=>({l:e.l,n:HK.docs[e.d].n+(e.s==='x'?' [TIDAK BERLAKU]':e.s.startsWith('u:')?' [bunyi setelah diubah '+e.s.slice(2)+']':''),t:e.t}));
+      const jw=sq&&(sq.o||[])[sq.a];
+      const {data,error}=await sb.functions.invoke('tanya-hukum',{body:{q:t,konteks:kh,soal:sq?{q:sq.q+((sq.o||[]).length?'\nPilihan: '+sq.o.map((o,i)=>'ABCDE'[i]+'. '+o).join(' | '):''),p:sq.p,d:sq.d,jw:jw!=null?(typeof sq.a==='number'?'ABCDE'[sq.a]+'. ':'')+jw:''}:null}});
       if(error){let m='';try{const j=await error.context.json();m=j.error||'';}catch(e){}
-        const st=error.context&&error.context.status;throw new Error(m||(st===404?'Asisten AI belum dipasang di server.':'Asisten AI tidak dapat dihubungi.'));}
+        const st=error.context&&error.context.status;if(st===404||!st){belumPasang();return;}throw new Error(m||'Asisten AI tidak dapat dihubungi.');}
       aiOut.innerHTML='<div class="cariist-it ai"><p class="cariist-sec">Jawaban asisten AI</p><div class="cariist-aitext">'+rapi(data.jawab||'')+'</div>'+
         ((data.sumber||[]).length?'<p class="cariist-q">Sumber web resmi: '+data.sumber.map(s=>'<a href="'+esc(s.url)+'" target="_blank" rel="noopener">'+esc(s.title||s.url)+'</a>').join(' · ')+'</p>':'')+
         '<p class="cariist-q">Jawaban AI dapat keliru. Cocokkan dengan bunyi pasal di bawah atau sumber resmi.'+(data.sisa!=null?' Sisa jatah hari ini: '+data.sisa+'.':'')+'</p></div>';
     }catch(e){aiOut.innerHTML='<div class="cariist-it ai"><p class="cariist-sec">Jawaban asisten AI</p><p class="cariist-nol">'+esc(e.message||String(e))+'</p></div>';}
     finally{aiJalan=false;aiBtn.disabled=false;}}
+  // Fungsi AI belum dipasang: jawaban lokal (Tentang soal ini + pasal) tetap tampil di bawah; pemilik diberi langkah pemasangannya.
+  function belumPasang(){aiOut.innerHTML='<div class="cariist-it ai"><p class="cariist-sec">Asisten AI belum aktif</p><p class="cariist-ket">'+
+      (window.__isOwner?'Fungsi AI belum dipasang di Supabase. Tiga langkahnya (rinciannya di CARA-PASANG.md): 1) buat API key di console.anthropic.com, 2) jalankan ai-jatah.sql di SQL Editor, 3) simpan ANTHROPIC_API_KEY di Edge Function Secrets lalu deploy fungsi tanya-hukum.':
+        'Asisten AI belum diaktifkan oleh admin.')+' Sementara itu, jawaban dari soal ini dan naskah peraturan ditampilkan di bawah.</p></div>';}
   aiBtn.onclick=()=>{tanyaAI();if(inp.value.trim().length>=2&&kataTerakhir!==inp.value.trim()){clearTimeout(tKetik);jalan();}};
   node.querySelector('.cariist-go').onclick=()=>{clearTimeout(tKetik);jalan();};
 
