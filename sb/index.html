@@ -49,6 +49,7 @@
   --accent:#5cc28f; --accent-soft:#1d3327; --brass:#d9a849; --brass-soft:#352a14;
   --ok:#5cc28f; --ok-soft:#173326; --bad:#f08b83; --bad-soft:#3a1d1b; color-scheme:dark}
 html{overflow-x:hidden}body{max-width:100%;overflow-x:clip}select,input,textarea{max-width:100%;min-width:0}
+.exitbawah{display:none}@media(max-width:999px){header .akunku .akunexit{display:none!important}.exitbawah:not([hidden]){display:flex;justify-content:center;margin-top:auto;padding-top:18px}.exitbawah:not([hidden])~footer{margin-top:10px}html .exitbawah .akunexit{flex:none;width:44px;height:44px;padding:0!important;gap:0;border-radius:50%;min-height:0;font-size:0;letter-spacing:0;display:grid;place-items:center}html .exitbawah .akunexit::before{width:19px;height:19px;margin-left:2px}}
 *{box-sizing:border-box}
 body{background:radial-gradient(900px 380px at 50% -140px,color-mix(in srgb,var(--accent) 13%,transparent),transparent 72%) no-repeat,var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55;margin:0}
 .wrap{max-width:880px;margin:0 auto;padding-block:24px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:18px}
@@ -450,6 +451,7 @@ body.tertutup #tirai{display:flex}
 
   <details class="mapbox" id="mapbox"><summary id="mapsum">Peta soal</summary><div class="map" id="map"></div><p class="mapket"><i class="tk ok">✓</i> dijawab benar &nbsp; <i class="tk no">✗</i> dijawab salah atau waktu habis</p></details>
 
+  <div class="exitbawah" id="exitbawah" hidden><button class="btn keluar akunexit" id="akunexit2" type="button" aria-label="Exit" title="Exit"></button></div>
   <footer><span>© 2026 CAT - Lex Fexora. All rights reserved.</span> | <span>Developed &amp; Curated by Febrillian Kusuma Raafi, S.H.</span></footer>
 </div>
 
@@ -895,7 +897,7 @@ window.__quiz={state};
     try{await auth.signInWithPopup(p);}catch(e){if(e&&/popup-blocked|operation-not-supported/.test(e.code||''))auth.signInWithRedirect(p);else if(e&&e.code!=='auth/popup-closed-by-user'&&e.code!=='auth/cancelled-popup-request')gp.textContent='Sign-in failed: '+(e.message||e.code);}};
   // Keluar menghapus jawaban sesi (benar/salah di kuis); tanda ✓/✗ di akun tetap tersimpan.
   window.__logout=()=>bOut.onclick();
-  $('akunexit').onclick=()=>bOut.onclick();
+  $('akunexit').onclick=()=>bOut.onclick();$('akunexit2').onclick=()=>bOut.onclick();
   bOut.onclick=()=>{window.__keluar=true;try{localStorage.removeItem('tkbcakim-v12');}catch(e){}auth.signOut().then(()=>location.reload());};
   $('adm-logout').onclick=e=>{e.preventDefault();e.stopPropagation();bOut.onclick();};
 
@@ -983,7 +985,7 @@ window.__quiz={state};
   function heartbeat(ref){const tick=()=>{if(document.hidden)return;ref.update({terakhir:FV.serverTimestamp(),posisi:posisi()}).catch(()=>{});};
     beat=setInterval(tick,60000);tick();document.addEventListener('visibilitychange',tick);}
 
-  function akunku(u){const k=$('akunku');if(!k)return;k.hidden=!u;if(!u)return;const nama=u.displayName||(u.email||'').split('@')[0],av=$('akunav');
+  function akunku(u){const k=$('akunku');if(!k)return;k.hidden=!u;if($('exitbawah'))$('exitbawah').hidden=!u;if(!u)return;const nama=u.displayName||(u.email||'').split('@')[0],av=$('akunav');
     av.textContent='';if(u.photoURL){const im=new Image();im.alt='';im.referrerPolicy='no-referrer';im.src=u.photoURL;im.onerror=()=>{av.textContent=(nama[0]||'?').toUpperCase();};av.appendChild(im);}else av.textContent=(nama[0]||'?').toUpperCase();
     $('akunnm').textContent=nama;$('akunem').textContent=u.email||'';k.title=u.email||'';}
   auth.onAuthStateChanged(async u=>{
