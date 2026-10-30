@@ -505,6 +505,7 @@ html .tojoin>b{color:var(--brass)}
 :root[data-theme="dark"] #tocard.setelan.tocard>summary::after{color:#a07a3a}
 :root[data-theme="dark"] #setelan>summary{font-family:var(--f-display,Georgia,serif);font-size:16px;letter-spacing:.01em}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #tocard.setelan.tocard{border:1px solid #000;border-radius:6px;background:radial-gradient(80% 60% at 50% 0,rgb(255 170 70 / .07),transparent 70%),linear-gradient(180deg,#0e0a08,#070605);box-shadow:inset 0 0 18px rgb(0 0 0 / .8),0 0 0 1px #7a5a28,0 0 0 3px #070605,0 0 0 4px #4a3820,0 10px 24px rgb(0 0 0 / .7)}:root:not([data-theme="light"]) #tocard.setelan.tocard>summary{padding:11px 14px}:root:not([data-theme="light"]) #tocard.setelan.tocard>summary .stl{font-family:var(--f-display,Georgia,serif);font-size:17px;font-weight:700;letter-spacing:.01em;-webkit-text-fill-color:#dcae55;color:#dcae55;text-shadow:0 1px 0 #000,0 0 10px rgb(217 168 73 / .15)}:root:not([data-theme="light"]) #tocard.setelan.tocard>summary .stl svg.piala{width:22px;height:22px}:root:not([data-theme="light"]) #tocard.setelan.tocard>summary::after{color:#a07a3a}:root:not([data-theme="light"]) #setelan>summary{font-family:var(--f-display,Georgia,serif);font-size:16px;letter-spacing:.01em}}
+#siapbtn .inkt{position:relative;display:inline;line-height:1;margin-right:-.08em}
 </style>
 </head>
 <body>
@@ -551,7 +552,7 @@ html .tojoin>b{color:var(--brass)}
       <label class="ctl-sub" for="bag" id="bagwrap" hidden><span>Bagian Soal</span><select id="bag"></select></label>
       <label for="order">Order <select id="order"><option value="seq">Sequential</option><option value="rand">Shuffle</option></select></label>
       <select id="timer" hidden aria-hidden="true"><option value="off"></option><option value="cum"></option><option value="cum45"></option><option value="cum35"></option><option value="cum30"></option><option value="per"></option><option value="per45"></option><option value="per35"></option><option value="per30"></option></select><label for="tmode">Timer <select id="tmode"><option value="off">Off</option><option value="cum">Total</option><option value="per">Per question</option></select></label><label for="tsec">Duration <select id="tsec"><option value="54">54 sec</option><option value="45">45 sec</option><option value="35">35 sec</option><option value="30">30 sec</option></select></label>
-      <div class="siaprow" id="siaprow"><button class="btn primary" id="siapbtn" type="button">Keep it</button></div>
+      <div class="siaprow" id="siaprow"><button class="btn primary" id="siapbtn" type="button"><span class="inkt">Keep it</span></button></div>
     </div>
   </details>
   <details class="setelan tocard" id="tocard" hidden>
@@ -1326,15 +1327,18 @@ window.__quiz={state};
   b.onclick=function(){var t=gelap()?"light":"dark";r.dataset.theme=t;try{localStorage.setItem("cat-tema",t);}catch(e){}sync();};
   if(mq.addEventListener)mq.addEventListener("change",sync);sync();})();</script>
 <script>
-// VVIP: geser teks agar bentuk hurufnya (bukan metrik font) tepat di tengah kapsul, di semua perangkat.
-(function(){const v=document.querySelector('.akunku .vip'),t=v&&v.querySelector('.vipt');if(!t)return;
+// VVIP dan Keep it: geser teks agar bentuk hurufnya (bukan metrik font) tepat di tengah tombol, di semua perangkat.
+function inkTengah(v,t){if(!v||!t)return;
   const pas=()=>{if(!v.offsetParent)return;t.style.top='0px';const cs=getComputedStyle(t),c=document.createElement('canvas').getContext('2d');
-    c.font=cs.fontWeight+' '+cs.fontSize+' '+cs.fontFamily;const m=c.measureText(t.textContent);if(!m.fontBoundingBoxAscent)return;
-    const r=t.getBoundingClientRect(),vr=v.getBoundingClientRect(),bt=parseFloat(getComputedStyle(v).borderTopWidth)||0,bb=parseFloat(getComputedStyle(v).borderBottomWidth)||0;
-    const base=r.top+(r.height-(m.fontBoundingBoxAscent+m.fontBoundingBoxDescent))/2+m.fontBoundingBoxAscent;
+    c.font=cs.fontWeight+' '+(parseFloat(cs.fontSize)*20)+'px '+cs.fontFamily;const m0=c.measureText(t.textContent);if(m0.actualBoundingBoxAscent==null)return;const m={actualBoundingBoxAscent:m0.actualBoundingBoxAscent/20,actualBoundingBoxDescent:m0.actualBoundingBoxDescent/20};
+    // Titik garis dasar diukur langsung dengan penanda kosong di dalam teks.
+    const p=document.createElement('span');p.style.cssText='display:inline-block;width:0;height:0;vertical-align:baseline';t.appendChild(p);
+    const vr=v.getBoundingClientRect(),vs=getComputedStyle(v),bt=parseFloat(vs.borderTopWidth)||0,bb=parseFloat(vs.borderBottomWidth)||0;
+    const base=p.getBoundingClientRect().top;p.remove();
     const ink=base+(m.actualBoundingBoxDescent-m.actualBoundingBoxAscent)/2,mid=vr.top+bt+(vr.height-bt-bb)/2;
     t.style.top=(Math.round((mid-ink)*4)/4)+'px';};
-  if(window.ResizeObserver)new ResizeObserver(pas).observe(v);if(document.fonts)document.fonts.ready.then(pas);addEventListener('load',pas);})();
+  if(window.ResizeObserver)new ResizeObserver(pas).observe(v);if(document.fonts){document.fonts.ready.then(pas);document.fonts.addEventListener&&document.fonts.addEventListener('loadingdone',()=>setTimeout(pas,50));}addEventListener('load',pas);document.addEventListener('toggle',()=>requestAnimationFrame(pas),true);}
+(function(){const v=document.querySelector('.akunku .vip');inkTengah(v,v&&v.querySelector('.vipt'));const k=document.getElementById('siapbtn');inkTengah(k,k&&k.querySelector('.inkt'));})();
 </script>
 </body>
 </html>
