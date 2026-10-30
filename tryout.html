@@ -301,17 +301,17 @@ header .tema .knop{background:linear-gradient(180deg,#c9b98f,#a8925c)}header .te
 
 /* Notifikasi login untuk pemilik */
 #lgtoast{position:fixed;right:16px;bottom:16px;z-index:9500;display:flex;flex-direction:column;gap:8px;align-items:flex-end;pointer-events:none;max-width:calc(100vw - 32px)}
-#lgtoast .lgt{pointer-events:auto;display:flex;align-items:center;gap:10px;padding:10px 10px 10px 12px;border-radius:18px;background:rgba(245,245,247,.62);color:#111;border:1px solid rgba(255,255,255,.55);box-shadow:0 10px 30px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.5);-webkit-backdrop-filter:blur(22px) saturate(180%);backdrop-filter:blur(22px) saturate(180%);font-size:13.5px;max-width:340px;animation:lgmasuk .3s ease-out}
-#lgtoast .lgt.pergi{opacity:0;transform:translateY(6px);transition:.3s}
-#lgtoast .lgav{flex:none;width:32px;height:32px;border-radius:50%;overflow:hidden;display:grid;place-items:center;background:var(--ok,#17733f);color:#fff;font-weight:700}
+#lgtoast .lgt{pointer-events:none;display:flex;align-items:center;gap:10px;padding:11px 14px 11px 12px;border-radius:20px;background:rgba(250,250,252,.5);color:#111;border:1px solid rgba(255,255,255,.6);box-shadow:0 10px 30px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.5);-webkit-backdrop-filter:blur(26px) saturate(190%);backdrop-filter:blur(26px) saturate(190%);font-size:13.5px;max-width:340px;animation:lgmasuk .5s cubic-bezier(.2,.9,.3,1.15)}
+#lgtoast .lgt.pergi{opacity:0;transform:translateY(-14px) scale(.96);transition:opacity .45s ease,transform .45s cubic-bezier(.4,0,1,1)}
+#lgtoast .lgjam{flex:none;align-self:flex-start;margin-top:2px;font-size:11.5px;color:rgba(60,60,67,.6)}
+#lgtoast .lgav{flex:none;width:38px;height:38px;border-radius:50%;overflow:hidden;display:grid;place-items:center;background:var(--ok,#17733f);color:#fff;font-weight:700}
 #lgtoast .lgav img{width:100%;height:100%;object-fit:cover}
-#lgtoast .lgtx{display:flex;flex-direction:column;line-height:1.35;min-width:0}#lgtoast .lgtx small{color:var(--muted,#777);font-size:11.5px}
-#lgtoast .lgtx small,#lgtoast button{color:rgba(60,60,67,.7)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #lgtoast .lgt{background:rgba(44,44,46,.55);color:#f5f5f7;border-color:rgba(255,255,255,.14);box-shadow:0 10px 30px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.08)}:root:not([data-theme="light"]) #lgtoast .lgtx small,:root:not([data-theme="light"]) :root:not([data-theme="light"]) #lgtoast button{color:rgba(235,235,245,.6)}}
-:root[data-theme="dark"] #lgtoast .lgt{background:rgba(44,44,46,.55);color:#f5f5f7;border-color:rgba(255,255,255,.14);box-shadow:0 10px 30px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.08)}:root[data-theme="dark"] #lgtoast .lgtx small,:root[data-theme="dark"] :root[data-theme="dark"] #lgtoast button{color:rgba(235,235,245,.6)}
+#lgtoast .lgtx{flex:1;display:flex;flex-direction:column;line-height:1.35;min-width:0}#lgtoast .lgtx small{color:rgba(60,60,67,.6);font-size:11.5px}
+
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #lgtoast .lgt{background:rgba(58,58,60,.42);color:#f5f5f7;border-color:rgba(255,255,255,.16);box-shadow:0 10px 30px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.08)}:root:not([data-theme="light"]) #lgtoast .lgtx small,:root:not([data-theme="light"]) #lgtoast .lgjam{color:rgba(235,235,245,.6)}}
+:root[data-theme="dark"] #lgtoast .lgt{background:rgba(58,58,60,.42);color:#f5f5f7;border-color:rgba(255,255,255,.16);box-shadow:0 10px 30px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.08)}:root[data-theme="dark"] #lgtoast .lgtx small,:root[data-theme="dark"] #lgtoast .lgjam{color:rgba(235,235,245,.6)}
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){#lgtoast .lgt{background:var(--surface,#fff);color:var(--ink,#111)}}
-#lgtoast button{flex:none;background:none;border:0;font-size:18px;line-height:1;cursor:pointer;padding:2px 4px}
-@keyframes lgmasuk{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes lgmasuk{from{opacity:0;transform:translateY(-18px) scale(.96)}to{opacity:1;transform:none}}
 @media(max-width:600px){#lgtoast{left:16px;right:16px;bottom:auto;top:12px;align-items:stretch}#lgtoast .lgt{max-width:none}}
 </style>
 </head>
@@ -367,8 +367,8 @@ function pantauLoginMulai(){if(loginDipantau)return;loginDipantau=true;
     const LOGIN={};let loginAwal=true;
     const toastLogin=(nama,foto,ket,uid)=>{const SD=window.__lgSudah=window.__lgSudah||{};if(uid){if(Date.now()-(SD[uid]||0)<150000)return;SD[uid]=Date.now();}
       let w=document.getElementById('lgtoast');if(!w){w=document.createElement('div');w.id='lgtoast';w.setAttribute('aria-live','polite');document.body.appendChild(w);}
-      const t=document.createElement('div');t.className='lgt';t.innerHTML=`<span class="lgav">${foto?`<img src="${esc(foto)}" alt="" referrerpolicy="no-referrer">`:esc((nama[0]||'?').toUpperCase())}</span><span class="lgtx"><b>${esc(nama)}</b> ${esc(ket)}<small>${new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})}</small></span><button type="button" aria-label="Tutup">×</button>`;
-      const hapus=()=>{t.classList.add('pergi');setTimeout(()=>t.remove(),300);};t.querySelector('button').onclick=hapus;w.appendChild(t);while(w.children.length>4)w.firstChild.remove();setTimeout(hapus,8000);
+      const t=document.createElement('div');t.className='lgt';t.innerHTML=`<span class="lgav">${foto?`<img src="${esc(foto)}" alt="" referrerpolicy="no-referrer">`:esc((nama[0]||'?').toUpperCase())}</span><span class="lgtx"><b>${esc(nama)}</b> ${esc(ket)}</span><small class="lgjam">sekarang</small>`;
+      const hapus=()=>{t.classList.add('pergi');setTimeout(()=>t.remove(),450);};w.appendChild(t);while(w.children.length>3)w.firstChild.remove();setTimeout(hapus,5000);
       if(document.hidden&&window.Notification&&Notification.permission==='granted'){try{new Notification('CAT Lex Fexora',{body:nama+' '+ket,icon:foto||undefined});}catch(e){}}};
     const pantauLogin=qs=>{const now=Date.now(),me=(U)&&(U).uid;
       qs.forEach(d=>{const x=d.data(),t=x.terakhir&&x.terakhir.toDate?+x.terakhir.toDate():0,prev=LOGIN[d.id];
