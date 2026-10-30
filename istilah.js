@@ -172,7 +172,7 @@
   function konteksSoal(q){if(!q||!HK)return null;const jw=norm((q.o||[])[q.a]),w=norm(q.q+' '+jw+' '+q.p).split(' ');
     return {kut:new Set(kutipan(q.d).map(k=>k.e)),ks:[...new Set(w.filter(k=>k.length>3&&!STOP.has(k)&&!UMUM.has(k)))]};}
   // Kartu "Jawaban": ayat/huruf yang paling menjawab pertanyaan, dikutip apa adanya dari naskah (bukan dikarang), lalu penjelasan bank soal yang paling cocok.
-  function kartuJawab(tq,ctx){if(!hasilH.length)return '';const q=norm(tq),ks=q.split(' ').filter(k=>k&&!STOP.has(k)&&!KATANIAT.has(k)),fs=frasa(q);if(!ks.length)return '';
+  function kartuJawab(tq,ctx){if(!hasilH.length&&!(hasil.r||[]).length)return '';const q=norm(tq),ks=q.split(' ').filter(k=>k&&!STOP.has(k)&&!KATANIAT.has(k)),fs=frasa(q);if(!ks.length)return '';
     // Dicari per ayat/huruf di seluruh naskah (bukan hanya pasal teratas): ruas pendek yang memuat semua kata kunci, frasa utuh, atau definisi ("X adalah") diutamakan.
     const atas=new Map(hasilH.slice(0,10).map(({e},i)=>[e,10-i]));let best=null;
     HK.e.forEach(e=>{if(!atas.has(e)&&!ks.every(k=>ada(e.nt,k)))return;const sg=segs(e),kep={};sg.forEach(x=>{if(!x.hf)kep[x.ay]=x;});
@@ -245,7 +245,7 @@
       const jw=sq&&(sq.o||[])[sq.a];
       const {data,error}=await sb.functions.invoke('tanya-hukum',{body:{q:t,konteks:kh,soal:sq?{q:sq.q+((sq.o||[]).length?'\nPilihan: '+sq.o.map((o,i)=>'ABCDE'[i]+'. '+o).join(' | '):''),p:sq.p,d:sq.d,jw:jw!=null?(typeof sq.a==='number'?'ABCDE'[sq.a]+'. ':'')+jw:''}:null}});
       if(error){let m='';try{const j=await error.context.json();m=j.error||'';}catch(e){}
-        const st=error.context&&error.context.status;if(st===404||!st){belumPasang();return;}throw new Error(m||'Asisten AI tidak dapat dihubungi.');}
+        const st=error.context&&error.context.status;if(st===404||!st){await belumPasang();return;}throw new Error(m||'Asisten AI tidak dapat dihubungi.');}
       aiOut.innerHTML='<div class="cariist-it ai"><p class="cariist-sec">Jawaban asisten AI</p><div class="cariist-aitext">'+rapi(data.jawab||'')+'</div>'+htmlPeriksa(data.jawab||'')+
         ((data.sumber||[]).length?'<p class="cariist-q">Sumber web resmi: '+data.sumber.map(s=>'<a href="'+esc(s.url)+'" target="_blank" rel="noopener">'+esc(s.title||s.url)+'</a>').join(' · ')+'</p>':'')+
         '<p class="cariist-q">Jawaban AI dapat keliru. Cocokkan dengan bunyi pasal di bawah atau sumber resmi.'+(data.sisa!=null?' Sisa jatah hari ini: '+data.sisa+'.':'')+'</p></div>';
@@ -273,8 +273,10 @@
       r.k.map(k=>'<p class="cariist-cekit '+(k.e?'ok':'q')+'"><b>'+(k.e?'✓':'?')+'</b> Kutipan “'+esc(k.q.slice(0,90))+(k.q.length>90?'…':'')+'” '+(k.e?'cocok dengan bunyi '+esc(k.e.l)+' '+esc(HK.docs[k.e.d].n):'tidak ditemukan persis di naskah terindeks, cek di sumber resmi')+'</p>').join('')+'</div>';}
 
   // Fungsi AI belum dipasang: jawaban lokal (Tentang soal ini + pasal) tetap tampil di bawah; pemilik diberi langkah pemasangannya.
-  function belumPasang(){aiOut.innerHTML='<div class="cariist-it ai"><p class="cariist-sec">Asisten AI belum aktif</p><p class="cariist-ket">'+
-      (window.__isOwner?'Fungsi AI belum dipasang di Supabase. Tiga langkahnya (rinciannya di CARA-PASANG.md): 1) buat API key di console.anthropic.com, 2) jalankan ai-jatah.sql di SQL Editor, 3) simpan ANTHROPIC_API_KEY di Edge Function Secrets lalu deploy fungsi tanya-hukum.':
+  async function belumPasang(){let pemilik=!!window.__isOwner||document.body.classList.contains('bebas');
+    if(!pemilik&&window.__sb&&window.__sb.rpc){try{const {data}=await window.__sb.rpc('cat_is_owner');pemilik=data===true;}catch(e){}}
+    aiOut.innerHTML='<div class="cariist-it ai"><p class="cariist-sec">Asisten AI belum aktif</p><p class="cariist-ket">'+
+      (pemilik?'Fungsi AI belum dipasang di Supabase. Tiga langkahnya (rinciannya di CARA-PASANG.md): 1) buat API key di console.anthropic.com, 2) jalankan ai-jatah.sql di SQL Editor, 3) simpan ANTHROPIC_API_KEY di Edge Function Secrets lalu deploy fungsi tanya-hukum.':
         'Asisten AI belum diaktifkan oleh admin.')+' Sementara itu, jawaban dari soal ini dan naskah peraturan ditampilkan di bawah.</p></div>';}
   aiBtn.onclick=()=>{tanyaAI();if(inp.value.trim().length>=2&&kataTerakhir!==inp.value.trim()){clearTimeout(tKetik);jalan();}};
   node.querySelector('.cariist-go').onclick=()=>{clearTimeout(tKetik);jalan();};
