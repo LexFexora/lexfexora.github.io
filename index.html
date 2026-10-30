@@ -497,6 +497,12 @@ html .setelan.tocard>summary .stl{animation:none;background:none;-webkit-text-fi
 /* Kotak tautan join: cokelat-emas gelap, selaras dengan panel Mock Exam. */
 html .tojoin{border:1px solid color-mix(in srgb,var(--brass) 40%,var(--line));background:linear-gradient(180deg,color-mix(in srgb,var(--brass) 12%,var(--surface)),color-mix(in srgb,var(--brass) 5%,var(--surface)));box-shadow:inset 0 1px 0 rgb(255 220 160 / .05)}
 html .tojoin>b{color:var(--brass)}
+/* Bar Mock Exam lebih gelap dan berkarakter, mendominasi panel lain. */
+:root[data-theme="dark"] #tocard.setelan.tocard{border:1px solid #000;border-radius:6px;background:radial-gradient(90% 50% at 50% 0,rgb(255 170 70 / .07),transparent 70%),linear-gradient(180deg,#0c0907,#050404);box-shadow:inset 0 0 0 1px #2a1f12,inset 0 0 30px rgb(0 0 0 / .9),0 0 0 2px #8a6a2a,0 0 0 4px #0a0806,0 0 0 5px #5a4320,0 0 0 7px #050403,0 0 0 8px #3a2a14,0 14px 30px rgb(0 0 0 / .85)}
+:root[data-theme="dark"] #tocard.setelan.tocard>summary{padding:16px 16px}
+:root[data-theme="dark"] #tocard.setelan.tocard>summary .stl{font-family:"Alegreya SC",Georgia,serif;font-size:21px;font-weight:800;letter-spacing:.06em;-webkit-text-fill-color:#d9a849;color:#d9a849;text-shadow:0 1px 0 #000,0 2px 2px rgb(0 0 0 / .9),0 0 12px rgb(217 168 73 / .18)}
+:root[data-theme="dark"] #tocard.setelan.tocard>summary::after{color:#a07a3a}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #tocard.setelan.tocard{border:1px solid #000;border-radius:6px;background:radial-gradient(90% 50% at 50% 0,rgb(255 170 70 / .07),transparent 70%),linear-gradient(180deg,#0c0907,#050404);box-shadow:inset 0 0 0 1px #2a1f12,inset 0 0 30px rgb(0 0 0 / .9),0 0 0 2px #8a6a2a,0 0 0 4px #0a0806,0 0 0 5px #5a4320,0 0 0 7px #050403,0 0 0 8px #3a2a14,0 14px 30px rgb(0 0 0 / .85)}:root:not([data-theme="light"]) #tocard.setelan.tocard>summary{padding:16px 16px}:root:not([data-theme="light"]) #tocard.setelan.tocard>summary .stl{font-family:"Alegreya SC",Georgia,serif;font-size:21px;font-weight:800;letter-spacing:.06em;-webkit-text-fill-color:#d9a849;color:#d9a849;text-shadow:0 1px 0 #000,0 2px 2px rgb(0 0 0 / .9),0 0 12px rgb(217 168 73 / .18)}:root:not([data-theme="light"]) #tocard.setelan.tocard>summary::after{color:#a07a3a}}
 </style>
 </head>
 <body>
