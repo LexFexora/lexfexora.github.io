@@ -41,15 +41,14 @@
   --f-mono:"IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#0a0405; --surface:#150a0d; --ink:#e6ece7; --muted:#9aaba0; --line:#2c171c;
-  --accent:#dc7f8d; --accent-soft:#2c1118; --brass:#e0b85c; --brass-soft:#2a1f12;
-  --ok:#7fcf9c; --ok-soft:#14261b; --bad:#f08b83; --bad-soft:#3a1d1b; color-scheme:dark}}
+  --bg:#101612; --surface:#18201b; --ink:#e6ece7; --muted:#9aaba0; --line:#2b362f;
+  --accent:#5cc28f; --accent-soft:#1d3327; --brass:#d9a849; --brass-soft:#352a14;
+  --ok:#5cc28f; --ok-soft:#173326; --bad:#f08b83; --bad-soft:#3a1d1b; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#0a0405; --surface:#150a0d; --ink:#e6ece7; --muted:#9aaba0; --line:#2c171c;
-  --accent:#dc7f8d; --accent-soft:#2c1118; --brass:#e0b85c; --brass-soft:#2a1f12;
-  --ok:#7fcf9c; --ok-soft:#14261b; --bad:#f08b83; --bad-soft:#3a1d1b; color-scheme:dark}
+  --bg:#101612; --surface:#18201b; --ink:#e6ece7; --muted:#9aaba0; --line:#2b362f;
+  --accent:#5cc28f; --accent-soft:#1d3327; --brass:#d9a849; --brass-soft:#352a14;
+  --ok:#5cc28f; --ok-soft:#173326; --bad:#f08b83; --bad-soft:#3a1d1b; color-scheme:dark}
 html{overflow-x:hidden}body{max-width:100%;overflow-x:clip}select,input,textarea{max-width:100%;min-width:0}
-:root[data-theme="dark"] body{background:var(--bg)}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body{background:var(--bg)}}
 *{box-sizing:border-box}
 body{background:radial-gradient(900px 380px at 50% -140px,color-mix(in srgb,var(--accent) 13%,transparent),transparent 72%) no-repeat,var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55;margin:0}
 .wrap{max-width:880px;margin:0 auto;padding-block:24px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:18px}
@@ -106,8 +105,8 @@ select{font:inherit;font-size:14px;padding:7px 10px;border-radius:8px;border:1px
 /* Tombol Keep it, Start, dan Next: arang gelap serasi dengan logo, bukan hijau. */
 #siapbtn,#next{background:linear-gradient(180deg,#2e2e2e,#121212);border:1px solid #3a3a3a;color:#f2f2f2;box-shadow:0 4px 12px rgb(0 0 0 / .18)}
 #siapbtn:hover,#next:hover{background:linear-gradient(180deg,#3a3a3a,#1b1b1b)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #siapbtn,:root:not([data-theme="light"]) #next{background:linear-gradient(180deg,#3a1f25,#1f1014);border-color:#55303a;color:#eef1ee;box-shadow:0 4px 14px rgb(0 0 0 / .35)}}
-:root[data-theme="dark"] #siapbtn,:root[data-theme="dark"] #next{background:linear-gradient(180deg,#3a1f25,#1f1014);border-color:#55303a;color:#eef1ee;box-shadow:0 4px 14px rgb(0 0 0 / .35)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #siapbtn,:root:not([data-theme="light"]) #next{background:linear-gradient(180deg,#3b413e,#252a27);border-color:#4d5450;color:#eef1ee;box-shadow:0 4px 14px rgb(0 0 0 / .35)}}
+:root[data-theme="dark"] #siapbtn,:root[data-theme="dark"] #next{background:linear-gradient(180deg,#3b413e,#252a27);border-color:#4d5450;color:#eef1ee;box-shadow:0 4px 14px rgb(0 0 0 / .35)}
 /* Previous dan Next soal: kaca buram bernuansa hijau, warnanya sama. */
 body .card .nav>#prev.btn,body .card .nav>#next.btn{color:var(--ink);border:1px solid color-mix(in srgb,var(--accent) 32%,transparent);
   background:linear-gradient(180deg,color-mix(in srgb,var(--accent) 16%,transparent),color-mix(in srgb,var(--accent) 6%,transparent)),color-mix(in srgb,var(--surface) 55%,transparent);
