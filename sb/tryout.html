@@ -44,6 +44,7 @@
   --accent:#dc7f8d; --accent-soft:#2c1118; --brass:#e0b85c; --brass-soft:#2a1f12;
   --ok:#7fcf9c; --ok-soft:#14261b; --bad:#f08b83; --bad-soft:#3a1d1b; color-scheme:dark}
 html{overflow-x:hidden}body{max-width:100%;overflow-x:clip}select,input,textarea{max-width:100%;min-width:0}
+:root[data-theme="dark"] body{background:var(--bg)}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body{background:var(--bg)}}
 *{box-sizing:border-box}
 body{background:radial-gradient(900px 380px at 50% -140px,color-mix(in srgb,var(--accent) 13%,transparent),transparent 72%) no-repeat,var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55;margin:0}
 .wrap{max-width:880px;margin:0 auto;padding:24px max(16px,env(safe-area-inset-right,0px)) 64px max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:16px}
