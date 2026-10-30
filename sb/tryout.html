@@ -341,6 +341,7 @@ const cfg=window.FIREBASE_CONFIG||{};
 if(!window.firebase||!cfg.apiKey){main.innerHTML="<p>Situs belum dikonfigurasi.</p>";return;}
 firebase.initializeApp(cfg);
 const auth=firebase.auth(),db=firebase.firestore(),FV=firebase.firestore.FieldValue;
+window.__soalKini=()=>T&&T.soal&&T.soal[Math.min(pos,T.soal.length-1)];
 // Cari istilah di Explanation: memakai seluruh bank soal bila akun boleh membacanya, bila tidak cukup soal mock exam ini.
 if(window.IstilahCari)IstilahCari.sumber(async()=>{try{const m=await db.doc("bank/meta").get();if(!m.exists)throw 0;
     const docs=await Promise.all(Array.from({length:m.data().chunks},(_,i)=>db.doc("bank/c"+i).get()));const arr=JSON.parse("["+docs.map(d=>d.data().d).join(",")+"]");

@@ -1173,7 +1173,7 @@ document.addEventListener("visibilitychange",()=>{if(document.hidden)persist();}
   else if(store.last&&store.last.cat!==undefined) selectCat(store.last.cat==="all"?"all":+store.last.cat,store.last.sub??"all",store.last.bag);
   else selectCat("all","all");
 })();
-window.__quiz={state};
+window.__quiz={state};window.__soalKini=()=>BYID[state.list[state.pos]];
 }
 </script>
 <script src="/istilah.js"></script>
