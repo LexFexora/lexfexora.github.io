@@ -830,7 +830,7 @@ function buildSession(fresh,onlyIds){
   persist();
 }
 function resetTimer(){state.tLeft=SEC*state.list.length;state.timeUp=false;state.qLeft=SEC;state.qId=null;state.expired={};}
-function persist(){store[sessionKey()]={list:state.list,pos:state.pos,mulai:!!state.mulai,ans:state.ans,perm:state.perm,order:state.order,tLeft:state.tLeft,timeUp:state.timeUp,qLeft:state.qLeft,qId:state.qId,expired:state.expired};store.last={cat:state.cat,sub:state.sub,bag:state.bag};save();}
+function persist(){store[sessionKey()]={list:state.list,pos:state.pos,mulai:!!state.mulai,ans:state.ans,perm:state.perm,order:state.order,tLeft:state.tLeft,timeUp:state.timeUp,qLeft:state.qLeft,qId:state.qId,expired:state.expired};store.last={cat:state.cat,sub:state.sub,bag:state.bag};if(state.cat!=="all"&&state.sub!=="all"){store.subAkhir=store.subAkhir||{};store.subAkhir[state.cat]={sub:state.sub,bag:state.bag};}save();}
 function restore(){
   const s=store[sessionKey()];
   const valid=s&&Array.isArray(s.list)&&s.list.length&&s.list.every(id=>BYID[id]&&s.perm&&s.perm[id]);
@@ -849,7 +849,9 @@ function renderTabs(){
   t.innerHTML=`<button class="tab pilih" type="button" id="pilih" aria-expanded="${!!state.klOpen}"${sel?` style="--kc:var(--k${state.cat})"`:""}><span class="ki ki4">${KOMPAS}</span><span class="kt"><b>Select Cluster - SKB</b>${sel?`<span class="sel">${esc(CATS[state.cat].short)}</span>`:`<small>Tap to choose a cluster</small>`}</span></button>`+
     (state.klOpen?Object.keys(CATS).map(n=>`<button class="tab kl" role="tab" type="button" data-k="${n}" aria-selected="${state.cat===+n}" style="--kc:var(--k${n})"><span class="ki">${ik(n)}</span><span class="kt"><b>${esc(CATS[n].short)}</b></span></button>`).join(""):"");
   $("pilih").onclick=()=>{state.klOpen=!state.klOpen;renderTabs();};
-  t.querySelectorAll(".tab[data-k]").forEach(b=>b.onclick=()=>{selectCat(+b.dataset.k,"all");});
+  // Khusus pemilik: klaster langsung membuka sub-materi yang terakhir dikerjakan; pengguna lain mulai dari All Sections.
+  t.querySelectorAll(".tab[data-k]").forEach(b=>b.onclick=()=>{const k=+b.dataset.k,ak=window.__isOwner&&store.subAkhir&&store.subAkhir[k];
+    if(ak&&SUBS[k]&&SUBS[k][ak.sub-1])selectCat(k,ak.sub,ak.bag);else selectCat(k,"all");});
 }
 function renderSub(){
   const s=$("sub");
