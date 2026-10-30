@@ -540,6 +540,24 @@ html:not(.fokus) .tabs .tab.pilih{padding-top:9px;padding-bottom:9px}html:not(.f
 /* Penghitung lilin & gulungan: tanpa kapsul, cukup ikon + angka. */
 .qhead .qkoin .kn,.qhead .qkoin .kn+.kn{height:auto;padding:0;border:0;background:none;border-radius:0}
 .qhead .qkoin{gap:12px}
+/* Android: daftar pilihan bergaya iPhone (melayang, gelap, blur, teks membungkus, centang). */
+.apick-bg{position:fixed;inset:0;z-index:9998;background:rgb(0 0 0 / .18)}
+.apick{position:fixed;z-index:9999;box-sizing:border-box;max-height:min(62vh,520px);overflow-y:auto;overscroll-behavior:contain;padding:6px 0;border-radius:22px;background:rgb(32 35 33 / .82);-webkit-backdrop-filter:blur(22px) saturate(1.4);backdrop-filter:blur(22px) saturate(1.4);box-shadow:0 0 0 .5px rgb(255 255 255 / .12),0 18px 50px rgb(0 0 0 / .55);font-family:var(--f-sans,system-ui,sans-serif);transform-origin:50% 0;animation:apickin .16s ease-out}
+.apick button{display:grid;grid-template-columns:26px 1fr;align-items:start;gap:4px;width:100%;margin:0;padding:11px 18px 11px 12px;border:0;background:none;color:#f2f4f3;font:inherit;font-size:17px;line-height:1.25;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.apick button+button{box-shadow:inset 0 .5px 0 rgb(255 255 255 / .08)}
+.apick button:active{background:rgb(255 255 255 / .08)}
+.apick button[disabled]{color:rgb(242 244 243 / .35)}
+.apick button .ck{font-size:16px;line-height:1.3;text-align:center;visibility:hidden}
+.apick button[aria-selected="true"] .ck{visibility:visible}
+@keyframes apickin{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .apick{background:rgb(250 250 250 / .86)}:root:not([data-theme="dark"]) .apick button{color:#111}:root:not([data-theme="dark"]) .apick button+button{box-shadow:inset 0 .5px 0 rgb(0 0 0 / .1)}}
+:root[data-theme="light"] .apick{background:rgb(250 250 250 / .86)}:root[data-theme="light"] .apick button{color:#111}
+@media (prefers-reduced-motion:reduce){.apick{animation:none}}
+/* Setelah Keep it: kotak Cahaya Lilin / Gulungan Naskah terbuka seperti gulungan, lalu bergoyang sebentar. */
+@keyframes mkgulung{0%{clip-path:inset(0 0 100% 0 round 2px);transform:scaleY(.35);opacity:.5}
+50%{clip-path:inset(0 0 0 0);transform:scaleY(1.04);opacity:1}62%{transform:scaleY(.98) rotate(-1.4deg)}74%{transform:rotate(1.1deg)}85%{transform:rotate(-.6deg)}94%{transform:rotate(.25deg)}100%{clip-path:inset(0);transform:none;opacity:1}}
+.kunci.mulaikartu.mk .mkbox.gulung{transform-origin:50% 0;animation:mkgulung .95s cubic-bezier(.2,.8,.25,1) both!important}
+@media (prefers-reduced-motion:reduce){.kunci.mulaikartu.mk .mkbox.gulung{animation:none!important}}
 </style>
 </head>
 <body>
@@ -1378,6 +1396,31 @@ function inkTengah(v,t){if(!v||!t)return;
     t.style.top=(Math.round((mid-ink)*4)/4)+'px';};
   if(window.ResizeObserver)new ResizeObserver(pas).observe(v);if(document.fonts){document.fonts.ready.then(pas);document.fonts.addEventListener&&document.fonts.addEventListener('loadingdone',()=>setTimeout(pas,50));}addEventListener('load',pas);document.addEventListener('toggle',()=>requestAnimationFrame(pas),true);}
 (function(){const v=document.querySelector('.akunku .vip');inkTengah(v,v&&v.querySelector('.vipt'));const k=document.getElementById('siapbtn');inkTengah(k,k&&k.querySelector('.inkt'));})();
+</script>
+<script>
+// Android: ganti daftar pilihan bawaan dengan pemilih bergaya iPhone. Keyboard tetap memakai select asli.
+(function(){if(!/Android/i.test(navigator.userAgent))return;let terbuka=null;
+  function tutup(){if(!terbuka)return;terbuka.bg.remove();terbuka.box.remove();const s=terbuka.sel;terbuka=null;removeEventListener('resize',tutup);s.focus({preventScroll:true});}
+  function buka(sel){tutup();const bg=document.createElement('div');bg.className='apick-bg';const box=document.createElement('div');box.className='apick';box.setAttribute('role','listbox');
+    [...sel.options].forEach((o,i)=>{if(o.hidden)return;const b=document.createElement('button');b.type='button';b.setAttribute('role','option');b.setAttribute('aria-selected',String(i===sel.selectedIndex));b.disabled=o.disabled;
+      b.innerHTML='<span class="ck">✓</span><span></span>';b.lastChild.textContent=o.textContent;
+      b.onclick=()=>{if(sel.selectedIndex!==i){sel.selectedIndex=i;sel.dispatchEvent(new Event('input',{bubbles:true}));sel.dispatchEvent(new Event('change',{bubbles:true}));}tutup();};box.appendChild(b);});
+    document.body.append(bg,box);const r=sel.getBoundingClientRect(),vw=innerWidth,vh=innerHeight,w=Math.min(Math.max(r.width*.78,240),vw-24,380);
+    box.style.width=w+'px';box.style.left=Math.round(Math.min(Math.max(12,r.left+(r.width-w)/2),vw-w-12))+'px';
+    const h=box.offsetHeight,atas=r.top-8,bawah=vh-r.bottom-8;let top;
+    if(bawah>=h)top=r.bottom+6;else if(atas>=h)top=r.top-h-6;else top=Math.max(12,Math.min(vh-h-12,r.top+r.height/2-h/2));
+    box.style.top=Math.round(top)+'px';const cur=box.querySelector('[aria-selected="true"]');if(cur)box.scrollTop=cur.offsetTop-box.clientHeight/2+cur.offsetHeight/2;
+    bg.onclick=tutup;terbuka={bg,box,sel};addEventListener('resize',tutup);}
+  document.addEventListener('keydown',e=>{if(terbuka&&e.key==='Escape')tutup();});
+  const pas=e=>{const sel=e.target.closest&&e.target.closest('select');return sel&&!sel.multiple&&!sel.disabled&&!(sel.size>1)?sel:null;};
+  // Cegah daftar bawaan saat disentuh; pemilih dibuka setelah ketukan selesai agar tidak langsung tertutup.
+  ['pointerdown','mousedown'].forEach(t=>document.addEventListener(t,e=>{if(pas(e)&&e.cancelable)e.preventDefault();},{capture:true,passive:false}));
+  document.addEventListener('click',e=>{const sel=pas(e);if(!sel)return;e.preventDefault();buka(sel);},true);})();
+</script>
+<script>
+// Keep it: tandai agar kotak di layar START dibuka dengan animasi gulungan.
+document.addEventListener('click',e=>{if(!(e.target.closest&&e.target.closest('#siapbtn')))return;
+  setTimeout(()=>{const b=document.querySelector('.mulaikartu.mk .mkbox');if(!b)return;b.classList.remove('gulung');void b.offsetWidth;b.classList.add('gulung');b.addEventListener('animationend',()=>b.classList.remove('gulung'),{once:true});},0);},true);
 </script>
 </body>
 </html>
