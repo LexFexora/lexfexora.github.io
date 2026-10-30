@@ -205,6 +205,8 @@ header .akun .av{background:#eef2ef;color:#1f2421}header .akun .nm{color:#eef2ef
 .btn.kecil,.nav.sk .mini .btn{font-size:12.5px;padding:5px 10px;min-width:0}
 .lb .tq{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;font-style:normal;font-size:11px;font-weight:700;margin-left:6px;vertical-align:1px;border:1px solid}
 .lb .tq.ok{color:var(--ok);background:var(--ok-soft);border-color:var(--ok)}.lb .tq.no{color:var(--bad);background:var(--bad-soft);border-color:var(--bad)}
+.lb .sk.ok{color:var(--ok)}.lb .sk.no{color:var(--bad)}.lb .sk:not(.ok):not(.no){color:#111}
+:root[data-theme="dark"] .lb .sk:not(.ok):not(.no){color:var(--ink)}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .lb .sk:not(.ok):not(.no){color:var(--ink)}}
 .lb .tq.tg{color:var(--muted);border-color:var(--line);border-style:dashed}.lb .tq.ks{color:var(--muted);background:var(--bg);border-color:var(--line)}
 .bahas{gap:12px}.bahas-h{display:flex;align-items:center;gap:8px;font-weight:600}.bahas-h>span:first-child{font-size:18px}
 .bahas .vonis{margin-left:auto;font-size:13px;font-weight:600;padding:2px 10px;border-radius:999px;border:1px solid}
@@ -353,7 +355,7 @@ auth.onAuthStateChanged(u=>{U=u;pMuat=false;aku=null;P={};if(unsubT){unsubT();un
   unsubT=db.doc("tryout/"+TID).onSnapshot(s=>{if(!s.exists){gate("Mock exam tidak ditemukan","Periksa kembali tautannya.");return;}
       T=s.data({serverTimestamps:"estimate"});T.id=s.id;if(!T.judul||T.judul==="Mock Exam Seleksi Kemampuan Bidang")T.judul="Mock Exam";gabung();render();},
     e=>gate("Mock exam belum dapat dibuka","Muat ulang halaman. ("+(e.code||e.message)+")"));
-  unsubP=db.collection("tryout/"+TID+"/peserta").onSnapshot(qs=>{const m={};qs.forEach(d=>{m[d.id]=d.data();});P=m;pMuat=true;if(T)gabung();
+  unsubP=db.collection("tryout/"+TID+"/peserta").onSnapshot(qs=>{const m={};qs.forEach(d=>{m[d.id]=d.data();});catatJawab(m);P=m;pMuat=true;if(T)gabung();
       // Heartbeat (kolom t) saja tidak perlu menggambar ulang layar, agar tombol tidak "lari" saat diklik.
       const sig=JSON.stringify(Object.keys(m).sort().map(k=>[k,m[k].nama,m[k].siap,m[k].selesai,m[k].dijawab,m[k].jawab])),sama=sig===sigP;sigP=sig;
       const baru=P[U.uid]&&!aku;if(baru){aku=Object.assign({jawab:{}},P[U.uid]);if(U.displayName)aku.nama=U.displayName;if(aku.selesai)selesaiKirim=true;}renderPapan();if(baru&&T&&T.status==='mulai'){render();return;}if(sama&&!baru)return;if(T&&(T.status==="menunggu"||T.status==="siap"||selesaiSemua())){if((document.activeElement||{}).id!=="mpilih")render();}else if(SINK()&&T.status==="mulai"&&praMs()<=0&&(document.activeElement||{}).id!=="mpilih")render();else if($("stat"))$("stat").outerHTML=statHTML();},()=>{});
@@ -522,6 +524,14 @@ function tunggu(){papan.hidden=false;main.innerHTML=`<div class="hasilku"><p cla
 function urut(){return Object.entries(P).map(([uid,p])=>Object.assign({uid},p)).sort((a,b)=>(b.benar||0)-(a.benar||0)||(b.skor||0)-(a.skor||0)||(a.dur||0)-(b.dur||0)||String(a.nama).localeCompare(String(b.nama)));}
 function av(p){return p.foto?`<img src="${esc(p.foto)}" alt="" referrerpolicy="no-referrer">`:esc((p.nama||"?").trim().charAt(0).toUpperCase());}
 // Mode serentak: tanda jawaban tiap peserta untuk soal yang sedang berjalan (benar, salah, belum, atau tidak menjawab).
+// Warna skor di papan: hijau bila jawaban terakhir peserta benar, merah bila salah, hitam bila belum menjawab.
+const AKHIR={},JW={};
+function catatJawab(m){if(!T||!T.soal)return;const byId={};T.soal.forEach(q=>byId[q.id]=q);
+  Object.keys(m).forEach(uid=>{const j=m[uid].jawab||{},lama=JW[uid];
+    if(lama)Object.keys(j).forEach(id=>{if(lama[id]!==j[id]&&byId[id])AKHIR[uid]=j[id]===byId[id].a?"ok":"no";});
+    JW[uid]=Object.assign({},j);});}
+function skWarna(p){if(SINK()&&T.status==="mulai"){const q=T.soal[Math.min(T.idx||0,T.soal.length-1)],j=(p.jawab||{})[q.id];return j===undefined?"":j===q.a?" ok":" no";}
+  return AKHIR[p.uid]?" "+AKHIR[p.uid]:"";}
 function tandaSoal(p){if(!SINK()||T.status!=="mulai")return "";const q=T.soal[Math.min(T.idx||0,T.soal.length-1)],j=(p.jawab||{})[q.id];
   const [c,t,l]=j!==undefined?(j===q.a?["ok","✓","benar"]:["no","✕","salah"]):soalSisaMs()>0?["tg","…","belum menjawab"]:["ks","–","tidak menjawab"];
   return `<i class="tq ${c}" title="Soal ${(T.idx||0)+1}: ${l}" aria-label="Soal ${(T.idx||0)+1}: ${l}">${t}</i>`;}
@@ -531,7 +541,7 @@ function renderPapan(){if(!T||papan.hidden&&!(T.status==="mulai"))return;
   let tampil=r.slice(0,10);const iMe=r.findIndex(p=>p.uid===me);if(iMe>=10)tampil=tampil.concat([null,r[iMe]]);
   const before={};lb.querySelectorAll("li[data-u]").forEach(li=>before[li.dataset.u]=li.getBoundingClientRect().top);
   lb.innerHTML=tampil.map(p=>{if(!p)return '<li class="gap">⋯</li>';const rk=urutLama[p.uid],dl=deltaUntil[p.uid],ad=dl&&dl.s>now;
-    return `<li data-u="${esc(p.uid)}" class="${p.uid===me?"aku":""}"><span class="rk${rk<=3?" m"+rk:""}">${rk}</span><span class="av">${av(p)}</span><span class="nm">${SINK()&&p.uid===T.master?'<span class="crown" title="Room master">🎩</span>':""}${esc(p.nama)}${p.uid===me?" (You)":""}${tandaSoal(p)}<small>${p.dijawab||0}/${T.soal.length} answered${p.selesai?" · finished":""}</small></span><span class="sk">${p.benar||0}<small> correct</small></span><span class="dl ${ad?(dl.d>0?"naik":"turun"):""}">${ad?(dl.d>0?"▲"+dl.d:"▼"+(-dl.d)):""}</span></li>`;}).join("");
+    return `<li data-u="${esc(p.uid)}" class="${p.uid===me?"aku":""}"><span class="rk${rk<=3?" m"+rk:""}">${rk}</span><span class="av">${av(p)}</span><span class="nm">${SINK()&&p.uid===T.master?'<span class="crown" title="Room master">🎩</span>':""}${esc(p.nama)}${p.uid===me?" (You)":""}${tandaSoal(p)}<small>${p.dijawab||0}/${T.soal.length} answered${p.selesai?" · finished":""}</small></span><span class="sk${skWarna(p)}">${p.benar||0}<small> correct</small></span><span class="dl ${ad?(dl.d>0?"naik":"turun"):""}">${ad?(dl.d>0?"▲"+dl.d:"▼"+(-dl.d)):""}</span></li>`;}).join("");
   // Animasi FLIP: baris bergeser halus dari posisi lama ke posisi baru.
   if(!matchMedia("(prefers-reduced-motion: reduce)").matches)lb.querySelectorAll("li[data-u]").forEach(li=>{const b=before[li.dataset.u];if(b===undefined)return;const dy=b-li.getBoundingClientRect().top;if(!dy)return;
     li.style.transition="none";li.style.transform=`translateY(${dy}px)`;requestAnimationFrame(()=>{li.style.transition="transform .6s cubic-bezier(.2,.8,.2,1)";li.style.transform="";});});}
