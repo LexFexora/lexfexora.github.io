@@ -325,6 +325,7 @@ header .tema .knop{background:linear-gradient(180deg,#c9b98f,#a8925c)}header .te
   <footer><span>© 2026 CAT - Lex Fexora. All rights reserved.</span> | <span>Developed &amp; Curated by Febrillian Kusuma Raafi, S.H.</span></footer>
 </div>
 
+<script src="/istilah.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3/dist/umd/supabase.js"></script>
 <script src="supabase-config.js"></script>
 <script src="fb-shim.js"></script>
@@ -340,6 +341,17 @@ const cfg=window.FIREBASE_CONFIG||{};
 if(!window.firebase||!cfg.apiKey){main.innerHTML="<p>Situs belum dikonfigurasi.</p>";return;}
 firebase.initializeApp(cfg);
 const auth=firebase.auth(),db=firebase.firestore(),FV=firebase.firestore.FieldValue;
+// Cari istilah di Explanation: memakai seluruh bank soal bila akun boleh membacanya, bila tidak cukup soal mock exam ini.
+if(window.IstilahCari)IstilahCari.sumber(async()=>{try{const m=await db.doc("bank/meta").get();if(!m.exists)throw 0;
+    const docs=await Promise.all(Array.from({length:m.data().chunks},(_,i)=>db.doc("bank/c"+i).get()));const arr=JSON.parse("["+docs.map(d=>d.data().d).join(",")+"]");
+    try{const ed=await db.doc("bank/edit").get();const me=(ed.exists&&ed.data().m)||{};arr.forEach(q=>{const r=me[q.id];if(r&&typeof r.q==="string")Object.assign(q,{q:r.q,o:(r.o||q.o).slice(),a:Number.isInteger(r.a)?r.a:q.a,p:String(r.p||""),d:String(r.d||"")});});}catch(e){}
+    return arr;}catch(e){return (T&&T.soal)||[];}});
+// Mengisi kolom Explanation tanpa mencabut kotak cari, agar ketikan dan fokus tidak hilang saat papan diperbarui.
+// Kotak cari baru muncul setelah soal dijawab atau waktunya habis, agar tidak bisa dipakai mencari kunci jawaban.
+function isiBahas(html,cari){const w=cari&&window.IstilahCari&&IstilahCari.node,tmp=document.createElement("div");tmp.innerHTML=html;const h=tmp.querySelector(":scope>.bahas-h");
+  if(!w||!h){bahas.innerHTML=html;return;}
+  [...bahas.childNodes].forEach(n=>{if(n!==w)n.remove();});const nodes=[...tmp.childNodes],i=nodes.indexOf(h);
+  if(w.parentNode!==bahas)bahas.appendChild(w);w.before(...nodes.slice(0,i+1));w.after(...nodes.slice(i+1));}
 const OWNER=(window.OWNER_EMAIL||"").toLowerCase();
 let U=null,isOwner=false,T=null,P={},aku=null,pos=0,urutLama={},deltaUntil={},simpanT=null,tick=null,unsubT=null,unsubP=null,selesaiKirim=false,pMuat=false;
 
@@ -498,13 +510,13 @@ function ujian(){papan.hidden=false;if(!aku){main.innerHTML='<p class="muted">Me
   <p class="muted kunci" style="margin:0;font-size:12px">Pintasan: <kbd>A</kbd>–<kbd>${L[q.o.length-1]}</kbd> memilih jawaban${sk?(isMaster()?", <kbd>→</kbd> Next untuk semua":""):", <kbd>←</kbd> <kbd>→</kbd> pindah soal"}.</p>`;pasangMaster();
   // Jawaban terkunci setelah dipilih; pembahasan dan sumber langsung tampil di kolom kanan.
   main.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{if((aku.jawab||{})[q.id]!==undefined||(sk&&soalSisaMs()<=0))return;aku.jawab=Object.assign({},aku.jawab,{[q.id]:+b.dataset.o});hitung();simpan(true);render();});
-  bahas.hidden=false;bahas.innerHTML=pil===undefined&&habis?`<div class="bahas-h"><svg class="hik" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5v-15z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/><path d="M9 8h7M9 11.5h5"/></svg><b>Explanation</b><span class="vonis no">Waktu habis</span></div><p class="kunci-j">Jawaban benar: <b>${L[perm.indexOf(q.a)]}. ${esc(q.o[q.a])}</b></p>`+
+  bahas.hidden=false;isiBahas(pil===undefined&&habis?`<div class="bahas-h"><svg class="hik" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5v-15z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/><path d="M9 8h7M9 11.5h5"/></svg><b>Explanation</b><span class="vonis no">Waktu habis</span></div><p class="kunci-j">Jawaban benar: <b>${L[perm.indexOf(q.a)]}. ${esc(q.o[q.a])}</b></p>`+
     `<div class="blok"><h3>Pembahasan</h3><p>${q.p?esc(q.p):'<span class="muted">Belum ada pembahasan untuk soal ini.</span>'}</p></div><div class="blok"><h3>Sumber</h3><p>${q.d?esc(q.d):'<span class="muted">—</span>'}</p></div>`:
     pil===undefined?`<div class="bahas-h"><svg class="hik" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5v-15z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/><path d="M9 8h7M9 11.5h5"/></svg><b>Explanation</b></div><p class="muted kosong">Pembahasan dan sumber muncul di sini setelah Anda memilih jawaban.</p>`:
     `<div class="bahas-h"><svg class="hik" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5v-15z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/><path d="M9 8h7M9 11.5h5"/></svg><b>Explanation</b></div>`+
     (pil!==q.a?`<p class="kunci-j">Jawaban benar: <b>${L[perm.indexOf(q.a)]}. ${esc(q.o[q.a])}</b></p>`:"")+
     `<div class="blok"><h3>Pembahasan</h3><p>${q.p?esc(q.p):'<span class="muted">Belum ada pembahasan untuk soal ini.</span>'}</p></div>`+
-    `<div class="blok"><h3>Sumber</h3><p>${q.d?esc(q.d):'<span class="muted">—</span>'}</p></div>`;
+    `<div class="blok"><h3>Sumber</h3><p>${q.d?esc(q.d):'<span class="muted">—</span>'}</p></div>`,pil!==undefined||habis);
   alat.querySelectorAll(".peta button").forEach(b=>b.onclick=()=>{pos=+b.dataset.i;render();});
   if($("prev"))$("prev").onclick=()=>{pos--;render();};if($("next"))$("next").onclick=()=>{if(sk)lanjutSemua();else{pos++;render();}};
   document.querySelectorAll("#kumpul").forEach(b=>b.onclick=()=>{const sisa=n-(aku.dijawab||0);if(!confirm(sisa?`Masih ada ${sisa} soal belum dijawab. Kumpulkan sekarang?`:"Kumpulkan jawaban sekarang?"))return;kumpul();render();});

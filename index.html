@@ -963,7 +963,7 @@ function moveQ(id,from,c,s){
 }
 // Pembahasan dan sumber dibungkus "🕯️ Keterangan": di HP tertutup sampai diketuk, di layar lebar langsung terbuka.
 // Ikon Explanation: 📜 bila jawaban pengguna salah, 🕯️ selain itu.
-function ketHTML(q){const ch=state.ans[q.id],ik=ch!==undefined&&ch!==q.a?"📜":"🕯️";return `<details class="ket"${matchMedia("(min-width:720px)").matches?" open":""}><summary>${ik} Explanation</summary><div class="explain"><div><h3>Pembahasan:</h3><p>${esc(q.p)}</p></div><div class="dasar"><h3>Sumber:</h3><p>${esc(q.d)}</p></div></div></details>`;}
+function ketHTML(q){const ch=state.ans[q.id],ik=ch!==undefined&&ch!==q.a?"📜":"🕯️";return `<details class="ket"${matchMedia("(min-width:720px)").matches?" open":""}><summary>${ik} Explanation</summary><div class="cariist-slot"></div><div class="explain"><div><h3>Pembahasan:</h3><p>${esc(q.p)}</p></div><div class="dasar"><h3>Sumber:</h3><p>${esc(q.d)}</p></div></div></details>`;}
 // Mode layar penuh: hanya soal, pilihan, timer, dan tombol navigasi.
 function fokus(on){document.documentElement.classList.toggle("fokus",on);
   try{if(on&&document.documentElement.requestFullscreen&&!document.fullscreenElement)document.documentElement.requestFullscreen().catch(()=>{});
@@ -1175,6 +1175,8 @@ document.addEventListener("visibilitychange",()=>{if(document.hidden)persist();}
 window.__quiz={state};
 }
 </script>
+<script src="/istilah.js"></script>
+<script>window.IstilahCari&&IstilahCari.sumber(()=>QB);</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3/dist/umd/supabase.js"></script>
 <script src="sb/supabase-config.js"></script>
 <script src="sb/fb-shim.js"></script>
