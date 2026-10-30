@@ -506,6 +506,14 @@ html .tojoin>b{color:var(--brass)}
 :root[data-theme="dark"] #setelan>summary{font-family:var(--f-display,Georgia,serif);font-size:16px;letter-spacing:.01em}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #tocard.setelan.tocard{border:1px solid #000;border-radius:6px;background:radial-gradient(80% 60% at 50% 0,rgb(255 170 70 / .07),transparent 70%),linear-gradient(180deg,#0e0a08,#070605);box-shadow:inset 0 0 18px rgb(0 0 0 / .8),0 0 0 1px #7a5a28,0 0 0 3px #070605,0 0 0 4px #4a3820,0 10px 24px rgb(0 0 0 / .7)}:root:not([data-theme="light"]) #tocard.setelan.tocard>summary{padding:11px 14px}:root:not([data-theme="light"]) #tocard.setelan.tocard>summary .stl{font-family:var(--f-display,Georgia,serif);font-size:17px;font-weight:700;letter-spacing:.01em;-webkit-text-fill-color:#dcae55;color:#dcae55;text-shadow:0 1px 0 #000,0 0 10px rgb(217 168 73 / .15)}:root:not([data-theme="light"]) #tocard.setelan.tocard>summary .stl svg.piala{width:22px;height:22px}:root:not([data-theme="light"]) #tocard.setelan.tocard>summary::after{color:#a07a3a}:root:not([data-theme="light"]) #setelan>summary{font-family:var(--f-display,Georgia,serif);font-size:16px;letter-spacing:.01em}}
 #siapbtn .inkt{position:relative;display:inline;line-height:1;margin-right:-.08em}
+.qhead .qkoin{display:inline-flex;align-items:center;gap:6px;margin:0 auto;white-space:nowrap}
+.qhead .qkoin .kn{display:inline-flex;align-items:center;gap:4px;height:28px;padding:0 9px;border-radius:999px;font-size:14px;line-height:1;border:1px solid color-mix(in srgb,var(--brass) 35%,var(--line));background:color-mix(in srgb,var(--brass-soft) 55%,transparent)}
+.qhead .qkoin .kn b{font:600 13px/1 var(--f-mono);color:var(--ink);font-variant-numeric:tabular-nums}
+.qhead .qkoin .kn+.kn{border-color:var(--line);background:color-mix(in srgb,var(--surface) 70%,transparent)}
+.qhead:has(.qkoin) .qno{margin-right:0}
+html.fokus .card .qhead .qkoin{grid-area:auto}
+@media(max-width:430px){.qhead:has(.qkoin) .qlbl{display:none}.qhead .qkoin{gap:4px}.qhead .qkoin .kn{height:26px;padding:0 7px;gap:3px;font-size:13px}.qhead:has(.qkoin){flex-wrap:wrap}.qhead:has(.qkoin) .qno,.qhead:has(.qkoin) .qkoin,.qhead:has(.qkoin) .qtools{order:0}.qhead:has(.qkoin) .owntools{order:1;flex-basis:100%;justify-content:flex-end}}
+html.fokus .card .qkoin.melayang{position:fixed;top:max(10px,env(safe-area-inset-top,0px));height:38px;margin:0;z-index:2}
 </style>
 </head>
 <body>
@@ -871,6 +879,11 @@ function fokus(on){document.documentElement.classList.toggle("fokus",on);
   window.scrollTo({top:0});pasFokus();}
 document.addEventListener("fullscreenchange",()=>{if(!document.fullscreenElement)document.documentElement.classList.remove("fokus");pasFokus();});
 function pasFokus(){requestAnimationFrame(()=>{const c=$("card");if(!c)return;c.style.setProperty("--fs",1);
+  // Layar penuh: penghitung lilin/gulungan di bar atas, tepat di antara nomor soal dan timer.
+  const kn=c.querySelector(".qkoin");if(kn){kn.classList.remove("melayang");kn.style.left="";
+    if(document.documentElement.classList.contains("fokus")){const qn=c.querySelector(".qno"),tm=document.querySelector("#timerbox .timer:not([hidden])")||document.querySelector(".timer");
+      kn.classList.add("melayang");const a=qn?qn.getBoundingClientRect().right:0,tr=tm?tm.getBoundingClientRect():null,b=tr&&tr.width?tr.left:innerWidth-12,w=kn.getBoundingClientRect().width;
+      if(b-a>=w+12)kn.style.left=Math.round((a+b-w)/2)+"px";else{kn.classList.remove("melayang");}}}
   if(!document.documentElement.classList.contains("fokus"))return;
   const x=c.querySelector(".ket .explain");if(x)x.style.display="none";
   let f=1;while(c.scrollHeight>c.clientHeight+1&&f>.5){f-=.04;c.style.setProperty("--fs",f.toFixed(2));}
@@ -949,7 +962,7 @@ function renderCard(){
   const here=state.cat==="all"?q.mappings[0]:(q.mappings.find(m=>m.c===state.cat&&(state.sub==="all"||m.s===+state.sub))||q.mappings[0]);
   const also=q.mappings.filter(m=>m!==here).map(m=>`${CATS[m.c].short} ${m.s}`).join(", ");
   const own=!!window.__isOwner;
-  let html=`<div class="qhead"><span class="qno"><span class="qlbl">Soal No. </span>${state.pos+1}${isPin(q)?" 📌":""} <span class="of">/ ${state.list.length}</span></span>`+(own?`<div class="owntools"><button class="btn mvbtn" id="ed" type="button" aria-expanded="${!!state.edOpen}">✎ Edit</button><button class="btn mvbtn" id="mv" type="button" aria-expanded="${!!state.mvOpen}">⇄ Pindahkan</button></div>`:"")+`<div class="qtools"><span id="tslot"></span><button class="btn qfs" id="cfs" type="button" title="Layar penuh" aria-label="Layar penuh">⛶</button></div></div>`;
+  let html=`<div class="qhead"><span class="qno"><span class="qlbl">Soal No. </span>${state.pos+1}${isPin(q)?" 📌":""} <span class="of">/ ${state.list.length}</span></span>`+(own?`<div class="owntools"><button class="btn mvbtn" id="ed" type="button" aria-expanded="${!!state.edOpen}">✎ Edit</button><button class="btn mvbtn" id="mv" type="button" aria-expanded="${!!state.mvOpen}">⇄ Pindahkan</button></div>`:"")+(t=>`<span class="qkoin" title="Lilin: jawaban benar · Gulungan naskah: jawaban salah"><span class="kn" aria-label="${t.ok} lilin">🕯️<b>${t.ok}</b></span><span class="kn" aria-label="${t.bad} gulungan naskah">📜<b>${t.bad}</b></span></span>`)(tally())+`<div class="qtools"><span id="tslot"></span><button class="btn qfs" id="cfs" type="button" title="Layar penuh" aria-label="Layar penuh">⛶</button></div></div>`;
   if(own&&state.mvOpen){const cs=Object.keys(CATS).map(Number);
     html+=`<div class="mvbox" id="mvbox"><span>Pindahkan dari <b>${esc(here.kategori_utama)} ${here.s}</b> ke:</span><select id="mvc" aria-label="Kategori tujuan">${cs.map(c=>`<option value="${c}"${c===here.c?" selected":""}>${esc(CATS[c].short)}</option>`).join("")}</select><select id="mvs" aria-label="Sub-materi tujuan"></select><button class="btn primary" id="mvok" type="button">Simpan</button><button class="btn" id="mvno" type="button">Batal</button><p class="note" id="mvmsg">Perpindahan disimpan di server dan berlaku untuk semua pengguna setelah mereka memuat ulang halaman.</p></div>`;}
   if(own&&state.edOpen){
