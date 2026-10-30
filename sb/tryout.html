@@ -288,6 +288,13 @@ body.tertutup #tirai{display:flex}
 .tema .knop{position:absolute;top:3px;left:3px;width:26px;height:26px;border-radius:50%;background:linear-gradient(180deg,#2e2e2e,#121212);box-shadow:0 2px 6px rgb(0 0 0 / .25);transition:transform .3s cubic-bezier(.4,.2,.2,1),background .3s}
 .tema[aria-checked="false"] .sun{color:#f3f5f2}
 .tema[aria-checked="true"] .knop{transform:translateX(30px);background:linear-gradient(135deg,#dcdcdc,#bdbdbd)}.tema[aria-checked="true"] .moon{color:#121212}
+/* Sakelar mode gelap dan tombol Exit: warna sama, efek kaca (blur + transparan). */
+html .tema,html .akunku .akunexit,html .exitbawah .akunexit{background:rgb(255 255 255 / .45);border:1px solid rgb(255 255 255 / .6);color:var(--muted);box-shadow:inset 0 1px 0 rgb(255 255 255 / .7),0 4px 14px rgb(0 0 0 / .08);-webkit-backdrop-filter:blur(18px) saturate(180%);backdrop-filter:blur(18px) saturate(180%);transition:background .3s,border-color .3s,color .2s}
+html .akunku .akunexit:hover,html .exitbawah .akunexit:hover,html .tema:hover{background:rgb(255 255 255 / .62);border-color:rgb(255 255 255 / .8);color:var(--ink)}
+html[data-theme="dark"] .tema,html[data-theme="dark"] .akunku .akunexit,html[data-theme="dark"] .exitbawah .akunexit{color:var(--muted);background:rgb(255 255 255 / .07);border-color:rgb(255 255 255 / .14);box-shadow:inset 0 1px 0 rgb(255 255 255 / .08),0 4px 14px rgb(0 0 0 / .35)}
+html[data-theme="dark"] .akunku .akunexit:hover,html[data-theme="dark"] .exitbawah .akunexit:hover,html[data-theme="dark"] .tema:hover{background:rgb(255 255 255 / .12);border-color:rgb(255 255 255 / .22);color:var(--ink)}
+@media (prefers-color-scheme:dark){html:not([data-theme="light"]) .tema,html:not([data-theme="light"]) .akunku .akunexit,html:not([data-theme="light"]) .exitbawah .akunexit{color:var(--muted);background:rgb(255 255 255 / .07);border-color:rgb(255 255 255 / .14);box-shadow:inset 0 1px 0 rgb(255 255 255 / .08),0 4px 14px rgb(0 0 0 / .35)}
+html:not([data-theme="light"]) .akunku .akunexit:hover,html:not([data-theme="light"]) .exitbawah .akunexit:hover,html:not([data-theme="light"]) .tema:hover{background:rgb(255 255 255 / .12);border-color:rgb(255 255 255 / .22);color:var(--ink)}}
 @media(prefers-reduced-motion:reduce){.tema .knop,.tema .ik{transition:none}}
 @media(max-width:1023px){.tema{display:none!important}}
 header .tema{background:#1f2421;border-color:#56625a;box-shadow:inset 0 1px 2px rgb(0 0 0 / .3)}header .tema:hover{border-color:#c9b98f}header .tema .ik{color:#8f9b94}
