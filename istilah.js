@@ -256,7 +256,7 @@
   function periksaAI(t){const hasilP=[],sudah=new Set(),re=/Pasal\s+(\d+[A-Z]?)(?:\s+ayat\s*\((\d+[a-z]?)\))?(?:\s+huruf\s+([a-z])\b)?((?:(?!Pasal\s)[^;\n]){0,170})/g;let m;
     while((m=re.exec(t))){const ekor=norm(m[4]);let dk=dokDi(ekor);if(dk<0){const a=SINGKAT.find(([r])=>r.test(ekor.slice(0,60)));dk=a?a[1]:-1;}
       const lb='Pasal '+m[1]+(m[2]?' ayat ('+m[2]+')':'')+(m[3]?' huruf '+m[3]:''),kunci=lb+'|'+dk;if(sudah.has(kunci))continue;sudah.add(kunci);
-      if(dk<0){const nb=SEBUT.exec(ekor);if(nb&&(nb[1]||nb[6]))hasilP.push({lb:lb+' '+m[4].replace(/^[\s,:]+/,'').split(/,|\(|\.\s|\.$/)[0].slice(0,70).trim(),st:'?',ket:'peraturannya belum ada di indeks situs, cek di sumber resmi'});continue;}
+      if(dk<0){const nb=SEBUT.exec(ekor);if(nb&&(nb[1]||nb[6]))hasilP.push({lb:lb+' '+m[4].replace(/^[\s,:]+/,'').split(/,|\(| dan | serta /)[0].slice(0,70).trim().replace(/\.$/,''),st:'?',ket:'peraturannya belum ada di indeks situs, cek di sumber resmi'});continue;}
       const e=HK.e.find(z=>z.d===dk&&z.nl==='pasal '+m[1].toLowerCase());
       if(!e){hasilP.push({lb:lb+' '+HK.docs[dk].n,st:'x',ket:'pasal ini tidak ditemukan di naskah resmi'});continue;}
       const x=(m[2]||m[3])?segs(e).find(z=>(!m[2]||z.ay===m[2])&&(m[3]?z.hf===m[3]:true)):null;
