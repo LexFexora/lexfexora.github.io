@@ -898,7 +898,7 @@ function renderTabs(){
   $("pilih").onclick=()=>{state.klOpen=!state.klOpen;renderTabs();};
   // Khusus pemilik: klaster langsung membuka sub-materi yang terakhir dikerjakan; pengguna lain mulai dari All Sections.
   t.querySelectorAll(".tab[data-k]").forEach(b=>b.onclick=()=>{const k=+b.dataset.k,ak=window.__isOwner&&store.subAkhir&&store.subAkhir[k];
-    if(ak&&SUBS[k]&&SUBS[k][ak.sub-1])selectCat(k,ak.sub,ak.bag);else selectCat(k,"all");});
+    if(ak&&SUBS[k]&&SUBS[k][ak.sub-1])selectCat(k,ak.sub,ak.bag);else selectCat(k,"all");requestAnimationFrame(bukaSetelan);});
 }
 function renderSub(){
   const s=$("sub");
@@ -1134,6 +1134,13 @@ setInterval(()=>{
   if(++tickN%5===0)persist();
   renderTimer();
 },1000);
+// Klik kategori: Quiz Options & Sections terbuka sendiri, turun perlahan dari atas ke bawah.
+function bukaSetelan(){const st=$("setelan");if(!st||st.hidden||st.open)return;
+  if(matchMedia("(prefers-reduced-motion:reduce)").matches||!st.animate){st.open=true;return;}
+  const h0=st.offsetHeight;st.open=true;const h1=st.offsetHeight,isi=st.querySelector(".controls");
+  st.style.overflow="hidden";const an=st.animate([{height:h0+"px"},{height:h1+"px"}],{duration:1300,easing:"cubic-bezier(.45,.05,.3,1)"});
+  if(isi)isi.animate([{opacity:0,transform:"translateY(-14px)"},{opacity:1,transform:"none"}],{duration:1300,easing:"cubic-bezier(.45,.05,.3,1)"});
+  an.onfinish=an.oncancel=()=>{st.style.overflow="";};}
 function renderRingkas(){const st=$("setelan");if(st){st.hidden=state.cat==="all";st.classList.toggle("perlu",!siapOK());document.querySelector(".wrap").classList.toggle("blmsiap",!siapOK()&&!(window.__gulTutup&&state.cat!=="all"));document.querySelector(".wrap").classList.toggle("blmmulai",state.cat!=="all"&&siapOK()&&!state.mulai&&state.pos<state.list.length);const sr=$("siaprow");if(sr)sr.hidden=siapOK();}const r=$("ringkas");if(!r)return;const s=state.cat==="all"||state.sub==="all"?"All Sections":state.sub+". "+SUBS[state.cat][state.sub-1]+(state.bag==="bonus"?" · Soal Bonus":state.bag!=="all"?" · Bagian "+state.bag:"");
   r.textContent=s+" · "+(state.order==="rand"?"Shuffle":"Sequential")+" · "+({off:"Timer off",cum:"Total timer",per:"Timer per question"}[tMode]||"");}
 function render(){if(tMode==="per")syncQ();renderScore();renderCard();renderMap();renderTimer();renderRingkas();}
