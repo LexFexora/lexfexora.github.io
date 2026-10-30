@@ -280,6 +280,13 @@ html.gate-wait .wrap{display:none}
 .adm .siapa .av{width:30px;height:30px;flex:none;border-radius:50%;overflow:hidden;display:grid;place-items:center;background:var(--line);color:var(--ink);font-size:13px;font-weight:700}.adm .siapa .av img{width:100%;height:100%;object-fit:cover;display:block}
 .adm .stt{font-size:12px;font-weight:700;letter-spacing:.02em}.adm .stt.on{color:#16a34a}.adm .stt.off{color:#dc2626}
 .adm .kat{font-size:12px;color:var(--muted);padding:2px 8px;border:1px solid var(--line);border-radius:999px;white-space:nowrap}
+.adm button.kat{font:inherit;font-size:12px;cursor:pointer;background:transparent;display:inline-flex;align-items:center;gap:5px}
+.adm button.kat::after{content:"";border:4px solid transparent;border-top:5px solid currentColor;margin-top:4px}
+.adm button.kat[aria-expanded="true"]{color:var(--brass);border-color:color-mix(in srgb,var(--brass) 55%,var(--line))}
+.adm button.kat[aria-expanded="true"]::after{border-top-color:transparent;border-bottom:5px solid currentColor;margin:0 0 4px}
+.adm .katd{flex-basis:100%;display:flex;flex-direction:column;gap:2px;padding:6px 10px;border-left:2px solid color-mix(in srgb,var(--brass) 55%,var(--line));font:12.5px/1.4 var(--f-sans,inherit);color:var(--ink);word-break:normal}
+.adm .katd span+span{color:var(--muted)}
+.adm .katd[hidden]{display:none}
 .adm .siapa .stt{margin-left:2px}
 /* Email, kategori, dan keterangan waktu rata dengan nama (sesudah foto 30px + jarak 8px). */
 .adm li{align-items:center;row-gap:2px}.adm li .dur{padding-left:38px!important;box-sizing:border-box}.adm li .em{margin-top:-2px}
@@ -1199,17 +1206,19 @@ window.__quiz={state};
       const q='insert into public.izin_pra (email) values\n'+izinOK.map(e=>"  ('"+e+"')").join(',\n')+'\non conflict do nothing;';
       navigator.clipboard&&navigator.clipboard.writeText(q).then(()=>{$('izinsql').textContent='✓ Tersalin ('+izinOK.length+' email)';});};
     // Status Online/Offline dihitung ulang tiap 30 detik walau tidak ada perubahan data.
-    let izinQs=null;setInterval(()=>{if(izinQs&&!document.hidden)izinRender(izinQs);},30000);
+    let izinQs=null;const katBuka=new Set(),emBuka=new Set();setInterval(()=>{if(izinQs&&!document.hidden)izinRender(izinQs);},30000);
     const izinRender=qs=>{izinQs=qs;const g={menunggu:[],disetujui:[],ditolak:[]};let on=0;
       qs.forEach(d=>{const x=d.data();(g[x.status]||g.menunggu).push([d.id,x]);if(x.status==='disetujui'&&x.terakhir&&x.terakhir.toDate&&Date.now()-x.terakhir.toDate()<180000)on++;});
       for(const k in g)g[k].sort((a,b)=>((b[1].terakhir&&b[1].terakhir.seconds)||0)-((a[1].terakhir&&a[1].terakhir.seconds)||0));
       izinOK=g.disetujui.map(([,x])=>String(x.email||'').trim().toLowerCase()).filter(e=>/^[^@\s']+@[^@\s']+$/.test(e));
       $('admcount').textContent=g.menunggu.length;$('admon').textContent=on;
       body.innerHTML=Object.keys(g).filter(k=>g[k].length).map(k=>`<h4>${TTL[k]} (${g[k].length})</h4><ul>`+g[k].map(([id,x])=>
-        `<li><button class="siapa" type="button" aria-expanded="false" title="Ketuk untuk melihat email"><span class="av">${x.foto?`<img src="${esc(x.foto)}" alt="" referrerpolicy="no-referrer" onerror="this.replaceWith(document.createTextNode('${esc((x.nama||x.email||'?')[0].toUpperCase()).replace(/'/g,'')}'))">`:esc((x.nama||x.email||'?')[0].toUpperCase())}</span><span class="nm">${esc(x.nama||(x.email||'').split('@')[0])}</span>${k==='disetujui'?(on=>`<span class="stt ${on?'on':'off'}">${on?'Online':'Offline'}</span>`)(!!(x.terakhir&&x.terakhir.toDate&&Date.now()-x.terakhir.toDate()<180000)):''}</button><span class="acts">${ACT[k].map(([v,l,c])=>`<button class="btn ${c}" data-id="${id}" data-v="${v}" type="button">${l}</button>`).join('')}</span>`+
-        `<span class="em"${k==='disetujui'?' hidden':''}><span class="mail">${esc(x.email)}</span>${k==='disetujui'&&x.posisi?`<span class="kat">${esc(String(x.posisi).split(' · ')[0])}</span>`:''}</span><span class="dur">${k==='menunggu'?'Meminta '+fmt(x.diminta):'Terakhir '+(fmt(x.terakhir)||'-')}</span></li>`).join('')+'</ul>').join('')||'<p class="note">Belum ada yang meminta akses.</p>';
+        `<li><button class="siapa" type="button" data-u="${esc(id)}" aria-expanded="${emBuka.has(id)}" title="Ketuk untuk melihat email"><span class="av">${x.foto?`<img src="${esc(x.foto)}" alt="" referrerpolicy="no-referrer" onerror="this.replaceWith(document.createTextNode('${esc((x.nama||x.email||'?')[0].toUpperCase()).replace(/'/g,'')}'))">`:esc((x.nama||x.email||'?')[0].toUpperCase())}</span><span class="nm">${esc(x.nama||(x.email||'').split('@')[0])}</span>${k==='disetujui'?(on=>`<span class="stt ${on?'on':'off'}">${on?'Online':'Offline'}</span>`)(!!(x.terakhir&&x.terakhir.toDate&&Date.now()-x.terakhir.toDate()<180000)):''}</button><span class="acts">${ACT[k].map(([v,l,c])=>`<button class="btn ${c}" data-id="${id}" data-v="${v}" type="button">${l}</button>`).join('')}</span>`+
+        `<span class="em"${k==='disetujui'&&!emBuka.has(id)?' hidden':''}><span class="mail">${esc(x.email)}</span>${k==='disetujui'&&x.posisi?(p=>`<button class="kat" type="button" data-kat="${esc(id)}" aria-expanded="${katBuka.has(id)}">${esc(p[0])}</button><span class="katd"${katBuka.has(id)?'':' hidden'}>${p[1]?`<span>${esc(p[1])}</span>`:''}${p[2]?`<span>${esc(p[2].replace(/^soal (\d+)\/(\d+)$/,'Soal ke-$1 dari $2'))}</span>`:''}</span>`)(String(x.posisi).split(' · ')):''}</span><span class="dur">${k==='menunggu'?'Meminta '+fmt(x.diminta):'Terakhir '+(fmt(x.terakhir)||'-')}</span></li>`).join('')+'</ul>').join('')||'<p class="note">Belum ada yang meminta akses.</p>';
       // Akun disetujui: foto dan nama saja, email muncul saat nama diketuk.
-      body.querySelectorAll('.siapa').forEach(b=>b.onclick=()=>{const e=b.parentElement.querySelector('.em');e.hidden=!e.hidden;b.setAttribute('aria-expanded',String(!e.hidden));});
+      // Chip kategori: ketuk untuk melihat sub-materi dan posisi soal yang sedang dikerjakan.
+      body.querySelectorAll('.kat[data-kat]').forEach(b=>b.onclick=()=>{const d=b.nextElementSibling,id=b.dataset.kat;d.hidden=!d.hidden;d.hidden?katBuka.delete(id):katBuka.add(id);b.setAttribute('aria-expanded',String(!d.hidden));});
+      body.querySelectorAll('.siapa').forEach(b=>b.onclick=()=>{const e=b.parentElement.querySelector('.em');e.hidden=!e.hidden;e.hidden?emBuka.delete(b.dataset.u):emBuka.add(b.dataset.u);b.setAttribute('aria-expanded',String(!e.hidden));});
       body.querySelectorAll('button[data-id]').forEach(b=>b.onclick=()=>{const r=db.doc('izin/'+b.dataset.id);b.disabled=true;
         (b.dataset.v==='hapus'?r.delete():r.update({status:b.dataset.v})).catch(e=>{alert('Gagal: '+(e.code||e.message));b.disabled=false;});});
     };
