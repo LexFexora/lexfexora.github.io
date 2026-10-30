@@ -302,7 +302,8 @@ html.gate-wait .wrap{display:none}
 .adm .katd{flex-basis:100%;display:flex;flex-direction:column;gap:2px;padding:6px 10px;border-left:2px solid color-mix(in srgb,var(--brass) 55%,var(--line));font:12.5px/1.4 var(--f-sans,inherit);color:var(--ink);word-break:normal}
 .adm .katd span+span{color:var(--muted)}
 .adm .katd[hidden]{display:none}
-.adm .siapa .stt{margin-left:2px}
+/* Label Online/Offline rata dalam satu kolom di kanan, tidak ikut panjang nama. */
+.adm .siapa{flex:1 1 0}.adm .siapa .nm{flex:1 1 auto}.adm .siapa .stt{flex:none;margin-left:auto;min-width:4.6em;text-align:left}
 /* Email, kategori, dan keterangan waktu rata dengan nama (sesudah foto 30px + jarak 8px). */
 .adm li{align-items:center;row-gap:2px}.adm li .dur{padding-left:38px!important;box-sizing:border-box}.adm li .em{margin-top:-2px}
 .adm li .em{display:flex;align-items:center;gap:8px;flex-wrap:wrap;flex-basis:100%;font:12.5px var(--f-mono);color:var(--muted);padding-left:38px;word-break:break-all}.adm li .em[hidden]{display:none!important}
