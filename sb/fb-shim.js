@@ -141,7 +141,7 @@
     async signInWithRedirect(p){const back=location.href.split('#')[0];
       const r=await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:back,queryParams:(p&&p._q)||{}}});
       if(r.error)throw err(r.error);return new Promise(()=>{});},
-    async signOut(){await sb.auth.signOut().catch(()=>{});}};
+    async signOut(){await sb.auth.signOut({scope:'local'}).catch(()=>{});}};
   let lastUid;
   sb.auth.onAuthStateChange((ev,ses)=>{const u=toUser(ses&&ses.user);auth.currentUser=u;
     if(ev!=='TOKEN_REFRESHED'||!u)catat(ev+(ev==='SIGNED_OUT'?(window.__keluar?' (tombol Exit)':' (otomatis)'):''),u?u.email:'');

@@ -608,12 +608,16 @@ body.bebas label.ctl-sub .subtap{display:block;position:absolute;inset:0;cursor:
 
 /* Notifikasi login untuk pemilik */
 #lgtoast{position:fixed;right:16px;bottom:16px;z-index:9500;display:flex;flex-direction:column;gap:8px;align-items:flex-end;pointer-events:none;max-width:calc(100vw - 32px)}
-#lgtoast .lgt{pointer-events:auto;display:flex;align-items:center;gap:10px;padding:10px 10px 10px 12px;border-radius:12px;background:var(--surface,#fff);color:var(--ink,#111);border:1px solid var(--line,#ddd);box-shadow:0 8px 24px rgba(0,0,0,.18);font-size:13.5px;max-width:340px;animation:lgmasuk .3s ease-out}
+#lgtoast .lgt{pointer-events:auto;display:flex;align-items:center;gap:10px;padding:10px 10px 10px 12px;border-radius:18px;background:rgba(245,245,247,.62);color:#111;border:1px solid rgba(255,255,255,.55);box-shadow:0 10px 30px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.5);-webkit-backdrop-filter:blur(22px) saturate(180%);backdrop-filter:blur(22px) saturate(180%);font-size:13.5px;max-width:340px;animation:lgmasuk .3s ease-out}
 #lgtoast .lgt.pergi{opacity:0;transform:translateY(6px);transition:.3s}
 #lgtoast .lgav{flex:none;width:32px;height:32px;border-radius:50%;overflow:hidden;display:grid;place-items:center;background:var(--ok,#17733f);color:#fff;font-weight:700}
 #lgtoast .lgav img{width:100%;height:100%;object-fit:cover}
 #lgtoast .lgtx{display:flex;flex-direction:column;line-height:1.35;min-width:0}#lgtoast .lgtx small{color:var(--muted,#777);font-size:11.5px}
-#lgtoast button{flex:none;background:none;border:0;color:var(--muted,#777);font-size:18px;line-height:1;cursor:pointer;padding:2px 4px}
+#lgtoast .lgtx small,#lgtoast button{color:rgba(60,60,67,.7)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #lgtoast .lgt{background:rgba(44,44,46,.55);color:#f5f5f7;border-color:rgba(255,255,255,.14);box-shadow:0 10px 30px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.08)}:root:not([data-theme="light"]) #lgtoast .lgtx small,:root:not([data-theme="light"]) :root:not([data-theme="light"]) #lgtoast button{color:rgba(235,235,245,.6)}}
+:root[data-theme="dark"] #lgtoast .lgt{background:rgba(44,44,46,.55);color:#f5f5f7;border-color:rgba(255,255,255,.14);box-shadow:0 10px 30px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.08)}:root[data-theme="dark"] #lgtoast .lgtx small,:root[data-theme="dark"] :root[data-theme="dark"] #lgtoast button{color:rgba(235,235,245,.6)}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){#lgtoast .lgt{background:var(--surface,#fff);color:var(--ink,#111)}}
+#lgtoast button{flex:none;background:none;border:0;font-size:18px;line-height:1;cursor:pointer;padding:2px 4px}
 @keyframes lgmasuk{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 @media(max-width:600px){#lgtoast{left:16px;right:16px;bottom:auto;top:12px;align-items:stretch}#lgtoast .lgt{max-width:none}}
 </style>
@@ -910,15 +914,27 @@ function renderTabs(){
   t.innerHTML=`<button class="tab pilih" type="button" id="pilih" aria-expanded="${!!state.klOpen}"${sel?` style="--kc:var(--k${state.cat})"`:""}><span class="ki ki4">${KOMPAS}</span><span class="kt"><b>Select Cluster - SKB</b>${sel?`<span class="sel">${esc(CATS[state.cat].short)}</span>`:`<small>Tap to choose a cluster</small>`}</span></button>`+
     (state.klOpen?Object.keys(CATS).map(n=>`<button class="tab kl" role="tab" type="button" data-k="${n}" aria-selected="${state.cat===+n}" style="--kc:var(--k${n})"><span class="ki">${ik(n)}</span><span class="kt"><b>${esc(CATS[n].short)}</b></span></button>`).join(""):"");
   $("pilih").onclick=()=>{const t=$("tabs"),h0=t.offsetHeight;if(t.dataset.anim)return;
-    // Menutup: ukur tinggi akhir dulu, lalu daftar cluster naik dan memudar sambil tingginya menyusut.
-    if(state.klOpen&&t.animate&&!matchMedia("(prefers-reduced-motion:reduce)").matches){state.klOpen=false;renderTabs();const h1=t.offsetHeight;state.klOpen=true;renderTabs();
-      t.dataset.anim="1";t.style.overflow="hidden";[...t.querySelectorAll(".tab.kl")].forEach(x=>x.animate([{opacity:1,transform:"none"},{opacity:0,transform:"translateY(-14px)"}],Object.assign({},EZ_PELAN,{fill:"forwards"})));
-      const an=t.animate([{height:h0+"px"},{height:h1+"px"}],EZ_PELAN);an.onfinish=an.oncancel=()=>{t.style.overflow="";delete t.dataset.anim;state.klOpen=false;renderTabs();};return;}
-    state.klOpen=!state.klOpen;renderTabs();if(state.klOpen)turunPerlahan(t,h0,[...t.querySelectorAll(".tab.kl")]);};
+    const gerak=t.animate&&!matchMedia("(prefers-reduced-motion:reduce)").matches;
+    // Menutup: kartu cluster memudar per baris (baris bawah dulu) sebelum tingginya menyusut, jadi tidak ada kartu yang terpotong.
+    if(state.klOpen&&gerak){state.klOpen=false;renderTabs();const h1=t.offsetHeight;state.klOpen=true;renderTabs();
+      t.dataset.anim="1";t.style.overflow="hidden";$("pilih").setAttribute("aria-expanded","false");
+      const kl=[...t.querySelectorAll(".tab.kl")],bar=barisKlaster(kl),nb=Math.max(0,...bar);
+      kl.forEach((x,i)=>x.animate([{opacity:1,transform:"none"},{opacity:0,transform:"translateY(-10px) scale(.97)"}],{duration:380,delay:(nb-bar[i])*70,easing:"cubic-bezier(.4,0,1,1)",fill:"forwards"}));
+      const an=t.animate([{height:h0+"px"},{height:h1+"px"}],{duration:620,delay:140+nb*40,easing:"cubic-bezier(.65,0,.35,1)",fill:"backwards"});
+      an.onfinish=an.oncancel=()=>{t.style.overflow="";delete t.dataset.anim;state.klOpen=false;renderTabs();};return;}
+    state.klOpen=!state.klOpen;renderTabs();if(!state.klOpen||!gerak)return;
+    // Membuka: tinggi bertambah dengan perlambatan, kartu muncul per baris dari atas.
+    const h1=t.offsetHeight;if(h1<=h0)return;const kl=[...t.querySelectorAll(".tab.kl")],bar=barisKlaster(kl);
+    t.dataset.anim="1";t.style.overflow="hidden";
+    const an=t.animate([{height:h0+"px"},{height:h1+"px"}],{duration:620,easing:"cubic-bezier(.22,.8,.3,1)"});
+    an.onfinish=an.oncancel=()=>{t.style.overflow="";delete t.dataset.anim;};
+    kl.forEach((x,i)=>x.animate([{opacity:0,transform:"translateY(-10px) scale(.97)"},{opacity:1,transform:"none"}],{duration:460,delay:90+bar[i]*90,easing:"cubic-bezier(.22,.8,.3,1)",fill:"backwards"}));};
   // Khusus pemilik: klaster langsung membuka sub-materi yang terakhir dikerjakan; pengguna lain mulai dari All Sections.
   t.querySelectorAll(".tab[data-k]").forEach(b=>b.onclick=()=>{const k=+b.dataset.k,ak=window.__isOwner&&store.subAkhir&&store.subAkhir[k];
     if(ak&&SUBS[k]&&SUBS[k][ak.sub-1])selectCat(k,ak.sub,ak.bag);else selectCat(k,"all");requestAnimationFrame(bukaSetelan);});
 }
+// Nomor baris tiap kartu cluster (2 kolom di HP, 4 di desktop), dipakai agar animasi bergerak per baris.
+function barisKlaster(kl){const ys=[...new Set(kl.map(x=>x.offsetTop))].sort((a,b)=>a-b);return kl.map(x=>ys.indexOf(x.offsetTop));}
 function renderSub(){
   const s=$("sub");
   $("sublbl").textContent=state.cat==="all"?"Section Details":"Section Details - "+CATS[state.cat].short;
@@ -1328,9 +1344,6 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
     akunku(u);
     if(!u){show('Access required','Sign in with your Google account. Your access request will be sent to the owner for approval.',null,true,false);
       setTimeout(()=>{if(window.__sbAuthErr&&!auth.currentUser)gp.textContent='Sign-in failed: '+window.__sbAuthErr;},800);
-      // Bila sesi berakhir sendiri (bukan lewat tombol Exit), tampilkan catatan singkatnya agar penyebabnya bisa dilacak.
-      try{const l=JSON.parse(localStorage.getItem('sb-authlog')||'[]'),k=l.filter(x=>Date.now()-x.t<864e5);const o=k.reverse().find(x=>/otomatis/.test(x.ev));
-        if(o){const h=k.find(x=>/^http/.test(x.ev)&&Math.abs(x.t-o.t)<6e4);gw.textContent='Session ended on its own at '+new Date(o.t).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})+(h?' · '+h.ev+' '+h.info.slice(0,120):'');}}catch(e){}
       return;}
     const who='Signed in as '+(u.displayName?u.displayName+' · ':'')+u.email;
     if(OWNER&&(u.email||'').toLowerCase()===OWNER&&u.emailVerified){isOwner=true;window.__isOwner=true;document.body.classList.add('bebas');
@@ -1457,7 +1470,8 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
     };
     // Notifikasi login (khusus pemilik): muncul di pojok layar tanpa mengganggu soal atau timer.
     const LOGIN={};let loginAwal=true;
-    const toastLogin=(nama,foto,ket)=>{let w=document.getElementById('lgtoast');if(!w){w=document.createElement('div');w.id='lgtoast';w.setAttribute('aria-live','polite');document.body.appendChild(w);}
+    const toastLogin=(nama,foto,ket,uid)=>{const SD=window.__lgSudah=window.__lgSudah||{};if(uid){if(Date.now()-(SD[uid]||0)<150000)return;SD[uid]=Date.now();}
+      let w=document.getElementById('lgtoast');if(!w){w=document.createElement('div');w.id='lgtoast';w.setAttribute('aria-live','polite');document.body.appendChild(w);}
       const t=document.createElement('div');t.className='lgt';t.innerHTML=`<span class="lgav">${foto?`<img src="${esc(foto)}" alt="" referrerpolicy="no-referrer">`:esc((nama[0]||'?').toUpperCase())}</span><span class="lgtx"><b>${esc(nama)}</b> ${esc(ket)}<small>${new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})}</small></span><button type="button" aria-label="Tutup">×</button>`;
       const hapus=()=>{t.classList.add('pergi');setTimeout(()=>t.remove(),300);};t.querySelector('button').onclick=hapus;w.appendChild(t);while(w.children.length>4)w.firstChild.remove();setTimeout(hapus,8000);
       if(document.hidden&&window.Notification&&Notification.permission==='granted'){try{new Notification('CAT Lex Fexora',{body:nama+' '+ket,icon:foto||undefined});}catch(e){}}};
@@ -1465,7 +1479,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       qs.forEach(d=>{const x=d.data(),t=x.terakhir&&x.terakhir.toDate?+x.terakhir.toDate():0,prev=LOGIN[d.id];
         // Hanya pengguna yang sudah diizinkan; permintaan akses baru tidak dinotifikasi.
         if(!loginAwal&&d.id!==me&&x.status==='disetujui'&&t&&now-t<120000&&prev!==undefined&&t-prev>150000)
-          toastLogin(x.nama||String(x.email||'Pengguna').split('@')[0],x.foto,'baru saja login');
+          toastLogin(x.nama||String(x.email||'Pengguna').split('@')[0],x.foto,'baru saja login',d.id);
         if(t)LOGIN[d.id]=t;else if(prev===undefined)LOGIN[d.id]=0;});
       loginAwal=false;};
     if(window.Notification&&Notification.permission==='default')document.addEventListener('click',()=>{try{Notification.requestPermission();}catch(e){}},{once:true});
