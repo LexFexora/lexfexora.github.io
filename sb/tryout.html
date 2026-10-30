@@ -562,6 +562,8 @@ function skWarna(p){if(SINK()&&T.status==="mulai"){const q=T.soal[Math.min(T.idx
   return AKHIR[p.uid]?" "+AKHIR[p.uid]:"";}
 function tandaSoal(p){if(!SINK()||T.status!=="mulai")return "";const q=T.soal[Math.min(T.idx||0,T.soal.length-1)],j=(p.jawab||{})[q.id];
   const [c,t,l]=j!==undefined?(j===q.a?["ok","✓","benar"]:["no","✕","salah"]):soalSisaMs()>0?["tg","…","belum menjawab"]:["ks","–","tidak menjawab"];
+  // Jawaban salah tidak diberi tanda ✕ (permintaan pemilik); skor merah di papan sudah menandainya.
+  if(c==="no")return "";
   return `<i class="tq ${c}" title="Soal ${(T.idx||0)+1}: ${l}" aria-label="Soal ${(T.idx||0)+1}: ${l}">${t}</i>`;}
 function renderPapan(){if(!T||papan.hidden&&!(T.status==="mulai"))return;
   const r=urut(),now=Date.now(),me=U&&U.uid;
