@@ -17,7 +17,7 @@
   const st=document.createElement('style');st.textContent='.cariist{display:flex;flex-direction:column;gap:8px;margin:2px 0 4px}\n.cariist-in{width:100%;box-sizing:border-box;font:inherit;font-size:14px;padding:9px 12px 9px 34px;border:1px solid color-mix(in srgb,var(--brass,#a8843c) 30%,var(--line,#ccc));border-radius:10px;color:var(--ink,#111);\n  background:var(--bg,#fff) url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%23999\' stroke-width=\'2.2\' stroke-linecap=\'round\'%3E%3Ccircle cx=\'11\' cy=\'11\' r=\'7\'/%3E%3Cpath d=\'m20 20-3.5-3.5\'/%3E%3C/svg%3E") no-repeat 11px center/16px;outline:none}\n.cariist-in:focus{border-color:color-mix(in srgb,var(--brass,#a8843c) 65%,var(--line,#ccc))}\n@media (hover:none) and (pointer:coarse){.cariist-in{font-size:16px}}\n.cariist-out{display:flex;flex-direction:column;gap:8px;max-height:min(55vh,460px);overflow:auto;overscroll-behavior:contain}.cariist-out:empty{display:none}\n.cariist-ket,.cariist-nol{margin:0;font-size:12px;color:var(--muted,#777)}\n.cariist-it{padding:9px 11px;border:1px solid color-mix(in srgb,var(--brass,#a8843c) 22%,var(--line,#ddd));border-radius:10px;background:color-mix(in srgb,var(--brass,#a8843c) 5%,transparent)}\n.cariist-it p{margin:0;font-size:13.5px;line-height:1.55;text-align:left}.cariist-it p+p{margin-top:6px}\n.cariist-d{color:var(--ink,#111)}.cariist-d b{color:var(--brass,#a8843c);font-weight:650}\n.cariist-q{font-size:12px!important;color:var(--muted,#777)}\n.cariist mark{background:color-mix(in srgb,var(--brass,#d4a83c) 35%,transparent);color:inherit;border-radius:3px;padding:0 1px}\n.cariist-row{display:flex;flex-wrap:wrap;gap:6px}.cariist-row .cariist-in{flex:1 1 220px;min-width:0}.cariist-ai{flex:none;font:inherit;font-size:13.5px;font-weight:650;padding:9px 14px;border-radius:10px;border:1px solid color-mix(in srgb,var(--ink,#111) 25%,var(--line,#ccc));background:var(--ink,#111);color:var(--surface,#fff);cursor:pointer}.cariist-ai:disabled{opacity:.55;cursor:wait}.cariist-aiout:empty{display:none}.cariist-it.ai{border-left:3px solid var(--ink,#111)}.cariist-aitext p{margin:0 0 6px;font-size:13.5px;line-height:1.6;text-align:left}.cariist-q a{color:inherit}.cariist-go{flex:none;font:inherit;font-size:13.5px;font-weight:650;padding:0 14px;border-radius:10px;border:1px solid color-mix(in srgb,var(--brass,#a8843c) 55%,var(--line,#ccc));background:linear-gradient(180deg,color-mix(in srgb,var(--brass,#a8843c) 22%,var(--surface,#fff)),color-mix(in srgb,var(--brass,#a8843c) 10%,var(--surface,#fff)));color:var(--ink,#111);cursor:pointer}.cariist-sec{margin:4px 0 0;font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--brass,#a8843c)}.cariist-h{display:flex;flex-wrap:wrap;align-items:center;gap:6px}.cariist-h b{font-weight:700}.cariist-kut{margin:2px 0 0;padding:6px 10px;border-left:3px solid var(--brass,#a8843c);background:color-mix(in srgb,var(--brass,#a8843c) 8%,transparent);border-radius:0 8px 8px 0;font-size:13px;line-height:1.5}\n.cariist-hit{background:color-mix(in srgb,var(--brass,#a8843c) 16%,transparent);border-radius:4px;padding:0 2px}\n.cariist-hf{display:inline-block;min-width:1.4em;padding-left:1em;font-weight:600}\n.cariist-pt{display:flex;flex-direction:column;gap:2px}\n.cariist-cek{display:flex;flex-direction:column;gap:4px;margin-top:6px;padding-top:6px;border-top:1px dashed var(--line,#ccc)}\n.cariist-cekit{margin:0;font-size:12.5px}\n.cariist-cekit summary{cursor:pointer}\n.cariist-cekit.ok b{color:var(--ok,#17733f)}\n.cariist-cekit.x b,.cariist-cekit.x summary{color:var(--bad,#b3261e)}\n.cariist-cekit.q b{color:var(--brass,#a8843c)}\n.cariist-tag{font-size:10.5px;font-weight:650;padding:1px 7px;border-radius:999px;border:1px solid currentColor;white-space:nowrap}.cariist-tag.ok{color:var(--ok,#17733f)}.cariist-tag.u{color:var(--brass,#a8843c)}.cariist-tag.x{color:var(--bad,#b3261e)}.cariist-p.pj{display:-webkit-box;-webkit-line-clamp:8;-webkit-box-orient:vertical;overflow:hidden}.cariist-full{font:inherit;font-size:12px;padding:0;border:0;background:none;color:var(--brass,#a8843c);cursor:pointer;margin-top:4px}.cariist-it.hk{border-left:3px solid color-mix(in srgb,var(--brass,#a8843c) 60%,transparent)}.cariist-web{display:flex;flex-wrap:wrap;gap:6px}.cariist-web a{font-size:12.5px;padding:5px 10px;border-radius:999px;border:1px solid color-mix(in srgb,var(--brass,#a8843c) 45%,var(--line,#ccc));color:var(--ink,#111);text-decoration:none;background:color-mix(in srgb,var(--brass,#a8843c) 7%,transparent)}.cariist-web a:hover{border-color:var(--brass,#a8843c)}.cariist-lagi{align-self:center;font:inherit;font-size:12.5px;padding:5px 12px;border:1px solid var(--line,#ccc);border-radius:999px;background:transparent;color:var(--ink,#111);cursor:pointer}';document.head.appendChild(st);
   const node=document.createElement('div');node.className='cariist';
   node.innerHTML='<div class="cariist-row"><input type="search" class="cariist-in" placeholder="Cari istilah, asas, atau pasal (mis. hadhanah, pasal 49 uu pa)…" autocomplete="off" enterkeyhint="search" aria-label="Cari istilah atau dasar hukum">'+
-    '<button type="button" class="cariist-go">Search</button><button type="button" class="cariist-ai" title="Asisten AI menelusuri hukum positif dan menjawab pertanyaan Anda">✦ Tanya AI</button></div><div class="cariist-aiout" aria-live="polite"></div><div class="cariist-out" aria-live="polite"></div>';
+    '<button type="button" class="cariist-go">Search</button></div><div class="cariist-out" aria-live="polite"></div>';
   const inp=node.querySelector('input'),out=node.querySelector('.cariist-out');
   // Klik di dalam kotak cari tidak ikut menutup panel Explanation (details) atau memicu pintasan soal.
   ['click','keydown','keyup'].forEach(t=>node.addEventListener(t,e=>{if(t==='click'&&e.target.closest('summary'))return;e.stopPropagation();}));
@@ -186,13 +186,13 @@
     // Pertanyaan definisi tanpa rumusan "X adalah" di naskah terindeks, atau naskah tidak memuat semua kata kunci: pembahasan bank soal yang paling cocok dipakai sebagai jawaban.
     if(b&&b.q.p&&(!best||(definisi&&!best.df)||best.m<ks.length)&&ks.every(k=>ada(b.np+' '+b.nd,k)))
       return '<article class="cariist-it jawab"><p class="cariist-sec">Jawaban</p><p class="cariist-kut">'+tandai(b.q.p,ks)+'</p>'+(b.q.d?'<p class="cariist-d"><b>Dasar:</b> '+esc(b.q.d)+'</p>':'')+htmlPasalTerkait(b)+
-        '<p class="cariist-ket">Diambil dari pembahasan bank soal yang paling sesuai. Untuk jawaban yang dirumuskan, gunakan ✦ Tanya AI.</p></article>';
+        '<p class="cariist-ket">Diambil dari pembahasan bank soal yang paling sesuai.</p></article>';
     if(!best||best.m<Math.min(2,ks.length))return '';const {e,x,kep,daftar}=best,lb=labelSeg(x);
     return '<article class="cariist-it jawab"><p class="cariist-sec">Jawaban</p>'+
       '<p class="cariist-kut">'+(kep?tandai(kep.t,ks)+' … ':'')+(x.hf?'<b>'+x.hf+'.</b> ':'')+tandai(x.t,ks)+(daftar&&daftar.length?daftar.map(z=>'<br><span class="cariist-hf">'+z.hf+'.</span> '+tandai(z.t,ks)).join(''):'')+'</p>'+
       '<p class="cariist-d"><b>Dasar:</b> '+esc(e.l+(lb?' '+lb:''))+' '+esc(HK.docs[e.d].n)+(e.s==='x'?' <span class="cariist-tag x">Tidak berlaku</span>':'')+'</p>'+
       (b&&b.q.p&&ks.every(k=>ada(b.np,k))?'<p class="cariist-p"><b class="cariist-lbl">Penjelasan bank soal:</b> '+tandai(b.q.p,ks)+'</p>':'')+
-      '<p class="cariist-ket">Kutipan bunyi peraturan yang paling sesuai dengan pertanyaan Anda. Untuk jawaban yang dirumuskan, gunakan ✦ Tanya AI.</p></article>';}
+      '<p class="cariist-ket">Kutipan bunyi peraturan yang paling sesuai dengan pertanyaan Anda.</p></article>';}
 
   let tampilH=0,hasilH=[];
   function kartuHukum({e},ks){const dn=HK.docs[e.d],pj=e.t.length>900,hit=lokasi(e,ks),lb=labelSeg(hit);
@@ -230,55 +230,8 @@
     if(hasil.soal&&!tq.split(' ').some(k=>k&&!STOP.has(k)&&!KATANIAT.has(k)&&!KATANIAT.has(k.replace(/(nya|kah|lah)$/,'')))){hasil.r=[];hasilH=[];hasil.murni=1;}
     hasil.jawab=hasil.murni?'':kartuJawab(tq,ctx);
     const nq=norm(t);let kh=hasil.ks.slice();ALIAS.forEach(([re])=>{kh=kh.filter(k=>!re.test(k));});hasil.kh=kh.filter(k=>k!=='pasal');gambar();}
-  inp.addEventListener('input',()=>{clearTimeout(tKetik);tKetik=setTimeout(jalan,260);if(!aiJalan&&!aiOut.querySelector('.cariist-aitext'))aiOut.innerHTML='';});
+  inp.addEventListener('input',()=>{clearTimeout(tKetik);tKetik=setTimeout(jalan,260);});
   inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();clearTimeout(tKetik);jalan();inp.blur&&matchMedia('(pointer:coarse)').matches&&inp.blur();}if(e.key==='Escape'){inp.value='';jalan();}});
-  // Asisten AI (fungsi Edge Supabase "tanya-hukum"): pasal terkait dari indeks dikirim sebagai pijakan, kunci API tetap di server.
-  const aiOut=node.querySelector('.cariist-aiout'),aiBtn=node.querySelector('.cariist-ai');let aiJalan=false;
-  const rapi=t=>esc(t).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').split(/\n{2,}/).map(p=>'<p>'+p.replace(/\n/g,'<br>')+'</p>').join('');
-  async function tanyaAI(){const t=inp.value.trim();if(t.length<3){aiOut.innerHTML='<p class="cariist-nol">Tulis pertanyaan Anda dulu di kolom cari.</p>';inp.focus();return;}
-    if(aiJalan)return;const sb=window.__sb;if(!sb||!sb.functions){aiOut.innerHTML='<p class="cariist-nol">Asisten AI belum tersedia di halaman ini.</p>';return;}
-    aiJalan=true;aiBtn.disabled=true;aiOut.innerHTML='<div class="cariist-it ai"><p class="cariist-sec">Jawaban asisten AI</p><p class="cariist-ket">Asisten sedang menelusuri peraturan yang berlaku… (biasanya 20–60 detik)</p></div>';
-    try{await Promise.all([siapkan(),siapkanHukum()]);const tq=perbaiki(t).teks,sq=soalAktif();
-      // Pijakan: pasal yang dirujuk soal aktif lebih dulu, lalu pasal hasil pencarian atas pertanyaan.
-      const pj=(sq?kutipan(sq.d).map(k=>k.e):[]).concat(cariHukum(tq).slice(0,8).map(r=>r.e)).filter((e,i,a)=>a.indexOf(e)===i).slice(0,8);
-      const kh=pj.map(e=>({l:e.l,n:HK.docs[e.d].n+(e.s==='x'?' [TIDAK BERLAKU]':e.s.startsWith('u:')?' [bunyi setelah diubah '+e.s.slice(2)+']':''),t:e.t}));
-      const jw=sq&&(sq.o||[])[sq.a];
-      const {data,error}=await sb.functions.invoke('tanya-hukum',{body:{q:t,konteks:kh,soal:sq?{q:sq.q+((sq.o||[]).length?'\nPilihan: '+sq.o.map((o,i)=>'ABCDE'[i]+'. '+o).join(' | '):''),p:sq.p,d:sq.d,jw:jw!=null?(typeof sq.a==='number'?'ABCDE'[sq.a]+'. ':'')+jw:''}:null}});
-      if(error){let m='';try{const j=await error.context.json();m=j.error||'';}catch(e){}
-        const st=error.context&&error.context.status;if(st===404||!st){await belumPasang();return;}throw new Error(m||'Asisten AI tidak dapat dihubungi.');}
-      aiOut.innerHTML='<div class="cariist-it ai"><p class="cariist-sec">Jawaban asisten AI</p><div class="cariist-aitext">'+rapi(data.jawab||'')+'</div>'+htmlPeriksa(data.jawab||'')+
-        ((data.sumber||[]).length?'<p class="cariist-q">Sumber web resmi: '+data.sumber.map(s=>'<a href="'+esc(s.url)+'" target="_blank" rel="noopener">'+esc(s.title||s.url)+'</a>').join(' · ')+'</p>':'')+
-        '<p class="cariist-q">Jawaban AI dapat keliru. Cocokkan dengan bunyi pasal di bawah atau sumber resmi.'+(data.sisa!=null?' Sisa jatah hari ini: '+data.sisa+'.':'')+'</p></div>';
-    }catch(e){aiOut.innerHTML='<div class="cariist-it ai"><p class="cariist-sec">Jawaban asisten AI</p><p class="cariist-nol">'+esc(e.message||String(e))+'</p></div>';}
-    finally{aiJalan=false;aiBtn.disabled=false;}}
-  // Pemeriksaan otomatis jawaban AI: setiap pasal yang disebut dan setiap kutipan dicocokkan ke naskah resmi di indeks situs.
-  const SINGKAT=[[/\b(khi|kompilasi hukum islam)\b/,3],[/\b(uu ?pa|uu peradilan agama|undang undang peradilan agama)\b/,0],[/\b(uu ?ma|uu mahkamah agung)\b/,1],[/\b(uup|uu perkawinan|undang undang perkawinan)\b/,2],[/\b(kuhperdata|kuh perdata|bw)\b/,4]];
-  function periksaAI(t){const hasilP=[],sudah=new Set(),re=/Pasal\s+(\d+[A-Z]?)(?:\s+ayat\s*\((\d+[a-z]?)\))?(?:\s+huruf\s+([a-z])\b)?((?:(?!Pasal\s)[^;\n]){0,170})/g;let m;
-    while((m=re.exec(t))){const ekor=norm(m[4]);let dk=dokDi(ekor);if(dk<0){const a=SINGKAT.find(([r])=>r.test(ekor.slice(0,60)));dk=a?a[1]:-1;}
-      const lb='Pasal '+m[1]+(m[2]?' ayat ('+m[2]+')':'')+(m[3]?' huruf '+m[3]:''),kunci=lb+'|'+dk;if(sudah.has(kunci))continue;sudah.add(kunci);
-      if(dk<0){const nb=SEBUT.exec(ekor);if(nb&&(nb[1]||nb[6]))hasilP.push({lb:lb+' '+m[4].replace(/^[\s,:]+/,'').split(/,|\(| dan | serta |\.\s+(?=[A-Z"“])/)[0].slice(0,70).trim().replace(/\.$/,''),st:'?',ket:'peraturannya belum ada di indeks situs, cek di sumber resmi'});continue;}
-      const e=HK.e.find(z=>z.d===dk&&z.nl==='pasal '+m[1].toLowerCase());
-      if(!e){hasilP.push({lb:lb+' '+HK.docs[dk].n,st:'x',ket:'pasal ini tidak ditemukan di naskah resmi'});continue;}
-      const x=(m[2]||m[3])?segs(e).find(z=>(!m[2]||z.ay===m[2])&&(m[3]?z.hf===m[3]:true)):null;
-      if((m[2]||m[3])&&!x){hasilP.push({lb:lb+' '+HK.docs[dk].n,st:'x',ket:'ayat/huruf ini tidak ada pada pasal tersebut di naskah resmi',e});continue;}
-      hasilP.push({lb:lb+' '+HK.docs[dk].n,st:e.s==='x'?'x':'ok',ket:e.s==='x'?'ketentuan ini sudah tidak berlaku':'ada di naskah resmi',e,x});}
-    // Kutipan langsung (≥ 6 kata) harus muncul persis di naskah terindeks.
-    const kut=[];(t.match(/[“"]([^”"]{30,600})[”"]/g)||[]).forEach(q=>{const nq=norm(q);if(nq.split(' ').length<6)return;
-      const e=HK.e.find(z=>z.nt.includes(nq));kut.push({q:q.slice(1,-1),e});});
-    return {p:hasilP,k:kut};}
-  function htmlPeriksa(t){const r=periksaAI(t);if(!r.p.length&&!r.k.length)return '';const ik={ok:'✓',x:'✕','?':'?'};
-    return '<div class="cariist-cek"><p class="cariist-sec">Pemeriksaan otomatis terhadap naskah resmi</p>'+
-      r.p.map(c=>'<details class="cariist-cekit '+(c.st==='ok'?'ok':c.st==='x'?'x':'q')+'"><summary><b>'+ik[c.st]+'</b> '+esc(c.lb)+': '+esc(c.ket)+'</summary>'+
-        (c.e?'<p class="cariist-kut">'+esc(c.x?(c.x.hf?(segs(c.e).find(z=>z.ay===c.x.ay&&!z.hf)||{t:''}).t+' … '+c.x.hf+'. ':'')+c.x.t:c.e.t.slice(0,1200))+'</p>':'')+'</details>').join('')+
-      r.k.map(k=>'<p class="cariist-cekit '+(k.e?'ok':'q')+'"><b>'+(k.e?'✓':'?')+'</b> Kutipan “'+esc(k.q.slice(0,90))+(k.q.length>90?'…':'')+'” '+(k.e?'cocok dengan bunyi '+esc(k.e.l)+' '+esc(HK.docs[k.e.d].n):'tidak ditemukan persis di naskah terindeks, cek di sumber resmi')+'</p>').join('')+'</div>';}
-
-  // Fungsi AI belum dipasang: jawaban lokal (Tentang soal ini + pasal) tetap tampil di bawah; pemilik diberi langkah pemasangannya.
-  async function belumPasang(){let pemilik=!!window.__isOwner||document.body.classList.contains('bebas');
-    if(!pemilik&&window.__sb&&window.__sb.rpc){try{const {data}=await window.__sb.rpc('cat_is_owner');pemilik=data===true;}catch(e){}}
-    aiOut.innerHTML='<div class="cariist-it ai"><p class="cariist-sec">Asisten AI belum aktif</p><p class="cariist-ket">'+
-      (pemilik?'Fungsi AI belum dipasang di Supabase. Tiga langkahnya (rinciannya di CARA-PASANG.md): 1) buat API key di console.anthropic.com, 2) jalankan ai-jatah.sql di SQL Editor, 3) simpan ANTHROPIC_API_KEY di Edge Function Secrets lalu deploy fungsi tanya-hukum.':
-        'Asisten AI belum diaktifkan oleh admin.')+' Sementara itu, jawaban dari soal ini dan naskah peraturan ditampilkan di bawah.</p></div>';}
-  aiBtn.onclick=()=>{tanyaAI();if(inp.value.trim().length>=2&&kataTerakhir!==inp.value.trim()){clearTimeout(tKetik);jalan();}};
   node.querySelector('.cariist-go').onclick=()=>{clearTimeout(tKetik);jalan();};
 
   // Halaman yang memakai: tempatkan elemen .cariist-slot, kotak cari dipindah ke sana (tetap satu elemen agar isian tidak hilang).
