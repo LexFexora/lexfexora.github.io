@@ -1280,8 +1280,10 @@ $("order").onchange=e=>{state.order=e.target.value;buildSession(true);render();}
 $("fsexit").onclick=()=>fokus(false);
 $("timer").value=tMode+(tMode!=="off"&&SEC!==54?String(SEC):"");
 // Timer dipilih lewat dua menu (jenis dan durasi), lalu diteruskan ke #timer yang tersembunyi.
-function sinkronTimer(){$("tmode").value=tMode;$("tsec").value=String(SEC);$("tsec").disabled=tMode==="off";}
-const gantiTimer=()=>{const m=$("tmode").value;$("timer").value=m==="off"?"off":m+($("tsec").value==="54"?"":$("tsec").value);$("timer").dispatchEvent(new Event("change"));sinkronTimer();};
+// Timer Off: kolom Duration kosong; setelah memilih Total atau Per question, durasinya muncul.
+function sinkronTimer(){const ts=$("tsec");if(!ts.querySelector('option[value=""]'))ts.insertAdjacentHTML("afterbegin",'<option value="" hidden></option>');
+  $("tmode").value=tMode;ts.value=tMode==="off"?"":String(SEC);ts.disabled=tMode==="off";}
+const gantiTimer=()=>{const m=$("tmode").value;$("timer").value=m==="off"?"off":m+(($("tsec").value||"54")==="54"?"":$("tsec").value);$("timer").dispatchEvent(new Event("change"));sinkronTimer();};
 $("tmode").onchange=gantiTimer;$("tsec").onchange=gantiTimer;sinkronTimer();
 $("siapbtn").onclick=()=>{window.__gulTutup=false;siapCat=state.cat;state.mulai=false;state.qLeft=SEC;state.qId=null;persist();$("setelan").open=false;render();window.scrollTo({top:Math.max(0,$("card").offsetTop-12),behavior:"smooth"});};
 $("timer").onchange=e=>{const v=e.target.value;tMode=v.replace(/\d+$/,"");SEC=+((v.match(/\d+$/)||[54])[0]);store.timerMode=tMode;store.timerSec=SEC;resetTimer();persist();render();};
