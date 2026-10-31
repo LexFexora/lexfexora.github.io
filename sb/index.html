@@ -573,6 +573,10 @@ html body .card .nav>.btn .nvp{flex:none;width:15px;height:15px;fill:none;stroke
 html body #setelan .controls select:focus,html body #setelan .controls select:focus-visible{outline:none;border-color:color-mix(in srgb,var(--ink) 45%,transparent)}
 /* Duration otomatis (Timer Total): tampil jelas walau tidak bisa dipilih, tanpa panah pilihan. */
 html body #tsec.otomatis{opacity:1;-webkit-text-fill-color:var(--ink);color:var(--ink);background-image:none;cursor:default}
+/* Timer dan tombol layar penuh di kepala soal: tanpa kapsul/lingkaran, latar, dan bingkai; hanya ikon dan angka. */
+html body .qtools .timer,html body .qtools .qfs,html body .qhead .qfs{background:none!important;border:0!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+html body .qtools .timer{padding:0 4px!important}
+html body .qtools .qfs{width:30px;height:30px}
 /* Select Cluster hanya judul: tidak bisa diklik, daftar kategori selalu terbuka, tanpa segitiga. */
 html body #tabs .tab.pilih{cursor:default;pointer-events:none}html body #tabs .tab.pilih::after{content:none!important;display:none!important}
 /* Baris Select Cluster: tanpa ikon, tulisan di tengah (segitiga tetap di kanan). */
