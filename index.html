@@ -1440,7 +1440,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
   function tryoutKartu(){$('tocard').hidden=false;if(isOwner){$('toown').hidden=false;$('toket').hidden=true;}
     // Selain pemilik: panel tetap tampil, hanya keterangan; ikut mock exam lewat tautan join yang dibagikan pemilik.
     else{$('toket').hidden=false;$('toket').innerHTML='<b class="toket-h">🔒 Restricted Examination Chamber</b><span>Full-length mock exams run on scheduled sessions only. Access is strictly granted via direct links shared by the developer. Contact the developer to schedule a joint practice session.</span>';$('tolist').innerHTML='';return;}
-    const ST={menunggu:'ruang tunggu',siap:'cek kesiapan',mulai:'sedang berjalan',selesai:'selesai'};
+    const ST={menunggu:'ruang tunggu',siap:'cek kesiapan',mulai:'sedang berjalan',jeda:'disimpan · bisa dilanjutkan',selesai:'selesai'};
     db.collection('tryout').orderBy('dibuat','desc').limit(15).onSnapshot(qs=>{const rows=[];qs.forEach(d=>{const t=d.data(),u=location.origin+location.pathname.replace(/[^/]*$/,'')+'tryout.html?t='+d.id;
         if(!isOwner&&t.status==='selesai')return;
         rows.push(`<div class="tr"><span class="muted trm">${(t.soal||[]).length} soal · ${ST[t.status]||t.status}</span><a class="btn copy${isOwner?'':' primary'}" href="${u}" target="_blank" rel="noopener">${isOwner?'Buka':'Ikut'}</a>${isOwner?`<button class="btn copy" type="button" data-hapus="${d.id}">Hapus</button>`:''}</div>`);});
