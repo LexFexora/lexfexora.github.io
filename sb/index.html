@@ -430,6 +430,12 @@ html:not([data-theme="light"]) .akunku .akunexit:hover,html:not([data-theme="lig
 .mk .mkplq{clip-path:none;border-radius:3px}
 /* Kepala Dewi Keadilan di atas judul klaster dihilangkan; papan judul naik ke atas. */
 .mk .mkcrest{display:none!important}.mk .mkplq{margin-top:6px}
+/* Saat bagian dibuka/ditutup: hiasan bergerak dijeda dan blur kaca diganti warna padat agar gerak tetap mulus. */
+html.beranim *,html.beranim *::before,html.beranim *::after{animation-play-state:paused!important}
+html.beranim .tema,html.beranim .akunexit,html.beranim body .card .nav>.btn,html.beranim #lgtoast .lgt{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+html.beranim .tema,html.beranim .akunexit{background:#1c2320!important}
+@media (prefers-color-scheme:light){html.beranim:not([data-theme="dark"]) .tema,html.beranim:not([data-theme="dark"]) .akunexit{background:#f3f4f2!important}}
+html.beranim[data-theme="light"] .tema,html.beranim[data-theme="light"] .akunexit{background:#f3f4f2!important}
 /* Segitiga buka/tutup di Quiz Options dan Mock Exam sama dengan segitiga Select Cluster. */
 html body #setelan>summary::after,html body #tocard>summary::after{font-family:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif!important;font-size:15px!important;font-weight:400!important;letter-spacing:0!important;color:var(--muted)!important;-webkit-text-fill-color:var(--muted);text-shadow:none!important;line-height:1}
 :root[data-theme="dark"] body #setelan>summary::after,:root[data-theme="dark"] body #tocard.setelan.tocard>summary::after{color:#9aaba0!important;-webkit-text-fill-color:#9aaba0}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body #setelan>summary::after,:root:not([data-theme="light"]) body #tocard.setelan.tocard>summary::after{color:#9aaba0!important;-webkit-text-fill-color:#9aaba0}}
@@ -1207,13 +1213,19 @@ setInterval(()=>{
 // Membuka bagian dengan gerak turun perlahan dari atas ke bawah: tinggi bertambah, isinya muncul sambil turun.
 // Selama animasi buka/tutup, isi dipotong rapi di tepi kotak. overflow saja tidak cukup di sebagian Chrome Android
 // (teks bisa tampak keluar dari kotak <details>), jadi ditambah clip-path yang selalu memotong seluruh lukisan isinya.
-function klip(el,on){el.style.overflow=on?"hidden":"";el.style.clipPath=on?"inset(-6px -6px -6px -6px round 14px)":"";}
+// Selama ada gerak buka/tutup, html.beranim menjeda animasi hiasan yang berjalan terus dan efek blur kaca,
+// supaya browser (terutama Safari iPhone) hanya menghitung perubahan tinggi dan geraknya tidak patah-patah.
+let jmlAnim=0;
+function klip(el,on){const H=document.documentElement;
+  if(on&&!el.__klip){el.__klip=1;jmlAnim++;}else if(!on&&el.__klip){el.__klip=0;jmlAnim=Math.max(0,jmlAnim-1);}
+  H.classList.toggle("beranim",jmlAnim>0);
+  el.style.overflow=on?"hidden":"";el.style.clipPath=on?"inset(-6px)":"";el.style.willChange=on?"height":"";}
 function turunPerlahan(el,h0,isi){if(matchMedia("(prefers-reduced-motion:reduce)").matches||!el.animate)return;
-  const h1=el.offsetHeight,ez={duration:1300,easing:"cubic-bezier(.45,.05,.3,1)"};if(h1<=h0)return;
+  const h1=el.offsetHeight,ez=EZ_PELAN;if(h1<=h0)return;
   klip(el,1);const an=el.animate([{height:h0+"px"},{height:h1+"px"}],ez);an.onfinish=an.oncancel=()=>{klip(el,0);};
   (isi||[]).forEach((x,i)=>x.animate([{opacity:0,transform:"translateY(-14px)"},{opacity:1,transform:"none"}],Object.assign({},ez,{delay:i*90,fill:"backwards"})));}
 // Menutup bagian dengan gerak yang sama, terbalik: isi naik dan memudar, tinggi menyusut sampai tinggal judulnya.
-const EZ_PELAN={duration:1300,easing:"cubic-bezier(.45,.05,.3,1)"};
+const EZ_PELAN={duration:1100,easing:"cubic-bezier(.65,0,.35,1)"};
 function tutupPerlahan(d,isi){if(d.dataset.anim)return;if(matchMedia("(prefers-reduced-motion:reduce)").matches||!d.animate){d.open=false;return;}
   const sm=d.querySelector(":scope>summary"),cs=getComputedStyle(d),h0=d.offsetHeight;
   const h1=sm.offsetHeight+parseFloat(cs.borderTopWidth)+parseFloat(cs.borderBottomWidth)+parseFloat(cs.paddingTop)+parseFloat(cs.paddingBottom);
