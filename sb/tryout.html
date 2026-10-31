@@ -497,7 +497,7 @@ function masterHTML(){const ps=Object.entries(P).filter(([u,p])=>!p.selesai&&!di
   <p class="muted" style="margin:0;font-size:12.5px">Room master menekan Next untuk semua peserta. ${boleh?"Kewenangan bisa dipindahkan kapan saja; ":""}bila room master keluar atau terputus, kewenangan pindah otomatis.</p></div>`;}
 // Kendali ringkas room master di bawah tombol Next: pindahkan 🎩 dan (khusus pemilik) akhiri mock exam.
 function miniMaster(){const ps=Object.entries(P).filter(([u,p])=>!p.selesai&&!dikick(u)&&u!==T.master),sg=segar();
-  return `<div class="mini">${ps.length?`<select id="mpilih" aria-label="Pindahkan room master"><option value="">Pindahkan room master ke…</option>${ps.map(([u,p])=>`<option value="${esc(u)}">${esc(p.nama)}${sg.includes(u)?"":" (offline)"}</option>`).join("")}</select><button class="btn kecil" id="mpindah" type="button">Pindahkan</button>`:""}${isOwner?'<button class="btn kecil" data-eds type="button" title="Edit soal (hanya pemilik)">✎ Edit</button><button class="btn kecil simpanjeda" type="button" title="Simpan progres; mock exam bisa dilanjutkan kapan saja">Save</button><button class="btn kecil bahaya" id="akhiri" type="button">Akhiri</button>':""}</div>`;}
+  return `<div class="mini">${ps.length?`<select id="mpilih" aria-label="Pindahkan room master"><option value="">Pindahkan room master ke…</option>${ps.map(([u,p])=>`<option value="${esc(u)}">${esc(p.nama)}${sg.includes(u)?"":" (offline)"}</option>`).join("")}</select><button class="btn kecil" id="mpindah" type="button">Pindahkan</button>`:""}${isOwner?'<button class="btn kecil" data-eds type="button" title="Edit soal (hanya pemilik)">✎ Edit</button><button class="btn kecil bahaya" id="akhiri" type="button">Akhiri</button>':""}</div>`;}
 function pasangMaster(){if($("mpindah"))$("mpindah").onclick=()=>pilihMaster($("mpilih").value);}
 
 // Bergabung otomatis: dokumen peserta dibuat sekali saat mock exam belum selesai.
@@ -561,7 +561,7 @@ function statHTML(){const ps=Object.values(P),n=ps.length,sel=ps.filter(p=>p.sel
 function pantau(){papan.hidden=false;main.innerHTML=`<div class="ujian-h"><span class="qno">${esc(T.judul)} · berjalan</span><span class="timer">⏱ <span id="sisa">${fmt(sisaMs())}</span></span></div>
   ${statHTML()}
   <div class="linkrow"><input readonly value="${esc(tautan())}" aria-label="Tautan mock exam"></div>
-  <div class="row"><button class="btn" data-eds type="button" title="Edit soal (hanya pemilik)">✎ Edit</button><button class="btn simpanjeda" type="button" title="Simpan progres; mock exam bisa dilanjutkan kapan saja">Save</button><button class="btn bahaya" id="akhiri" type="button">Akhiri mock exam untuk semua</button></div>`;$("akhiri").onclick=akhiri;}
+  <div class="row"><button class="btn" data-eds type="button" title="Edit soal (hanya pemilik)">✎ Edit</button><button class="btn bahaya" id="akhiri" type="button">Akhiri mock exam untuk semua</button></div>`;$("akhiri").onclick=akhiri;}
 // Hasil lengkap untuk pemilik, bisa dibuka di Excel atau Google Sheets.
 function unduhCSV(){const r=urut(),n=T.soal.length,q=v=>'"'+String(v).replace(/"/g,'""')+'"';
   const baris=[["Peringkat","Nama","Poin","Benar","Salah","Kosong","Waktu (mm:ss)","Status"].map(q).join(",")].concat(r.map((p,i)=>[i+1,p.nama,p.skor||0,p.benar||0,(p.dijawab||0)-(p.benar||0),n-(p.dijawab||0),fmt(p.dur||0),p.selesai?"Dikumpulkan":"Otomatis saat selesai"].map(q).join(",")));
@@ -579,7 +579,7 @@ function ujian(){papan.hidden=false;if(!aku){main.innerHTML='<p class="muted">Me
   // Serentak: kartu kendali (room master, peta, statistik, Akhiri) hanya untuk room master yang sedang aktif.
   alat.hidden=sk;alat.innerHTML=sk?"":`<div class="peta${sk?" kunci-peta":""}">${T.soal.map((s,i)=>`<button type="button" data-i="${i}"${sk?" disabled":""} class="${(aku.jawab||{})[s.id]!==undefined?"sdh":""}${i===pos?" ini":""}">${i+1}</button>`).join("")}</div>
   ${pos<n-1&&!sk?'<div class="row" style="justify-content:flex-end"><button class="btn" id="kumpul" type="button">Kumpulkan sekarang</button></div>':""}
-  ${sk?statHTML():""}${isOwner?(sk?"":statHTML())+'<div class="row"><button class="btn" data-eds type="button" title="Edit soal (hanya pemilik)">✎ Edit</button><button class="btn simpanjeda" type="button" title="Simpan progres; mock exam bisa dilanjutkan kapan saja">Save</button><button class="btn bahaya" id="akhiri" type="button">Akhiri mock exam untuk semua</button></div>':""}
+  ${sk?statHTML():""}${isOwner?(sk?"":statHTML())+'<div class="row"><button class="btn" data-eds type="button" title="Edit soal (hanya pemilik)">✎ Edit</button><button class="btn bahaya" id="akhiri" type="button">Akhiri mock exam untuk semua</button></div>':""}
   <p class="muted kunci" style="margin:0;font-size:12px">Pintasan: <kbd>A</kbd>–<kbd>${L[q.o.length-1]}</kbd> memilih jawaban${sk?(isMaster()?", <kbd>→</kbd> Next untuk semua":""):", <kbd>←</kbd> <kbd>→</kbd> pindah soal"}.</p>`;pasangMaster();
   // Jawaban terkunci setelah dipilih; pembahasan dan sumber langsung tampil di kolom kanan.
   main.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{if((aku.jawab||{})[q.id]!==undefined||(sk&&soalSisaMs()<=0))return;aku.jawab=Object.assign({},aku.jawab,{[q.id]:+b.dataset.o});hitung();simpan(true);render();});
@@ -603,7 +603,7 @@ function akhiri(){if(!confirm("Akhiri mock exam sekarang? Semua peserta langsung
 
 function tunggu(){papan.hidden=false;main.innerHTML=`<div class="hasilku"><p class="eyebrow" style="margin:0 0 6px">Jawaban terkumpul</p><div><span class="angka">${aku.skor}</span> <span class="poin">POIN</span></div>
   <p class="muted">Benar ${aku.benar} dari ${T.soal.length} soal. Peringkat akhir diumumkan saat waktu habis atau penyelenggara mengakhiri mock exam.</p>
-  <p class="muted">Sisa waktu <b id="sisa">${fmt(sisaMs())}</b></p></div>${isOwner?'<div class="row" style="justify-content:center"><button class="btn" data-eds type="button" title="Edit soal (hanya pemilik)">✎ Edit</button><button class="btn simpanjeda" type="button" title="Simpan progres; mock exam bisa dilanjutkan kapan saja">Save</button><button class="btn bahaya" id="akhiri" type="button">Akhiri mock exam untuk semua</button></div>':""}`;
+  <p class="muted">Sisa waktu <b id="sisa">${fmt(sisaMs())}</b></p></div>${isOwner?'<div class="row" style="justify-content:center"><button class="btn" data-eds type="button" title="Edit soal (hanya pemilik)">✎ Edit</button><button class="btn bahaya" id="akhiri" type="button">Akhiri mock exam untuk semua</button></div>':""}`;
   if($("akhiri"))$("akhiri").onclick=akhiri;}
 
 // Peringkat: nilai tertinggi, lalu waktu pengerjaan tercepat, lalu nama.
