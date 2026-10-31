@@ -1857,5 +1857,20 @@ function inkTengah(v,t){if(!v||!t)return;
 document.addEventListener('click',e=>{if(!(e.target.closest&&e.target.closest('#siapbtn')))return;
   setTimeout(()=>{const b=document.querySelector('.mulaikartu.mk .mkbox');if(!b)return;b.classList.remove('gulung');void b.offsetWidth;b.classList.add('gulung');b.addEventListener('animationend',()=>b.classList.remove('gulung'),{once:true});},0);},true);
 </script>
+<script>
+// Explanation dibuka/ditutup perlahan: tinggi kotak dianimasikan halus (ease-out), isi memudar masuk/keluar.
+(function(){const ease='cubic-bezier(.25,.8,.25,1)';
+  document.addEventListener('click',e=>{const sm=e.target.closest&&e.target.closest('details.ket>summary');if(!sm)return;
+    const d=sm.parentElement,isi=d.querySelector('.explain');if(!d.animate||matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+    e.preventDefault();const h0=d.getBoundingClientRect().height;if(d._an){d._an.cancel();d._an=null;}if(d._fa){d._fa.cancel();d._fa=null;}
+    const buka=!d.open||d._tutup;d._tutup=false;d.open=true;const hBuka=d.getBoundingClientRect().height;
+    d.open=false;const hTutup=d.getBoundingClientRect().height;d.open=true;
+    const h1=buka?hBuka:hTutup,dur=Math.min(560,Math.max(320,Math.abs(h1-h0)*1.1));
+    d.style.overflow='hidden';d._tutup=!buka;
+    d._an=d.animate({height:[h0+'px',h1+'px']},{duration:dur,easing:ease});
+    if(isi)d._fa=isi.animate({opacity:buka?[0,1]:[1,0],transform:buka?['translateY(-6px)','none']:['none','translateY(-6px)']},{duration:dur*(buka?1:.7),easing:ease,fill:'both'});
+    d._an.onfinish=()=>{d._an=null;d.style.overflow='';if(d._tutup){d.open=false;d._tutup=false;}if(d._fa){d._fa.cancel();d._fa=null;}};
+  },true);})();
+</script>
 </body>
 </html>
