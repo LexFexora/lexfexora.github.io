@@ -427,6 +427,9 @@ html:not([data-theme="light"]) .akunku .akunexit:hover,html:not([data-theme="lig
 .mk .mkplq{clip-path:none;border-radius:3px}
 /* Kepala Dewi Keadilan di atas judul klaster dihilangkan; papan judul naik ke atas. */
 .mk .mkcrest{display:none!important}.mk .mkplq{margin-top:6px}
+/* Label dan isi pilihan di Quiz Options (Section Details/All Sections, Order, Timer, Duration) berwarna putih di mode gelap. */
+:root[data-theme="dark"] #setelan .controls label,:root[data-theme="dark"] #setelan .controls .lbl,:root[data-theme="dark"] #setelan .controls select{color:#fff!important;-webkit-text-fill-color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #setelan .controls label,:root:not([data-theme="light"]) #setelan .controls .lbl,:root:not([data-theme="light"]) #setelan .controls select{color:#fff!important;-webkit-text-fill-color:#fff}}
 .mk .mkeye{margin-top:18px;font-family:"Alegreya SC",Georgia,serif;font-weight:500;font-size:15px;letter-spacing:.06em;color:#eadbb8}
 .mk h2.mkttl{margin:4px 18px 16px;max-width:none;font-family:"Alegreya SC","Newsreader",Georgia,serif;font-weight:700;font-size:23px;line-height:1.18;letter-spacing:.02em;color:#f0d9a6;text-shadow:0 2px 0 #000,0 0 18px rgb(0 0 0 / .9),0 0 14px rgb(240 190 110 / .25);text-wrap:balance}
 .mk .mkbox{box-sizing:border-box;position:relative;width:calc(100% - 36px);max-width:440px;padding:20px 22px 22px;background:linear-gradient(180deg,rgb(52 42 34 / .96),rgb(38 31 26 / .96));border:1px solid #000;box-shadow:0 0 0 1px #6e5232,0 0 0 3px #1a140f,0 0 0 4px #4a3826,0 10px 26px rgb(0 0 0 / .7);display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
