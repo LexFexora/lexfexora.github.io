@@ -425,6 +425,8 @@ html:not([data-theme="light"]) .akunku .akunexit:hover,html:not([data-theme="lig
 .mk .mkhero{width:100%;line-height:0}.mk .mkhero svg{display:block;width:100%;height:auto}
 .mk .mkplq{position:relative;z-index:2;margin:-24px auto 0;padding:7px 34px 6px;font-family:"Alegreya SC","Newsreader",Georgia,serif;font-weight:700;font-size:20px;letter-spacing:.06em;color:#2a1c0a;background:radial-gradient(80% 90% at 50% 45%,#fff6d6,#e2c98e 70%,#b8954f);border:2px solid #2a1f0c;box-shadow:0 0 0 1px #c9a457,0 0 0 4px #1b150d,0 0 0 5px #8a6a2a,0 4px 10px rgb(0 0 0 / .7);clip-path:polygon(10px 0,calc(100% - 10px) 0,100% 50%,calc(100% - 10px) 100%,10px 100%,0 50%);filter:drop-shadow(0 0 6px rgb(255 214 140 / .35))}
 .mk .mkplq{clip-path:none;border-radius:3px}
+/* Kepala Dewi Keadilan di atas judul klaster dihilangkan; papan judul naik ke atas. */
+.mk .mkcrest{display:none!important}.mk .mkplq{margin-top:6px}
 .mk .mkeye{margin-top:18px;font-family:"Alegreya SC",Georgia,serif;font-weight:500;font-size:15px;letter-spacing:.06em;color:#eadbb8}
 .mk h2.mkttl{margin:4px 18px 16px;max-width:none;font-family:"Alegreya SC","Newsreader",Georgia,serif;font-weight:700;font-size:23px;line-height:1.18;letter-spacing:.02em;color:#f0d9a6;text-shadow:0 2px 0 #000,0 0 18px rgb(0 0 0 / .9),0 0 14px rgb(240 190 110 / .25);text-wrap:balance}
 .mk .mkbox{box-sizing:border-box;position:relative;width:calc(100% - 36px);max-width:440px;padding:20px 22px 22px;background:linear-gradient(180deg,rgb(52 42 34 / .96),rgb(38 31 26 / .96));border:1px solid #000;box-shadow:0 0 0 1px #6e5232,0 0 0 3px #1a140f,0 0 0 4px #4a3826,0 10px 26px rgb(0 0 0 / .7);display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
@@ -934,6 +936,8 @@ function renderTabs(){
   t.innerHTML=`<button class="tab pilih" type="button" id="pilih" aria-expanded="${!!state.klOpen}"${sel?` style="--kc:var(--k${state.cat})"`:""}><span class="ki ki4">${KOMPAS}</span><span class="kt"><b>Select Cluster - SKB</b>${sel?`<span class="sel">${esc(CATS[state.cat].short)}</span>`:`<small>Tap to choose a cluster</small>`}</span></button>`+
     (state.klOpen?Object.keys(CATS).map(n=>`<button class="tab kl" role="tab" type="button" data-k="${n}" aria-selected="${state.cat===+n}" style="--kc:var(--k${n})"><span class="ki">${ik(n)}</span><span class="kt"><b>${esc(CATS[n].short)}</b></span></button>`).join(""):"");
   $("pilih").onclick=()=>{const t=$("tabs"),h0=t.offsetHeight;if(t.dataset.anim)return;
+    // Select Cluster diklik lagi: panel Quiz Options & Sections yang terbuka ikut menutup perlahan seperti semula.
+    {const st=$("setelan");if(st&&st.open&&!st.hidden)tutupPerlahan(st,[st.querySelector(".controls")].filter(Boolean));}
     const gerak=t.animate&&!matchMedia("(prefers-reduced-motion:reduce)").matches;
     // Menutup: kartu cluster memudar per baris (baris bawah dulu) sebelum tingginya menyusut, jadi tidak ada kartu yang terpotong.
     if(state.klOpen&&gerak){state.klOpen=false;renderTabs();const h1=t.offsetHeight;state.klOpen=true;renderTabs();
@@ -942,7 +946,8 @@ function renderTabs(){
       kl.forEach((x,i)=>x.animate([{opacity:1,transform:"none"},{opacity:0,transform:"translateY(-10px) scale(.97)"}],{duration:380,delay:(nb-bar[i])*70,easing:"cubic-bezier(.4,0,1,1)",fill:"forwards"}));
       const an=t.animate([{height:h0+"px"},{height:h1+"px"}],{duration:620,delay:140+nb*40,easing:"cubic-bezier(.65,0,.35,1)",fill:"backwards"});
       an.onfinish=an.oncancel=()=>{klip(t,0);delete t.dataset.anim;state.klOpen=false;renderTabs();};return;}
-    state.klOpen=!state.klOpen;renderTabs();if(!state.klOpen||!gerak)return;
+    state.klOpen=!state.klOpen;renderTabs();
+    if(!state.klOpen||!gerak)return;
     // Membuka: tinggi bertambah dengan perlambatan, kartu muncul per baris dari atas.
     const h1=t.offsetHeight;if(h1<=h0)return;const kl=[...t.querySelectorAll(".tab.kl")],bar=barisKlaster(kl);
     t.dataset.anim="1";klip(t,1);
