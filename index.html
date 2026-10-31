@@ -564,6 +564,12 @@ html body .tabs .tab.kl[aria-selected="true"]{border-color:color-mix(in srgb,var
 html body .tabs .tab.kl[aria-selected="true"]::after{content:none;display:none}
 :root[data-theme="dark"] body .tabs .tab.kl[aria-selected="true"]{border-color:rgb(255 255 255 / .5);box-shadow:none}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body .tabs .tab.kl[aria-selected="true"]{border-color:rgb(255 255 255 / .5);box-shadow:none}}
+/* Tombol Previous/Next presisi: lebar sama, teks dan panah tepat di tengah (panah SVG, bukan huruf). */
+html body .card .nav>#prev.btn,html body .card .nav>#next.btn{flex:0 0 132px;width:132px;height:44px;min-height:44px;padding:0 14px!important;display:inline-flex;align-items:center;justify-content:center;gap:7px;line-height:1;font-size:15px;letter-spacing:0}
+html body .card .nav>.btn span{display:block;line-height:1}
+html body .card .nav>.btn .nvp{flex:none;width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+/* Kolom pilihan di Quiz Options: saat disentuh tidak muncul bingkai emas, cukup garis tepi putih lembut seperti kolom lain. */
+html body #setelan .controls select:focus,html body #setelan .controls select:focus-visible{outline:none;border-color:color-mix(in srgb,var(--ink) 45%,transparent)}
 /* Select Cluster hanya judul: tidak bisa diklik, daftar kategori selalu terbuka, tanpa segitiga. */
 html body #tabs .tab.pilih{cursor:default;pointer-events:none}html body #tabs .tab.pilih::after{content:none!important;display:none!important}
 /* Baris Select Cluster: tanpa ikon, tulisan di tengah (segitiga tetap di kanan). */
@@ -1171,7 +1177,7 @@ function renderCard(){
     html+=`${ketHTML(q)}`;
   }
   if(locked) html+=ketHTML(q);
-  html+=`<div class="nav"><button class="btn" id="prev" type="button" ${state.pos===0?"disabled":""}>← Previous</button><button class="btn primary" id="next" type="button">${state.pos===state.list.length-1?"Lihat hasil":"Next →"}</button></div>`;
+  html+=`<div class="nav"><button class="btn" id="prev" type="button" ${state.pos===0?"disabled":""}><svg class="nvp" viewBox="0 0 16 16" aria-hidden="true"><path d="M13 8H3.5M7.5 4 3.5 8l4 4"/></svg><span>Previous</span></button><button class="btn primary" id="next" type="button">${state.pos===state.list.length-1?"<span>Lihat hasil</span>":'<span>Next</span><svg class="nvp" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4"/></svg>'}</button></div>`;
   card.innerHTML=html;pasangAlat();
   if(own){$("mv").onclick=()=>{state.mvOpen=!state.mvOpen;renderCard();};$("ed").onclick=()=>{state.edOpen=true;state.mvOpen=false;renderCard();};
     if(state.mvOpen){const fill=()=>{const c=+$("mvc").value;$("mvs").innerHTML=SUBS[c].map((n,i)=>`<option value="${i+1}"${c===here.c&&i+1===here.s?" selected":""}>${i+1}. ${esc(n)}</option>`).join("");};
@@ -1281,8 +1287,10 @@ $("fsexit").onclick=()=>fokus(false);
 $("timer").value=tMode+(tMode!=="off"&&SEC!==54?String(SEC):"");
 // Timer dipilih lewat dua menu (jenis dan durasi), lalu diteruskan ke #timer yang tersembunyi.
 // Timer Off: kolom Duration kosong; setelah memilih Total atau Per question, durasinya muncul.
-function sinkronTimer(){const ts=$("tsec");if(!ts.querySelector('option[value=""]'))ts.insertAdjacentHTML("afterbegin",'<option value="" hidden></option>');
-  $("tmode").value=tMode;ts.value=tMode==="off"?"":String(SEC);ts.disabled=tMode==="off";}
+// Pilihan kosong hanya ada saat Off (iPhone menampilkan pilihan tersembunyi sebagai baris kosong di daftar).
+function sinkronTimer(){const ts=$("tsec"),k=ts.querySelector('option[value=""]'),off=tMode==="off";
+  if(off&&!k)ts.insertAdjacentHTML("afterbegin",'<option value=""></option>');if(!off&&k)k.remove();
+  $("tmode").value=tMode;ts.value=off?"":String(SEC);ts.disabled=off;}
 const gantiTimer=()=>{const m=$("tmode").value;$("timer").value=m==="off"?"off":m+(($("tsec").value||"54")==="54"?"":$("tsec").value);$("timer").dispatchEvent(new Event("change"));sinkronTimer();};
 $("tmode").onchange=gantiTimer;$("tsec").onchange=gantiTimer;sinkronTimer();
 $("siapbtn").onclick=()=>{window.__gulTutup=false;siapCat=state.cat;state.mulai=false;state.qLeft=SEC;state.qId=null;persist();$("setelan").open=false;render();window.scrollTo({top:Math.max(0,$("card").offsetTop-12),behavior:"smooth"});};
