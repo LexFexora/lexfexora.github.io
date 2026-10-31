@@ -181,7 +181,7 @@ header .akun .av{background:#eef2ef;color:#1f2421}header .akun .nm{color:#eef2ef
 .bahas .vonis{padding:3px 11px;letter-spacing:.02em}
 .kiri,.tengah,.kanan,.chatlist,.lb{scrollbar-color:color-mix(in srgb,var(--ink) 18%,transparent) transparent}
 .chatlist li.aku p{background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 40%,var(--line))}
-.chatform{display:flex;gap:8px}.chatform input{flex:1;min-width:0;font:inherit;font-size:14px;padding:9px 12px;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--ink)}.lb .avw{position:relative;display:block;width:max-content}.lb .avw .crown{position:absolute;left:50%;top:-14px;transform:translateX(-50%) rotate(-8deg);font-size:14px;line-height:1;pointer-events:none;filter:drop-shadow(0 1px 1.5px rgb(0 0 0 / .5))}.lb li{overflow:visible}.nav.sk{flex-direction:column;align-items:center;gap:6px}.mini{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:center}.mini select{font:inherit;font-size:12.5px;padding:5px 8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);max-width:200px}.nav.sk .tunggun{margin:0;font-size:12px;width:100%;text-align:center}
+.chatform{display:flex;gap:8px}.chatform input{flex:1;min-width:0;font:inherit;font-size:14px;padding:9px 12px;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--ink)}.lb .avw{position:relative;display:block;width:max-content}.lb .avw .crown{position:absolute;left:50%;top:-14px;transform:translateX(-50%) rotate(-8deg);font-size:14px;line-height:1;pointer-events:none;filter:drop-shadow(0 1px 2px rgb(0 0 0 / .45))}.lb li{overflow:visible}.nav.sk{flex-direction:column;align-items:center;gap:6px}.mini{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:center}.mini select{font:inherit;font-size:12.5px;padding:5px 8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);max-width:200px}.nav.sk .tunggun{margin:0;font-size:12px;width:100%;text-align:center}
 .opt .mk.x{color:var(--bad);font-weight:700}
 .btn.review{display:inline-flex;align-items:center;gap:8px;padding:9px 20px;color:#1f1608;border-color:color-mix(in srgb,var(--brass) 70%,#000);
   background:linear-gradient(180deg,#e2bd6a,#c79a3e);box-shadow:inset 0 1px 0 rgb(255 255 255 / .35),0 6px 16px -8px rgb(154 107 18 / .6);letter-spacing:.02em}
@@ -322,6 +322,8 @@ header .tema .knop{background:linear-gradient(180deg,#c9b98f,#a8925c)}header .te
 @keyframes lgmasuk{from{opacity:0;transform:translateY(-18px) scale(.96)}to{opacity:1;transform:none}}
 @media(max-width:600px){#lgtoast{left:16px;right:16px;bottom:auto;top:12px;align-items:stretch}#lgtoast .lgt{max-width:none}}
 .topi{display:inline-block;width:1.35em;height:1.1em;vertical-align:-.14em;overflow:visible}.lb .avw .crown .topi{display:block;width:24px;height:19.5px}
+/* Tanda air nama + email peserta selama mock exam (body.lindung). */
+#tandaair{position:fixed;inset:-20%;z-index:2147483000;pointer-events:none;display:flex;flex-wrap:wrap;gap:70px 90px;align-content:flex-start;padding:40px;transform:rotate(-24deg);opacity:.07;font:600 15px/1 "Public Sans",system-ui,sans-serif;color:var(--ink,#888);overflow:hidden;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -362,7 +364,7 @@ header .tema .knop{background:linear-gradient(180deg,#c9b98f,#a8925c)}header .te
 <script>
 // Mock Exam bersama: login Google tanpa persetujuan, soal dari dokumen tryout/<id>, nilai peserta di tryout/<id>/peserta/<uid>.
 (function(){
-const TOPI='<svg class="topi" viewBox="0 0 32 26" shape-rendering="geometricPrecision" aria-hidden="true"><defs><linearGradient id="tpK" x1="0" x2="1"><stop offset="0" stop-color="#4a4a4a"/><stop offset=".22" stop-color="#1c1c1c"/><stop offset=".75" stop-color="#060606"/><stop offset="1" stop-color="#2a2a2a"/></linearGradient><linearGradient id="tpB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a3a3a"/><stop offset="1" stop-color="#030303"/></linearGradient></defs><g stroke="#c9ccd1" stroke-width="1.1" stroke-linejoin="round"><path d="M9.4 3.3C9.4 2.1 11 1.2 16 1.2s6.6.9 6.6 2.1L21.8 18.8H10.2z" fill="url(#tpK)"/><path d="M1.6 19.6c0-1.1 1.3-1.6 2.8-1 2.6 1 6.9 1.5 11.6 1.5s9-.5 11.6-1.5c1.5-.6 2.8-.1 2.8 1 0 2.7-6.4 4.8-14.4 4.8S1.6 22.3 1.6 19.6z" fill="url(#tpB)"/></g><path d="M10.6 14.4h10.8l-.25 3.2H10.85z" fill="#000"/><path d="M11.6 3.6l.7 10.2" stroke="#fff" stroke-opacity=".28" stroke-width="1.2" stroke-linecap="round"/><path d="M5.5 20.5c3 .8 6.6 1.1 10.5 1.1" fill="none" stroke="#fff" stroke-opacity=".22" stroke-width=".8" stroke-linecap="round"/></svg>';
+const TOPI='<svg class="topi" viewBox="0 0 32 26" shape-rendering="geometricPrecision" aria-hidden="true"><defs><linearGradient id="tpK" x1="0" x2="1"><stop offset="0" stop-color="#4a4a4a"/><stop offset=".22" stop-color="#1c1c1c"/><stop offset=".75" stop-color="#060606"/><stop offset="1" stop-color="#2a2a2a"/></linearGradient><linearGradient id="tpB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a3a3a"/><stop offset="1" stop-color="#030303"/></linearGradient></defs><g stroke="#000" stroke-width=".6" stroke-linejoin="round"><path d="M9.4 3.3C9.4 2.1 11 1.2 16 1.2s6.6.9 6.6 2.1L21.8 18.8H10.2z" fill="url(#tpK)"/><path d="M1.6 19.6c0-1.1 1.3-1.6 2.8-1 2.6 1 6.9 1.5 11.6 1.5s9-.5 11.6-1.5c1.5-.6 2.8-.1 2.8 1 0 2.7-6.4 4.8-14.4 4.8S1.6 22.3 1.6 19.6z" fill="url(#tpB)"/></g><path d="M10.6 14.4h10.8l-.25 3.2H10.85z" fill="#000"/><path d="M11.6 3.6l.7 10.2" stroke="#fff" stroke-opacity=".16" stroke-width="1.1" stroke-linecap="round"/><path d="M5.5 20.5c3 .8 6.6 1.1 10.5 1.1" fill="none" stroke="#fff" stroke-opacity=".12" stroke-width=".7" stroke-linecap="round"/></svg>';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const L="ABCDEFGH";
@@ -411,6 +413,7 @@ function isiBahas(html,cari){const w=cari&&window.IstilahCari&&IstilahCari.node,
   [...bahas.childNodes].forEach(n=>{if(n!==w)n.remove();});const nodes=[...tmp.childNodes],i=nodes.indexOf(h);
   if(w.parentNode!==bahas)bahas.appendChild(w);w.before(...nodes.slice(0,i+1));w.after(...nodes.slice(i+1));}
 const OWNER=(window.OWNER_EMAIL||"").toLowerCase();
+const BEBAS_SALIN=["amifaveiro9@gmail.com"]; // boleh salin & screenshot di mock exam, selain pemilik
 let U=null,isOwner=false,T=null,P={},aku=null,pos=0,urutLama={},deltaUntil={},simpanT=null,tick=null,unsubT=null,unsubP=null,selesaiKirim=false,pMuat=false;
 
 function login(){const p=new firebase.auth.GoogleAuthProvider();p.setCustomParameters({prompt:"select_account"});
@@ -422,7 +425,7 @@ if(!TID){gate("Tautan mock exam tidak lengkap","Buka tautan mock exam yang dibag
 
 auth.onAuthStateChanged(u=>{U=u;pMuat=false;aku=null;P={};if(unsubT){unsubT();unsubT=null;}if(unsubP){unsubP();unsubP=null;}if(unsubC){unsubC();unsubC=null;}
   if(!u){gate("Mock Exam","Masuk dengan akun Google untuk ikut mock exam. Nama akun Anda akan tampil di papan peringkat.",true);return;}
-  isOwner=!!OWNER&&(u.email||"").toLowerCase()===OWNER&&u.emailVerified;$("edsoal").hidden=!isOwner;if(isOwner){siapkanEdit();pantauLoginMulai();}$("akun").hidden=false;$("akunav").innerHTML=av({foto:u.photoURL,nama:u.displayName||u.email});$("akunnm").textContent=u.displayName||(u.email||"").split("@")[0];document.body.classList.toggle("bebas",isOwner);
+  isOwner=!!OWNER&&(u.email||"").toLowerCase()===OWNER&&u.emailVerified;$("edsoal").hidden=!isOwner;if(isOwner){siapkanEdit();pantauLoginMulai();}$("akun").hidden=false;$("akunav").innerHTML=av({foto:u.photoURL,nama:u.displayName||u.email});$("akunnm").textContent=u.displayName||(u.email||"").split("@")[0];document.body.classList.toggle("bebas",isOwner||BEBAS_SALIN.includes((u.email||"").toLowerCase())&&u.emailVerified);
   unsubT=db.doc("tryout/"+TID).onSnapshot(s=>{if(!s.exists){gate("Mock exam tidak ditemukan","Periksa kembali tautannya.");return;}
       T=s.data({serverTimestamps:"estimate"});T.id=s.id;if(!T.judul||T.judul==="Mock Exam Seleksi Kemampuan Bidang")T.judul="Mock Exam";gabung();render();},
     e=>gate("Mock exam belum dapat dibuka","Muat ulang halaman. ("+(e.code||e.message)+")"));
@@ -648,6 +651,16 @@ function pembahasan(p){const j=(aku&&aku.jawab)||p.jawab||{},n=T.soal.length;let
     ${q.p||q.d?`<p class="pb">${esc(q.p)}${q.d?`<small>Source: ${esc(q.d)}</small>`:""}</p>`:""}</li>`;}).join("");
   return `<details class="rev"><summary>Answer review <span class="muted" style="font-weight:400;font-size:13px">${salah} of ${n} to study</span></summary>
   <div class="revf"><button class="btn on" type="button" data-f="semua">All questions</button><button class="btn" type="button" data-f="salah">Wrong &amp; unanswered only</button></div><ol class="rv" id="rv">${it}</ol></details>`;}
+// Pengecualian salin/screenshot: pemilik dan email di BEBAS_SALIN (body.bebas). Peserta lain mendapat tanda air nama + email selama mock exam.
+function bebasSalin(){const e=((U&&U.email)||"").toLowerCase();return !!e&&U.emailVerified!==false&&(e===OWNER||BEBAS_SALIN.includes(e));}
+let wmKey="";
+function segarkanLindung(){const bb=!!U&&bebasSalin();document.body.classList.toggle("bebas",bb);const on=!!(U&&T&&!bb);document.body.classList.toggle("lindung",on);
+  let wm=document.getElementById("tandaair");
+  if(on){const k=(U.displayName||"")+" · "+(U.email||"");if(!wm){wm=document.createElement("div");wm.id="tandaair";wm.setAttribute("aria-hidden","true");document.body.appendChild(wm);}
+    if(wmKey!==k){wmKey=k;wm.innerHTML=Array.from({length:60},()=>`<span>${esc(k)}</span>`).join("");}}
+  else if(wm){wm.remove();wmKey="";}}
+setInterval(segarkanLindung,1000);
+
 })();
 </script>
 <div id="tirai" aria-hidden="true">Konten disembunyikan. Ketuk atau kembali ke halaman ini untuk melanjutkan.</div>
@@ -657,6 +670,7 @@ function pembahasan(p){const j=(aku&&aku.jawab)||p.jawab||{},n=T.soal.length;let
 // Pemilik (body.bebas) dikecualikan agar bisa screenshot untuk melaporkan kendala.
 (()=>{const bebas=()=>document.body.classList.contains("bebas");const no=e=>{if(bebas())return;const t=e.target;if(t&&t.closest&&t.closest('input,textarea,select,[contenteditable]'))return;e.preventDefault();};
   ["contextmenu","copy","cut","dragstart","selectstart"].forEach(k=>document.addEventListener(k,no));
+  document.addEventListener("paste",e=>{if(!bebas())e.preventDefault();},true);
   const tutup=()=>{if(!bebas())document.body.classList.add("tertutup");},buka=()=>document.body.classList.remove("tertutup");
   const kosongkan=()=>{try{navigator.clipboard&&navigator.clipboard.writeText("")}catch(e){}};
   document.addEventListener("keydown",e=>{if(bebas())return;const k=(e.key||"").toLowerCase(),m=e.ctrlKey||e.metaKey;
