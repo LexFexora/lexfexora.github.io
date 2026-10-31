@@ -751,6 +751,24 @@ body.bebas label.ctl-sub .subtap{display:block;position:absolute;inset:0;cursor:
 :root[data-theme="dark"] body .card .nav>#prev.btn,:root[data-theme="dark"] body .card .nav>#next.btn{color:#eef1ef;border:1px solid rgb(255 255 255 / .16);background:radial-gradient(120% 90% at 20% 0,rgb(255 255 255 / .1),transparent 60%),linear-gradient(160deg,rgb(255 255 255 / .06),rgb(255 255 255 / .015) 55%,rgb(255 255 255 / .03));box-shadow:inset 0 1px 0 rgb(255 255 255 / .1),inset 0 -1px 0 rgb(0 0 0 / .35),0 10px 24px rgb(0 0 0 / .5)}
 :root[data-theme="dark"] body .card .nav>#prev.btn:hover:not(:disabled),:root[data-theme="dark"] body .card .nav>#next.btn:hover{border-color:rgb(255 255 255 / .32);background:radial-gradient(120% 90% at 20% 0,rgb(255 255 255 / .15),transparent 62%),linear-gradient(160deg,rgb(255 255 255 / .09),rgb(255 255 255 / .03))}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#060807;--surface:#0d100f;--line:#222725;--accent-soft:#14231b}:root:not([data-theme="light"]) body{background:radial-gradient(90% 60% at 80% 100%,rgb(60 110 80 / .07),transparent 70%),#060807}:root:not([data-theme="light"]) body .card{background:radial-gradient(120% 70% at 0 0,rgb(255 255 255 / .045),transparent 60%),linear-gradient(165deg,rgb(255 255 255 / .03),rgb(255 255 255 / .008) 50%,rgb(255 255 255 / .02)),#0a0c0b;border:1px solid rgb(255 255 255 / .09);box-shadow:inset 0 1px 0 rgb(255 255 255 / .06),0 14px 34px rgb(0 0 0 / .6)}:root:not([data-theme="light"]) body .card .opt:not(.correct):not(.wrong){background:linear-gradient(160deg,rgb(255 255 255 / .04),rgb(255 255 255 / .01) 60%,rgb(255 255 255 / .02));border-color:rgb(255 255 255 / .1);box-shadow:inset 0 1px 0 rgb(255 255 255 / .05),0 6px 16px rgb(0 0 0 / .35)}:root:not([data-theme="light"]) body .card .opt:not(.correct):not(.wrong):hover:not(:disabled){border-color:rgb(255 255 255 / .28)}:root:not([data-theme="light"]) body .card .opt .l{border-color:rgb(255 255 255 / .2)}:root:not([data-theme="light"]) body .card .nav>#prev.btn,:root:not([data-theme="light"]) body .card .nav>#next.btn{color:#eef1ef;border:1px solid rgb(255 255 255 / .16);background:radial-gradient(120% 90% at 20% 0,rgb(255 255 255 / .1),transparent 60%),linear-gradient(160deg,rgb(255 255 255 / .06),rgb(255 255 255 / .015) 55%,rgb(255 255 255 / .03));box-shadow:inset 0 1px 0 rgb(255 255 255 / .1),inset 0 -1px 0 rgb(0 0 0 / .35),0 10px 24px rgb(0 0 0 / .5)}:root:not([data-theme="light"]) body .card .nav>#prev.btn:hover:not(:disabled),:root:not([data-theme="light"]) body .card .nav>#next.btn:hover{border-color:rgb(255 255 255 / .32);background:radial-gradient(120% 90% at 20% 0,rgb(255 255 255 / .15),transparent 62%),linear-gradient(160deg,rgb(255 255 255 / .09),rgb(255 255 255 / .03))}}
+
+/* Layar Final Score: kaca gelap netral, huruf sans, selaras dengan kartu klaster dan layar soal. */
+html body #card .done.putusan{border:1px solid rgb(255 255 255 / .1);border-radius:16px;color:#e9ecea;padding:30px 20px 26px;background:radial-gradient(70% 45% at 50% 0,rgb(255 255 255 / .07),transparent 70%),linear-gradient(170deg,rgb(255 255 255 / .03),rgb(255 255 255 / .005) 55%),#090b0a;box-shadow:inset 0 1px 0 rgb(255 255 255 / .07),0 14px 34px rgb(0 0 0 / .6)}
+html body #card .done.putusan::before{content:none}
+html body #card .putusan .palu{width:108px;height:81px;color:#eef1ef;margin:0 0 10px;filter:drop-shadow(0 0 10px rgb(255 255 255 / .16)) drop-shadow(0 2px 4px rgb(0 0 0 / .8))}
+html body #card .putusan .palu .alas{color:#7d8581}
+html body #card .putusan .palu .riak{stroke:rgb(255 255 255 / .55)}
+html body #card .putusan .eyebrow{font-family:var(--f-body);font-weight:600;font-size:12.5px;letter-spacing:.22em;text-transform:uppercase;color:#98a29d}
+html body #card .putusan .skor{margin:6px 0 2px;gap:8px}
+html body #card .putusan .angka{font-family:var(--f-body);font-weight:700;font-size:64px;letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:#f5f7f6;text-shadow:0 0 26px rgb(255 255 255 / .14)}
+html body #card .putusan .poin{font-family:var(--f-body);font-weight:500;font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:#98a29d;text-shadow:none}
+html body #card .putusan .predikat{font-family:var(--f-body);font-weight:500;font-size:14px;letter-spacing:.01em;line-height:1.45;margin-top:8px}
+html body #card .putusan .predikat.lulus{color:#8fd3ae}
+html body #card .putusan .predikat.gagal{color:#ee9f95}
+html body #card .putusan .pgaris{background:linear-gradient(90deg,transparent,rgb(255 255 255 / .22) 50%,transparent);margin:20px auto}
+html body #card .putusan .row>.btn{min-height:46px;font-family:var(--f-body);font-weight:600;font-size:15px;letter-spacing:.01em;color:#e9ecea;text-shadow:none;border:1px solid rgb(255 255 255 / .13);border-radius:12px;background:linear-gradient(160deg,rgb(255 255 255 / .05),rgb(255 255 255 / .012) 60%,rgb(255 255 255 / .025));box-shadow:inset 0 1px 0 rgb(255 255 255 / .07),0 8px 20px rgb(0 0 0 / .45)}
+html body #card .putusan .row>.btn.primary{color:#fff;border-color:rgb(255 255 255 / .3);background:radial-gradient(120% 90% at 20% 0,rgb(255 255 255 / .14),transparent 62%),linear-gradient(160deg,rgb(255 255 255 / .1),rgb(255 255 255 / .035));box-shadow:inset 0 1px 0 rgb(255 255 255 / .16),0 0 18px rgb(255 255 255 / .06),0 8px 20px rgb(0 0 0 / .45)}
+html body #card .putusan .row>.btn:hover{filter:none;border-color:rgb(255 255 255 / .34)}
 </style>
 </head>
 <body>
@@ -1276,7 +1294,7 @@ const PALU=`<svg class="palu" viewBox="0 0 150 112" aria-hidden="true"><circle c
 function hitungNaik(){const el=$("angka");if(!el||matchMedia("(prefers-reduced-motion: reduce)").matches)return;const v=+el.textContent;el.textContent="0";
   const t0=performance.now()+780,d=900;const f=t=>{const k=Math.min(1,Math.max(0,(t-t0)/d));el.textContent=Math.round(v*(1-Math.pow(1-k,3)));if(k<1)requestAnimationFrame(f);};requestAnimationFrame(f);}
 function nilaiHTML(ok,n){const min=p=>Math.ceil(p*n/100-1e-9),cap=n?STANDAR.find(([p])=>ok>=min(p)):null;
-  return `<p class="predikat ${cap?"lulus":"gagal"}">${cap?"Passed · "+cap[1]+" · "+cap[0]+"%":"Not Passed · below Adequate Standard 50%"}</p>`;}
+  return `<p class="predikat ${cap?"lulus":"gagal"}">${cap?"Passed · "+cap[1]+" ("+cap[0]+"%)":"Not Passed · Below Adequate Standard (50%)"}</p>`;}
 function bagNext(){if(state.ulang||state.sub==="all"||state.bag==="all"||state.bag==="bonus")return false;const {k,bonus}=bagInfo(QB.filter(q=>inCat(q,state.cat,state.sub)).length);return +state.bag<k?+state.bag+1:bonus?"bonus":false;}
 // Quiz Options wajib disimpan setiap kali halaman dibuka; setelah itu tombol Mulai muncul.
 let siapCat=null;
@@ -1398,7 +1416,7 @@ window.__ulang=(c,s,ids,label,k)=>{ids=ids.filter(id=>BYID[id]);if(!ids.length){
   selectCat(c,s,1);state.ulang={ids,label,k};restore();$("order").value=state.order;renderBag();render();
   siapCat=state.cat;window.__gulTutup=false;state.setHilang=false;const st=$("setelan");if(st){st.hidden=false;st.open=false;}render();
   requestAnimationFrame(()=>window.scrollTo({top:Math.max(0,$("ulangbar").offsetTop-12),behavior:"smooth"}));};
-window.__quiz={state};window.__soalKini=()=>BYID[state.list[state.pos]];
+window.__quiz={state,render:()=>render()};window.__soalKini=()=>BYID[state.list[state.pos]];
 window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add(id);state.edOpen=false;render();};
 }
 </script>
