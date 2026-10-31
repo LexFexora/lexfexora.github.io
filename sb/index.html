@@ -565,6 +565,8 @@ html body .tabs .tab.kl[aria-selected="true"]{border-color:color-mix(in srgb,var
 html body .tabs .tab.kl[aria-selected="true"]::after{content:none;display:none}
 :root[data-theme="dark"] body .tabs .tab.kl[aria-selected="true"]{border-color:rgb(255 255 255 / .5);box-shadow:none}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body .tabs .tab.kl[aria-selected="true"]{border-color:rgb(255 255 255 / .5);box-shadow:none}}
+/* Select Cluster hanya judul: tidak bisa diklik, daftar kategori selalu terbuka, tanpa segitiga. */
+html body #tabs .tab.pilih{cursor:default;pointer-events:none}html body #tabs .tab.pilih::after{content:none!important;display:none!important}
 /* Baris Select Cluster: tanpa ikon, tulisan di tengah (segitiga tetap di kanan). */
 html body #tabs .tab.pilih{justify-content:center;text-align:center;padding-left:36px;padding-right:36px}html body #tabs .tab.pilih .kt{align-items:center;text-align:center}
 /* Latar baris Select Cluster disamakan dengan Mock Exam: hitam pekat dengan bingkai ganda. */
@@ -958,12 +960,13 @@ function restore(){
 const KLIK={1:[`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5v16.5M7.5 20h9M4.5 6.5h15"/><circle cx="12" cy="4.5" r="1"/><path d="M4.5 6.5 2 13a2.5 2.5 0 0 0 5 0z"/><path d="M19.5 6.5 17 13a2.5 2.5 0 0 0 5 0z"/></svg>`,"Teori, asas & kelembagaan"],2:[`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9.5 12 4l9 5.5z"/><path d="M5 10v8M9.7 10v8M14.3 10v8M19 10v8"/><path d="M3 20.5h18M4 18h16"/></svg>`,"Hukum acara PA & jinayat"],3:[`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5.5c3-1.2 6-1 9 1 3-2 6-2.2 9-1V19c-3-1-6-.8-9 1-3-1.8-6-2-9-1z"/><path d="M12 6.5V20"/></svg>`,"Perkawinan, waris & ekonomi syariah"],4:[`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="16" height="11" rx="1.5"/><path d="M2 19.5h20"/><path d="m10 9 -1.8 1.8L10 12.6M14 9l1.8 1.8L14 12.6"/></svg>`,"Peradilan elektronik & e-Court"]};
 const KOMPAS=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 1.8v8.4M3.6 10.2h4.8M2.2 3.4h7.6"/><path d="M2.2 3.4 1 6.6a1.3 1.3 0 0 0 2.4 0zM9.8 3.4 8.6 6.6a1.3 1.3 0 0 0 2.4 0z"/><path d="M13 4.6 18 1.8l5 2.8z"/><path d="M14.2 5.4v4M16.6 5.4v4M19.4 5.4v4M21.8 5.4v4M13 10.2h10"/><path d="M1 14.4c1.7-.7 3.4-.6 5 .6 1.6-1.2 3.3-1.3 5-.6v7.2c-1.7-.6-3.4-.5-5 .6-1.6-1.1-3.3-1.2-5-.6z"/><path d="M6 15v7.2"/><rect x="14" y="14.2" width="8" height="5.6" rx=".8"/><path d="M12.8 22.2h10.4"/></svg>`;
 function renderTabs(){
-  const t=$("tabs");
+  const t=$("tabs");state.klOpen=true; // daftar kategori selalu terbuka
   // "Pilih Klaster" membuka dan menutup daftar klaster; klaster yang dipilih tampil di bawah judulnya.
   const sel=state.cat!=="all",ik=n=>(KLIK[n]||[KOMPAS])[0];
   t.innerHTML=`<button class="tab pilih" type="button" id="pilih" aria-expanded="${!!state.klOpen}"${sel?` style="--kc:var(--k${state.cat})"`:""}><span class="kt"><b>Select Cluster</b>${sel?`<span class="sel">${esc(CATS[state.cat].short)}</span>`:`<small>Tap to choose a cluster</small>`}</span></button>`+
     (state.klOpen?Object.keys(CATS).map(n=>`<button class="tab kl" role="tab" type="button" data-k="${n}" aria-selected="${state.cat===+n}" style="--kc:var(--k${n})"><span class="ki">${ik(n)}</span><span class="kt"><b>${esc(CATS[n].short)}</b></span></button>`).join(""):"");
-  $("pilih").onclick=()=>{const t=$("tabs"),h0=t.offsetHeight;if(t.dataset.anim)return;
+  $("pilih").onclick=()=>{};$("pilih").tabIndex=-1;
+  if(0)$("pilih").onclick=()=>{const t=$("tabs"),h0=t.offsetHeight;if(t.dataset.anim)return;
     const gerak=t.animate&&!matchMedia("(prefers-reduced-motion:reduce)").matches;
     // Menutup: kartu cluster memudar per baris (baris bawah dulu) sebelum tingginya menyusut, jadi tidak ada kartu yang terpotong.
     if(state.klOpen&&gerak){state.klOpen=false;renderTabs();const h1=t.offsetHeight;state.klOpen=true;renderTabs();
