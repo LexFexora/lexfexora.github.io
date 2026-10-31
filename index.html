@@ -564,6 +564,8 @@ html body .tabs .tab.kl[aria-selected="true"]{border-color:color-mix(in srgb,var
 html body .tabs .tab.kl[aria-selected="true"]::after{content:none;display:none}
 :root[data-theme="dark"] body .tabs .tab.kl[aria-selected="true"]{border-color:rgb(255 255 255 / .5);box-shadow:none}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body .tabs .tab.kl[aria-selected="true"]{border-color:rgb(255 255 255 / .5);box-shadow:none}}
+/* Baris Select Cluster: tanpa ikon, tulisan di tengah (segitiga tetap di kanan). */
+html body #tabs .tab.pilih{justify-content:center;text-align:center;padding-left:36px;padding-right:36px}html body #tabs .tab.pilih .kt{align-items:center;text-align:center}
 /* Latar baris Select Cluster disamakan dengan Mock Exam: hitam pekat dengan bingkai ganda. */
 :root[data-theme="dark"] body #tabs .tab.pilih{border:1px solid #000!important;border-radius:6px!important;background:linear-gradient(180deg,#111413,#0a0b0b)!important;box-shadow:0 0 0 1px #59615c,0 0 0 3px #070807,0 0 0 4px #3a413d,0 10px 24px rgb(0 0 0 / .7)!important}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body #tabs .tab.pilih{border:1px solid #000!important;border-radius:6px!important;background:linear-gradient(180deg,#111413,#0a0b0b)!important;box-shadow:0 0 0 1px #59615c,0 0 0 3px #070807,0 0 0 4px #3a413d,0 10px 24px rgb(0 0 0 / .7)!important}}
@@ -958,7 +960,7 @@ function renderTabs(){
   const t=$("tabs");
   // "Pilih Klaster" membuka dan menutup daftar klaster; klaster yang dipilih tampil di bawah judulnya.
   const sel=state.cat!=="all",ik=n=>(KLIK[n]||[KOMPAS])[0];
-  t.innerHTML=`<button class="tab pilih" type="button" id="pilih" aria-expanded="${!!state.klOpen}"${sel?` style="--kc:var(--k${state.cat})"`:""}><span class="ki ki4">${KOMPAS}</span><span class="kt"><b>Select Cluster - SKB</b>${sel?`<span class="sel">${esc(CATS[state.cat].short)}</span>`:`<small>Tap to choose a cluster</small>`}</span></button>`+
+  t.innerHTML=`<button class="tab pilih" type="button" id="pilih" aria-expanded="${!!state.klOpen}"${sel?` style="--kc:var(--k${state.cat})"`:""}><span class="kt"><b>Select Cluster</b>${sel?`<span class="sel">${esc(CATS[state.cat].short)}</span>`:`<small>Tap to choose a cluster</small>`}</span></button>`+
     (state.klOpen?Object.keys(CATS).map(n=>`<button class="tab kl" role="tab" type="button" data-k="${n}" aria-selected="${state.cat===+n}" style="--kc:var(--k${n})"><span class="ki">${ik(n)}</span><span class="kt"><b>${esc(CATS[n].short)}</b></span></button>`).join(""):"");
   $("pilih").onclick=()=>{const t=$("tabs"),h0=t.offsetHeight;if(t.dataset.anim)return;
     const gerak=t.animate&&!matchMedia("(prefers-reduced-motion:reduce)").matches;
@@ -1073,7 +1075,7 @@ document.addEventListener("toggle",e=>{const k=e.target,c=$("card");if(!k.classL
 function renderCard(){
   const card=$("card");
   if(!state.list.length){card.innerHTML="<p>Tidak ada soal untuk pilihan ini.</p>";return;}
-  if(!siapOK()&&!(window.__gulTutup&&state.cat!=="all")){card.innerHTML=`<div class="kunci"><span class="ik">🔒</span>${state.cat==="all"?"<b>Pilih klaster dulu</b><p>Pilih salah satu klaster di Select Cluster - SKB, atur Quiz Options &amp; Sections, lalu tekan Keep it.</p>":"<b>Atur Quiz Options &amp; Sections dulu</b><p>Pilih detail bagian, urutan, dan timer, lalu tekan Keep it.</p>"}<button class="btn primary" id="bukaset" type="button">Buka Quiz Options &amp; Sections</button></div>`;
+  if(!siapOK()&&!(window.__gulTutup&&state.cat!=="all")){card.innerHTML=`<div class="kunci"><span class="ik">🔒</span>${state.cat==="all"?"<b>Pilih klaster dulu</b><p>Pilih salah satu klaster di Select Cluster, atur Quiz Options &amp; Sections, lalu tekan Keep it.</p>":"<b>Atur Quiz Options &amp; Sections dulu</b><p>Pilih detail bagian, urutan, dan timer, lalu tekan Keep it.</p>"}<button class="btn primary" id="bukaset" type="button">Buka Quiz Options &amp; Sections</button></div>`;
     $("bukaset").onclick=()=>{const st=$("setelan");st.open=true;st.scrollIntoView({behavior:"smooth",block:"start"});};return;}
   // Soal baru tampil dan timer baru berjalan setelah pengguna menekan Mulai.
   if(state.cat!=="all"&&!state.mulai&&state.pos<state.list.length){
