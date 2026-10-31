@@ -570,6 +570,8 @@ html body .card .nav>.btn span{display:block;line-height:1}
 html body .card .nav>.btn .nvp{flex:none;width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
 /* Kolom pilihan di Quiz Options: saat disentuh tidak muncul bingkai emas, cukup garis tepi putih lembut seperti kolom lain. */
 html body #setelan .controls select:focus,html body #setelan .controls select:focus-visible{outline:none;border-color:color-mix(in srgb,var(--ink) 45%,transparent)}
+/* Duration otomatis (Timer Total): tampil jelas walau tidak bisa dipilih, tanpa panah pilihan. */
+html body #tsec.otomatis{opacity:1;-webkit-text-fill-color:var(--ink);color:var(--ink);background-image:none;cursor:default}
 /* Select Cluster hanya judul: tidak bisa diklik, daftar kategori selalu terbuka, tanpa segitiga. */
 html body #tabs .tab.pilih{cursor:default;pointer-events:none}html body #tabs .tab.pilih::after{content:none!important;display:none!important}
 /* Baris Select Cluster: tanpa ikon, tulisan di tengah (segitiga tetap di kanan). */
@@ -951,7 +953,9 @@ function buildSession(fresh,onlyIds){
   ids.forEach(id=>{state.perm[id]=shuffle(BYID[id].o.map((_,i)=>i));});
   persist();
 }
-function resetTimer(){state.tLeft=SEC*state.list.length;state.timeUp=false;state.qLeft=SEC;state.qId=null;state.expired={};}
+// Timer Total: 40 detik per soal dikali jumlah soal yang dipilih; Per question memakai pilihan Duration.
+const SEC_TOTAL=40;
+function resetTimer(){state.tLeft=SEC_TOTAL*state.list.length;state.timeUp=false;state.qLeft=SEC;state.qId=null;state.expired={};}
 function persist(){store[sessionKey()]={list:state.list,pos:state.pos,mulai:!!state.mulai,ans:state.ans,perm:state.perm,order:state.order,tLeft:state.tLeft,timeUp:state.timeUp,qLeft:state.qLeft,qId:state.qId,expired:state.expired};store.last={cat:state.cat,sub:state.sub,bag:state.bag};if(state.cat!=="all"&&state.sub!=="all"){store.subAkhir=store.subAkhir||{};store.subAkhir[state.cat]={sub:state.sub,bag:state.bag};}save();}
 function restore(){
   const s=store[sessionKey()];
@@ -1089,7 +1093,7 @@ function renderCard(){
   // Soal baru tampil dan timer baru berjalan setelah pengguna menekan Mulai.
   if(state.cat!=="all"&&!state.mulai&&state.pos<state.list.length){
     const n=state.list.length,sub=state.sub==="all"?CATS[state.cat].short:SUBS[state.cat][state.sub-1],bg=state.sub==="all"||state.bag==="all"?"":state.bag==="bonus"?"Bonus Questions":"Part "+state.bag;
-    const tm={off:"No timer",cum:"Total timer "+fmt(SEC*n),per:"Timer "+SEC+" sec per question"}[tMode]||"";
+    const tm={off:"No timer",cum:"Total timer "+fmt(SEC_TOTAL*n),per:"Timer "+SEC+" sec per question"}[tMode]||"";
     card.innerHTML=`<div class="kunci mulaikartu mk${window.__gulTutup?" tertutup":""}"><svg class="mkscene" viewBox="0 0 400 800" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs>
 <linearGradient id="mkSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0c1016"/><stop offset=".5" stop-color="#18212b"/><stop offset="1" stop-color="#0a0d11"/></linearGradient>
 <linearGradient id="mkBeam" x1="1" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfe2ff" stop-opacity=".5"/><stop offset="1" stop-color="#cfe2ff" stop-opacity="0"/></linearGradient>
@@ -1210,7 +1214,7 @@ function renderTimer(){
   const b=TB;
   if(tMode==="off"||!state.list.length||state.cat==="all"||!siapOK()||!state.mulai&&state.pos<state.list.length){b.hidden=true;return;}
   b.hidden=false;
-  if(tMode==="cum"){b.className="timer"+(state.tLeft<=60||state.timeUp?" warn":"");b.innerHTML=`⏱ ${state.timeUp?"Time's up":fmt(state.tLeft)} <small>of ${fmt(SEC*state.list.length)} · ${state.list.length} questions × ${SEC} sec</small>`;}
+  if(tMode==="cum"){b.className="timer"+(state.tLeft<=60||state.timeUp?" warn":"");b.innerHTML=`⏱ ${state.timeUp?"Time's up":fmt(state.tLeft)} <small>of ${fmt(SEC_TOTAL*state.list.length)} · ${state.list.length} questions × ${SEC_TOTAL} sec</small>`;}
   else{const id=state.list[state.pos];const idle=state.pos>=state.list.length||state.ans[id]!==undefined||state.expired[id];
     b.className="timer"+(!idle&&state.qLeft<=10?" warn":"");b.innerHTML=`⏱ ${state.expired[id]&&state.ans[id]===undefined?"Time's up":idle?"--:--":fmt(state.qLeft)} <small>${SEC} sec per question</small>`;}
 }
@@ -1274,7 +1278,7 @@ document.querySelector("#tocard>summary").addEventListener("click",e=>{const d=$
   const h0=d.offsetHeight;d.open=true;turunPerlahan(d,h0,[d.querySelector(".toisi")].filter(Boolean));});
 function renderRingkas(){const st=$("setelan");if(st){if(!st.dataset.anim)st.hidden=state.cat==="all"||!!state.setHilang;st.classList.toggle("perlu",!siapOK());document.querySelector(".wrap").classList.toggle("blmsiap",!siapOK()&&!(window.__gulTutup&&state.cat!=="all"));document.querySelector(".wrap").classList.toggle("blmmulai",state.cat!=="all"&&siapOK()&&!state.mulai&&state.pos<state.list.length);const sr=$("siaprow");if(sr)sr.hidden=siapOK();}const r=$("ringkas");if(!r)return;const s=state.cat==="all"||state.sub==="all"?"All Sections":state.sub+". "+SUBS[state.cat][state.sub-1]+(state.bag==="bonus"?" · Soal Bonus":state.bag!=="all"?" · Bagian "+state.bag:"");
   r.textContent=s+" · "+(state.order==="rand"?"Shuffle":"Sequential")+" · "+({off:"Timer off",cum:"Total timer",per:"Timer per question"}[tMode]||"");}
-function render(){if(tMode==="per")syncQ();renderScore();renderCard();renderMap();renderTimer();renderRingkas();}
+function render(){if(tMode==="per")syncQ();renderScore();renderCard();renderMap();renderTimer();renderRingkas();sinkronTimer();}
 function retake(){buildSession(true);render();}
 function retryWrong(){const w=state.list.filter(isBad);if(!w.length)return;buildSession(true,w);render();}
 
@@ -1287,11 +1291,14 @@ $("fsexit").onclick=()=>fokus(false);
 $("timer").value=tMode+(tMode!=="off"&&SEC!==54?String(SEC):"");
 // Timer dipilih lewat dua menu (jenis dan durasi), lalu diteruskan ke #timer yang tersembunyi.
 // Timer Off: kolom Duration kosong; setelah memilih Total atau Per question, durasinya muncul.
-// Pilihan kosong hanya ada saat Off (iPhone menampilkan pilihan tersembunyi sebagai baris kosong di daftar).
-function sinkronTimer(){const ts=$("tsec"),k=ts.querySelector('option[value=""]'),off=tMode==="off";
-  if(off&&!k)ts.insertAdjacentHTML("afterbegin",'<option value=""></option>');if(!off&&k)k.remove();
-  $("tmode").value=tMode;ts.value=off?"":String(SEC);ts.disabled=off;}
-const gantiTimer=()=>{const m=$("tmode").value;$("timer").value=m==="off"?"off":m+(($("tsec").value||"54")==="54"?"":$("tsec").value);$("timer").dispatchEvent(new Event("change"));sinkronTimer();};
+// Duration: Off = kosong; Total = otomatis 40 detik × jumlah soal (hanya ditampilkan); Per question = pilihan 54/45/35/30 detik.
+var DURASI_PER='<option value="54">54 sec</option><option value="45">45 sec</option><option value="35">35 sec</option><option value="30">30 sec</option>';
+function teksTotal(n){const t=SEC_TOTAL*n,h=Math.floor(t/3600),m=Math.floor(t%3600/60),d=t%60;return [h&&h+" hr",m&&m+" min",d&&d+" sec"].filter(Boolean).join(" ")||"0 sec";}
+function sinkronTimer(){const ts=$("tsec");$("tmode").value=tMode;
+  if(tMode==="off"){ts.innerHTML='<option value=""></option>';ts.value="";ts.disabled=true;ts.classList.remove("otomatis");return;}
+  if(tMode==="cum"){ts.innerHTML='<option value="tot">'+teksTotal(state.list.length)+'</option>';ts.value="tot";ts.disabled=true;ts.classList.add("otomatis");return;}
+  if(!ts.querySelector('option[value="54"]'))ts.innerHTML=DURASI_PER;ts.value=String(SEC);ts.disabled=false;ts.classList.remove("otomatis");}
+const gantiTimer=()=>{const m=$("tmode").value;$("timer").value=m==="off"?"off":m+(m!=="per"||!/^\d+$/.test($("tsec").value)||$("tsec").value==="54"?"":$("tsec").value);$("timer").dispatchEvent(new Event("change"));sinkronTimer();};
 $("tmode").onchange=gantiTimer;$("tsec").onchange=gantiTimer;sinkronTimer();
 $("siapbtn").onclick=()=>{window.__gulTutup=false;siapCat=state.cat;state.mulai=false;state.qLeft=SEC;state.qId=null;persist();$("setelan").open=false;render();window.scrollTo({top:Math.max(0,$("card").offsetTop-12),behavior:"smooth"});};
 $("timer").onchange=e=>{const v=e.target.value;tMode=v.replace(/\d+$/,"");SEC=+((v.match(/\d+$/)||[54])[0]);store.timerMode=tMode;store.timerSec=SEC;resetTimer();persist();render();};
