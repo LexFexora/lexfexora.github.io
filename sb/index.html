@@ -599,6 +599,12 @@ html body .qtools .qfs{width:30px;height:30px}
 #card .putusan .row>.btn:hover{filter:brightness(1.15)}#card .putusan .row>.btn:active{transform:translateY(1px)}
 /* Desktop: Hukum Formil dan Hukum Materil sama-sama dua baris; di ponsel tetap satu baris seperti biasa. */
 @media (max-width:720px){.tabs .tab.kl .pcbr{display:none}}
+/* Question Map: tanda benar = lilin, salah = gulungan (ikon SVG, tanpa lingkaran). */
+.tk.lil,.tk.gul{width:auto;height:auto;border-radius:0;background:none!important;display:inline-flex;vertical-align:-3px}
+.tk .tki{display:block;height:17px;width:auto;filter:drop-shadow(0 1px 1.2px rgb(0 0 0 / .55))}
+.map .tk.lil,.map .tk.gul{top:-9px;right:-6px}
+.mapket .tk .tki{height:18px}
+.mapket{display:flex;flex-wrap:wrap;align-items:center;gap:6px 16px;white-space:normal}.mapket>span{display:inline-flex;align-items:center;gap:6px}
 /* Select Cluster hanya judul: tidak bisa diklik, daftar kategori selalu terbuka, tanpa segitiga. */
 html body #tabs .tab.pilih{cursor:default;pointer-events:none}html body #tabs .tab.pilih::after{content:none!important;display:none!important}
 /* Baris Select Cluster: tanpa ikon, tulisan di tengah (segitiga tetap di kanan). */
@@ -787,7 +793,7 @@ body.bebas label.ctl-sub .subtap{display:block;position:absolute;inset:0;cursor:
 
   <section class="card" id="card" aria-live="polite"></section>
 
-  <details class="mapbox" id="mapbox"><summary id="mapsum">Question Map</summary><div class="map" id="map"></div><p class="mapket"><i class="tk ok">✓</i> answered correctly &nbsp; <i class="tk no">✗</i> answered wrong or time ran out</p></details>
+  <details class="mapbox" id="mapbox"><summary id="mapsum">Question Map</summary><div class="map" id="map"></div><p class="mapket"><span><i class="tk lil" id="ketlil"></i>answered correctly</span><span><i class="tk gul" id="ketgul"></i>answered wrong or time ran out</span></p></details>
 
   <div class="exitbawah" id="exitbawah" hidden><button class="btn keluar akunexit" id="akunexit2" type="button" aria-label="Exit" title="Exit"></button></div>
   <footer><span>© 2026 CAT - Lex Fexora. All rights reserved.</span> | <span>Developed &amp; Curated by Febrillian Kusuma Raafi, S.H.</span></footer>
@@ -1064,9 +1070,11 @@ function renderScore(){
   $("score").innerHTML=`<span class="st"><small>Answered</small> <strong>${done}/${n}</strong></span><span class="st"><small>Correct</small> <strong>${ok}</strong></span><span class="st"><small>Wrong</small> <strong>${bad}</strong></span><span class="st" title="Questions in this selection you have answered correctly, saved to your account"><small>Mastered</small> <strong>${fmtPct(state.list.filter(i=>BENAR[i]).length,n)}</strong></span><div class="sbrow"><span class="meter" aria-hidden="true"><i class="m-ok" style="width:${n?ok*100/n:0}%"></i><i class="m-bad" style="width:${n?bad*100/n:0}%"></i></span>${window.__logout?'<button class="btn keluar" id="sbkeluar" type="button">EXIT</button>':""}</div>`;
   if($("sbkeluar"))$("sbkeluar").onclick=()=>window.__logout();
 }
+const IK_LILIN='<svg class="tki" viewBox="0 0 16 20" shape-rendering="geometricPrecision" aria-hidden="true"><circle cx="8" cy="5" r="4.6" fill="#ffc861" opacity=".28"/><path d="M8 1.2C9.9 3.6 10.3 5.2 8 7.6 5.7 5.2 6.1 3.6 8 1.2z" fill="#ffd27a"/><path d="M8 3.8c.6 1.2.6 1.9 0 3-.6-1.1-.6-1.8 0-3z" fill="#fff6dc"/><path d="M8 7.4v1.4" stroke="#2a2a2a" stroke-width=".8"/><rect x="5.2" y="8.6" width="5.6" height="8.4" rx=".8" fill="#f4ecdc" stroke="#9c8a6a" stroke-width=".6"/><path d="M5.6 9.2c1 .1 1 1.8 1.7 1.8s.6-1.6 1.3-1.6" fill="none" stroke="#fff" stroke-width=".7"/><path d="M2.6 17.6h10.8a1.2 1.2 0 0 1 0 1.6H2.6a1.2 1.2 0 0 1 0-1.6z" fill="#c9a25e"/></svg>',IK_GUL='<svg class="tki" viewBox="0 0 18 20" shape-rendering="geometricPrecision" aria-hidden="true"><rect x="3.6" y="3" width="10.8" height="14" fill="#ead9b4" stroke="#8a6a42" stroke-width=".6"/><path d="M5.6 6.6h6.8M5.6 8.8h6M5.6 11h6.8M5.6 13.2h5" stroke="#9b7d4f" stroke-width=".7" stroke-linecap="round"/><rect x="1.4" y="1.2" width="15.2" height="3" rx="1.5" fill="#8a5a2e" stroke="#3a2412" stroke-width=".5"/><rect x="1.4" y="15.8" width="15.2" height="3" rx="1.5" fill="#8a5a2e" stroke="#3a2412" stroke-width=".5"/><path d="M2.6 2.1h12.8M2.6 16.7h12.8" stroke="#c99a62" stroke-width=".6" stroke-linecap="round"/></svg>';
 function renderMap(){
+  if($("ketlil")&&!$("ketlil").firstChild){$("ketlil").innerHTML=IK_LILIN;$("ketgul").innerHTML=IK_GUL;}
   $("mapsum").textContent=`Question Map (${state.list.length})`;
-  $("map").innerHTML=state.list.map((id,i)=>{const a=state.ans[id];const c=isBad(id)?"bad":(a===undefined?"":"ok");return `<button type="button" class="${c}${i===state.pos?" cur":""}" data-i="${i}" aria-label="Question ${i+1}">${i+1}${c==="ok"?'<i class="tk ok" aria-hidden="true">✓</i>':c==="bad"?'<i class="tk no" aria-hidden="true">✗</i>':""}</button>`;}).join("");
+  $("map").innerHTML=state.list.map((id,i)=>{const a=state.ans[id];const c=isBad(id)?"bad":(a===undefined?"":"ok");return `<button type="button" class="${c}${i===state.pos?" cur":""}" data-i="${i}" aria-label="Question ${i+1}">${i+1}${c==="ok"?'<i class="tk lil" aria-hidden="true">'+IK_LILIN+'</i>':c==="bad"?'<i class="tk gul" aria-hidden="true">'+IK_GUL+'</i>':""}</button>`;}).join("");
   $("map").querySelectorAll("button").forEach(b=>b.onclick=()=>{state.pos=+b.dataset.i;persist();render();window.scrollTo({top:$("card").offsetTop-12});});
 }
 function editQ(id){
