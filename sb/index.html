@@ -1511,7 +1511,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       const baru=PK?pool.filter(q=>!PK.m[q.id]).length:null,pakai=Math.min(n,j);
       $('toinfo').innerHTML=`<b>${n}</b> soal tersedia dari sub-materi terpilih`+(baru!==null?` (<b>${baru}</b> belum pernah diujikan)`:'')+`. `+
         (n>j?`Diujikan <b>${j}</b> soal; sisa ${n-j} soal tidak dipakai sekarang dan diutamakan muncul di mock exam berikutnya.`:n<j?`Kurang dari ${j}, jadi semua ${n} soal dipakai.`:`Semua ${n} soal dipakai.`)+
-        ` Semua peserta mengerjakan soal yang sama secara serentak: ${+$('todetik').value||54} detik per soal (sekitar ${Math.ceil(pakai*(+$('todetik').value||54)/60)} menit), lalu room master 🎩 menekan Next.`;};
+        ` Semua peserta mengerjakan soal yang sama secara serentak: ${+$('todetik').value||54} detik per soal (sekitar ${Math.ceil(pakai*(+$('todetik').value||54)/60)} menit), lalu room master menekan Next.`;};
     // Mock exam selalu serentak: semua peserta di soal yang sama, tiap soal dibatasi detik, room master menekan Next.
     $('todetik').oninput=toInfo;
     $('torst').onclick=async()=>{if(!confirm('Atur ulang riwayat rotasi? Semua soal dianggap belum pernah diujikan.'))return;await pakaiMuat();PK.m={};try{await pakaiRef.set(PK);}catch(e){alert('Gagal: '+(e.code||e.message));}toInfo();};
