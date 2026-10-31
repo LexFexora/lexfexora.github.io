@@ -560,6 +560,9 @@ html .tojoin>b{color:var(--brass)}
 html body #tabs .tab.pilih .ki{width:22px;height:22px;border-radius:6px;box-shadow:0 1px 3px rgb(0 0 0 / .2)}html body #tabs .tab.pilih .ki svg{width:86%;height:86%}
 html body #setelan>summary .stl svg{width:22px;height:22px;flex:none}
 html body #tocard>summary .stl svg.piala{width:22px;height:22px}
+/* Latar baris Select Cluster disamakan dengan Mock Exam: hitam pekat dengan bingkai ganda. */
+:root[data-theme="dark"] body #tabs .tab.pilih{border:1px solid #000!important;border-radius:6px!important;background:linear-gradient(180deg,#111413,#0a0b0b)!important;box-shadow:0 0 0 1px #59615c,0 0 0 3px #070807,0 0 0 4px #3a413d,0 10px 24px rgb(0 0 0 / .7)!important}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body #tabs .tab.pilih{border:1px solid #000!important;border-radius:6px!important;background:linear-gradient(180deg,#111413,#0a0b0b)!important;box-shadow:0 0 0 1px #59615c,0 0 0 3px #070807,0 0 0 4px #3a413d,0 10px 24px rgb(0 0 0 / .7)!important}}
 /* Judul tiga baris utama (Select Cluster, Quiz Options, Mock Exam) berukuran sama persis: 17px. */
 :root[data-theme="dark"] body #tabs .tab.pilih .kt>b,:root[data-theme="dark"] body #setelan>summary .stl,:root[data-theme="dark"] body #tocard.setelan.tocard>summary .stl{font-family:var(--f-display,Georgia,serif)!important;font-size:17px!important;font-weight:700!important;letter-spacing:.01em!important}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body #tabs .tab.pilih .kt>b,:root:not([data-theme="light"]) body #setelan>summary .stl,:root:not([data-theme="light"]) body #tocard.setelan.tocard>summary .stl{font-family:var(--f-display,Georgia,serif)!important;font-size:17px!important;font-weight:700!important;letter-spacing:.01em!important}}html body #tabs .tab.pilih .ki{margin-left:2px}
