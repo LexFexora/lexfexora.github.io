@@ -595,6 +595,8 @@ html body .qtools .qfs{width:30px;height:30px}
 #card .putusan .row>.btn{display:flex;align-items:center;justify-content:center;min-height:46px;margin:0;padding:8px 10px;font-family:"Alegreya SC",Georgia,serif;font-weight:700;font-size:16px;letter-spacing:.05em;line-height:1.1;color:#eadbb8;text-shadow:0 1px 0 #000;border:1px solid #000;border-radius:2px;background:linear-gradient(180deg,#2a1a12,#170e09 60%,#100906);box-shadow:inset 0 0 0 2px #100906,inset 0 0 0 3px #5c4630,0 0 0 1px #3a2a1a,0 4px 10px rgb(0 0 0 / .7);transition:filter .2s,transform .1s}
 #card .putusan .row>.btn.primary{color:#f0d9a6;background:linear-gradient(180deg,#5a3424,#3a2016 55%,#2a160e);box-shadow:inset 0 0 0 2px #2a160e,inset 0 0 0 3px #a07a4a,inset 0 1px 6px rgb(255 200 150 / .2),0 0 0 1px #6e5232,0 6px 14px rgb(0 0 0 / .7)}
 #card .putusan .row>.btn:hover{filter:brightness(1.15)}#card .putusan .row>.btn:active{transform:translateY(1px)}
+/* Desktop: Hukum Formil dan Hukum Materil sama-sama dua baris; di ponsel tetap satu baris seperti biasa. */
+@media (max-width:720px){.tabs .tab.kl .pcbr{display:none}}
 /* Select Cluster hanya judul: tidak bisa diklik, daftar kategori selalu terbuka, tanpa segitiga. */
 html body #tabs .tab.pilih{cursor:default;pointer-events:none}html body #tabs .tab.pilih::after{content:none!important;display:none!important}
 /* Baris Select Cluster: tanpa ikon, tulisan di tengah (segitiga tetap di kanan). */
@@ -998,7 +1000,7 @@ function renderTabs(){
   // "Pilih Klaster" membuka dan menutup daftar klaster; klaster yang dipilih tampil di bawah judulnya.
   const sel=state.cat!=="all",ik=n=>(KLIK[n]||[KOMPAS])[0];
   t.innerHTML=`<button class="tab pilih" type="button" id="pilih" aria-expanded="${!!state.klOpen}"${sel?` style="--kc:var(--k${state.cat})"`:""}><span class="kt"><b>Select Cluster</b>${sel?`<span class="sel">${esc(CATS[state.cat].short)}</span>`:`<small>Tap to choose a cluster</small>`}</span></button>`+
-    (state.klOpen?Object.keys(CATS).map(n=>`<button class="tab kl" role="tab" type="button" data-k="${n}" aria-selected="${state.cat===+n}" style="--kc:var(--k${n})"><span class="ki">${ik(n)}</span><span class="kt"><b>${esc(CATS[n].short)}</b></span></button>`).join(""):"");
+    (state.klOpen?Object.keys(CATS).map(n=>`<button class="tab kl" role="tab" type="button" data-k="${n}" aria-selected="${state.cat===+n}" style="--kc:var(--k${n})"><span class="ki">${ik(n)}</span><span class="kt"><b>${n==="2"||n==="3"?esc(CATS[n].short).replace(" ",' <br class="pcbr">'):esc(CATS[n].short)}</b></span></button>`).join(""):"");
   $("pilih").onclick=()=>{};$("pilih").tabIndex=-1;
   if(0)$("pilih").onclick=()=>{const t=$("tabs"),h0=t.offsetHeight;if(t.dataset.anim)return;
     const gerak=t.animate&&!matchMedia("(prefers-reduced-motion:reduce)").matches;
