@@ -957,11 +957,11 @@ function renderTabs(){
     an.onfinish=an.oncancel=()=>{klip(t,0);delete t.dataset.anim;};
     kl.forEach((x,i)=>x.animate([{opacity:0,transform:"translateY(-10px) scale(.97)"},{opacity:1,transform:"none"}],{duration:460,delay:90+bar[i]*90,easing:"cubic-bezier(.22,.8,.3,1)",fill:"backwards"}));};
   // Khusus pemilik: klaster langsung membuka sub-materi yang terakhir dikerjakan; pengguna lain mulai dari All Sections.
-  // Kartu kategori yang sudah dipilih diklik lagi: panel Quiz Options & Sections membuka/menutup perlahan (toggle).
+  // Kartu kategori yang sudah dipilih diklik lagi: seluruh kotak Quiz Options & Sections hilang perlahan; diklik lagi muncul perlahan (toggle).
   t.querySelectorAll(".tab[data-k]").forEach(b=>b.onclick=()=>{const k=+b.dataset.k;
-    if(state.cat===k){const st=$("setelan");if(st&&!st.hidden){if(st.open)tutupPerlahan(st,[st.querySelector(".controls")].filter(Boolean));else bukaSetelan();return;}}
+    if(state.cat===k){const st=$("setelan");if(st&&!st.dataset.anim){if(st.hidden)munculPerlahan(st);else hilangPerlahan(st);return;}}
     const ak=window.__isOwner&&store.subAkhir&&store.subAkhir[k];
-    if(ak&&SUBS[k]&&SUBS[k][ak.sub-1])selectCat(k,ak.sub,ak.bag);else selectCat(k,"all");requestAnimationFrame(bukaSetelan);});
+    if(ak&&SUBS[k]&&SUBS[k][ak.sub-1])selectCat(k,ak.sub,ak.bag);else selectCat(k,"all");requestAnimationFrame(()=>{const st=$("setelan");if(state.setHilang&&st)munculPerlahan(st);else bukaSetelan();});});
 }
 // Nomor baris tiap kartu cluster (2 kolom di HP, 4 di desktop), dipakai agar animasi bergerak per baris.
 function barisKlaster(kl){const ys=[...new Set(kl.map(x=>x.offsetTop))].sort((a,b)=>a-b);return kl.map(x=>ys.indexOf(x.offsetTop));}
@@ -1218,12 +1218,23 @@ function tutupPerlahan(d,isi){if(d.dataset.anim)return;if(matchMedia("(prefers-r
 document.querySelector("#setelan>summary").addEventListener("click",e=>{const st=$("setelan");e.preventDefault();if(st.dataset.anim)return;const c=[st.querySelector(".controls")].filter(Boolean);
   if(st.open)tutupPerlahan(st,c);else{const h0=st.offsetHeight;st.open=true;turunPerlahan(st,h0,c);}});
 // Klik kategori: Quiz Options & Sections terbuka sendiri, turun perlahan dari atas ke bawah.
+// Seluruh kotak Quiz Options hilang/muncul perlahan: tinggi dan kejelasannya berubah bersamaan.
+function hilangPerlahan(st){const h0=st.offsetHeight;state.setHilang=true;
+  if(matchMedia("(prefers-reduced-motion:reduce)").matches||!st.animate){st.hidden=true;return;}
+  st.dataset.anim="1";klip(st,1);const an=st.animate([{height:h0+"px",opacity:1},{height:"0px",opacity:0,paddingTop:"0px",paddingBottom:"0px",borderTopWidth:"0px",borderBottomWidth:"0px"}],Object.assign({},EZ_PELAN,{fill:"forwards"}));
+  an.onfinish=()=>{st.hidden=true;klip(st,0);an.cancel();delete st.dataset.anim;};}
+function munculPerlahan(st){state.setHilang=false;st.hidden=false;st.open=true;
+  if(matchMedia("(prefers-reduced-motion:reduce)").matches||!st.animate)return;
+  const h1=st.offsetHeight;st.dataset.anim="1";klip(st,1);
+  const an=st.animate([{height:"0px",opacity:0,paddingTop:"0px",paddingBottom:"0px",borderTopWidth:"0px",borderBottomWidth:"0px"},{height:h1+"px",opacity:1}],EZ_PELAN);
+  const c=st.querySelector(".controls");if(c)c.animate([{opacity:0,transform:"translateY(-14px)"},{opacity:1,transform:"none"}],Object.assign({},EZ_PELAN,{delay:150,fill:"backwards"}));
+  an.onfinish=an.oncancel=()=>{klip(st,0);delete st.dataset.anim;};}
 function bukaSetelan(){const st=$("setelan");if(!st||st.hidden||st.open)return;
   const h0=st.offsetHeight;st.open=true;turunPerlahan(st,h0,[st.querySelector(".controls")].filter(Boolean));}
 // Bar Mock Exam: dibuka dan ditutup dengan gerak perlahan yang sama.
 document.querySelector("#tocard>summary").addEventListener("click",e=>{const d=$("tocard");e.preventDefault();if(d.dataset.anim)return;if(d.open){tutupPerlahan(d,[d.querySelector(".toisi")].filter(Boolean));return;}
   const h0=d.offsetHeight;d.open=true;turunPerlahan(d,h0,[d.querySelector(".toisi")].filter(Boolean));});
-function renderRingkas(){const st=$("setelan");if(st){st.hidden=state.cat==="all";st.classList.toggle("perlu",!siapOK());document.querySelector(".wrap").classList.toggle("blmsiap",!siapOK()&&!(window.__gulTutup&&state.cat!=="all"));document.querySelector(".wrap").classList.toggle("blmmulai",state.cat!=="all"&&siapOK()&&!state.mulai&&state.pos<state.list.length);const sr=$("siaprow");if(sr)sr.hidden=siapOK();}const r=$("ringkas");if(!r)return;const s=state.cat==="all"||state.sub==="all"?"All Sections":state.sub+". "+SUBS[state.cat][state.sub-1]+(state.bag==="bonus"?" · Soal Bonus":state.bag!=="all"?" · Bagian "+state.bag:"");
+function renderRingkas(){const st=$("setelan");if(st){if(!st.dataset.anim)st.hidden=state.cat==="all"||!!state.setHilang;st.classList.toggle("perlu",!siapOK());document.querySelector(".wrap").classList.toggle("blmsiap",!siapOK()&&!(window.__gulTutup&&state.cat!=="all"));document.querySelector(".wrap").classList.toggle("blmmulai",state.cat!=="all"&&siapOK()&&!state.mulai&&state.pos<state.list.length);const sr=$("siaprow");if(sr)sr.hidden=siapOK();}const r=$("ringkas");if(!r)return;const s=state.cat==="all"||state.sub==="all"?"All Sections":state.sub+". "+SUBS[state.cat][state.sub-1]+(state.bag==="bonus"?" · Soal Bonus":state.bag!=="all"?" · Bagian "+state.bag:"");
   r.textContent=s+" · "+(state.order==="rand"?"Shuffle":"Sequential")+" · "+({off:"Timer off",cum:"Total timer",per:"Timer per question"}[tMode]||"");}
 function render(){if(tMode==="per")syncQ();renderScore();renderCard();renderMap();renderTimer();renderRingkas();}
 function retake(){buildSession(true);render();}
@@ -1245,6 +1256,8 @@ $("timer").onchange=e=>{const v=e.target.value;tMode=v.replace(/\d+$/,"");SEC=+(
 document.addEventListener("visibilitychange",()=>{if(document.hidden)persist();});
 
 (function init(){
+  // Di awal hanya Select Cluster dan Mock Exam yang tampil; Quiz Options muncul setelah sebuah kategori diklik.
+  state.setHilang=true;
   const h=(location.hash||"").slice(1);
   const n=catKeyToNum(h);
   if(n) selectCat(n,"all");
