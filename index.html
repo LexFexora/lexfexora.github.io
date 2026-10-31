@@ -534,6 +534,11 @@ html .tojoin>b{color:var(--brass)}
 :root[data-theme="dark"] #tocard.setelan.tocard>summary .stl svg.piala{width:22px;height:22px}
 :root[data-theme="dark"] #tocard.setelan.tocard>summary::after{color:#a07a3a}
 :root[data-theme="dark"] #setelan>summary{font-family:var(--f-display,Georgia,serif);font-size:16px;letter-spacing:.01em}
+/* Judul "Select Cluster - SKB" memakai huruf yang sama dengan judul "Quiz Options & Sections". */
+:root[data-theme="dark"] #tabs .tab.pilih .kt>b{font-family:var(--f-display,Georgia,serif);font-size:16px;font-weight:700;letter-spacing:.01em}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #tabs .tab.pilih .kt>b{font-family:var(--f-display,Georgia,serif);font-size:16px;font-weight:700;letter-spacing:.01em}}
+:root[data-theme="light"] #tabs .tab.pilih .kt>b{font-size:14px;font-weight:600}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) #tabs .tab.pilih .kt>b{font-size:14px;font-weight:600}}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #tocard.setelan.tocard{border:1px solid #000;border-radius:6px;background:radial-gradient(80% 60% at 50% 0,rgb(255 170 70 / .07),transparent 70%),linear-gradient(180deg,#0e0a08,#070605);box-shadow:inset 0 0 18px rgb(0 0 0 / .8),0 0 0 1px #7a5a28,0 0 0 3px #070605,0 0 0 4px #4a3820,0 10px 24px rgb(0 0 0 / .7)}:root:not([data-theme="light"]) #tocard.setelan.tocard>summary{padding:11px 14px}:root:not([data-theme="light"]) #tocard.setelan.tocard>summary .stl{font-family:var(--f-display,Georgia,serif);font-size:17px;font-weight:700;letter-spacing:.01em;-webkit-text-fill-color:#dcae55;color:#dcae55;text-shadow:0 1px 0 #000,0 0 10px rgb(217 168 73 / .15)}:root:not([data-theme="light"]) #tocard.setelan.tocard>summary .stl svg.piala{width:22px;height:22px}:root:not([data-theme="light"]) #tocard.setelan.tocard>summary::after{color:#a07a3a}:root:not([data-theme="light"]) #setelan>summary{font-family:var(--f-display,Georgia,serif);font-size:16px;letter-spacing:.01em}}
 #siapbtn .inkt{position:relative;display:inline;line-height:1;margin-right:-.08em}
 .qhead .qkoin{display:inline-flex;align-items:center;gap:6px;margin:0 auto;white-space:nowrap}
