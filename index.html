@@ -429,6 +429,9 @@ html:not([data-theme="light"]) .akunku .akunexit:hover,html:not([data-theme="lig
 .mk .mkplq{clip-path:none;border-radius:3px}
 /* Kepala Dewi Keadilan di atas judul klaster dihilangkan; papan judul naik ke atas. */
 .mk .mkcrest{display:none!important}.mk .mkplq{margin-top:6px}
+/* Segitiga buka/tutup di Quiz Options dan Mock Exam sama dengan segitiga Select Cluster. */
+html body #setelan>summary::after,html body #tocard>summary::after{font-family:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif!important;font-size:15px!important;font-weight:400!important;letter-spacing:0!important;color:var(--muted)!important;-webkit-text-fill-color:var(--muted);text-shadow:none!important;line-height:1}
+:root[data-theme="dark"] body #setelan>summary::after,:root[data-theme="dark"] body #tocard.setelan.tocard>summary::after{color:#9aaba0!important;-webkit-text-fill-color:#9aaba0}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body #setelan>summary::after,:root:not([data-theme="light"]) body #tocard.setelan.tocard>summary::after{color:#9aaba0!important;-webkit-text-fill-color:#9aaba0}}
 /* Label dan isi pilihan di Quiz Options (Section Details/All Sections, Order, Timer, Duration) berwarna putih di mode gelap. */
 :root[data-theme="dark"] #setelan .controls label,:root[data-theme="dark"] #setelan .controls .lbl,:root[data-theme="dark"] #setelan .controls select{color:#fff!important;-webkit-text-fill-color:#fff}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #setelan .controls label,:root:not([data-theme="light"]) #setelan .controls .lbl,:root:not([data-theme="light"]) #setelan .controls select{color:#fff!important;-webkit-text-fill-color:#fff}}
