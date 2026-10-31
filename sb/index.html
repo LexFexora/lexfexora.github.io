@@ -940,8 +940,6 @@ function renderTabs(){
   t.innerHTML=`<button class="tab pilih" type="button" id="pilih" aria-expanded="${!!state.klOpen}"${sel?` style="--kc:var(--k${state.cat})"`:""}><span class="ki ki4">${KOMPAS}</span><span class="kt"><b>Select Cluster - SKB</b>${sel?`<span class="sel">${esc(CATS[state.cat].short)}</span>`:`<small>Tap to choose a cluster</small>`}</span></button>`+
     (state.klOpen?Object.keys(CATS).map(n=>`<button class="tab kl" role="tab" type="button" data-k="${n}" aria-selected="${state.cat===+n}" style="--kc:var(--k${n})"><span class="ki">${ik(n)}</span><span class="kt"><b>${esc(CATS[n].short)}</b></span></button>`).join(""):"");
   $("pilih").onclick=()=>{const t=$("tabs"),h0=t.offsetHeight;if(t.dataset.anim)return;
-    // Select Cluster diklik lagi: panel Quiz Options & Sections yang terbuka ikut menutup perlahan seperti semula.
-    {const st=$("setelan");if(st&&st.open&&!st.hidden)tutupPerlahan(st,[st.querySelector(".controls")].filter(Boolean));}
     const gerak=t.animate&&!matchMedia("(prefers-reduced-motion:reduce)").matches;
     // Menutup: kartu cluster memudar per baris (baris bawah dulu) sebelum tingginya menyusut, jadi tidak ada kartu yang terpotong.
     if(state.klOpen&&gerak){state.klOpen=false;renderTabs();const h1=t.offsetHeight;state.klOpen=true;renderTabs();
@@ -959,7 +957,10 @@ function renderTabs(){
     an.onfinish=an.oncancel=()=>{klip(t,0);delete t.dataset.anim;};
     kl.forEach((x,i)=>x.animate([{opacity:0,transform:"translateY(-10px) scale(.97)"},{opacity:1,transform:"none"}],{duration:460,delay:90+bar[i]*90,easing:"cubic-bezier(.22,.8,.3,1)",fill:"backwards"}));};
   // Khusus pemilik: klaster langsung membuka sub-materi yang terakhir dikerjakan; pengguna lain mulai dari All Sections.
-  t.querySelectorAll(".tab[data-k]").forEach(b=>b.onclick=()=>{const k=+b.dataset.k,ak=window.__isOwner&&store.subAkhir&&store.subAkhir[k];
+  // Kartu kategori yang sudah dipilih diklik lagi: panel Quiz Options & Sections membuka/menutup perlahan (toggle).
+  t.querySelectorAll(".tab[data-k]").forEach(b=>b.onclick=()=>{const k=+b.dataset.k;
+    if(state.cat===k){const st=$("setelan");if(st&&!st.hidden){if(st.open)tutupPerlahan(st,[st.querySelector(".controls")].filter(Boolean));else bukaSetelan();return;}}
+    const ak=window.__isOwner&&store.subAkhir&&store.subAkhir[k];
     if(ak&&SUBS[k]&&SUBS[k][ak.sub-1])selectCat(k,ak.sub,ak.bag);else selectCat(k,"all");requestAnimationFrame(bukaSetelan);});
 }
 // Nomor baris tiap kartu cluster (2 kolom di HP, 4 di desktop), dipakai agar animasi bergerak per baris.
