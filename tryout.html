@@ -324,6 +324,9 @@ header .tema .knop{background:linear-gradient(180deg,#c9b98f,#a8925c)}header .te
 .topi{display:inline-block;width:1.35em;height:1.1em;vertical-align:-.14em;overflow:visible}.lb .avw .crown .topi{display:block;width:24px;height:19.5px}
 /* Tanda air nama + email peserta selama mock exam (body.lindung). */
 #tandaair{position:fixed;inset:-20%;z-index:2147483000;pointer-events:none;display:flex;flex-wrap:wrap;gap:70px 90px;align-content:flex-start;padding:40px;transform:rotate(-24deg);opacity:.07;font:600 15px/1 "Public Sans",system-ui,sans-serif;color:var(--ink,#888);overflow:hidden;white-space:nowrap}
+.lb .kickbtn{margin-left:6px;padding:1px 8px;font:600 11px/1.6 "Public Sans",system-ui,sans-serif;color:var(--bad);background:transparent;border:1px solid color-mix(in srgb,var(--bad) 55%,transparent);border-radius:999px;cursor:pointer;vertical-align:1px}.lb .kickbtn:hover{background:color-mix(in srgb,var(--bad) 12%,transparent)}.lb li.kicked{opacity:.5}
+/* Baris kendali room master: pilihan pindah master satu baris penuh, tombol (Pindahkan, Edit, Save, Akhiri) di bawahnya agar tidak terpotong. */
+.nav.sk .mini{display:flex!important;flex-wrap:wrap!important;justify-content:center}.nav.sk .mini select{flex:1 1 100%!important}
 </style>
 </head>
 <body>
@@ -443,7 +446,7 @@ auth.onAuthStateChanged(u=>{U=u;pMuat=false;aku=null;P={};if(unsubT){unsubT();un
       if(SINK()){const q=$("sisaq"),sq=soalSisaMs();if(q){q.textContent=fmt(sq);jamSet(q,sq);q.parentElement.classList.toggle("warn",sq<=10000);q.parentElement.classList.toggle("kedip",sq>0&&sq<=10000);}
         if(sq<=0&&habisIdx!==(T.idx||0)){habisIdx=T.idx||0;render();}}}
     if(SINK()&&Date.now()-cekT>5000){cekT=Date.now();cekMaster();}},250);
-  if(!detak)detak=setInterval(()=>{if(SINK()&&aku&&!aku.selesai&&T&&T.status==="mulai")db.doc("tryout/"+TID+"/peserta/"+U.uid).update({t:FV.serverTimestamp()}).catch(()=>{});},10000);
+  if(!detak)detak=setInterval(()=>{if(SINK()&&aku&&!aku.selesai&&T&&T.status==="mulai"&&!dikick(U.uid))db.doc("tryout/"+TID+"/peserta/"+U.uid).update({t:FV.serverTimestamp()}).catch(()=>{});},10000);
 });
 let unsubC=null,sigP="",habisDitangani=false,habisIdx=-1,cekT=0,detak=null;
 try{pos=+(localStorage.getItem("to-pos-"+TID)||sessionStorage.getItem("to-pos-"+TID))||0;}catch(e){}
@@ -470,11 +473,16 @@ function jamHTML(id,ms,tot,warnAt){const w=ms<=warnAt;return `<span class="timer
 function jamOff(ms,tot){return (100-Math.max(0,Math.min(1,tot?ms/tot:0))*100).toFixed(2);}
 function jamSet(el,ms){const j=el&&el.closest(".jam");if(!j)return;const b=j.querySelector(".busur");if(b)b.style.strokeDashoffset=jamOff(ms,+j.dataset.tot);}
 function soalSisaMs(){const det=(T.detikSisa!=null?T.detikSisa:(T.detikSoal||54))*1000,st=T.idxMulai?tms(T.idxMulai):mulaiMs();return Math.max(0,st+det-Date.now());}
-function belumJawab(q){return Object.values(P).filter(p=>!p.selesai&&(p.jawab||{})[q.id]===undefined).length;}
-function semuaJawab(q){const ps=Object.values(P).filter(p=>!p.selesai);return ps.length>0&&ps.every(p=>(p.jawab||{})[q.id]!==undefined);}
+// Kick: pemilik mengeluarkan peserta (T.keluar[uid]). Peserta yang dikeluarkan atau offline (>25 detik tanpa sinyal) tidak ditunggu untuk Next.
+function dikick(uid){return !!(T&&T.keluar&&T.keluar[uid]);}
+function ditunggu(){const sg=segar();return Object.entries(P).filter(([u,p])=>!p.selesai&&!dikick(u)&&(sg.includes(u)||u===(U&&U.uid))).map(([,p])=>p);}
+function belumJawab(q){return ditunggu().filter(p=>(p.jawab||{})[q.id]===undefined).length;}
+function semuaJawab(q){const ps=ditunggu();return ps.length>0&&ps.every(p=>(p.jawab||{})[q.id]!==undefined);}
+function kick(uid){if(!isOwner||!uid||uid===(U&&U.uid))return;const p=P[uid];if(!confirm(`Keluarkan ${p?p.nama:"peserta ini"} dari mock exam? Next tidak lagi menunggu jawabannya.`))return;
+  db.doc("tryout/"+TID).update({keluar:Object.assign({},T.keluar||{},{[uid]:true})}).catch(e=>alert("Gagal: "+(e.code||e.message)));}
 function isMaster(){return SINK()&&!!U&&T.master===U.uid;}
 function namaP(uid){const p=P[uid];return p?p.nama:"(belum bergabung)";}
-function segar(){const ps=Object.entries(P).filter(([,p])=>!p.selesai);if(!ps.length)return [];const mx=Math.max(...ps.map(([,p])=>tms(p.t)));
+function segar(){const ps=Object.entries(P).filter(([u,p])=>!p.selesai&&!(T&&T.keluar&&T.keluar[u]));if(!ps.length)return [];const mx=Math.max(...ps.map(([,p])=>tms(p.t)));
   return ps.filter(([,p])=>mx-tms(p.t)<25000).map(([u])=>u);}
 function pilihMaster(uid){if(!uid||uid===T.master)return;db.doc("tryout/"+TID).update({master:uid}).catch(e=>alert("Gagal memindahkan: "+(e.code||e.message)));}
 function cekMaster(){if(!SINK()||!U||!aku||T.status!=="mulai"||selesaiSemua())return;const sg=segar();if(!sg.length||sg.includes(T.master))return;
@@ -482,12 +490,12 @@ function cekMaster(){if(!SINK()||!U||!aku||T.status!=="mulai"||selesaiSemua())re
 function lanjutSemua(){if(!isMaster())return;const i=(T.idx||0)+1;
   if(i>=T.soal.length&&!confirm("Ini soal terakhir. Selesaikan mock exam untuk semua peserta?"))return;
   db.doc("tryout/"+TID).update({idx:i,idxMulai:FV.serverTimestamp(),detikSisa:null}).catch(e=>alert("Gagal: "+(e.code||e.message)));}
-function masterHTML(){const ps=Object.entries(P).filter(([,p])=>!p.selesai),sg=segar(),boleh=isMaster()||isOwner;
+function masterHTML(){const ps=Object.entries(P).filter(([u,p])=>!p.selesai&&!dikick(u)),sg=segar(),boleh=isMaster()||isOwner;
   return `<div class="master"><div class="master-h"><span class="mk">${TOPI}</span><span>Room master: ${P[T.master]?`<i class="cav">${av(P[T.master])}</i>`:""}<b>${esc(namaP(T.master))}</b>${T.master===(U&&U.uid)?" (Anda)":""}</span></div>
   ${boleh&&ps.length>1?`<div class="linkrow"><select id="mpilih" aria-label="Pindahkan room master">${ps.map(([u,p])=>`<option value="${esc(u)}"${u===T.master?" selected":""}>${esc(p.nama)}${sg.includes(u)?"":" (offline)"}</option>`).join("")}</select><button class="btn" id="mpindah" type="button">Jadikan room master</button></div>`:""}
   <p class="muted" style="margin:0;font-size:12.5px">Room master menekan Next untuk semua peserta. ${boleh?"Kewenangan bisa dipindahkan kapan saja; ":""}bila room master keluar atau terputus, kewenangan pindah otomatis.</p></div>`;}
 // Kendali ringkas room master di bawah tombol Next: pindahkan 🎩 dan (khusus pemilik) akhiri mock exam.
-function miniMaster(){const ps=Object.entries(P).filter(([u,p])=>!p.selesai&&u!==T.master),sg=segar();
+function miniMaster(){const ps=Object.entries(P).filter(([u,p])=>!p.selesai&&!dikick(u)&&u!==T.master),sg=segar();
   return `<div class="mini">${ps.length?`<select id="mpilih" aria-label="Pindahkan room master"><option value="">Pindahkan room master ke…</option>${ps.map(([u,p])=>`<option value="${esc(u)}">${esc(p.nama)}${sg.includes(u)?"":" (offline)"}</option>`).join("")}</select><button class="btn kecil" id="mpindah" type="button">Pindahkan</button>`:""}${isOwner?'<button class="btn kecil" data-eds type="button" title="Edit soal (hanya pemilik)">✎ Edit</button><button class="btn kecil simpanjeda" type="button" title="Simpan progres; mock exam bisa dilanjutkan kapan saja">Save</button><button class="btn kecil bahaya" id="akhiri" type="button">Akhiri</button>':""}</div>`;}
 function pasangMaster(){if($("mpindah"))$("mpindah").onclick=()=>pilihMaster($("mpilih").value);}
 
@@ -512,6 +520,7 @@ function render(){if(!T||!U)return;main.className="card";$("toptimer").hidden=tr
   if(selesaiSemua())return hasil();
   if(T.status==="menunggu"||T.status==="siap")return lobi();
   if(T.status==="jeda")return jedaView();
+  if(U&&dikick(U.uid)&&!isOwner&&T.status==="mulai"){main.innerHTML='<div class="hasilku"><p class="eyebrow" style="margin:0 0 6px">Dikeluarkan</p><p>Anda dikeluarkan dari mock exam ini oleh penyelenggara.</p><p class="muted">Peringkat akhir tetap bisa dilihat setelah mock exam selesai.</p></div>';papan.hidden=false;renderPapan();return;}
   if(praMs()>0)return hitungMundur();
   if(isOwner&&!aku)return pantau();
   if(aku&&aku.selesai)tunggu();else ujian();renderPapan();}
@@ -620,7 +629,7 @@ function renderPapan(){if(!T||papan.hidden&&!(T.status==="mulai"))return;
   let tampil=r.slice(0,10);const iMe=r.findIndex(p=>p.uid===me);if(iMe>=10)tampil=tampil.concat([null,r[iMe]]);
   const before={};lb.querySelectorAll("li[data-u]").forEach(li=>before[li.dataset.u]=li.getBoundingClientRect().top);
   lb.innerHTML=tampil.map(p=>{if(!p)return '<li class="gap">⋯</li>';const rk=urutLama[p.uid],dl=deltaUntil[p.uid],ad=dl&&dl.s>now;
-    return `<li data-u="${esc(p.uid)}" class="${p.uid===me?"aku":""}"><span class="rk${rk<=3?" m"+rk:""}">${rk}</span>${SINK()&&p.uid===T.master?'<span class="avw"><span class="av">'+av(p)+'</span><span class="crown" title="Room master">'+TOPI+'</span></span>':'<span class="av">'+av(p)+'</span>'}<span class="nm">${esc(p.nama)}${p.uid===me?" (You)":""}${tandaSoal(p)}<small>${p.dijawab||0}/${T.soal.length} answered${p.selesai?" · finished":""}</small></span><span class="sk${skWarna(p)}">${p.benar||0}<small> correct</small></span><span class="dl ${ad?(dl.d>0?"naik":"turun"):""}">${ad?(dl.d>0?"▲"+dl.d:"▼"+(-dl.d)):""}</span></li>`;}).join("");
+    return `<li data-u="${esc(p.uid)}" class="${p.uid===me?"aku":""}${dikick(p.uid)?" kicked":""}"><span class="rk${rk<=3?" m"+rk:""}">${rk}</span>${SINK()&&p.uid===T.master?'<span class="avw"><span class="av">'+av(p)+'</span><span class="crown" title="Room master">'+TOPI+'</span></span>':'<span class="av">'+av(p)+'</span>'}<span class="nm">${esc(p.nama)}${p.uid===me?" (You)":""}${tandaSoal(p)}<small>${p.dijawab||0}/${T.soal.length} answered${p.selesai?" · finished":""}${dikick(p.uid)?" · dikeluarkan":""}</small>${isOwner&&SINK()&&T.status==="mulai"&&p.uid!==me&&!p.selesai&&!dikick(p.uid)?`<button class="kickbtn" type="button" data-kick="${esc(p.uid)}" title="Keluarkan peserta ini">Kick</button>`:""}</span><span class="sk${skWarna(p)}">${p.benar||0}<small> correct</small></span><span class="dl ${ad?(dl.d>0?"naik":"turun"):""}">${ad?(dl.d>0?"▲"+dl.d:"▼"+(-dl.d)):""}</span></li>`;}).join("");
   // Animasi FLIP: baris bergeser halus dari posisi lama ke posisi baru.
   if(!matchMedia("(prefers-reduced-motion: reduce)").matches)lb.querySelectorAll("li[data-u]").forEach(li=>{const b=before[li.dataset.u];if(b===undefined)return;const dy=b-li.getBoundingClientRect().top;if(!dy)return;
     li.style.transition="none";li.style.transform=`translateY(${dy}px)`;requestAnimationFrame(()=>{li.style.transition="transform .6s cubic-bezier(.2,.8,.2,1)";li.style.transform="";});});}
@@ -672,6 +681,7 @@ function jedaView(){papan.hidden=false;document.body.dataset.v="lobi";setTimeout
   ${isOwner?'<div class="row" style="justify-content:center"><button class="btn primary" id="lanjutjeda" type="button">Lanjutkan mock exam</button><button class="btn bahaya" id="akhiri" type="button">Akhiri mock exam untuk semua</button></div>':""}`;
   if($("lanjutjeda"))$("lanjutjeda").onclick=lanjutkanJeda;if($("akhiri"))$("akhiri").onclick=akhiri;}
 document.addEventListener("click",e=>{if(e.target.closest&&e.target.closest(".simpanjeda"))simpanJeda();});
+document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-kick]");if(b){e.preventDefault();kick(b.dataset.kick);}});
 // Pengecualian salin/screenshot: pemilik dan email di BEBAS_SALIN (body.bebas). Peserta lain mendapat tanda air nama + email selama mock exam.
 function bebasSalin(){const e=((U&&U.email)||"").toLowerCase();return !!e&&U.emailVerified!==false&&(e===OWNER||BEBAS_SALIN.includes(e));}
 let wmKey="";
