@@ -282,6 +282,8 @@ footer{font-size:12px;color:var(--muted);text-align:center}footer span{white-spa
 .online li .at{flex-basis:100%;color:var(--accent);font-size:12.5px;padding-left:2px}
 .online .note{color:var(--muted);font-size:12px;margin:6px 0 0}
 html.gate-wait .wrap{display:none}
+/* Layar loading/masuk: teks tidak bisa diblok, jadi gelembung kaca pembesar dan menu salin iPhone tidak muncul saat layar ditekan lama. */
+.gate,.gate *{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}.gate .note{-webkit-user-select:text;user-select:text}
 .gate{max-width:520px;margin:12vh auto;padding:24px 20px;border:1px solid var(--line);border-radius:14px;background:var(--surface);text-align:center}
 .gate h2{font-family:var(--f-head,inherit);margin:0 0 8px;font-size:22px}
 .gate p{color:var(--muted);margin:6px 0}
