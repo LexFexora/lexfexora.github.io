@@ -1443,7 +1443,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
     ids.forEach(id=>{const q=by.get(id);if(!q)return;(q.mappings&&q.mappings.length?q.mappings:[{c:q.c,s:q.s}]).forEach(m=>{const k=m.c+'|'+m.s;cnt.set(k,(cnt.get(k)||0)+1);if(!punya.has(k))punya.set(k,new Set());punya.get(k).add(id);});});
     if(!cnt.size)return '';const sisa=new Set(ids.filter(id=>by.has(id))),pilih=[];
     while(sisa.size&&pilih.length<6){let best=null,bn=0;punya.forEach((st,k)=>{let n=0;st.forEach(id=>{if(sisa.has(id))n++;});if(n>bn){bn=n;best=k;}});if(!best)break;pilih.push(best);punya.get(best).forEach(id=>sisa.delete(id));}
-    const nm=k=>{const [c,s]=k.split('|').map(Number);return (SUBS[c]&&SUBS[c][s-1])||'';};
+    const nm=k=>{const [c,s]=k.split('|').map(Number);const n=(SUBS[c]&&SUBS[c][s-1])||'';return n&&CATS[c]?CATS[c].short+' '+n:n;};
     return pilih.length===1?nm(pilih[0]):nm(pilih[0])+' +'+(pilih.length-1)+' sub lainnya';}
   function tryoutKartu(){$('tocard').hidden=false;if(isOwner){$('toown').hidden=false;$('toket').hidden=true;}
     // Selain pemilik: panel tetap tampil, hanya keterangan; ikut mock exam lewat tautan join yang dibagikan pemilik.
@@ -1451,10 +1451,10 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
     const ST={menunggu:'ruang tunggu',siap:'cek kesiapan',mulai:'sedang berjalan',jeda:'disimpan · bisa dilanjutkan',selesai:'selesai'};
     db.collection('tryout').orderBy('dibuat','desc').limit(15).onSnapshot(qs=>{const rows=[];qs.forEach(d=>{const t=d.data(),u=location.origin+location.pathname.replace(/[^/]*$/,'')+'tryout.html?t='+d.id;
         if(!isOwner&&t.status==='selesai')return;
-        const sj=subMock(t);rows.push(`<div class="tr">${sj?`<span class="trj" title="${esc(sj)}">${esc(sj)}</span>`:''}<span class="muted trm">${(t.soal||[]).length} soal · ${ST[t.status]||t.status}</span><a class="btn copy${isOwner?'':' primary'}" href="${u}" target="_blank" rel="noopener">${isOwner?'Buka':'Ikut'}</a>${isOwner?`<button class="btn copy" type="button" data-hapus="${d.id}">Hapus</button>`:''}</div>`);});
+        const sj=t.subJudul||subMock(t);if(isOwner&&!t.subJudul&&sj)db.doc('tryout/'+d.id).update({subJudul:sj}).catch(()=>{});rows.push(`<div class="tr">${sj?`<span class="trj" title="${esc(sj)}">${esc(sj)}</span>`:''}<span class="muted trm">${(t.soal||[]).length} soal · ${ST[t.status]||t.status}</span><a class="btn copy${isOwner?'':' primary'}" href="${u}" target="_blank" rel="noopener">${isOwner?'Buka':'Ikut'}</a>${isOwner?`<button class="btn copy" type="button" data-hapus="${d.id}">Hapus</button>`:''}</div>`);});
       // Pemilik: tautan join mock exam terbaru yang belum selesai, siap disalin atau dibagikan.
       let jl='',d0=null;qs.forEach(d=>{if(!d0&&d.data().status!=='selesai')d0=d;});if(isOwner){if(d0){const u0=location.origin+location.pathname.replace(/[^/]*$/,'')+'tryout.html?t='+d0.id;
-        jl=`<div class="tojoin"><b>Tautan join peserta</b><span class="muted">${esc(jdl(d0.data().judul))}</span><div class="linkrow"><input readonly value="${u0}" aria-label="Tautan join peserta" onclick="this.select()"><button class="btn copy" type="button" data-salin="${u0}">⧉ Salin tautan</button><button class="btn copy" type="button" data-bagi="${u0}">Bagikan</button></div><p class="note" style="margin:0">Kirim tautan ini ke peserta. Mereka masuk dengan Google lalu otomatis ke ruang tunggu, dan papan peringkat diurutkan menurut jumlah jawaban benar.</p></div>`;}}
+        jl=`<div class="tojoin"><b>Tautan join peserta</b><span class="muted">${esc(jdl(d0.data().judul)+(d0.data().subJudul?' - '+d0.data().subJudul:''))}</span><div class="linkrow"><input readonly value="${u0}" aria-label="Tautan join peserta" onclick="this.select()"><button class="btn copy" type="button" data-salin="${u0}">⧉ Salin tautan</button><button class="btn copy" type="button" data-bagi="${u0}">Bagikan</button></div><p class="note" style="margin:0">Kirim tautan ini ke peserta. Mereka masuk dengan Google lalu otomatis ke ruang tunggu, dan papan peringkat diurutkan menurut jumlah jawaban benar.</p></div>`;}}
       $('tolist').innerHTML=rows.join('')+jl;
       $('tolist').querySelectorAll('[data-bagi]').forEach(b=>b.onclick=()=>{const u=b.dataset.bagi,tx='Ikut Mock Exam bersama: '+u;if(navigator.share)navigator.share({title:'Mock Exam',text:'Ikut Mock Exam bersama',url:u}).catch(()=>{});else window.open('https://wa.me/?text='+encodeURIComponent(tx),'_blank');});
       // Peserta: teks kosong bila tidak ada mock exam yang dibuka, ajakan Ikut bila ada.
@@ -1571,7 +1571,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       const det=Math.max(10,Math.min(600,+$('todetik').value||54)),me=auth.currentUser.uid;
       // Serentak: batas total longgar (tiap soal + jeda Next); yang mengatur tempo adalah detik per soal.
       const ext={mode:'sinkron',detikSoal:det,idx:0,idxMulai:null,master:me,pembuat:me};
-      try{const r=await db.collection('tryout').add(Object.assign({judul:($('tojudul').value||'Mock Exam').trim().slice(0,120),soal,durasi:soal.length*(det+60)+600,status:'menunggu',mulai:null,dibuat:FV.serverTimestamp()},ext));
+      try{const r=await db.collection('tryout').add(Object.assign({judul:($('tojudul').value||'Mock Exam').trim().slice(0,120),subJudul:subMock({soal}),soal,durasi:soal.length*(det+60)+600,status:'menunggu',mulai:null,dibuat:FV.serverTimestamp()},ext));
         await pakaiCatat(r.id,soal.map(q=>q.id),1).catch(()=>{});
         $('tobox').open=false;$('toinfo').textContent='';$('tocard').open=true;$('tolist').scrollIntoView({behavior:'smooth',block:'start'});}
       catch(e){alert('Gagal membuat mock exam: '+(e.code||e.message));}

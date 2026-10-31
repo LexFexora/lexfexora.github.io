@@ -432,7 +432,7 @@ auth.onAuthStateChanged(u=>{U=u;pMuat=false;aku=null;P={};if(unsubT){unsubT();un
   if(!u){gate("Mock Exam","Masuk dengan akun Google untuk ikut mock exam. Nama akun Anda akan tampil di papan peringkat.",true);return;}
   isOwner=!!OWNER&&(u.email||"").toLowerCase()===OWNER&&u.emailVerified;$("edsoal").hidden=!isOwner;if(isOwner){siapkanEdit();pantauLoginMulai();}$("akun").hidden=false;$("akunav").innerHTML=av({foto:u.photoURL,nama:u.displayName||u.email});$("akunnm").textContent=u.displayName||(u.email||"").split("@")[0];document.body.classList.toggle("bebas",isOwner||BEBAS_SALIN.includes((u.email||"").toLowerCase())&&u.emailVerified);
   unsubT=db.doc("tryout/"+TID).onSnapshot(s=>{if(!s.exists){gate("Mock exam tidak ditemukan","Periksa kembali tautannya.");return;}
-      T=s.data({serverTimestamps:"estimate"});T.id=s.id;if(!T.judul||T.judul==="Mock Exam Seleksi Kemampuan Bidang")T.judul="Mock Exam";gabung();render();},
+      T=s.data({serverTimestamps:"estimate"});T.id=s.id;if(!T.judul||T.judul==="Mock Exam Seleksi Kemampuan Bidang")T.judul="Mock Exam";if(T.subJudul)T.judul+=" - "+T.subJudul;gabung();render();},
     e=>gate("Mock exam belum dapat dibuka","Muat ulang halaman. ("+(e.code||e.message)+")"));
   unsubP=db.collection("tryout/"+TID+"/peserta").onSnapshot(qs=>{const m={};qs.forEach(d=>{m[d.id]=d.data();});catatJawab(m);P=m;pMuat=true;if(T)gabung();
       // Heartbeat (kolom t) saja tidak perlu menggambar ulang layar, agar tombol tidak "lari" saat diklik.
