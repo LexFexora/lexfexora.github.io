@@ -726,7 +726,7 @@ body.bebas label.ctl-sub .subtap{display:block;position:absolute;inset:0;cursor:
     <summary><span class="stl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg> Quiz Options &amp; Sections</span><span class="ringkas" id="ringkas"></span></summary>
     <div class="controls">
       <label class="ctl-sub" for="sub"><span id="sublbl">Section Details</span><select id="sub"></select></label>
-      <label class="ctl-sub" for="bag" id="bagwrap" hidden><span>Bagian Soal</span><select id="bag"></select></label>
+      <label class="ctl-sub" for="bag" id="bagwrap" hidden><span>Question Part</span><select id="bag"></select></label>
       <label for="order">Order <select id="order"><option value="seq">Sequential</option><option value="rand">Shuffle</option></select></label>
       <select id="timer" hidden aria-hidden="true"><option value="off"></option><option value="cum"></option><option value="cum45"></option><option value="cum35"></option><option value="cum30"></option><option value="per"></option><option value="per45"></option><option value="per35"></option><option value="per30"></option></select><label for="tmode">Timer <select id="tmode"><option value="off">Off</option><option value="cum">Total</option><option value="per">Per question</option></select></label><label for="tsec">Duration <select id="tsec"><option value="54">54 sec</option><option value="45">45 sec</option><option value="35">35 sec</option><option value="30">30 sec</option></select></label>
       <div class="siaprow" id="siaprow"><button class="btn primary" id="siapbtn" type="button"><span class="inkt">Keep it</span></button></div>
@@ -1020,7 +1020,7 @@ function renderBag(){
   w.hidden=state.cat==="all"||state.sub==="all";if(w.hidden)return;
   const n=QB.filter(q=>inCat(q,state.cat,state.sub)).length,{k,sz,bonus}=bagInfo(n);
   if((state.bag==="bonus"&&!bonus)||state.bag==="all")state.bag=1;
-  s.innerHTML=Array.from({length:k},(_,i)=>`<option value="${i+1}">Bagian ${i+1} · soal ${i*sz+1}–${Math.min(n,(i+1)*sz)}</option>`).join("")+(bonus?`<option value="bonus">Soal Bonus · soal ${k*sz+1}–${n}</option>`:"");
+  s.innerHTML=Array.from({length:k},(_,i)=>`<option value="${i+1}">Part ${i+1} · Questions ${i*sz+1}–${Math.min(n,(i+1)*sz)}</option>`).join("")+(bonus?`<option value="bonus">Bonus · Questions ${k*sz+1}–${n}</option>`:"");
   s.value=String(state.bag);
 }
 function selectCat(k,sub,bag){
@@ -1280,7 +1280,7 @@ function bukaSetelan(){const st=$("setelan");if(!st||st.hidden||st.open)return;
 // Bar Mock Exam: dibuka dan ditutup dengan gerak perlahan yang sama.
 document.querySelector("#tocard>summary").addEventListener("click",e=>{const d=$("tocard");e.preventDefault();if(d.dataset.anim)return;if(d.open){tutupPerlahan(d,[d.querySelector(".toisi")].filter(Boolean));return;}
   const h0=d.offsetHeight;d.open=true;turunPerlahan(d,h0,[d.querySelector(".toisi")].filter(Boolean));});
-function renderRingkas(){const st=$("setelan");if(st){if(!st.dataset.anim)st.hidden=state.cat==="all"||!!state.setHilang;st.classList.toggle("perlu",!siapOK());document.querySelector(".wrap").classList.toggle("blmsiap",!siapOK()&&!(window.__gulTutup&&state.cat!=="all"));document.querySelector(".wrap").classList.toggle("blmmulai",state.cat!=="all"&&siapOK()&&!state.mulai&&state.pos<state.list.length);const sr=$("siaprow");if(sr)sr.hidden=siapOK();}const r=$("ringkas");if(!r)return;const s=state.cat==="all"||state.sub==="all"?"All Sections":state.sub+". "+SUBS[state.cat][state.sub-1]+(state.bag==="bonus"?" · Soal Bonus":state.bag!=="all"?" · Bagian "+state.bag:"");
+function renderRingkas(){const st=$("setelan");if(st){if(!st.dataset.anim)st.hidden=state.cat==="all"||!!state.setHilang;st.classList.toggle("perlu",!siapOK());document.querySelector(".wrap").classList.toggle("blmsiap",!siapOK()&&!(window.__gulTutup&&state.cat!=="all"));document.querySelector(".wrap").classList.toggle("blmmulai",state.cat!=="all"&&siapOK()&&!state.mulai&&state.pos<state.list.length);const sr=$("siaprow");if(sr)sr.hidden=siapOK();}const r=$("ringkas");if(!r)return;const s=state.cat==="all"||state.sub==="all"?"All Sections":state.sub+". "+SUBS[state.cat][state.sub-1]+(state.bag==="bonus"?" · Bonus":state.bag!=="all"?" · Part "+state.bag:"");
   r.textContent=s+" · "+(state.order==="rand"?"Shuffle":"Sequential")+" · "+({off:"Timer off",cum:"Total timer",per:"Timer per question"}[tMode]||"");}
 function render(){if(tMode==="per")syncQ();renderScore();renderCard();renderMap();renderTimer();renderRingkas();sinkronTimer();}
 function retake(){buildSession(true);render();}
