@@ -764,7 +764,7 @@ body.bebas label.ctl-sub .subtap{display:block;position:absolute;inset:0;cursor:
 
   <section class="card" id="card" aria-live="polite"></section>
 
-  <details class="mapbox" id="mapbox"><summary id="mapsum">Peta soal</summary><div class="map" id="map"></div><p class="mapket"><i class="tk ok">✓</i> dijawab benar &nbsp; <i class="tk no">✗</i> dijawab salah atau waktu habis</p></details>
+  <details class="mapbox" id="mapbox"><summary id="mapsum">Question Map</summary><div class="map" id="map"></div><p class="mapket"><i class="tk ok">✓</i> answered correctly &nbsp; <i class="tk no">✗</i> answered wrong or time ran out</p></details>
 
   <div class="exitbawah" id="exitbawah" hidden><button class="btn keluar akunexit" id="akunexit2" type="button" aria-label="Exit" title="Exit"></button></div>
   <footer><span>© 2026 CAT - Lex Fexora. All rights reserved.</span> | <span>Developed &amp; Curated by Febrillian Kusuma Raafi, S.H.</span></footer>
@@ -1042,8 +1042,8 @@ function renderScore(){
   if($("sbkeluar"))$("sbkeluar").onclick=()=>window.__logout();
 }
 function renderMap(){
-  $("mapsum").textContent=`Peta soal (${state.list.length})`;
-  $("map").innerHTML=state.list.map((id,i)=>{const a=state.ans[id];const c=isBad(id)?"bad":(a===undefined?"":"ok");return `<button type="button" class="${c}${i===state.pos?" cur":""}" data-i="${i}" aria-label="Soal ${i+1}">${i+1}${c==="ok"?'<i class="tk ok" aria-hidden="true">✓</i>':c==="bad"?'<i class="tk no" aria-hidden="true">✗</i>':""}</button>`;}).join("");
+  $("mapsum").textContent=`Question Map (${state.list.length})`;
+  $("map").innerHTML=state.list.map((id,i)=>{const a=state.ans[id];const c=isBad(id)?"bad":(a===undefined?"":"ok");return `<button type="button" class="${c}${i===state.pos?" cur":""}" data-i="${i}" aria-label="Question ${i+1}">${i+1}${c==="ok"?'<i class="tk ok" aria-hidden="true">✓</i>':c==="bad"?'<i class="tk no" aria-hidden="true">✗</i>':""}</button>`;}).join("");
   $("map").querySelectorAll("button").forEach(b=>b.onclick=()=>{state.pos=+b.dataset.i;persist();render();window.scrollTo({top:$("card").offsetTop-12});});
 }
 function editQ(id){
