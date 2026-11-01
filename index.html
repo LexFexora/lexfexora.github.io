@@ -1560,7 +1560,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
   const escH=t=>String(t==null?'':t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const salinT=(v,b)=>{const ok=()=>{const o=b.textContent;b.textContent='✓ Copied';setTimeout(()=>b.textContent=o,1500);};if(navigator.clipboard)navigator.clipboard.writeText(v).then(ok).catch(()=>prompt('Copy:',v));else prompt('Copy:',v);};
   let tfPoll=null;const tfTunggu=()=>{if(tfPoll)return;let n=0;tfPoll=setInterval(async()=>{if(++n>360){clearInterval(tfPoll);tfPoll=null;return;}
-    try{const {data}=await window.__sb.rpc('cat_sudah_beli');if(data===true){clearInterval(tfPoll);tfPoll=null;const m=$('tfmodal');if(m)m.remove();if(window.__pkBuka)window.__pkBuka();else location.href=location.pathname;}}catch(e){}},10000);};
+    try{const {data}=await window.__sb.rpc('cat_sudah_beli');if(data===true){clearInterval(tfPoll);tfPoll=null;const m=$('tfmodal');if(m)m.remove();if(window.__pkBuka)window.__pkBuka();}}catch(e){}},10000);};
   window.__tfTunggu=tfTunggu;
   function modalTransfer(d){let m=$('tfmodal');if(m)m.remove();m=document.createElement('div');m.id='tfmodal';m.className='tfmodal';
     const rp='Rp'+Number(d.nominal).toLocaleString('id-ID'),noRek=(String(d.rekening).match(/\d[\d .-]{5,}\d/)||[''])[0].replace(/[^0-9]/g,'');
@@ -1810,21 +1810,17 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       if($('edsoal'))$('edsoal').onclick=()=>window.EditSoal&&EditSoal.cari({ambil:()=>QB,kini:()=>{try{return (window.__soalKini&&window.__soalKini())||null;}catch(e){return null;}},terkunci:id=>DIKUNCI.has(id),
         simpan:(rec,q)=>window.__edit(q.id,rec).then(()=>{if(window.__terapkanEdit)window.__terapkanEdit(q.id,rec);else{applyEdit(q,rec);DIKUNCI.add(q.id);}})});
       admin();start();return;}
-    const ref=db.doc('izin/'+u.uid);let sudahBayar=false;
+    const ref=db.doc('izin/'+u.uid);
     try{const s=await ref.get();
       if(!s.exists)await ref.set({email:u.email||'',nama:u.displayName||'',foto:u.photoURL||'',status:'menunggu',diminta:FV.serverTimestamp(),terakhir:FV.serverTimestamp(),posisi:''});
     }catch(e){show('Could not check access','Please reload the page. ('+(e.code||e.message)+')',who,false,true);return;}
     try{if(localStorage.getItem('beli-niat')){localStorage.removeItem('beli-niat');beliAkses(null);}}catch(e){}
     unsub=ref.onSnapshot(s=>{const st=s.exists?s.data().status:'menunggu';
-      // Situs hanya untuk pemilik dan pembeli yang sudah lunas: akun disetujui pun tetap harus sudah membeli.
-      if(st==='ditolak'){show('Access denied','The owner has not granted access to this account.',who,false,true);return;}
-      const masuk=()=>{if(!beat)heartbeat(ref);start();};
-      if(st==='disetujui'&&sudahBayar){masuk();return;}
-      const gerbang=()=>{const sdh=/[?&]bayar=ok\b/.test(location.search);
-        show(sdh?'Payment received':'Buyers only',sdh?'Your payment is being confirmed. This page will open automatically in a moment.':'CAT - Lex Fexora is available to buyers only. One payment gives lifetime access to every question and package. If you have already transferred, this page opens automatically once the owner confirms it.',who,false,true);
-        $('g-beli').hidden=false;$('g-beli').textContent='Buy access';if(window.__tfTunggu)window.__tfTunggu();};
-      if(st!=='disetujui'){gerbang();return;}
-      window.__sb.rpc('cat_sudah_beli').then(({data,error})=>{if(!error&&data===true){sudahBayar=true;masuk();}else gerbang();},()=>gerbang());
+      if(st==='disetujui'){if(!beat)heartbeat(ref);start();}
+      else if(st==='ditolak'){show('Access denied','The owner has not granted access to this account.',who,false,true);}
+      else{const sdh=/[?&]bayar=ok\b/.test(location.search);
+        show(sdh?'Payment received':'Waiting for approval',sdh?'Your payment is being confirmed. This page will open automatically in a moment.':'Your access request has been sent. This page will open automatically once the owner approves it, or right away after you buy access.',who,false,true);
+        if(!sdh)$('g-beli').hidden=false;}
     },e=>show('Could not check access','Please reload the page. ('+(e.code||e.message)+')',who,false,true));
   });
 
