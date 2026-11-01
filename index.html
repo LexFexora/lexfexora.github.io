@@ -1564,24 +1564,24 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
   window.__tfTunggu=tfTunggu;
   function modalTransfer(d){let m=$('tfmodal');if(m)m.remove();m=document.createElement('div');m.id='tfmodal';m.className='tfmodal';
     const rp='Rp'+Number(d.nominal).toLocaleString('id-ID'),noRek=(String(d.rekening).match(/\d[\d .-]{5,}\d/)||[''])[0].replace(/[^0-9]/g,'');
-    m.innerHTML=`<div class="tfbox" role="dialog" aria-modal="true" aria-labelledby="tfh"><b id="tfh">Buy instant access</b>
-      <span>1. Transfer this <b>exact amount</b>, including the last 3 digits:</span><div class="tfrow"><big>${rp}</big><button class="btn copy" type="button" data-c="${d.nominal}">⧉ Copy</button></div>
-      <span>To this account:</span><div class="tfrow"><span class="tfrek">${escH(d.rekening)}</span>${noRek?`<button class="btn copy" type="button" data-c="${noRek}">⧉ Copy</button>`:''}</div>
-      <span>2. Enter the sender name shown on your bank, then tap the button below.</span><input id="tfnama" autocomplete="name" placeholder="Sender name" value="${escH(d.pengirim)}" aria-label="Sender name">
-      <button class="btn primary" type="button" id="tfkirim">${d.dikirim?'Update sender name':'I have transferred'}</button>
-      <small id="tfinfo">${d.dikirim?'Transfer submitted. Your packages open automatically once the owner confirms it.':'Your packages open automatically once the owner confirms your transfer.'}</small>
-      ${d.wa?`<a class="btn" id="tfwa" target="_blank" rel="noopener" ${d.dikirim?'':'hidden'}>Notify owner on WhatsApp</a>`:''}
-      <button class="btn" type="button" id="tftutup">Close</button></div>`;
+    m.innerHTML=`<div class="tfbox" role="dialog" aria-modal="true" aria-labelledby="tfh"><b id="tfh">Beli akses Paket Prediksi</b>
+      <span>1. Transfer <b>tepat sebesar</b> nominal ini, termasuk 3 digit terakhir:</span><div class="tfrow"><big>${rp}</big><button class="btn copy" type="button" data-c="${d.nominal}">⧉ Salin</button></div>
+      <span>Ke rekening:</span><div class="tfrow"><span class="tfrek">${escH(d.rekening)}</span>${noRek?`<button class="btn copy" type="button" data-c="${noRek}">⧉ Salin</button>`:''}</div>
+      <span>2. Isi nama pengirim sesuai rekening Anda, lalu ketuk tombol di bawah.</span><input id="tfnama" autocomplete="name" placeholder="Nama pengirim" value="${escH(d.pengirim)}" aria-label="Nama pengirim">
+      <button class="btn primary" type="button" id="tfkirim">${d.dikirim?'Perbarui nama pengirim':'Saya sudah transfer'}</button>
+      <small id="tfinfo">${d.dikirim?'Transfer sudah dikirim. Paket terbuka otomatis setelah pemilik mengonfirmasi.':'Paket terbuka otomatis setelah pemilik mengonfirmasi transfer Anda. Sekali bayar, akses selamanya.'}</small>
+      ${d.wa?`<a class="btn" id="tfwa" target="_blank" rel="noopener" ${d.dikirim?'':'hidden'}>Kabari pemilik via WhatsApp</a>`:''}
+      <button class="btn" type="button" id="tftutup">Tutup</button></div>`;
     document.body.appendChild(m);
     m.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>salinT(b.dataset.c,b));
     const waSet=()=>{const a=$('tfwa');if(!a)return;const no=String(d.wa).replace(/[^0-9]/g,'').replace(/^0/,'62');
-      a.href='https://wa.me/'+no+'?text='+encodeURIComponent(`Hello, I have transferred ${rp} for the Prediction Packages. Sender: ${$('tfnama').value.trim()}. Account: ${((auth.currentUser&&auth.currentUser.email)||'')}`);};
+      a.href='https://wa.me/'+no+'?text='+encodeURIComponent(`Halo, saya sudah transfer ${rp} untuk Paket Prediksi. Pengirim: ${$('tfnama').value.trim()}. Akun: ${((auth.currentUser&&auth.currentUser.email)||'')}`);};
     waSet();$('tftutup').onclick=()=>m.remove();m.onclick=e=>{if(e.target===m)m.remove();};
-    $('tfkirim').onclick=async()=>{const nm=$('tfnama').value.trim();if(nm.length<2){alert('Please enter the sender name.');return;}
+    $('tfkirim').onclick=async()=>{const nm=$('tfnama').value.trim();if(nm.length<2){alert('Isi nama pengirim dulu.');return;}
       $('tfkirim').disabled=true;const {data,error}=await window.__sb.rpc('cat_beli_transfer',{p_nama:nm});$('tfkirim').disabled=false;
-      if(error||!data){$('tfinfo').textContent='Could not submit. Please try again.';return;}
+      if(error||!data){$('tfinfo').textContent='Gagal mengirim. Silakan coba lagi.';return;}
       if(data.lunas){m.remove();if(window.__pkBuka)window.__pkBuka();return;}
-      $('tfkirim').textContent='Update sender name';$('tfinfo').textContent='Thank you. Your transfer has been submitted. Your packages open automatically once the owner confirms it. You can close this window.';
+      $('tfkirim').textContent='Perbarui nama pengirim';$('tfinfo').textContent='Terima kasih, transfer Anda sudah tercatat. Paket terbuka otomatis setelah pemilik mengonfirmasi. Jendela ini boleh ditutup.';
       if($('tfwa')){$('tfwa').hidden=false;waSet();}tfTunggu();};
     if(d.dikirim)tfTunggu();}
   async function beliAkses(btn){const sb=window.__sb,t=btn&&btn.textContent;if(btn){btn.disabled=true;btn.textContent='Preparing payment…';}
@@ -1759,7 +1759,11 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       d.insertAdjacentHTML('beforeend','<b class="pkbsub">Sales</b><div class="linkrow"><input id="pkbharga" autocomplete="off" inputmode="numeric" placeholder="Price in Rp, e.g. 99000" aria-label="Price in rupiah"><input id="pkbwa" autocomplete="off" inputmode="tel" placeholder="WhatsApp for help, e.g. 0812…" aria-label="WhatsApp number"></div><input id="pkbrek" autocomplete="off" placeholder="Bank account, e.g. BRI 0123 4567 8901 234 a.n. Your Name" aria-label="Bank account for transfers"><div class="linkrow"><button class="btn copy" type="button" id="pkbsimpan">Save price</button><button class="btn copy" type="button" id="pkbsalin">⧉ Copy public link</button></div><small id="pkbinfo">Buyers transfer an exact amount (price + 3 unique digits) to your account. Check the mutation in BRImo, then tap Confirm below: their account is approved and the packages unlock immediately. Leave the bank account empty to use Xendit instead.</small><small id="pkbjual"></small><b class="pkbsub">Transfers to confirm <button class="btn copy" type="button" id="pkbmuat">↻ Refresh</button></b><div id="pkbtunggu" class="pkbtunggu"><small>No transfers waiting.</small></div>');
       $('pklist').before(d);
       const PUBLIK='https://lexfexora.github.io/beli/',rp=v=>'Rp'+Number(v).toLocaleString('id-ID');
-      try{const {data,error}=await sb.from('cat_bayar').select('nominal,wa,rekening').eq('id','paket').maybeSingle();if(error)throw error;if(data){$('pkbharga').value=data.nominal||'';$('pkbwa').value=data.wa||'';$('pkbrek').value=data.rekening||'';}}
+      try{const {data,error}=await sb.from('cat_bayar').select('nominal,wa,rekening').eq('id','paket').maybeSingle();if(error)throw error;if(data){$('pkbharga').value=data.nominal||'';$('pkbwa').value=data.wa||'';$('pkbrek').value=data.rekening||'';}
+        // Ringkasan bank soal untuk halaman publik /beli/ (jumlah soal per kategori dan jumlah paket), diperbarui saat pemilik membuka kartu ini.
+        try{const L=susunPaket(),BYQ={};QB.forEach(q=>BYQ[q.id]=q);const per={};L.forEach(ids=>ids.forEach(id=>{const q=BYQ[id];if(q)per[q.c]=(per[q.c]||0)+1;}));
+          const info={soal:L.reduce((t,x)=>t+x.length,0),paket:L.length,per};const lama=await sb.from('cat_bayar').select('info').eq('id','paket').maybeSingle();
+          if(!lama.error&&JSON.stringify(lama.data&&lama.data.info)!==JSON.stringify(info))await sb.from('cat_bayar').upsert({id:'paket',info});}catch(e){}}
       catch(e){$('pkbinfo').textContent='The sales tables do not exist yet. Run sb/supabase-update-4.sql and sb/supabase-update-5.sql in Supabase first.';}
       try{const {data,error}=await sb.from('cat_beli').select('nominal,email,lunas_pada').eq('status','lunas').order('lunas_pada',{ascending:false});if(!error&&data){const tot=data.reduce((t,x)=>t+x.nominal,0);
         $('pkbjual').textContent=data.length?`Paid buyers: ${data.length} · Total ${rp(tot)} · Latest: ${data.slice(0,3).map(x=>x.email).join(', ')}`:'Paid buyers: 0';}}catch(e){}

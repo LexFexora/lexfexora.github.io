@@ -12,3 +12,6 @@ begin
 end $$;
 revoke all on function public.cat_izin_hapus(text) from public, anon;
 grant execute on function public.cat_izin_hapus(text) to authenticated;
+
+-- Ringkasan bank soal untuk halaman /beli/ (diisi otomatis dari situs saat pemilik membuka Paket Prediksi).
+alter table public.cat_bayar add column if not exists info jsonb;
