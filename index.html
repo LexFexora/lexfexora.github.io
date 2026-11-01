@@ -1658,7 +1658,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
     const kata=t=>new Set(normT(t).split(' ').filter(w=>w.length>2&&!STOP.has(w)));
     const mirip=(A,B)=>{let n=0;A.forEach(w=>{if(B.has(w))n++;});return n/Math.max(1,A.size+B.size-n);};
     const pkStat=()=>{const L=susunPaket(),n=L.reduce((t,x)=>t+x.length,0),f=v=>v.toLocaleString('en-US');
-      return `<span class="pkstat"><span><b>${f(n)}</b><i>Questions</i></span><span><b>${L.length}</b><i>Packages</i></span><span><b>0</b><i>Repeats</i></span></span><span class="pkuniq">Every question appears once, and only once.</span>`;};
+      return `<span class="pkstat"><span><b>${f(n)}</b><i>Questions</i></span><span><b>${L.length}</b><i>Packages</i></span><span><b>0</b><i>Repeats</i></span></span>`;};
     let PKS=null;const susunPaket=()=>{if(PKS)return PKS;const r=benih('paket-prediksi'),seen=new Set(),perJwb={},kl={};
       const kembar=q=>{const k=normT(q.q);if(seen.has(k))return true;const j=normT(q.o[q.a]),W=kata(q.q),L=perJwb[j]=perJwb[j]||[];
         if(L.some(X=>mirip(W,X)>=.6))return true;seen.add(k);L.push(W);return false;};
@@ -1688,15 +1688,15 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
     const pkRender=()=>{const L=susunPaket(),B=(window.__quiz&&window.__quiz.benar&&window.__quiz.benar())||{};
       const BYQ={};QB.forEach(q=>BYQ[q.id]=q);const kom=ids=>{const h={};ids.forEach(id=>{const q=BYQ[id];if(q)h[q.c]=(h[q.c]||0)+1;});return Object.keys(CATS).filter(c=>h[c]).map(c=>({1:'IH',2:'Formil',3:'Materil',4:'TIK'}[c]||CATS[c].short)+' '+h[c]).join(' · ');};
       if(!buka){kunci();return;}
-      $('pkket').innerHTML=`<span class="pklead">CAT-Lex Fexora prediction packages with no repeated questions, each containing 25 questions on Legal Theory, Formal Law, Material Law, and ICT.</span>${pkStat()}<small class="pkcat">These packages are predictions built from the question bank, not leaked exam questions.</small>`;
+      $('pkket').innerHTML=`<span class="pklead">Each package is a full CAT simulation with 25 questions from each cluster: Legal Theory, Formal Law, Material Law, and ICT.</span>${pkStat()}<small class="pkcat">Predictions built from the CAT-Lex Fexora question bank, not leaked exam questions.</small>`;
       $('pklist').innerHTML=L.map((ids,i)=>{const ok=ids.filter(id=>B[id]).length,ss=window.__quiz&&window.__quiz.sesi&&window.__quiz.sesi('paket|'+(i+1)),
           dj=ss&&ss.ans?Object.keys(ss.ans).length:0,lanjut=ss&&(ss.pos>0||dj>0)&&ss.pos<ids.length;
         return `<div class="tr pk"><span class="trj"><b>Package ${i+1}</b></span><span class="muted trm pkpct" title="${dj} of ${ids.length} questions answered">${Math.round(dj*100/ids.length)}%</span><button class="btn copy" type="button" data-pk="${i+1}">${lanjut?'Continue':'Start'}</button></div>`;}).join('');
       $('pklist').querySelectorAll('[data-pk]').forEach(b=>b.onclick=()=>{const n=+b.dataset.pk,ids=susunPaket()[n-1];if(!window.__ulang||!ids||!ids.length)return;
         window.__ulang(2,'all',ids,'Package '+n,'paket|'+n,true);});};
     const KK='pk-kode',sb=window.__sb;let buka=isOwner;
-    const kunci=(pesan)=>{const L=susunPaket();$('pkket').innerHTML='<span class="pklead">'+L.length+' sealed packages, built to mirror the CAT exam for Religious Court judge candidates. Not a single question repeats. Somewhere inside are the questions that will decide your result. How many can you clear?</span>'+pkStat();
-      $('pklist').innerHTML=`<div class="pkkunci"><b>🔒 Restricted Access</b><span>The packages are sealed. Enter your access code to break the seal.</span><div class="linkrow"><input id="pkinput" type="password" autocomplete="off" placeholder="Access code" aria-label="Access code"><button class="btn copy" type="button" id="pkbuka">Unlock</button></div><small id="pkpesan">${pesan||''}</small></div>`+[1,2,3,4,5,6].map(n=>`<div class="tr pk pkghost" aria-hidden="true"><span class="trj"><b>Package ${n}</b></span><span class="pkpct">🔒</span><span class="pkgbtn">Sealed</span></div>`).join('')+`<p class="pkmore">+ ${L.length-6} more sealed packages</p>`;
+    const kunci=(pesan)=>{const L=susunPaket();$('pkket').innerHTML='<span class="pklead">Built to mirror the CAT exam for Religious Court judge candidates. Somewhere inside are the questions that will decide your result. How many can you clear?</span>'+pkStat();
+      $('pklist').innerHTML=`<div class="pkkunci"><b>🔒 Restricted Access</b><span>Enter your access code to break the seal.</span><div class="linkrow"><input id="pkinput" type="password" autocomplete="off" placeholder="Access code" aria-label="Access code"><button class="btn copy" type="button" id="pkbuka">Unlock</button></div><small id="pkpesan">${pesan||''}</small></div>`+[1,2,3,4,5,6].map(n=>`<div class="tr pk pkghost" aria-hidden="true"><span class="trj"><b>Package ${n}</b></span><span class="pkpct">🔒</span><span class="pkgbtn">Sealed</span></div>`).join('')+`<p class="pkmore">+ ${L.length-6} more sealed packages</p>`;
       const coba=async()=>{const k=$('pkinput').value.trim();if(!k)return;$('pkbuka').disabled=true;$('pkpesan').textContent='Checking…';
         const ok=await cek(k);$('pkbuka').disabled=false;if(ok){try{localStorage.setItem(KK,k);}catch(e){}buka=true;pkRender();}else $('pkpesan').textContent='Incorrect access code.';};
       $('pkbuka').onclick=coba;$('pkinput').onkeydown=e=>{if(e.key==='Enter')coba();};};
