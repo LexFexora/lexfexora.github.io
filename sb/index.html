@@ -1124,14 +1124,19 @@ try{store=JSON.parse(localStorage.getItem(KEY)||"{}")||{};}catch(e){store={};}
 // Progres Paket Prediksi juga disimpan di akun (progres/<uid>.pk, satu teks JSON per paket), jadi tidak hilang walau
 // ganti HP, browser dibersihkan, atau login ulang. Saat dimuat, versi dengan jawaban terbanyak (akun atau perangkat) yang dipakai.
 const PKJ=o=>o&&o.ans?Object.keys(o.ans).length:0,PKT={};
+function lebihBaru(a,b){if(!a)return false;if(!b)return true;const ea=a.ep||0,eb=b.ep||0;return ea>eb||(ea===eb&&PKJ(a)>PKJ(b));}
 (()=>{const PK=window.__PK_AWAL||{};let ubah=false;
-  Object.keys(PK).forEach(n=>{let v=null;try{v=JSON.parse(PK[n]);}catch(e){}const k="ulang|paket|"+n;if(v&&(!store[k]||PKJ(v)>PKJ(store[k]))){store[k]=v;ubah=true;}});
+  Object.keys(PK).forEach(n=>{let v=null;try{v=JSON.parse(PK[n]);}catch(e){}const k="ulang|paket|"+n;if(v&&lebihBaru(v,store[k])){store[k]=v;ubah=true;}});
   if(ubah)try{localStorage.setItem(KEY,JSON.stringify(store));}catch(e){}
   if(window.__simpanPaket)Object.keys(store).forEach(k=>{const m=/^ulang\|paket\|(\d+)$/.exec(k);if(!m)return;let c=null;try{c=PK[m[1]]?JSON.parse(PK[m[1]]):null;}catch(e){}
-    if(PKJ(store[k])>PKJ(c))window.__simpanPaket(m[1],store[k]);});})();
+    if(lebihBaru(store[k],c))window.__simpanPaket(m[1],store[k]);});})();
 function kirimPaket(n,segera){if(!window.__simpanPaket)return;clearTimeout(PKT[n]);const go=()=>{delete PKT[n];const v=store["ulang|paket|"+n];if(v)window.__simpanPaket(n,v);};if(segera)go();else PKT[n]=setTimeout(go,1500);}
 document.addEventListener("visibilitychange",()=>{if(document.hidden)Object.keys(PKT).forEach(n=>kirimPaket(n,true));});
-function save(){if(window.__keluar)return;try{localStorage.setItem(KEY,JSON.stringify(store));}catch(e){}}
+// Sebelum menulis, gabungkan dulu dengan isi perangkat: sesi yang lebih baru (ep) atau jawabannya lebih banyak tidak boleh tertimpa
+// oleh tab/halaman lama yang masih terbuka (penyebab progres "mundur").
+function save(){if(window.__keluar)return;try{const disk=JSON.parse(localStorage.getItem(KEY)||"{}")||{};
+  Object.keys(disk).forEach(k=>{const d=disk[k];if(!(k in store))store[k]=d;else if(d&&typeof d==="object"&&d.ans&&lebihBaru(d,store[k]))store[k]=d;});
+  localStorage.setItem(KEY,JSON.stringify(store));}catch(e){}}
 
 // Daftar Pilih Klaster terbuka saat halaman dibuka dan bisa ditutup kembali.
 const state={klOpen:true,cat:"all",sub:"all",bag:"all",order:"seq",list:[],pos:0,perm:{},ans:{},tLeft:0,timeUp:false,qLeft:0,qId:null,expired:{}};
@@ -1170,7 +1175,7 @@ function sortSeq(qs){const K=new Map(qs.map(q=>[q.id,seqKey(q)]));return qs.slic
 function buildSession(fresh,onlyIds){
   let ids=onlyIds||sortSeq(pool()).map(q=>q.id);
   if(state.order==="rand") ids=shuffle(ids);
-  state.list=ids; state.pos=0; state.ans={}; state.perm={}; state.mulai=false;
+  state.list=ids; state.pos=0; state.ans={}; state.perm={}; state.mulai=false; state.ep=Date.now();
   resetTimer();
   ids.forEach(id=>{state.perm[id]=shuffle(BYID[id].o.map((_,i)=>i));});
   persist();
@@ -1178,13 +1183,19 @@ function buildSession(fresh,onlyIds){
 // Timer Total: 40 detik per soal dikali jumlah soal yang dipilih; Per question memakai pilihan Duration.
 const SEC_TOTAL=40;
 function resetTimer(){state.tLeft=SEC_TOTAL*state.list.length;state.timeUp=false;state.qLeft=SEC;state.qId=null;state.expired={};}
-function persist(){store[sessionKey()]={list:state.list,pos:state.pos,mulai:!!state.mulai,ans:state.ans,perm:state.perm,order:state.order,tLeft:state.tLeft,timeUp:state.timeUp,qLeft:state.qLeft,qId:state.qId,expired:state.expired};store.last={cat:state.cat,sub:state.sub,bag:state.bag};if(state.cat!=="all"&&state.sub!=="all"){store.subAkhir=store.subAkhir||{};store.subAkhir[state.cat]={sub:state.sub,bag:state.bag};}save();
+function persist(){const pk=sessionKey(),mine={list:state.list,pos:state.pos,mulai:!!state.mulai,ans:state.ans,perm:state.perm,order:state.order,tLeft:state.tLeft,timeUp:state.timeUp,qLeft:state.qLeft,qId:state.qId,expired:state.expired,ep:state.ep||0};store[pk]=mine;store.last={cat:state.cat,sub:state.sub,bag:state.bag};if(state.cat!=="all"&&state.sub!=="all"){store.subAkhir=store.subAkhir||{};store.subAkhir[state.cat]={sub:state.sub,bag:state.bag};}save();
+  // Tab ini ternyata tertinggal (perangkat menyimpan sesi yang lebih maju): pakai versi itu, jangan timpa.
+  if(store[pk]!==mine){if(!persist.muat){persist.muat=1;try{restore();}finally{persist.muat=0;}setTimeout(()=>render(),0);}return;}
   if(state.ulang&&/^paket\|\d+$/.test(state.ulang.k))kirimPaket(state.ulang.k.split("|")[1]);}
+// Tab lain menyimpan progres: segarkan tab ini agar tidak tertinggal.
+window.addEventListener("storage",e=>{if(e.key!==KEY||!e.newValue)return;let disk={};try{disk=JSON.parse(e.newValue)||{};}catch(x){return;}
+  const pk=sessionKey(),lama=store[pk];Object.keys(disk).forEach(k=>{const d=disk[k];if(!(k in store))store[k]=d;else if(d&&typeof d==="object"&&d.ans&&lebihBaru(d,store[k]))store[k]=d;});
+  if(store[pk]!==lama){restore();render();}});
 function restore(){
   const s=store[sessionKey()];
   const valid=s&&Array.isArray(s.list)&&s.list.length&&s.list.every(id=>BYID[id]&&s.perm&&s.perm[id]);
   const ids=new Set(pool().map(q=>q.id));
-  if(valid&&s.list.length===ids.size&&s.list.every(id=>ids.has(id))){state.list=(s.order||"seq")==="seq"?sortSeq(s.list.map(id=>BYID[id])).map(q=>q.id):s.list;state.pos=Math.min(s.pos||0,s.list.length);state.ans=s.ans||{};state.perm=s.perm;state.order=s.order||"seq";state.mulai=typeof s.mulai==="boolean"?s.mulai:!!(s.pos||Object.keys(s.ans||{}).length);state.tLeft=typeof s.tLeft==="number"?s.tLeft:SEC*s.list.length;state.timeUp=!!s.timeUp;state.qLeft=typeof s.qLeft==="number"?s.qLeft:SEC;state.qId=s.qId||null;state.expired=s.expired||{};}
+  if(valid&&s.list.length===ids.size&&s.list.every(id=>ids.has(id))){state.list=(s.order||"seq")==="seq"?sortSeq(s.list.map(id=>BYID[id])).map(q=>q.id):s.list;state.pos=Math.min(s.pos||0,s.list.length);state.ans=s.ans||{};state.ep=s.ep||0;state.perm=s.perm;state.order=s.order||"seq";state.mulai=typeof s.mulai==="boolean"?s.mulai:!!(s.pos||Object.keys(s.ans||{}).length);state.tLeft=typeof s.tLeft==="number"?s.tLeft:SEC*s.list.length;state.timeUp=!!s.timeUp;state.qLeft=typeof s.qLeft==="number"?s.qLeft:SEC;state.qId=s.qId||null;state.expired=s.expired||{};}
   else buildSession(true);
 }
 
