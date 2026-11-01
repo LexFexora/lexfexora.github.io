@@ -2066,18 +2066,25 @@ document.addEventListener('click',e=>{if(!(e.target.closest&&e.target.closest('#
   setTimeout(()=>{const b=document.querySelector('.mulaikartu.mk .mkbox');if(!b)return;b.classList.remove('gulung');void b.offsetWidth;b.classList.add('gulung');b.addEventListener('animationend',()=>b.classList.remove('gulung'),{once:true});},0);},true);
 </script>
 <script>
-// Explanation dibuka/ditutup perlahan: tinggi kotak dianimasikan halus (ease-out), isi memudar masuk/keluar.
-(function(){const ease='cubic-bezier(.25,.8,.25,1)';
+// Explanation dibuka/ditutup perlahan: tinggi kotak dianimasikan halus, isi memudar masuk/keluar.
+// Agar tidak patah: animasi ditahan di ukuran akhir (fill) sampai status buka/tutup diganti, isi dipindah ke layer sendiri
+// (hanya opacity yang berubah, tanpa repaint bayangan), dan scroll anchoring dimatikan selama animasi agar halaman tidak meloncat.
+(function(){const ease='cubic-bezier(.22,.8,.24,1)',R=document.documentElement;
+  const beres=d=>{d.style.overflow='';d.style.willChange='';d.style.overflowAnchor='';R.style.overflowAnchor='';const isi=d.querySelector('.explain');if(isi)isi.style.willChange='';};
   document.addEventListener('click',e=>{const sm=e.target.closest&&e.target.closest('details.ket>summary');if(!sm)return;
     const d=sm.parentElement,isi=d.querySelector('.explain');if(!d.animate||matchMedia('(prefers-reduced-motion:reduce)').matches)return;
-    e.preventDefault();const h0=d.getBoundingClientRect().height;if(d._an){d._an.cancel();d._an=null;}if(d._fa){d._fa.cancel();d._fa=null;}
+    e.preventDefault();const h0=d.getBoundingClientRect().height;
+    if(d._an){d._an.cancel();d._an=null;}if(d._fa){d._fa.cancel();d._fa=null;}
     const buka=!d.open||d._tutup;d._tutup=false;d.open=true;const hBuka=d.getBoundingClientRect().height;
     d.open=false;const hTutup=d.getBoundingClientRect().height;d.open=true;
-    const h1=buka?hBuka:hTutup,dur=Math.min(560,Math.max(320,Math.abs(h1-h0)*1.1));
-    d.style.overflow='hidden';d._tutup=!buka;
-    d._an=d.animate({height:[h0+'px',h1+'px']},{duration:dur,easing:ease});
-    if(isi)d._fa=isi.animate({opacity:buka?[0,1]:[1,0],transform:buka?['translateY(-6px)','none']:['none','translateY(-6px)']},{duration:dur*(buka?1:.7),easing:ease,fill:'both'});
-    d._an.onfinish=()=>{d._an=null;d.style.overflow='';if(d._tutup){d.open=false;d._tutup=false;}if(d._fa){d._fa.cancel();d._fa=null;}};
+    const h1=buka?hBuka:hTutup,jarak=Math.abs(h1-h0),dur=Math.round(Math.min(520,Math.max(300,240+jarak*.3)));
+    d.style.overflow='hidden';d.style.willChange='height';d.style.overflowAnchor='none';R.style.overflowAnchor='none';d._tutup=!buka;
+    d._an=d.animate({height:[h0+'px',h1+'px']},{duration:dur,easing:ease,fill:'forwards'});
+    if(isi){isi.style.willChange='opacity,transform';
+      d._fa=isi.animate({opacity:buka?[0,1]:[1,0],transform:buka?['translateY(-4px)','none']:['none','translateY(-4px)']},{duration:buka?dur:Math.round(dur*.6),easing:buka?'cubic-bezier(.3,.6,.3,1)':'cubic-bezier(.5,0,.75,0)',fill:'both'});}
+    const an=d._an;an.onfinish=()=>{if(d._an!==an)return;
+      // Ganti status dulu selagi tinggi masih ditahan animasi, baru lepaskan animasinya: tidak ada satu frame pun yang meloncat.
+      if(d._tutup){d.open=false;d._tutup=false;}an.cancel();d._an=null;if(d._fa){d._fa.cancel();d._fa=null;}beres(d);};
   },true);})();
 </script>
 <script>
