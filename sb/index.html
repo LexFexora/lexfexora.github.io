@@ -1127,18 +1127,42 @@ try{store=JSON.parse(localStorage.getItem(KEY)||"{}")||{};}catch(e){store={};}
 // Progres Paket Prediksi juga disimpan di akun (progres/<uid>.pk, satu teks JSON per paket), jadi tidak hilang walau
 // ganti HP, browser dibersihkan, atau login ulang. Saat dimuat, versi dengan jawaban terbanyak (akun atau perangkat) yang dipakai.
 const PKJ=o=>o&&o.ans?Object.keys(o.ans).length:0,PKT={};
-function lebihBaru(a,b){if(!a)return false;if(!b)return true;const ea=a.ep||0,eb=b.ep||0;return ea>eb||(ea===eb&&PKJ(a)>PKJ(b));}
-(()=>{const PK=window.__PK_AWAL||{};let ubah=false;
-  Object.keys(PK).forEach(n=>{let v=null;try{v=JSON.parse(PK[n]);}catch(e){}const k="ulang|paket|"+n;if(v&&lebihBaru(v,store[k])){store[k]=v;ubah=true;}});
-  if(ubah)try{localStorage.setItem(KEY,JSON.stringify(store));}catch(e){}
-  if(window.__simpanPaket)Object.keys(store).forEach(k=>{const m=/^ulang\|paket\|(\d+)$/.exec(k);if(!m)return;let c=null;try{c=PK[m[1]]?JSON.parse(PK[m[1]]):null;}catch(e){}
-    if(lebihBaru(store[k],c))window.__simpanPaket(m[1],store[k]);});})();
-function kirimPaket(n,segera){if(!window.__simpanPaket)return;clearTimeout(PKT[n]);const go=()=>{delete PKT[n];const v=store["ulang|paket|"+n];if(v)window.__simpanPaket(n,v);};if(segera)go();else PKT[n]=setTimeout(go,1500);}
-document.addEventListener("visibilitychange",()=>{if(document.hidden)Object.keys(PKT).forEach(n=>kirimPaket(n,true));});
+// Gabungkan dua versi sesi yang sama (perangkat, tab lain, akun). Jawaban TIDAK pernah dibuang: jawaban kedua versi disatukan,
+// posisi soal diambil dari versi yang terakhir benar-benar dikerjakan (t). Satu-satunya pengecualian: "Retry All"/ganti urutan (rs)
+// yang memang sengaja mengosongkan jawaban. Mengembalikan objek a apa adanya bila b tidak menambah apa pun.
+function gabung(a,b){if(!b||typeof b!=="object"||!b.ans)return a;if(!a||typeof a!=="object"||!a.ans)return b;
+  const ea=a.ep||0,eb=b.ep||0;if(ea!==eb){const nw=ea>eb?a:b;if(nw.rs)return nw;}
+  const ta=a.t||0,tb=b.t||0,bb=tb>ta;let tambah=bb||(eb>ea);
+  if(!tambah){for(const k in b.ans)if(!(k in a.ans)){tambah=true;break;}}
+  if(!tambah&&b.expired){for(const k in b.expired)if(!(a.expired&&k in a.expired)){tambah=true;break;}}
+  if(!tambah)return a;
+  const base=bb?b:a,lain=bb?a:b;
+  return {...base,ans:{...lain.ans,...base.ans},expired:{...(lain.expired||{}),...(base.expired||{})},t:Math.max(ta,tb),ep:Math.max(ea,eb),rs:ea>=eb?a.rs:b.rs};}
+function lebihBaru(a,b){return !!a&&gabung(b,a)!==b;}
+function gabungStore(src){let ubah=false;Object.keys(src||{}).forEach(k=>{const d=src[k];if(!(k in store)){store[k]=d;ubah=true;return;}
+  if(d&&typeof d==="object"&&d.ans){const g=gabung(store[k],d);if(g!==store[k]){store[k]=g;ubah=true;}}});return ubah;}
+function pkCloud(raw){const o={};Object.keys(raw||{}).forEach(n=>{try{const v=JSON.parse(raw[n]);if(v)o["ulang|paket|"+n]=v;}catch(e){}});return o;}
+(()=>{const C=pkCloud(window.__PK_AWAL);if(gabungStore(C))try{localStorage.setItem(KEY,JSON.stringify(store));}catch(e){}
+  if(window.__simpanPaket)Object.keys(store).forEach(k=>{const m=/^ulang\|paket\|(\d+)$/.exec(k);if(!m)return;
+    if(gabung(C[k],store[k])!==C[k])kirimPaket(m[1],true);});})();
+// Menyimpan ke akun: baca dulu versi akun, gabungkan, baru tulis. Jadi tab/HP lama yang baru "bangun" tidak bisa menimpa progres yang lebih jauh.
+function kirimPaket(n,segera){if(!window.__simpanPaket)return;clearTimeout(PKT[n]);
+  const go=async()=>{delete PKT[n];const k="ulang|paket|"+n;let v=store[k];if(!v)return;
+    try{if(window.__ambilPaket){const c=await window.__ambilPaket(n);if(c){let cv=null;try{cv=JSON.parse(c);}catch(e){}const g=gabung(store[k],cv);if(g!==store[k]){store[k]=g;save();terapkan(k);}v=store[k];if(cv&&gabung(cv,v)===cv)return;}}}catch(e){}
+    window.__simpanPaket(n,v);};
+  if(segera)go();else PKT[n]=setTimeout(go,1500);}
+// Sesi yang sedang tampil berubah karena gabungan: muat ulang state dan tampilan.
+function terapkan(k){if(typeof sessionKey!=="function"||!state.list||sessionKey()!==k)return;restore();try{render();}catch(e){}}
+// Saat halaman kembali dibuka (pindah aplikasi, buka tab lagi), ambil dulu progres terbaru dari perangkat dan akun.
+async function segarkanPaket(){window.__segar=1;setTimeout(()=>{window.__segar=0;},8000);try{const disk=JSON.parse(localStorage.getItem(KEY)||"{}")||{};const pk=sessionKey(),lama=store[pk];gabungStore(disk);
+    if(window.__ambilSemuaPaket){const raw=await window.__ambilSemuaPaket();if(raw)gabungStore(pkCloud(raw));}
+    if(store[pk]!==lama){save();terapkan(pk);}}catch(e){}finally{window.__segar=0;lastTick=Date.now();}}
+document.addEventListener("visibilitychange",()=>{if(document.hidden)Object.keys(PKT).forEach(n=>kirimPaket(n,true));else segarkanPaket();});
+addEventListener("pageshow",e=>{if(e.persisted)segarkanPaket();});
 // Sebelum menulis, gabungkan dulu dengan isi perangkat: sesi yang lebih baru (ep) atau jawabannya lebih banyak tidak boleh tertimpa
 // oleh tab/halaman lama yang masih terbuka (penyebab progres "mundur").
 function save(){if(window.__keluar)return;try{const disk=JSON.parse(localStorage.getItem(KEY)||"{}")||{};
-  Object.keys(disk).forEach(k=>{const d=disk[k];if(!(k in store))store[k]=d;else if(d&&typeof d==="object"&&d.ans&&lebihBaru(d,store[k]))store[k]=d;});
+  gabungStore(disk);
   localStorage.setItem(KEY,JSON.stringify(store));}catch(e){}}
 
 // Daftar Pilih Klaster terbuka saat halaman dibuka dan bisa ditutup kembali.
@@ -1175,10 +1199,10 @@ function subIdx(q){if(state.cat==="all")return q.c*100+q.s;const m=q.mappings.fi
 function seqKey(q){let c,s;if(state.cat==="all"){c=q.c;s=q.s;}else{c=+state.cat;const m=q.mappings.find(m=>m.c===c&&(state.sub==="all"||m.s===+state.sub));s=m?m.s:99;}
   const fl=c>1&&s!==99;return [c*100+(fl?flowSubRank(c,s):s),fl?getFlowStage(q,c,s):(c===1&&s!==99?ihStage(q):0)];}
 function sortSeq(qs){const K=new Map(qs.map(q=>[q.id,seqKey(q)]));return qs.slice().sort((a,b)=>{const ka=K.get(a.id),kb=K.get(b.id),x=getOrderKey(a),y=getOrderKey(b);return ka[0]-kb[0]||ka[1]-kb[1]||x[0]-y[0]||x[1]-y[1]||(a.id<b.id?-1:a.id>b.id?1:0);});}
-function buildSession(fresh,onlyIds){
+function buildSession(fresh,onlyIds,reset){
   let ids=onlyIds||sortSeq(pool()).map(q=>q.id);
   if(state.order==="rand") ids=shuffle(ids);
-  state.list=ids; state.pos=0; state.ans={}; state.perm={}; state.mulai=false; state.ep=Date.now();
+  state.list=ids; state.pos=0; state.ans={}; state.perm={}; state.mulai=false; state.ep=Date.now(); state.rs=!!reset; state.t=0;
   resetTimer();
   ids.forEach(id=>{state.perm[id]=shuffle(BYID[id].o.map((_,i)=>i));});
   persist();
@@ -1190,19 +1214,26 @@ function PKT_ON(){return !!(state.ulang&&/^paket\|/.test(state.ulang.k));}
 function tmode(){return PKT_ON()?"per":tMode;}
 function sec(){return PKT_ON()?54:SEC;}
 function resetTimer(){state.tLeft=SEC_TOTAL*state.list.length;state.timeUp=false;state.qLeft=SEC;state.qId=null;state.expired={};}
-function persist(){const pk=sessionKey(),mine={list:state.list,pos:state.pos,mulai:!!state.mulai,ans:state.ans,perm:state.perm,order:state.order,tLeft:state.tLeft,timeUp:state.timeUp,qLeft:state.qLeft,qId:state.qId,expired:state.expired,ep:state.ep||0};store[pk]=mine;store.last={cat:state.cat,sub:state.sub,bag:state.bag};if(state.cat!=="all"&&state.sub!=="all"){store.subAkhir=store.subAkhir||{};store.subAkhir[state.cat]={sub:state.sub,bag:state.bag};}save();
+function persist(){const pk=sessionKey(),mine={list:state.list,pos:state.pos,mulai:!!state.mulai,ans:state.ans,perm:state.perm,order:state.order,tLeft:state.tLeft,timeUp:state.timeUp,qLeft:state.qLeft,qId:state.qId,expired:state.expired,ep:state.ep||0,rs:!!state.rs};
+  {const p=store[pk];mine.t=(!p||p.ep!==mine.ep||p.pos!==mine.pos||PKJ(p)!==PKJ(mine)||Object.keys(p.expired||{}).length!==Object.keys(mine.expired||{}).length)?Date.now():(p.t||state.t||0);state.t=mine.t;}
+  store[pk]=mine;store.last={cat:state.cat,sub:state.sub,bag:state.bag};if(state.cat!=="all"&&state.sub!=="all"){store.subAkhir=store.subAkhir||{};store.subAkhir[state.cat]={sub:state.sub,bag:state.bag};}save();
   // Tab ini ternyata tertinggal (perangkat menyimpan sesi yang lebih maju): pakai versi itu, jangan timpa.
   if(store[pk]!==mine){if(!persist.muat){persist.muat=1;try{restore();}finally{persist.muat=0;}setTimeout(()=>render(),0);}return;}
   if(state.ulang&&/^paket\|\d+$/.test(state.ulang.k))kirimPaket(state.ulang.k.split("|")[1]);}
 // Tab lain menyimpan progres: segarkan tab ini agar tidak tertinggal.
 window.addEventListener("storage",e=>{if(e.key!==KEY||!e.newValue)return;let disk={};try{disk=JSON.parse(e.newValue)||{};}catch(x){return;}
-  const pk=sessionKey(),lama=store[pk];Object.keys(disk).forEach(k=>{const d=disk[k];if(!(k in store))store[k]=d;else if(d&&typeof d==="object"&&d.ans&&lebihBaru(d,store[k]))store[k]=d;});
+  const pk=sessionKey(),lama=store[pk];gabungStore(disk);
   if(store[pk]!==lama){restore();render();}});
 function restore(){
   const s=store[sessionKey()];
   const valid=s&&Array.isArray(s.list)&&s.list.length&&s.list.every(id=>BYID[id]&&s.perm&&s.perm[id]);
   const ids=new Set(pool().map(q=>q.id));
-  if(valid&&s.list.length===ids.size&&s.list.every(id=>ids.has(id))){state.list=(s.order||"seq")==="seq"?sortSeq(s.list.map(id=>BYID[id])).map(q=>q.id):s.list;state.pos=Math.min(s.pos||0,s.list.length);state.ans=s.ans||{};state.ep=s.ep||0;state.perm=s.perm;state.order=s.order||"seq";state.mulai=typeof s.mulai==="boolean"?s.mulai:!!(s.pos||Object.keys(s.ans||{}).length);state.tLeft=typeof s.tLeft==="number"?s.tLeft:SEC*s.list.length;state.timeUp=!!s.timeUp;state.qLeft=typeof s.qLeft==="number"?s.qLeft:SEC;state.qId=s.qId||null;state.expired=s.expired||{};}
+  if(valid&&s.list.length===ids.size&&s.list.every(id=>ids.has(id))){state.list=(s.order||"seq")==="seq"?sortSeq(s.list.map(id=>BYID[id])).map(q=>q.id):s.list;state.pos=Math.min(s.pos||0,s.list.length);state.ans=s.ans||{};state.ep=s.ep||0;state.rs=!!s.rs;state.t=s.t||0;state.perm=s.perm;state.order=s.order||"seq";state.mulai=typeof s.mulai==="boolean"?s.mulai:!!(s.pos||Object.keys(s.ans||{}).length);state.tLeft=typeof s.tLeft==="number"?s.tLeft:SEC*s.list.length;state.timeUp=!!s.timeUp;state.qLeft=typeof s.qLeft==="number"?s.qLeft:SEC;state.qId=s.qId||null;state.expired=s.expired||{};}
+  else if(s&&s.ans&&Object.keys(s.ans).length){
+    // Bank soal berubah (soal diedit/dihapus): susun ulang daftar, tapi jawaban dan posisi lama tetap dipakai.
+    const lama=s;buildSession(true);const ada=new Set(state.list);
+    Object.keys(lama.ans).forEach(id=>{if(ada.has(id))state.ans[id]=lama.ans[id];});Object.keys(lama.expired||{}).forEach(id=>{if(ada.has(id))state.expired[id]=true;});
+    state.ep=lama.ep||0;state.rs=!!lama.rs;state.mulai=!!lama.mulai;state.pos=Math.min(lama.pos||0,state.list.length);persist();}
   else buildSession(true);
 }
 
@@ -1385,7 +1416,7 @@ function renderCard(){
 <ellipse cx="20" cy="44" rx="14" ry="4" fill="#8f939a"/><ellipse cx="20" cy="42.5" rx="11" ry="3" fill="#c9ccd1"/><path d="M33 44c4 0 5 3 2 4" fill="none" stroke="#8f939a" stroke-width="1.6"/></svg><b class="mkb1">Cahaya Lilin</b><p>Terpancar saat analisismu tepat sasaran. Rawat apinya, jangan biarkan ia padam di tengah jalan.</p><div class="mkchain" aria-hidden="true"></div><svg class="mkico" viewBox="0 0 44 44" aria-hidden="true"><defs><linearGradient id="mkPp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f3e2bb"/><stop offset="1" stop-color="#c9a873"/></linearGradient><linearGradient id="mkRl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e8d1a2"/><stop offset=".5" stop-color="#b38d55"/><stop offset="1" stop-color="#7c5f33"/></linearGradient></defs>
 <rect x="9" y="8" width="26" height="28" fill="url(#mkPp)"/><path d="M13 14h18M13 18h16M13 22h18M13 26h14M13 30h17" stroke="#9b7d4f" stroke-width=".9"/>
 <rect x="6" y="5" width="32" height="5" rx="2.5" fill="url(#mkRl)"/><rect x="6" y="34" width="32" height="5" rx="2.5" fill="url(#mkRl)"/></svg><b class="mkb2">Gulungan Naskah</b><p>Muncul saat langkahmu keliru. Bukan tanda kekalahan, melainkan isyarat bagimu untuk membuka kembali lembaran naskah kuno dan meluruskan pemahaman.</p></div><span class="mkrol mkrol-b" aria-hidden="true"></span></div><p class="mkhint">Tekan <b>Keep it</b> untuk membuka gulungan.</p><button class="btn primary mulai" id="mulaibtn" type="button">START</button><div class="info"><span>${n} questions</span><span>${state.order==="rand"?"Shuffle":"Sequential"}</span><span>${tm}</span></div></div>`;
-    $("mulaibtn").onclick=()=>{if(tmode()==="per"){const i=state.list.findIndex(id=>state.ans[id]===undefined&&!state.expired[id]);if(i>=0)state.pos=i;}state.mulai=true;state.qLeft=sec();state.qId=null;lastTick=Date.now();persist();render();window.scrollTo({top:Math.max(0,$("card").offsetTop-12)});};return;}
+    $("mulaibtn").onclick=()=>{if(tmode()==="per"){const bisa=id=>state.ans[id]===undefined&&!state.expired[id];if(!bisa(state.list[state.pos])){let i=state.list.findIndex((id,j)=>j>state.pos&&bisa(id));if(i<0)i=state.list.findIndex(bisa);if(i>=0)state.pos=i;}}state.mulai=true;state.qLeft=sec();state.qId=null;lastTick=Date.now();persist();render();window.scrollTo({top:Math.max(0,$("card").offsetTop-12)});};return;}
   if(state.pos>=state.list.length){
     const {ok,bad,n}=tally();
     const nilai=n?Math.round(ok*100/n):0;
@@ -1463,6 +1494,7 @@ function renderTimer(){
 }
 let lastTick=Date.now(),tickN=0;
 setInterval(()=>{
+  if(window.__segar){lastTick=Date.now();return;}
   const now=Date.now(),dt=(now-lastTick)/1000;lastTick=now;
   if(!timerActive()){renderTimer();return;}
   if(tmode()==="cum"){
@@ -1525,14 +1557,14 @@ document.querySelector("#pkcard>summary").addEventListener("click",e=>{const d=$
 function renderRingkas(){const st=$("setelan");if(st){if(!st.dataset.anim)st.hidden=state.cat==="all"||!!state.setHilang;st.classList.toggle("perlu",!siapOK());document.querySelector(".wrap").classList.toggle("blmsiap",!siapOK()&&!(window.__gulTutup&&state.cat!=="all"));document.querySelector(".wrap").classList.toggle("blmmulai",state.cat!=="all"&&siapOK()&&!state.mulai&&state.pos<state.list.length);const sr=$("siaprow");if(sr)sr.hidden=siapOK();}const r=$("ringkas");if(!r)return;const s=state.cat==="all"||state.sub==="all"?"All Sections":state.sub+". "+SUBS[state.cat][state.sub-1]+(state.ulang?" · "+state.ulang.label:state.bag==="bonus"?" · Bonus":state.bag!=="all"?" · Part "+state.bag:"");
   r.textContent=s+" · "+(state.order==="rand"?"Shuffle":"Sequential")+" · "+({off:"Timer off",cum:"Total timer",per:"Timer per question"}[tMode]||"");}
 function render(){renderUlang();if(tmode()==="per")syncQ();renderScore();renderCard();renderMap();renderTimer();renderRingkas();sinkronTimer();}
-function retake(){buildSession(true);render();}
-function retryWrong(){const w=state.list.filter(isBad);if(!w.length)return;buildSession(true,w);render();}
+function retake(){buildSession(true,null,true);render();}
+function retryWrong(){const w=state.list.filter(isBad);if(!w.length)return;buildSession(true,w,true);render();}
 
 $("bag").onchange=e=>{state.ulang=null;state.bag=bagNum(e.target.value);restore();$("order").value=state.order;render();};
 $("sub").onchange=e=>{state.ulang=null;state.sub=e.target.value==="all"?"all":+e.target.value;state.bag=state.sub==="all"?"all":1;renderBag();restore();$("order").value=state.order;
   // Khusus pemilik: ganti sub-materi saat mengerjakan, gulungan menutup dan baru terbuka lagi setelah Keep it.
   if(window.__isOwner&&siapOK()){siapCat=null;state.mulai=false;window.__gulTutup=true;}render();};
-$("order").onchange=e=>{state.order=e.target.value;buildSession(true);render();};
+$("order").onchange=e=>{state.order=e.target.value;buildSession(true,null,true);render();};
 $("fsexit").onclick=()=>fokus(false);
 $("timer").value=tMode+(tMode!=="off"&&SEC!==54?String(SEC):"");
 // Timer dipilih lewat dua menu (jenis dan durasi), lalu diteruskan ke #timer yang tersembunyi.
@@ -1662,6 +1694,8 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
     let imporSudah=false;try{const s=await ref.get();window.__BENAR_AWAL=(s.exists&&s.data().b)||{};window.__COBA_AWAL=(s.exists&&s.data().c)||{};window.__PK_AWAL=(s.exists&&s.data().pk)||{};imporSudah=!!(s.exists&&s.data().impor);}catch(e){window.__BENAR_AWAL={};window.__COBA_AWAL={};window.__PK_AWAL={};}
     window.__simpanBenar=id=>ref.set({b:{[id]:1}},{merge:true}).catch(()=>{});
     window.__sinkronBenar=m=>ref.set({b:m},{merge:true}).catch(()=>{});
+    window.__ambilSemuaPaket=async()=>{try{const s=await ref.get();return (s.exists&&s.data().pk)||{};}catch(e){return null;}};
+    window.__ambilPaket=async n=>{const pk=await window.__ambilSemuaPaket();return pk?pk[n]||null:null;};
     window.__simpanPaket=(n,v)=>{try{return ref.set({pk:{[n]:JSON.stringify(v)}},{merge:true}).catch(()=>{});}catch(e){}};
     window.__simpanCoba=id=>ref.set({c:{[id]:1}},{merge:true}).catch(()=>{});
     window.__sinkronCoba=m=>ref.set({c:m},{merge:true}).catch(()=>{});
