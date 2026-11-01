@@ -865,7 +865,7 @@ html:root[data-theme="dark"] body #siapbtn:hover{background:radial-gradient(120%
 #pklist .tr.pk{flex-direction:column;align-items:stretch;gap:4px;padding:8px 6px;text-align:center;border-radius:10px;margin:0}
 #pklist .tr.pk .trj{flex:none;align-items:center}
 #pklist .tr.pk .trj b{font-size:13px;white-space:nowrap}
-#pklist .tr.pk .pkpct{margin:0;min-width:0;text-align:center;font-size:12px}
+#pklist .tr.pk .pkpct{margin:0;min-width:0;text-align:center;font-size:12px}#pklist .tr.pk .pkbs{display:flex;justify-content:center;gap:8px;font-size:11.5px;font-weight:700;font-variant-numeric:tabular-nums;margin-top:-2px}#pklist .pkbs i{font-style:normal}#pklist .pkbs .ok{color:#3fb26f}#pklist .pkbs .no{color:#e0645a}
 #pklist .tr.pk .btn{width:100%;justify-content:center;padding:4px 0;font-size:12.5px;min-height:0}
 .pkstat{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0 6px}
 .pkstat>span{display:flex;flex-direction:column;align-items:center;gap:3px;padding:11px 6px 10px;border-radius:12px;border:1px solid rgb(255 255 255 / .09);background:linear-gradient(160deg,rgb(255 255 255 / .05),rgb(255 255 255 / .01));box-shadow:inset 0 1px 0 rgb(255 255 255 / .05)}
@@ -1121,6 +1121,16 @@ function fmtPct(c,n){const v=n?c*100/n:0;return (v>0&&v<10?v.toFixed(1).replace(
 const TIERNAME={1:"Dasar hukum",2:"Istilah, jenis & prosedur",3:"Pendapat ahli & doktrin"};
 let store={};
 try{store=JSON.parse(localStorage.getItem(KEY)||"{}")||{};}catch(e){store={};}
+// Progres Paket Prediksi juga disimpan di akun (progres/<uid>.pk, satu teks JSON per paket), jadi tidak hilang walau
+// ganti HP, browser dibersihkan, atau login ulang. Saat dimuat, versi dengan jawaban terbanyak (akun atau perangkat) yang dipakai.
+const PKJ=o=>o&&o.ans?Object.keys(o.ans).length:0,PKT={};
+(()=>{const PK=window.__PK_AWAL||{};let ubah=false;
+  Object.keys(PK).forEach(n=>{let v=null;try{v=JSON.parse(PK[n]);}catch(e){}const k="ulang|paket|"+n;if(v&&(!store[k]||PKJ(v)>PKJ(store[k]))){store[k]=v;ubah=true;}});
+  if(ubah)try{localStorage.setItem(KEY,JSON.stringify(store));}catch(e){}
+  if(window.__simpanPaket)Object.keys(store).forEach(k=>{const m=/^ulang\|paket\|(\d+)$/.exec(k);if(!m)return;let c=null;try{c=PK[m[1]]?JSON.parse(PK[m[1]]):null;}catch(e){}
+    if(PKJ(store[k])>PKJ(c))window.__simpanPaket(m[1],store[k]);});})();
+function kirimPaket(n,segera){if(!window.__simpanPaket)return;clearTimeout(PKT[n]);const go=()=>{delete PKT[n];const v=store["ulang|paket|"+n];if(v)window.__simpanPaket(n,v);};if(segera)go();else PKT[n]=setTimeout(go,1500);}
+document.addEventListener("visibilitychange",()=>{if(document.hidden)Object.keys(PKT).forEach(n=>kirimPaket(n,true));});
 function save(){if(window.__keluar)return;try{localStorage.setItem(KEY,JSON.stringify(store));}catch(e){}}
 
 // Daftar Pilih Klaster terbuka saat halaman dibuka dan bisa ditutup kembali.
@@ -1168,7 +1178,8 @@ function buildSession(fresh,onlyIds){
 // Timer Total: 40 detik per soal dikali jumlah soal yang dipilih; Per question memakai pilihan Duration.
 const SEC_TOTAL=40;
 function resetTimer(){state.tLeft=SEC_TOTAL*state.list.length;state.timeUp=false;state.qLeft=SEC;state.qId=null;state.expired={};}
-function persist(){store[sessionKey()]={list:state.list,pos:state.pos,mulai:!!state.mulai,ans:state.ans,perm:state.perm,order:state.order,tLeft:state.tLeft,timeUp:state.timeUp,qLeft:state.qLeft,qId:state.qId,expired:state.expired};store.last={cat:state.cat,sub:state.sub,bag:state.bag};if(state.cat!=="all"&&state.sub!=="all"){store.subAkhir=store.subAkhir||{};store.subAkhir[state.cat]={sub:state.sub,bag:state.bag};}save();}
+function persist(){store[sessionKey()]={list:state.list,pos:state.pos,mulai:!!state.mulai,ans:state.ans,perm:state.perm,order:state.order,tLeft:state.tLeft,timeUp:state.timeUp,qLeft:state.qLeft,qId:state.qId,expired:state.expired};store.last={cat:state.cat,sub:state.sub,bag:state.bag};if(state.cat!=="all"&&state.sub!=="all"){store.subAkhir=store.subAkhir||{};store.subAkhir[state.cat]={sub:state.sub,bag:state.bag};}save();
+  if(state.ulang&&/^paket\|\d+$/.test(state.ulang.k))kirimPaket(state.ulang.k.split("|")[1]);}
 function restore(){
   const s=store[sessionKey()];
   const valid=s&&Array.isArray(s.list)&&s.list.length&&s.list.every(id=>BYID[id]&&s.perm&&s.perm[id]);
@@ -1630,9 +1641,10 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
   }
   // Soal yang pernah dijawab benar disimpan di progres/<uid> agar tetap ada setelah keluar atau ganti perangkat.
   async function progres(){const u=auth.currentUser;if(!u)return;window.__UID=u.uid;const ref=db.doc('progres/'+u.uid);
-    let imporSudah=false;try{const s=await ref.get();window.__BENAR_AWAL=(s.exists&&s.data().b)||{};window.__COBA_AWAL=(s.exists&&s.data().c)||{};imporSudah=!!(s.exists&&s.data().impor);}catch(e){window.__BENAR_AWAL={};window.__COBA_AWAL={};}
+    let imporSudah=false;try{const s=await ref.get();window.__BENAR_AWAL=(s.exists&&s.data().b)||{};window.__COBA_AWAL=(s.exists&&s.data().c)||{};window.__PK_AWAL=(s.exists&&s.data().pk)||{};imporSudah=!!(s.exists&&s.data().impor);}catch(e){window.__BENAR_AWAL={};window.__COBA_AWAL={};window.__PK_AWAL={};}
     window.__simpanBenar=id=>ref.set({b:{[id]:1}},{merge:true}).catch(()=>{});
     window.__sinkronBenar=m=>ref.set({b:m},{merge:true}).catch(()=>{});
+    window.__simpanPaket=(n,v)=>{try{return ref.set({pk:{[n]:JSON.stringify(v)}},{merge:true}).catch(()=>{});}catch(e){}};
     window.__simpanCoba=id=>ref.set({c:{[id]:1}},{merge:true}).catch(()=>{});
     window.__sinkronCoba=m=>ref.set({c:m},{merge:true}).catch(()=>{});
     if(window.__sb)tawarImpor(u,ref,imporSudah);}
@@ -1738,8 +1750,9 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       if(!buka){kunci();return;}
       $('pkket').innerHTML=`<span class="pklead">Each package is a full CAT simulation with 25 questions from each cluster: Legal Theory, Formal Law, Material Law, and ICT.</span>${pkStat()}<small class="pkcat">Predictions built from the CAT-Lex Fexora question bank, not leaked exam questions.</small>`;
       $('pklist').innerHTML=L.map((ids,i)=>{const ok=ids.filter(id=>B[id]).length,ss=window.__quiz&&window.__quiz.sesi&&window.__quiz.sesi('paket|'+(i+1)),
-          dj=ss&&ss.ans?Object.keys(ss.ans).length:0,lanjut=ss&&(ss.pos>0||dj>0)&&ss.pos<ids.length;
-        return `<div class="tr pk"><span class="trj"><b>Package ${i+1}</b></span><span class="muted trm pkpct" title="${dj} of ${ids.length} questions answered">${Math.round(dj*100/ids.length)}%</span><button class="btn copy" type="button" data-pk="${i+1}">${lanjut?'Continue':'Start'}</button></div>`;}).join('');
+          dj=ss&&ss.ans?Object.keys(ss.ans).length:0,lanjut=ss&&(ss.pos>0||dj>0)&&ss.pos<ids.length,
+          bn=dj?Object.keys(ss.ans).filter(id=>BYQ[id]&&ss.ans[id]===BYQ[id].a).length:0,pb=dj?Math.round(bn*100/dj):0;
+        return `<div class="tr pk"><span class="trj"><b>Package ${i+1}</b></span><span class="muted trm pkpct" title="${dj} of ${ids.length} questions answered">${Math.round(dj*100/ids.length)}% done</span>${dj?`<span class="pkbs" title="${bn} correct, ${dj-bn} wrong of ${dj} answered"><i class="ok">✓ ${pb}%</i><i class="no">✗ ${100-pb}%</i></span>`:''}<button class="btn copy" type="button" data-pk="${i+1}">${lanjut?'Continue':'Start'}</button></div>`;}).join('');
       $('pklist').querySelectorAll('[data-pk]').forEach(b=>b.onclick=()=>{const n=+b.dataset.pk,ids=susunPaket()[n-1];if(!window.__ulang||!ids||!ids.length)return;
         window.__ulang(2,'all',ids,'Package '+n,'paket|'+n,true);});};
     const KK='pk-kode',sb=window.__sb;let buka=isOwner;
