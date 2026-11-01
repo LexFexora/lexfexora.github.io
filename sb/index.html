@@ -1686,14 +1686,22 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
           const tam=lebih.map(s=>({s,v:sisa*(K.G[s].length-n[s])/tot}));let pakai=0;tam.forEach(x=>{const f=Math.min(Math.floor(x.v),K.G[x.s].length-n[x.s]);n[x.s]+=f;pakai+=f;x.r=x.v-Math.floor(x.v);});
           sisa-=pakai;tam.sort((a,b)=>b.r-a.r);for(const x of tam){if(sisa<=0)break;if(K.G[x.s].length>n[x.s]){n[x.s]++;sisa--;}}}
         const pos=[];K.subs.forEach(s=>{for(let k=0;k<n[s];k++)pos.push({t:(k+.5)/n[s]*T+s*1e-6,id:K.G[s][k].id});});
-        pos.sort((a,b)=>a.t-b.t);pos.forEach((x,i)=>{const p=Math.floor(i/PER_KL);if(p<P)PKS[p].push(x.id);});});
-      PKS=PKS.map(ids=>acakB(ids,r));
+        pos.sort((a,b)=>a.t-b.t);pos.forEach((x,i)=>{const p=Math.floor(i/PER_KL);if(p<P)PKS[p].push(x.id);});
+        // Sisa soal klaster ini (belum masuk paket seimbang), juga disebar merata antar sub, untuk paket lanjutan.
+        const sis=[];K.subs.forEach(s=>{const g=K.G[s].slice(n[s]);g.forEach((q,k)=>sis.push({t:(k+.5)/g.length+s*1e-6,id:q.id}));});
+        K.sisa=sis.sort((a,b)=>a.t-b.t).map(x=>x.id);});
+      // Paket lanjutan: semua sisa soal dicampur sebanding jumlah sisa tiap klaster, dipotong per 100 soal.
+      const S=Object.values(kl).reduce((t,K)=>t+K.sisa.length,0),camp=[];
+      Object.values(kl).forEach(K=>K.sisa.forEach((id,k)=>camp.push({t:(k+.5)/K.sisa.length,id})));
+      camp.sort((a,b)=>a.t-b.t);for(let i=0;i<S;i+=100)PKS.push(camp.slice(i,i+100).map(x=>x.id));
+      PKS.seimbang=P;const sb=PKS.seimbang;PKS=PKS.map(ids=>acakB(ids,r));PKS.seimbang=sb;
       return PKS;};
     const pkRender=()=>{const L=susunPaket(),B=(window.__quiz&&window.__quiz.benar&&window.__quiz.benar())||{};
-      $('pkket').textContent=`${L.length} paket × 100 soal. Tiap paket berisi 25 soal dari masing-masing klaster (Ilmu Hukum, Hukum Formil, Hukum Materil, TIK) dan mencakup semua sub-materinya, kecuali beberapa sub yang soalnya kurang dari ${L.length}. Tidak ada soal yang sama atau serupa antar paket. Soal dasar hukum dan istilah didahulukan, jadi paket awal memuat materi yang paling sering diujikan. Ini prediksi, bukan bocoran soal.`;
+      const BYQ={};QB.forEach(q=>BYQ[q.id]=q);const kom=ids=>{const h={};ids.forEach(id=>{const q=BYQ[id];if(q)h[q.c]=(h[q.c]||0)+1;});return Object.keys(CATS).filter(c=>h[c]).map(c=>({1:'IH',2:'Formil',3:'Materil',4:'TIK'}[c]||CATS[c].short)+' '+h[c]).join(' · ');};
+      $('pkket').textContent=`Paket 1–${L.seimbang}: 100 soal seimbang, 25 per klaster. Paket ${L.seimbang+1}–${L.length}: lanjutan dari sisa soal yang belum masuk, dicampur sebanding sisa tiap klaster (soal TIK sudah habis di paket seimbang). Total ${L.reduce((t,x)=>t+x.length,0)} soal, tidak ada soal yang sama atau serupa antar paket. Paket seimbang mencakup semua sub-materi tiap klaster, kecuali beberapa sub yang soalnya kurang dari ${L.seimbang}. Soal dasar hukum dan istilah didahulukan, jadi paket awal memuat materi yang paling sering diujikan. Ini prediksi, bukan bocoran soal.`;
       $('pklist').innerHTML=L.map((ids,i)=>{const ok=ids.filter(id=>B[id]).length,ss=window.__quiz&&window.__quiz.sesi&&window.__quiz.sesi('paket|'+(i+1)),
           dj=ss&&ss.ans?Object.keys(ss.ans).length:0,lanjut=ss&&(ss.pos>0||dj>0)&&ss.pos<ids.length;
-        return `<div class="tr pk"><span class="trj"><b>Paket ${i+1}</b><small>100 soal · 25 per klaster · semua sub-materi</small></span><span class="muted trm">dikuasai ${ok}${dj?` · dijawab ${dj}`:''}</span><button class="btn copy" type="button" data-pk="${i+1}">${lanjut?'Lanjut':'Mulai'}</button></div>`;}).join('');
+        return `<div class="tr pk"><span class="trj"><b>Paket ${i+1}</b><small>${i<L.seimbang?'100 soal · 25 per klaster · semua sub-materi':ids.length+' soal lanjutan · '+kom(ids)}</small></span><span class="muted trm">dikuasai ${ok}${dj?` · dijawab ${dj}`:''}</span><button class="btn copy" type="button" data-pk="${i+1}">${lanjut?'Lanjut':'Mulai'}</button></div>`;}).join('');
       $('pklist').querySelectorAll('[data-pk]').forEach(b=>b.onclick=()=>{const n=+b.dataset.pk,ids=susunPaket()[n-1];if(!window.__ulang||!ids||!ids.length)return;
         window.__ulang(2,'all',ids,'Paket '+n,'paket|'+n);});};
     $('pkcard').hidden=false;$('pkcard').addEventListener('toggle',()=>{if($('pkcard').open)pkRender();});
