@@ -1,4 +1,4 @@
-# Computer Assisted Test - Febrillian Kusuma Raafi, S.H.
+# Computer Assisted Test - Lex Fexora
 
 Latihan Seleksi Kemampuan Bidang Calon Hakim Peradilan Agama.
 
