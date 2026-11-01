@@ -1913,6 +1913,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
     const esc=s=>String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
     const ACT={menunggu:[['disetujui','Setujui','primary'],['ditolak','Tolak','']],disetujui:[['ditolak','Cabut','']],ditolak:[['disetujui','Setujui','primary'],['hapus','Hapus','']]};
     const TTL={menunggu:'Menunggu persetujuan',disetujui:'Disetujui',ditolak:'Ditolak / dicabut'};
+    // Hapus: lewat fungsi cat_izin_hapus agar email ikut keluar dari izin_pra (tidak disetujui otomatis lagi).
     // Pindah ke Supabase: salin email yang sudah disetujui sebagai perintah SQL untuk tabel izin_pra.
     let izinOK=[];$('izinsql').onclick=()=>{if(!izinOK.length){alert('Belum ada akun yang disetujui.');return;}
       const q='insert into public.izin_pra (email) values\n'+izinOK.map(e=>"  ('"+e+"')").join(',\n')+'\non conflict do nothing;';
@@ -1951,7 +1952,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
         window.__ulang(+c,+s,m==='x'?r.bad:r.all,nm+(m==='x'?' (yang salah)':''),u+'|'+c+'|'+s+'|'+m);});
       body.querySelectorAll('.siapa').forEach(b=>b.onclick=()=>{const e=b.parentElement.querySelector('.em');e.hidden=!e.hidden;e.hidden?emBuka.delete(b.dataset.u):emBuka.add(b.dataset.u);b.setAttribute('aria-expanded',String(!e.hidden));});
       body.querySelectorAll('button[data-id]').forEach(b=>b.onclick=()=>{const r=db.doc('izin/'+b.dataset.id);b.disabled=true;
-        (b.dataset.v==='hapus'?r.delete():r.update({status:b.dataset.v})).catch(e=>{alert('Gagal: '+(e.code||e.message));b.disabled=false;});});
+        (b.dataset.v==='hapus'?window.__sb.rpc('cat_izin_hapus',{p_uid:b.dataset.id}).then(({error})=>{if(error)throw new Error(/function|schema cache/i.test(error.message||'')?'Jalankan dulu sb/supabase-update-7.sql di Supabase.':(error.message||error.code));}):r.update({status:b.dataset.v})).catch(e=>{alert('Gagal: '+(e.code||e.message));b.disabled=false;});});
     };
     // Notifikasi login (khusus pemilik): muncul di pojok layar tanpa mengganggu soal atau timer.
     const LOGIN={};let loginAwal=true;
