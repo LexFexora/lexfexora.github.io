@@ -860,6 +860,18 @@ html:root[data-theme="dark"] body #siapbtn:hover{background:radial-gradient(120%
 #pklist .tr.pk .trj b{font-size:13px;white-space:nowrap}
 #pklist .tr.pk .pkpct{margin:0;min-width:0;text-align:center;font-size:12px}
 #pklist .tr.pk .btn{width:100%;justify-content:center;padding:4px 0;font-size:12.5px;min-height:0}
+.pkstat{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0 6px}
+.pkstat>span{display:flex;flex-direction:column;align-items:center;gap:3px;padding:11px 6px 10px;border-radius:12px;border:1px solid rgb(255 255 255 / .09);background:linear-gradient(160deg,rgb(255 255 255 / .05),rgb(255 255 255 / .01));box-shadow:inset 0 1px 0 rgb(255 255 255 / .05)}
+.pkstat b{font-family:var(--f-display,Georgia,serif);font-size:22px;line-height:1.1;font-weight:700;color:color-mix(in srgb,var(--brass) 85%,var(--ink))!important}
+.pkstat i{font-style:normal;font-size:10.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.pkuniq{display:block;text-align:center;font-size:11.5px;color:var(--muted);margin:0 0 4px}
+.pkuniq::before{content:"✓ ";color:color-mix(in srgb,var(--brass) 85%,var(--ink))}
+#pklist .pkghost{pointer-events:none;user-select:none;filter:blur(1.2px);opacity:.75}
+#pklist .pkghost .pkgbtn{font-size:12px;color:var(--muted);padding:4px 0;border:1px solid rgb(255 255 255 / .08);border-radius:8px}
+#pklist .pkmore{grid-column:1/-1;margin:2px 0 0;text-align:center;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:color-mix(in srgb,var(--brass) 70%,var(--muted))}
+html.beranim #pkcard *,html.beranim #tocard *,html.beranim #setelan *{box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;text-shadow:none!important;transition:none!important}
+html.beranim #pklist .pkghost{filter:none}
+html.beranim .toisi,html.beranim #setelan .controls{contain:layout paint style}
 </style>
 </head>
 <body>
@@ -1443,7 +1455,7 @@ function turunPerlahan(el,h0,isi){if(matchMedia("(prefers-reduced-motion:reduce)
   klip(el,1);const an=el.animate([{height:h0+"px"},{height:h1+"px"}],ez);an.onfinish=an.oncancel=()=>{klip(el,0);};
   (isi||[]).forEach((x,i)=>x.animate([{opacity:0,transform:"translateY(-14px)"},{opacity:1,transform:"none"}],Object.assign({},ez,{delay:i*90,fill:"backwards"})));}
 // Menutup bagian dengan gerak yang sama, terbalik: isi naik dan memudar, tinggi menyusut sampai tinggal judulnya.
-const EZ_PELAN={duration:1100,easing:"cubic-bezier(.65,0,.35,1)"};
+const EZ_PELAN={duration:820,easing:"cubic-bezier(.45,0,.2,1)"};
 function tutupPerlahan(d,isi){if(d.dataset.anim)return;if(matchMedia("(prefers-reduced-motion:reduce)").matches||!d.animate){d.open=false;return;}
   const sm=d.querySelector(":scope>summary"),cs=getComputedStyle(d),h0=d.offsetHeight;
   const h1=sm.offsetHeight+parseFloat(cs.borderTopWidth)+parseFloat(cs.borderBottomWidth)+parseFloat(cs.paddingTop)+parseFloat(cs.paddingBottom);
@@ -1646,6 +1658,8 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
     const STOP=new Set('yang dan atau dalam untuk dengan pada dari oleh adalah ini itu tersebut menurut apa apakah berikut kecuali sebagai bahwa tidak dapat harus akan telah suatu secara karena maka'.split(' '));
     const kata=t=>new Set(normT(t).split(' ').filter(w=>w.length>2&&!STOP.has(w)));
     const mirip=(A,B)=>{let n=0;A.forEach(w=>{if(B.has(w))n++;});return n/Math.max(1,A.size+B.size-n);};
+    const pkStat=()=>{const L=susunPaket(),n=L.reduce((t,x)=>t+x.length,0),f=v=>v.toLocaleString('en-US');
+      return `<span class="pkstat"><span><b>${f(n)}</b><i>Questions</i></span><span><b>${L.length}</b><i>Packages</i></span><span><b>0</b><i>Repeats</i></span></span><span class="pkuniq">Every question appears once, and only once.</span>`;};
     let PKS=null;const susunPaket=()=>{if(PKS)return PKS;const r=benih('paket-prediksi'),seen=new Set(),perJwb={},kl={};
       const kembar=q=>{const k=normT(q.q);if(seen.has(k))return true;const j=normT(q.o[q.a]),W=kata(q.q),L=perJwb[j]=perJwb[j]||[];
         if(L.some(X=>mirip(W,X)>=.6))return true;seen.add(k);L.push(W);return false;};
@@ -1675,15 +1689,15 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
     const pkRender=()=>{const L=susunPaket(),B=(window.__quiz&&window.__quiz.benar&&window.__quiz.benar())||{};
       const BYQ={};QB.forEach(q=>BYQ[q.id]=q);const kom=ids=>{const h={};ids.forEach(id=>{const q=BYQ[id];if(q)h[q.c]=(h[q.c]||0)+1;});return Object.keys(CATS).filter(c=>h[c]).map(c=>({1:'IH',2:'Formil',3:'Materil',4:'TIK'}[c]||CATS[c].short)+' '+h[c]).join(' · ');};
       if(!buka){kunci();return;}
-      $('pkket').innerHTML=`<span class="pklead">CAT-Lex Fexora prediction packages with no repeated questions, each containing 25 questions on Legal Theory, Formal Law, Material Law, and ICT.</span><small class="pkcat">These packages are predictions built from the question bank, not leaked exam questions.</small>`;
+      $('pkket').innerHTML=`<span class="pklead">CAT-Lex Fexora prediction packages with no repeated questions, each containing 25 questions on Legal Theory, Formal Law, Material Law, and ICT.</span>${pkStat()}<small class="pkcat">These packages are predictions built from the question bank, not leaked exam questions.</small>`;
       $('pklist').innerHTML=L.map((ids,i)=>{const ok=ids.filter(id=>B[id]).length,ss=window.__quiz&&window.__quiz.sesi&&window.__quiz.sesi('paket|'+(i+1)),
           dj=ss&&ss.ans?Object.keys(ss.ans).length:0,lanjut=ss&&(ss.pos>0||dj>0)&&ss.pos<ids.length;
         return `<div class="tr pk"><span class="trj"><b>Package ${i+1}</b></span><span class="muted trm pkpct" title="${dj} of ${ids.length} questions answered">${Math.round(dj*100/ids.length)}%</span><button class="btn copy" type="button" data-pk="${i+1}">${lanjut?'Continue':'Start'}</button></div>`;}).join('');
       $('pklist').querySelectorAll('[data-pk]').forEach(b=>b.onclick=()=>{const n=+b.dataset.pk,ids=susunPaket()[n-1];if(!window.__ulang||!ids||!ids.length)return;
         window.__ulang(2,'all',ids,'Package '+n,'paket|'+n,true);});};
     const KK='pk-kode',sb=window.__sb;let buka=isOwner;
-    const kunci=(pesan)=>{$('pkket').innerHTML='<span class="pklead">CAT-Lex Fexora prediction packages with no repeated questions, each containing 25 questions on Legal Theory, Formal Law, Material Law, and ICT.</span>';
-      $('pklist').innerHTML=`<div class="pkkunci"><b>🔒 Restricted Access</b><span>Enter your access code to unlock the packages.</span><div class="linkrow"><input id="pkinput" type="password" autocomplete="off" placeholder="Access code" aria-label="Access code"><button class="btn copy" type="button" id="pkbuka">Unlock</button></div><small id="pkpesan">${pesan||''}</small></div>`;
+    const kunci=(pesan)=>{const L=susunPaket();$('pkket').innerHTML='<span class="pklead">'+L.length+' sealed packages, built to mirror the CAT exam for Religious Court judge candidates. Not a single question repeats. Somewhere inside are the questions that will decide your result. How many can you clear?</span>'+pkStat();
+      $('pklist').innerHTML=`<div class="pkkunci"><b>🔒 Restricted Access</b><span>The packages are sealed. Enter your access code to break the seal.</span><div class="linkrow"><input id="pkinput" type="password" autocomplete="off" placeholder="Access code" aria-label="Access code"><button class="btn copy" type="button" id="pkbuka">Unlock</button></div><small id="pkpesan">${pesan||''}</small></div>`+[1,2,3,4,5,6].map(n=>`<div class="tr pk pkghost" aria-hidden="true"><span class="trj"><b>Package ${n}</b></span><span class="pkpct">🔒</span><span class="pkgbtn">Sealed</span></div>`).join('')+`<p class="pkmore">+ ${L.length-6} more sealed packages</p>`;
       const coba=async()=>{const k=$('pkinput').value.trim();if(!k)return;$('pkbuka').disabled=true;$('pkpesan').textContent='Checking…';
         const ok=await cek(k);$('pkbuka').disabled=false;if(ok){try{localStorage.setItem(KK,k);}catch(e){}buka=true;pkRender();}else $('pkpesan').textContent='Incorrect access code.';};
       $('pkbuka').onclick=coba;$('pkinput').onkeydown=e=>{if(e.key==='Enter')coba();};};
@@ -1701,7 +1715,8 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       $('pksimpan').onclick=async()=>{const v=$('pkkode').value.trim();if(v.length<6){alert('The code must be at least 6 characters long.');return;}
         $('pksimpan').disabled=true;const {error}=await sb.from('cat_kode').upsert({id:'paket',kode:v,diubah:new Date().toISOString()});$('pksimpan').disabled=false;
         $('pkkinfo').textContent=error?'Save failed: '+(error.message||error.code):'Code saved. Other users must now use this code.';};};
-    box.addEventListener('toggle',()=>{if(box.open)tampil();});
+    tampil();window.__pkSegar=()=>{if(buka)pkRender();};
+    box.addEventListener('toggle',()=>{if(!box.open)return;const t=()=>{if(box.dataset.anim)return setTimeout(t,120);if(buka)pkRender();};setTimeout(t,120);});
   }
   async function start(){
     if(started)return;started=true;
