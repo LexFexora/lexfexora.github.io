@@ -1683,7 +1683,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
         window.__ulang(2,'all',ids,'Package '+n,'paket|'+n,true);});};
     const KK='pk-kode',sb=window.__sb;let buka=isOwner;
     const kunci=(pesan)=>{$('pkket').innerHTML='<span class="pklead">CAT-Lex Fexora prediction packages with no repeated questions, each containing 25 questions on Legal Theory, Formal Law, Material Law, and ICT.</span>';
-      $('pklist').innerHTML=`<div class="pkkunci"><b>🔒 Restricted Access</b><span>Enter the access code provided by the developer to unlock the packages.</span><div class="linkrow"><input id="pkinput" type="password" autocomplete="off" placeholder="Access code" aria-label="Access code"><button class="btn copy" type="button" id="pkbuka">Unlock</button></div><small id="pkpesan">${pesan||''}</small></div>`;
+      $('pklist').innerHTML=`<div class="pkkunci"><b>🔒 Restricted Access</b><span>Enter your access code to unlock the packages.</span><div class="linkrow"><input id="pkinput" type="password" autocomplete="off" placeholder="Access code" aria-label="Access code"><button class="btn copy" type="button" id="pkbuka">Unlock</button></div><small id="pkpesan">${pesan||''}</small></div>`;
       const coba=async()=>{const k=$('pkinput').value.trim();if(!k)return;$('pkbuka').disabled=true;$('pkpesan').textContent='Checking…';
         const ok=await cek(k);$('pkbuka').disabled=false;if(ok){try{localStorage.setItem(KK,k);}catch(e){}buka=true;pkRender();}else $('pkpesan').textContent='Incorrect access code.';};
       $('pkbuka').onclick=coba;$('pkinput').onkeydown=e=>{if(e.key==='Enter')coba();};};
