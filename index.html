@@ -449,8 +449,8 @@ html.beranim .tema,html.beranim .akunexit{background:#1c2320!important}
 @media (prefers-color-scheme:light){html.beranim:not([data-theme="dark"]) .tema,html.beranim:not([data-theme="dark"]) .akunexit{background:#f3f4f2!important}}
 html.beranim[data-theme="light"] .tema,html.beranim[data-theme="light"] .akunexit{background:#f3f4f2!important}
 /* Segitiga buka/tutup di Quiz Options dan Mock Exam sama dengan segitiga Select Cluster. */
-html body #setelan>summary::after,html body #tocard>summary::after{font-family:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif!important;font-size:15px!important;font-weight:400!important;letter-spacing:0!important;color:var(--muted)!important;-webkit-text-fill-color:var(--muted);text-shadow:none!important;line-height:1}
-:root[data-theme="dark"] body #setelan>summary::after,:root[data-theme="dark"] body #tocard.setelan.tocard>summary::after{color:#9aaba0!important;-webkit-text-fill-color:#9aaba0}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body #setelan>summary::after,:root:not([data-theme="light"]) body #tocard.setelan.tocard>summary::after{color:#9aaba0!important;-webkit-text-fill-color:#9aaba0}}
+html body #setelan>summary::after,html body #tocard>summary::after,html body #pkcard>summary::after{font-family:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif!important;font-size:15px!important;font-weight:400!important;letter-spacing:0!important;color:var(--muted)!important;-webkit-text-fill-color:var(--muted);text-shadow:none!important;line-height:1}
+:root[data-theme="dark"] body #setelan>summary::after,:root[data-theme="dark"] body #tocard.setelan.tocard>summary::after,:root[data-theme="dark"] body #pkcard.setelan.tocard>summary::after{color:#9aaba0!important;-webkit-text-fill-color:#9aaba0}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body #setelan>summary::after,:root:not([data-theme="light"]) body #tocard.setelan.tocard>summary::after,:root:not([data-theme="light"]) body #pkcard.setelan.tocard>summary::after{color:#9aaba0!important;-webkit-text-fill-color:#9aaba0}}
 /* Label dan isi pilihan di Quiz Options (Section Details/All Sections, Order, Timer, Duration) berwarna putih di mode gelap. */
 :root[data-theme="dark"] #setelan .controls label,:root[data-theme="dark"] #setelan .controls .lbl,:root[data-theme="dark"] #setelan .controls select{color:#fff!important;-webkit-text-fill-color:#fff}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #setelan .controls label,:root:not([data-theme="light"]) #setelan .controls .lbl,:root:not([data-theme="light"]) #setelan .controls select{color:#fff!important;-webkit-text-fill-color:#fff}}
@@ -557,11 +557,16 @@ html .setelan.tocard>summary .stl{animation:none;background:none;-webkit-text-fi
 html .tojoin{border:1px solid color-mix(in srgb,var(--brass) 40%,var(--line));background:linear-gradient(180deg,color-mix(in srgb,var(--brass) 12%,var(--surface)),color-mix(in srgb,var(--brass) 5%,var(--surface)));box-shadow:inset 0 1px 0 rgb(255 220 160 / .05)}
 html .tojoin>b{color:var(--brass)}
 /* Bar Mock Exam: ukuran sama dengan Quiz Options, sedikit lebih menonjol. */
-:root[data-theme="dark"] #tocard.setelan.tocard{border:1px solid #000;border-radius:6px;background:radial-gradient(80% 60% at 50% 0,rgb(255 170 70 / .07),transparent 70%),linear-gradient(180deg,#0e0a08,#070605);box-shadow:inset 0 0 18px rgb(0 0 0 / .8),0 0 0 1px #7a5a28,0 0 0 3px #070605,0 0 0 4px #4a3820,0 10px 24px rgb(0 0 0 / .7)}
-:root[data-theme="dark"] #tocard.setelan.tocard>summary{padding:11px 14px}
-:root[data-theme="dark"] #tocard.setelan.tocard>summary .stl{font-family:var(--f-display,Georgia,serif);font-size:17px;font-weight:700;letter-spacing:.01em;-webkit-text-fill-color:#dcae55;color:#dcae55;text-shadow:0 1px 0 #000,0 0 10px rgb(217 168 73 / .15)}
-:root[data-theme="dark"] #tocard.setelan.tocard>summary .stl svg.piala{width:22px;height:22px}
-:root[data-theme="dark"] #tocard.setelan.tocard>summary::after{color:#a07a3a}
+:root[data-theme="dark"] #tocard.setelan.tocard, sedikit lebih menonjol. */
+:root[data-theme="dark"] #pkcard.setelan.tocard{border:1px solid #000;border-radius:6px;background:radial-gradient(80% 60% at 50% 0,rgb(255 170 70 / .07),transparent 70%),linear-gradient(180deg,#0e0a08,#070605);box-shadow:inset 0 0 18px rgb(0 0 0 / .8),0 0 0 1px #7a5a28,0 0 0 3px #070605,0 0 0 4px #4a3820,0 10px 24px rgb(0 0 0 / .7)}
+:root[data-theme="dark"] #tocard.setelan.tocard>summary,
+:root[data-theme="dark"] #pkcard.setelan.tocard>summary{padding:11px 14px}
+:root[data-theme="dark"] #tocard.setelan.tocard>summary .stl,
+:root[data-theme="dark"] #pkcard.setelan.tocard>summary .stl{font-family:var(--f-display,Georgia,serif);font-size:17px;font-weight:700;letter-spacing:.01em;-webkit-text-fill-color:#dcae55;color:#dcae55;text-shadow:0 1px 0 #000,0 0 10px rgb(217 168 73 / .15)}
+:root[data-theme="dark"] #tocard.setelan.tocard>summary .stl svg.piala,
+:root[data-theme="dark"] #pkcard.setelan.tocard>summary .stl svg.piala{width:22px;height:22px}
+:root[data-theme="dark"] #tocard.setelan.tocard>summary::after,
+:root[data-theme="dark"] #pkcard.setelan.tocard>summary::after{color:#a07a3a}
 :root[data-theme="dark"] #setelan>summary{font-family:var(--f-display,Georgia,serif);font-size:16px;letter-spacing:.01em}
 /* Judul "Select Cluster - SKB" memakai huruf yang sama dengan judul "Quiz Options & Sections". */
 :root[data-theme="dark"] #tabs .tab.pilih .kt>b{font-family:var(--f-display,Georgia,serif);font-size:16px;font-weight:700;letter-spacing:.01em}
@@ -571,7 +576,8 @@ html .tojoin>b{color:var(--brass)}
 /* Ikon tiga baris utama (Select Cluster, Quiz Options, Mock Exam) sama besar, mengikuti ikon piala: 22px. */
 html body #tabs .tab.pilih .ki{width:22px;height:22px;border-radius:6px;box-shadow:0 1px 3px rgb(0 0 0 / .2)}html body #tabs .tab.pilih .ki svg{width:86%;height:86%}
 html body #setelan>summary .stl svg{width:22px;height:22px;flex:none}
-html body #tocard>summary .stl svg.piala{width:22px;height:22px}
+html body #tocard>summary .stl svg.piala,
+html body #pkcard>summary .stl svg.piala{width:22px;height:22px}
 /* Kartu kategori terpilih: hanya garis tepi putih tegas (tanpa isi warna dan tanpa centang). */
 html body .tabs .tab.kl[aria-selected="true"]{border-color:color-mix(in srgb,var(--ink) 55%,transparent);background:var(--surface);box-shadow:none}
 html body .tabs .tab.kl[aria-selected="true"]::after{content:none;display:none}
@@ -624,12 +630,12 @@ html body #tabs .tab.pilih{justify-content:center;text-align:center;padding-left
 :root[data-theme="dark"] body #tabs .tab.pilih{border:1px solid #000!important;border-radius:6px!important;background:linear-gradient(180deg,#111413,#0a0b0b)!important;box-shadow:0 0 0 1px #59615c,0 0 0 3px #070807,0 0 0 4px #3a413d,0 10px 24px rgb(0 0 0 / .7)!important}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body #tabs .tab.pilih{border:1px solid #000!important;border-radius:6px!important;background:linear-gradient(180deg,#111413,#0a0b0b)!important;box-shadow:0 0 0 1px #59615c,0 0 0 3px #070807,0 0 0 4px #3a413d,0 10px 24px rgb(0 0 0 / .7)!important}}
 /* Judul tiga baris utama (Select Cluster, Quiz Options, Mock Exam) berukuran sama persis: 17px. */
-:root[data-theme="dark"] body #tabs .tab.pilih .kt>b,:root[data-theme="dark"] body #setelan>summary .stl,:root[data-theme="dark"] body #tocard.setelan.tocard>summary .stl{font-family:var(--f-display,Georgia,serif)!important;font-size:17px!important;font-weight:700!important;letter-spacing:.01em!important}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body #tabs .tab.pilih .kt>b,:root:not([data-theme="light"]) body #setelan>summary .stl,:root:not([data-theme="light"]) body #tocard.setelan.tocard>summary .stl{font-family:var(--f-display,Georgia,serif)!important;font-size:17px!important;font-weight:700!important;letter-spacing:.01em!important}}html body #tabs .tab.pilih .ki{margin-left:2px}
+:root[data-theme="dark"] body #tabs .tab.pilih .kt>b,:root[data-theme="dark"] body #setelan>summary .stl,:root[data-theme="dark"] body #tocard.setelan.tocard>summary .stl,:root[data-theme="dark"] body #pkcard.setelan.tocard>summary .stl{font-family:var(--f-display,Georgia,serif)!important;font-size:17px!important;font-weight:700!important;letter-spacing:.01em!important}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body #tabs .tab.pilih .kt>b,:root:not([data-theme="light"]) body #setelan>summary .stl,:root:not([data-theme="light"]) body #tocard.setelan.tocard>summary .stl,:root:not([data-theme="light"]) body #pkcard.setelan.tocard>summary .stl{font-family:var(--f-display,Georgia,serif)!important;font-size:17px!important;font-weight:700!important;letter-spacing:.01em!important}}html body #tabs .tab.pilih .ki{margin-left:2px}
 /* Tulisan Keep it: emas hangat serasi dengan tombol coklat, huruf lebih kecil. */
 html:root[data-theme="dark"] #siapbtn{color:#d6b170;font-size:15px;letter-spacing:.1em;text-shadow:0 1px 0 #000,0 0 8px rgb(214 160 80 / .18);box-shadow:inset 0 0 0 2px #110906,inset 0 0 0 3px #6e5232,inset 0 1px 8px rgb(255 140 60 / .12),0 0 0 1px #000,0 4px 10px rgb(0 0 0 / .8)}
 @media (prefers-color-scheme:dark){html:root:not([data-theme="light"]) #siapbtn{color:#d6b170;font-size:15px;letter-spacing:.1em;text-shadow:0 1px 0 #000,0 0 8px rgb(214 160 80 / .18);box-shadow:inset 0 0 0 2px #110906,inset 0 0 0 3px #6e5232,inset 0 1px 8px rgb(255 140 60 / .12),0 0 0 1px #000,0 4px 10px rgb(0 0 0 / .8)}}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #tocard.setelan.tocard{border:1px solid #000;border-radius:6px;background:radial-gradient(80% 60% at 50% 0,rgb(255 170 70 / .07),transparent 70%),linear-gradient(180deg,#0e0a08,#070605);box-shadow:inset 0 0 18px rgb(0 0 0 / .8),0 0 0 1px #7a5a28,0 0 0 3px #070605,0 0 0 4px #4a3820,0 10px 24px rgb(0 0 0 / .7)}:root:not([data-theme="light"]) #tocard.setelan.tocard>summary{padding:11px 14px}:root:not([data-theme="light"]) #tocard.setelan.tocard>summary .stl{font-family:var(--f-display,Georgia,serif);font-size:17px;font-weight:700;letter-spacing:.01em;-webkit-text-fill-color:#dcae55;color:#dcae55;text-shadow:0 1px 0 #000,0 0 10px rgb(217 168 73 / .15)}:root:not([data-theme="light"]) #tocard.setelan.tocard>summary .stl svg.piala{width:22px;height:22px}:root:not([data-theme="light"]) #tocard.setelan.tocard>summary::after{color:#a07a3a}:root:not([data-theme="light"]) #setelan>summary{font-family:var(--f-display,Georgia,serif);font-size:16px;letter-spacing:.01em}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #tocard.setelan.tocard,:root:not([data-theme="light"]) #pkcard.setelan.tocard{border:1px solid #000;border-radius:6px;background:radial-gradient(80% 60% at 50% 0,rgb(255 170 70 / .07),transparent 70%),linear-gradient(180deg,#0e0a08,#070605);box-shadow:inset 0 0 18px rgb(0 0 0 / .8),0 0 0 1px #7a5a28,0 0 0 3px #070605,0 0 0 4px #4a3820,0 10px 24px rgb(0 0 0 / .7)}:root:not([data-theme="light"]) #tocard.setelan.tocard>summary,:root:not([data-theme="light"]) #pkcard.setelan.tocard>summary{padding:11px 14px}:root:not([data-theme="light"]) #tocard.setelan.tocard>summary .stl,:root:not([data-theme="light"]) #pkcard.setelan.tocard>summary .stl{font-family:var(--f-display,Georgia,serif);font-size:17px;font-weight:700;letter-spacing:.01em;-webkit-text-fill-color:#dcae55;color:#dcae55;text-shadow:0 1px 0 #000,0 0 10px rgb(217 168 73 / .15)}:root:not([data-theme="light"]) #tocard.setelan.tocard>summary .stl svg.piala,:root:not([data-theme="light"]) #pkcard.setelan.tocard>summary .stl svg.piala{width:22px;height:22px}:root:not([data-theme="light"]) #tocard.setelan.tocard>summary::after,:root:not([data-theme="light"]) #pkcard.setelan.tocard>summary::after{color:#a07a3a}:root:not([data-theme="light"]) #setelan>summary{font-family:var(--f-display,Georgia,serif);font-size:16px;letter-spacing:.01em}}
 #siapbtn .inkt{position:relative;display:inline;line-height:1;margin-right:-.08em}
 .qhead .qkoin{display:inline-flex;align-items:center;gap:6px;margin:0 auto;white-space:nowrap}
 .qhead .qkoin .kn{display:inline-flex;align-items:center;gap:4px;height:28px;padding:0 9px;border-radius:999px;font-size:14px;line-height:1;border:1px solid color-mix(in srgb,var(--brass) 35%,var(--line));background:color-mix(in srgb,var(--brass-soft) 55%,transparent)}
@@ -646,15 +652,16 @@ html:not(.fokus) header .akunku{margin-top:10px;padding-top:8px}
 .exitbawah:not([hidden]){padding-top:6px}.exitbawah:not([hidden])~footer{margin-top:6px}}
 /* Beranda: tidak ada oranye/emas selain VVIP dan piala. */
 :root{--k1:#aeb6b1;--k2:#aeb6b1;--k3:#aeb6b1;--k4:#aeb6b1}
-:root[data-theme="dark"] #setelan,:root[data-theme="dark"] #tocard.setelan.tocard{box-shadow:0 0 0 1px #3c433f,0 0 0 3px #070807,0 0 0 4px #2a302c,0 10px 24px rgb(0 0 0 / .6)!important;background:linear-gradient(180deg,#111413,#0a0b0b)!important;animation:none!important}
-:root[data-theme="dark"] #tocard.setelan.tocard{box-shadow:0 0 0 1px #59615c,0 0 0 3px #070807,0 0 0 4px #3a413d,0 10px 24px rgb(0 0 0 / .7)!important}
-:root[data-theme="dark"] #setelan>summary,:root[data-theme="dark"] #setelan.perlu>summary{color:#e3e7e4!important;text-shadow:0 1px 0 #000!important}:root[data-theme="dark"] #tocard.setelan.tocard>summary .stl{color:#e3e7e4!important;-webkit-text-fill-color:#e3e7e4!important;text-shadow:0 1px 0 #000!important}
+:root[data-theme="dark"] #setelan,:root[data-theme="dark"] #tocard.setelan.tocard,:root[data-theme="dark"] #pkcard.setelan.tocard{box-shadow:0 0 0 1px #3c433f,0 0 0 3px #070807,0 0 0 4px #2a302c,0 10px 24px rgb(0 0 0 / .6)!important;background:linear-gradient(180deg,#111413,#0a0b0b)!important;animation:none!important}
+:root[data-theme="dark"] #tocard.setelan.tocard,
+:root[data-theme="dark"] #pkcard.setelan.tocard{box-shadow:0 0 0 1px #59615c,0 0 0 3px #070807,0 0 0 4px #3a413d,0 10px 24px rgb(0 0 0 / .7)!important}
+:root[data-theme="dark"] #setelan>summary,:root[data-theme="dark"] #setelan.perlu>summary{color:#e3e7e4!important;text-shadow:0 1px 0 #000!important}:root[data-theme="dark"] #tocard.setelan.tocard>summary .stl,:root[data-theme="dark"] #pkcard.setelan.tocard>summary .stl{color:#e3e7e4!important;-webkit-text-fill-color:#e3e7e4!important;text-shadow:0 1px 0 #000!important}
 :root[data-theme="dark"] #setelan>summary svg{color:#aeb6b1}
-:root[data-theme="dark"] #setelan>summary::after,:root[data-theme="dark"] #tocard.setelan.tocard>summary::after{color:#8a948e!important}
+:root[data-theme="dark"] #setelan>summary::after,:root[data-theme="dark"] #tocard.setelan.tocard>summary::after,:root[data-theme="dark"] #pkcard.setelan.tocard>summary::after{color:#8a948e!important}
 :root[data-theme="dark"] #setelan .controls label,:root[data-theme="dark"] #setelan .controls .lbl{color:#9aa39e}
 :root[data-theme="dark"] #setelan select,:root[data-theme="dark"] #setelan input{border-color:#353b37}
 :root[data-theme="dark"] #siapbtn{color:#e3e7e4;box-shadow:inset 0 0 0 2px #110906,inset 0 0 0 3px #59615c,0 0 0 1px #000,0 4px 10px rgb(0 0 0 / .8)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #setelan,:root:not([data-theme="light"]) #tocard.setelan.tocard{box-shadow:0 0 0 1px #3c433f,0 0 0 3px #070807,0 0 0 4px #2a302c,0 10px 24px rgb(0 0 0 / .6)!important;background:linear-gradient(180deg,#111413,#0a0b0b)!important;animation:none!important}:root:not([data-theme="light"]) #tocard.setelan.tocard{box-shadow:0 0 0 1px #59615c,0 0 0 3px #070807,0 0 0 4px #3a413d,0 10px 24px rgb(0 0 0 / .7)!important}:root:not([data-theme="light"]) #setelan>summary,:root:not([data-theme="light"]) #setelan.perlu>summary{color:#e3e7e4!important;text-shadow:0 1px 0 #000!important}:root:not([data-theme="light"]) #tocard.setelan.tocard>summary .stl{color:#e3e7e4!important;-webkit-text-fill-color:#e3e7e4!important;text-shadow:0 1px 0 #000!important}:root:not([data-theme="light"]) #setelan>summary svg{color:#aeb6b1}:root:not([data-theme="light"]) #setelan>summary::after,:root:not([data-theme="light"]) #tocard.setelan.tocard>summary::after{color:#8a948e!important}:root:not([data-theme="light"]) #setelan .controls label,:root:not([data-theme="light"]) #setelan .controls .lbl{color:#9aa39e}:root:not([data-theme="light"]) #setelan select,:root:not([data-theme="light"]) #setelan input{border-color:#353b37}:root:not([data-theme="light"]) #siapbtn{color:#e3e7e4;box-shadow:inset 0 0 0 2px #110906,inset 0 0 0 3px #59615c,0 0 0 1px #000,0 4px 10px rgb(0 0 0 / .8)}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #setelan,:root:not([data-theme="light"]) #tocard.setelan.tocard,:root:not([data-theme="light"]) #pkcard.setelan.tocard{box-shadow:0 0 0 1px #3c433f,0 0 0 3px #070807,0 0 0 4px #2a302c,0 10px 24px rgb(0 0 0 / .6)!important;background:linear-gradient(180deg,#111413,#0a0b0b)!important;animation:none!important}:root:not([data-theme="light"]) #tocard.setelan.tocard,:root:not([data-theme="light"]) #pkcard.setelan.tocard{box-shadow:0 0 0 1px #59615c,0 0 0 3px #070807,0 0 0 4px #3a413d,0 10px 24px rgb(0 0 0 / .7)!important}:root:not([data-theme="light"]) #setelan>summary,:root:not([data-theme="light"]) #setelan.perlu>summary{color:#e3e7e4!important;text-shadow:0 1px 0 #000!important}:root:not([data-theme="light"]) #tocard.setelan.tocard>summary .stl,:root:not([data-theme="light"]) #pkcard.setelan.tocard>summary .stl{color:#e3e7e4!important;-webkit-text-fill-color:#e3e7e4!important;text-shadow:0 1px 0 #000!important}:root:not([data-theme="light"]) #setelan>summary svg{color:#aeb6b1}:root:not([data-theme="light"]) #setelan>summary::after,:root:not([data-theme="light"]) #tocard.setelan.tocard>summary::after,:root:not([data-theme="light"]) #pkcard.setelan.tocard>summary::after{color:#8a948e!important}:root:not([data-theme="light"]) #setelan .controls label,:root:not([data-theme="light"]) #setelan .controls .lbl{color:#9aa39e}:root:not([data-theme="light"]) #setelan select,:root:not([data-theme="light"]) #setelan input{border-color:#353b37}:root:not([data-theme="light"]) #siapbtn{color:#e3e7e4;box-shadow:inset 0 0 0 2px #110906,inset 0 0 0 3px #59615c,0 0 0 1px #000,0 4px 10px rgb(0 0 0 / .8)}}
 @keyframes perluk2{0%,100%{box-shadow:0 0 0 1px #3c433f,0 0 0 3px #070807,0 0 0 4px #2a302c,0 10px 24px rgb(0 0 0 / .6)}50%{box-shadow:0 0 0 1px #8a948e,0 0 0 3px #070807,0 0 0 4px #4a524d,0 0 18px rgb(220 230 225 / .12)}}
 :root[data-theme="dark"] #setelan.perlu{animation:perluk2 2.8s ease-in-out infinite!important}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #setelan.perlu{animation:perluk2 2.8s ease-in-out infinite!important}}@media (prefers-reduced-motion:reduce){#setelan.perlu{animation:none!important}}
 /* HP: header dan kotak klaster lebih ringkas agar footer muat di atas bilah Safari. */
@@ -833,6 +840,12 @@ html:root[data-theme="dark"] body #siapbtn{font-family:var(--f-body)!important;f
 html:root[data-theme="dark"] body #siapbtn{background:radial-gradient(120% 90% at 0 0,rgb(255 255 255 / .055),transparent 60%),linear-gradient(160deg,rgb(255 255 255 / .04),rgb(255 255 255 / .01) 55%,rgb(255 255 255 / .02)),#070908!important;border:1px solid rgb(255 255 255 / .11)!important;border-radius:12px!important;box-shadow:inset 0 1px 0 rgb(255 255 255 / .06),inset 0 -1px 0 rgb(0 0 0 / .35),0 10px 24px rgb(0 0 0 / .5)!important;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
 html:root[data-theme="dark"] body #siapbtn:hover{background:radial-gradient(120% 90% at 0 0,rgb(255 255 255 / .09),transparent 62%),linear-gradient(160deg,rgb(255 255 255 / .06),rgb(255 255 255 / .02)),#070908!important;border-color:rgb(255 255 255 / .24)!important}
 @media (prefers-color-scheme:dark){html:root:not([data-theme="light"]) body #siapbtn{background:radial-gradient(120% 90% at 0 0,rgb(255 255 255 / .055),transparent 60%),linear-gradient(160deg,rgb(255 255 255 / .04),rgb(255 255 255 / .01) 55%,rgb(255 255 255 / .02)),#070908!important;border:1px solid rgb(255 255 255 / .11)!important;border-radius:12px!important;box-shadow:inset 0 1px 0 rgb(255 255 255 / .06),inset 0 -1px 0 rgb(0 0 0 / .35),0 10px 24px rgb(0 0 0 / .5)!important;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}html:root:not([data-theme="light"]) body #siapbtn:hover{background:radial-gradient(120% 90% at 0 0,rgb(255 255 255 / .09),transparent 62%),linear-gradient(160deg,rgb(255 255 255 / .06),rgb(255 255 255 / .02)),#070908!important;border-color:rgb(255 255 255 / .24)!important}}
+
+/* Paket Prediksi: nama paket dan keterangannya bertumpuk di kiri. */
+.tolist .tr.pk .trj{display:flex;flex-direction:column;gap:2px;flex:1 1 200px;min-width:0;white-space:normal;overflow:visible}
+.tolist .tr.pk .trj b{margin:0;font-size:13.5px}
+.tolist .tr.pk .trj small{color:var(--muted);font-size:12px;line-height:1.35}
+#pkket{margin:0 0 8px;font-size:12.5px;color:var(--muted)}
 </style>
 </head>
 <body>
@@ -902,6 +915,14 @@ html:root[data-theme="dark"] body #siapbtn:hover{background:radial-gradient(120%
       </div>
     </details>
       </div>
+    </div>
+  </details>
+
+  <details class="setelan tocard" id="pkcard" hidden>
+    <summary><span class="stl"><svg class="piala" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="url(#pialaEmas)" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5.2"/></g><circle cx="12" cy="12" r="1.9" fill="url(#pialaEmas)"/></svg>Prediction Packages</span></summary>
+    <div class="toisi">
+      <p class="note" id="pkket"></p>
+      <div id="pklist" class="tolist"></div>
     </div>
   </details>
 
@@ -1477,10 +1498,10 @@ function renderUlang(){const b=$("ulangbar");if(!b)return;b.hidden=!state.ulang;
   b.innerHTML=`<span>Mengulang soal <b>${esc(state.ulang.label)}</b> · ${state.list.length} soal</span><button class="btn" type="button" id="ulangx">Kembali ke latihan biasa</button>`;
   $("ulangx").onclick=()=>selectCat(state.cat,state.sub,1);}
 window.__ulang=(c,s,ids,label,k)=>{ids=ids.filter(id=>BYID[id]);if(!ids.length){alert("Soalnya tidak ada lagi di bank.");return;}
-  selectCat(c,s,1);state.ulang={ids,label,k};restore();$("order").value=state.order;renderBag();render();
+  selectCat(c,s,s==="all"?"all":1);state.ulang={ids,label,k};restore();$("order").value=state.order;renderBag();render();
   siapCat=state.cat;window.__gulTutup=false;state.setHilang=false;const st=$("setelan");if(st){st.hidden=false;st.open=false;}render();
   requestAnimationFrame(()=>window.scrollTo({top:Math.max(0,$("ulangbar").offsetTop-12),behavior:"smooth"}));};
-window.__quiz={state,render:()=>render()};window.__soalKini=()=>BYID[state.list[state.pos]];
+window.__quiz={state,render:()=>render(),benar:()=>BENAR,sesi:k=>store["ulang|"+k]||null};window.__soalKini=()=>BYID[state.list[state.pos]];
 window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add(id);state.edOpen=false;render();};
 }
 </script>
@@ -1637,6 +1658,44 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
     $('pindahinfo').textContent=`Soal yang Anda ubah lewat pojok kanan atas setiap soal: ${n} dipindahkan (⇄ Pindahkan), ${ne} diedit (✎ Edit). Tombolnya hanya terlihat oleh Anda, sedangkan perubahannya berlaku untuk semua pengguna dan tetap berlaku setelah bank diunggah ulang.`;}).catch(()=>{});}
   function admin(){
     pinfo();
+    // Paket Prediksi (khusus pemilik): paket tetap 100 soal = 25 soal dari tiap klaster, setiap paket memuat semua sub-materi klaster itu.
+    // Tidak ada soal yang berulang antar paket; jumlah paket mengikuti klaster dengan soal paling sedikit. Urutan acak berbenih, jadi isi paket selalu sama.
+    // Di tiap sub-materi, soal dasar hukum (tier 1) lalu istilah/prosedur (tier 2) didahulukan, jadi paket awal berisi materi yang paling sering diujikan.
+    const PER_KL=25;
+    const benih=t=>{let h=2166136261;for(const ch of t)h=Math.imul(h^ch.charCodeAt(0),16777619);return ()=>{h+=0x6D2B79F5;let x=h;x=Math.imul(x^x>>>15,x|1);x^=x+Math.imul(x^x>>>7,x|61);return ((x^x>>>14)>>>0)/4294967296;};};
+    const acakB=(a,r)=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+    // Soal kembar dibuang lebih dulu: teks soal sama persis, atau jawaban benar sama dan kata-kata soalnya ≥60% sama (soal serupa dengan id berbeda).
+    const normT=t=>String(t||'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
+    const STOP=new Set('yang dan atau dalam untuk dengan pada dari oleh adalah ini itu tersebut menurut apa apakah berikut kecuali sebagai bahwa tidak dapat harus akan telah suatu secara karena maka'.split(' '));
+    const kata=t=>new Set(normT(t).split(' ').filter(w=>w.length>2&&!STOP.has(w)));
+    const mirip=(A,B)=>{let n=0;A.forEach(w=>{if(B.has(w))n++;});return n/Math.max(1,A.size+B.size-n);};
+    let PKS=null;const susunPaket=()=>{if(PKS)return PKS;const r=benih('paket-prediksi'),seen=new Set(),perJwb={},kl={};
+      const kembar=q=>{const k=normT(q.q);if(seen.has(k))return true;const j=normT(q.o[q.a]),W=kata(q.q),L=perJwb[j]=perJwb[j]||[];
+        if(L.some(X=>mirip(W,X)>=.6))return true;seen.add(k);L.push(W);return false;};
+      Object.keys(CATS).forEach(c=>{const G={};QB.filter(q=>q.c===+c).forEach(q=>{if(kembar(q))return;(G[q.s]=G[q.s]||[]).push(q);});
+        // tiap sub: tier 1 dulu, lalu 2, lalu 3; di dalam tier diacak berbenih
+        Object.keys(G).forEach(s=>{const T={};acakB(G[s],r).forEach(q=>{const t=getQuestionTier(q);(T[t]=T[t]||[]).push(q);});G[s]=[1,2,3].flatMap(t=>T[t]||[]).concat(Object.keys(T).filter(t=>![1,2,3].includes(+t)).flatMap(t=>T[t]));});
+        kl[c]={subs:Object.keys(G).map(Number).sort((a,b)=>a-b),G,n:Object.values(G).reduce((t,g)=>t+g.length,0)};});
+      const P=Math.min(...Object.values(kl).map(k=>Math.floor(k.n/PER_KL)));PKS=Array.from({length:P},()=>[]);
+      // Per klaster dipakai P×25 soal. Jatah tiap sub minimal P (bila soalnya cukup) agar muncul di setiap paket, sisanya sebanding jumlah soal sub.
+      // Soal tiap sub disebar merata sepanjang urutan P×25 posisi, lalu dipotong per 25: setiap sub dengan ≥P soal pasti ada di setiap paket.
+      Object.keys(kl).forEach(c=>{const K=kl[c],T=P*PER_KL,n={};K.subs.forEach(s=>n[s]=Math.min(K.G[s].length,P));
+        let sisa=T-Object.values(n).reduce((a,b)=>a+b,0);
+        while(sisa>0){const lebih=K.subs.filter(s=>K.G[s].length>n[s]);if(!lebih.length)break;const tot=lebih.reduce((t,s)=>t+K.G[s].length-n[s],0);
+          const tam=lebih.map(s=>({s,v:sisa*(K.G[s].length-n[s])/tot}));let pakai=0;tam.forEach(x=>{const f=Math.min(Math.floor(x.v),K.G[x.s].length-n[x.s]);n[x.s]+=f;pakai+=f;x.r=x.v-Math.floor(x.v);});
+          sisa-=pakai;tam.sort((a,b)=>b.r-a.r);for(const x of tam){if(sisa<=0)break;if(K.G[x.s].length>n[x.s]){n[x.s]++;sisa--;}}}
+        const pos=[];K.subs.forEach(s=>{for(let k=0;k<n[s];k++)pos.push({t:(k+.5)/n[s]*T+s*1e-6,id:K.G[s][k].id});});
+        pos.sort((a,b)=>a.t-b.t);pos.forEach((x,i)=>{const p=Math.floor(i/PER_KL);if(p<P)PKS[p].push(x.id);});});
+      PKS=PKS.map(ids=>acakB(ids,r));
+      return PKS;};
+    const pkRender=()=>{const L=susunPaket(),B=(window.__quiz&&window.__quiz.benar&&window.__quiz.benar())||{};
+      $('pkket').textContent=`${L.length} paket × 100 soal. Tiap paket berisi 25 soal dari masing-masing klaster (Ilmu Hukum, Hukum Formil, Hukum Materil, TIK) dan mencakup semua sub-materinya, kecuali beberapa sub yang soalnya kurang dari ${L.length}. Tidak ada soal yang sama atau serupa antar paket. Soal dasar hukum dan istilah didahulukan, jadi paket awal memuat materi yang paling sering diujikan. Ini prediksi, bukan bocoran soal.`;
+      $('pklist').innerHTML=L.map((ids,i)=>{const ok=ids.filter(id=>B[id]).length,ss=window.__quiz&&window.__quiz.sesi&&window.__quiz.sesi('paket|'+(i+1)),
+          dj=ss&&ss.ans?Object.keys(ss.ans).length:0,lanjut=ss&&(ss.pos>0||dj>0)&&ss.pos<ids.length;
+        return `<div class="tr pk"><span class="trj"><b>Paket ${i+1}</b><small>100 soal · 25 per klaster · semua sub-materi</small></span><span class="muted trm">dikuasai ${ok}${dj?` · dijawab ${dj}`:''}</span><button class="btn copy" type="button" data-pk="${i+1}">${lanjut?'Lanjut':'Mulai'}</button></div>`;}).join('');
+      $('pklist').querySelectorAll('[data-pk]').forEach(b=>b.onclick=()=>{const n=+b.dataset.pk,ids=susunPaket()[n-1];if(!window.__ulang||!ids||!ids.length)return;
+        window.__ulang(2,'all',ids,'Paket '+n,'paket|'+n);});};
+    $('pkcard').hidden=false;$('pkcard').addEventListener('toggle',()=>{if($('pkcard').open)pkRender();});
     // Mock Exam bersama: pemilik memilih sub-materi dan jumlah soal; peserta ikut lewat tryout.html?t=<id>.
     const toPool=()=>{const sel=new Set([...document.querySelectorAll('#tosub input[data-cs]:checked')].map(i=>i.dataset.cs));
       return QB.filter(q=>q.mappings.some(m=>sel.has(m.c+'|'+m.s)));};
