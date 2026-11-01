@@ -40,6 +40,17 @@ h1{font-family:var(--f-d);font-weight:650;font-size:30px;line-height:1.15;margin
 .kat li.tot span,.kat li.tot b{color:var(--brass);font-weight:700}
 .selamanya{display:flex;gap:10px;align-items:flex-start;border:1px solid rgb(212 166 74 / .45);background:rgb(212 166 74 / .09);border-radius:12px;padding:12px 14px;margin:0 0 10px;font-size:14px;color:var(--muted)}.selamanya+.harga,.selamanya:last-of-type{margin-bottom:16px}
 .selamanya b{color:var(--brass)}
+.fitur{list-style:none;margin:4px 0 18px;padding:0}
+.fitur li{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-top:1px solid var(--line)}
+.fitur li:first-child{border-top:0;padding-top:4px}
+.fitur .fi{flex:none;width:32px;height:32px;border-radius:9px;display:grid;place-items:center;border:1px solid rgb(212 166 74 / .4);background:rgb(212 166 74 / .08)}
+.fitur svg{width:17px;height:17px;fill:none;stroke:var(--brass);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.fitur b{display:block;font-size:15px;font-weight:600;color:var(--ink);margin-bottom:2px}
+.fitur li span:not(.fi){display:block;font-size:13.5px;color:var(--muted);line-height:1.5}
+.hargabox{border-top:1px solid var(--line);padding-top:16px;margin-top:2px}
+.hargabox small{display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.hargabox .harga{margin:2px 0 6px}
+.hargabox:has(.harga:empty){display:none}
 .harga{font-family:var(--f-d);font-size:28px;color:var(--brass);margin:4px 0 14px}
 .harga:empty{display:none}
 .btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:50px;border-radius:12px;border:1px solid var(--brass);background:var(--brass);color:#16120a;font:600 16px var(--f-b);text-decoration:none;cursor:pointer;margin-top:8px}
@@ -58,12 +69,15 @@ ol{margin:0;padding-left:20px;color:var(--muted)}ol li{margin:6px 0}ol b{color:v
 
   <section class="card">
     <h1>Paket Prediksi SKB Calon Hakim Peradilan Agama</h1>
-    <p class="lead">Simulasi CAT lengkap. Soal disusun dari empat kategori, yaitu Ilmu Hukum, Hukum Formil, Hukum Materil, dan TIK, dan setiap soal dilengkapi pembahasan serta dasar hukum.</p>
+    <p class="lead">Simulasi CAT lengkap dari empat kategori: Ilmu Hukum, Hukum Formil, Hukum Materil, dan TIK.</p>
     <div class="stat"><div><b id="stsoal">4.514</b><i>Soal</i></div><div><b id="stpaket">46</b><i>Paket</i></div><div><b>0</b><i>Duplikat</i></div></div>
     <ul class="kat" id="kat" hidden></ul>
-    <div class="selamanya"><span aria-hidden="true">📜</span><span><b>Mengikuti aturan terbaru.</b> Pembahasan dan dasar hukum diperbarui sesuai regulasi terkini, antara lain Buku II Peradilan Agama 2026 (SK KMA Nomor 159/KMA/SK.HK2/VIII/2026), SEMA Rumusan Pleno Kamar hingga 2025, PERMA terbaru, KHI, KHES, dan KEPPH.</span></div>
-    <div class="selamanya"><span aria-hidden="true">♾️</span><span><b>Sekali bayar, akses selamanya.</b> Tidak ada langganan dan tidak ada batas waktu. Semua paket bisa dikerjakan berulang kali, kapan saja, dengan akun Google Anda.</span></div>
-    <div class="harga" id="harga"></div>
+    <ul class="fitur">
+      <li><span class="fi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8.3-7 9.5C8 19.3 5 15.5 5 11V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg></span><div><b>Dasar hukum terkini</b><span>Mengikuti Buku II Peradilan Agama 2026 (SK KMA Nomor 159/KMA/SK.HK2/VIII/2026), SEMA Rumusan Pleno Kamar hingga 2025, PERMA terbaru, KHI, KHES, dan KEPPH.</span></div></li>
+      <li><span class="fi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11l3 3v13H5z"/><path d="M9 10h6M9 14h6M9 18h3"/></svg></span><div><b>Pembahasan lengkap</b><span>Setiap soal disertai pembahasan dan dasar hukum yang spesifik.</span></div></li>
+      <li><span class="fi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.5 15.5c-2 0-3.5-1.6-3.5-3.5s1.5-3.5 3.5-3.5c3.5 0 5.5 7 9 7 2 0 3.5-1.6 3.5-3.5s-1.5-3.5-3.5-3.5c-3.5 0-5.5 7-9 7z"/></svg></span><div><b>Akses selamanya</b><span>Sekali bayar, tanpa langganan dan tanpa batas waktu. Semua paket bisa dikerjakan berulang kali.</span></div></li>
+    </ul>
+    <div class="hargabox"><small>Harga · sekali bayar</small><div class="harga" id="harga"></div></div>
     <a class="btn" id="bayar" href="https://lexfexora.github.io/?beli=1" aria-disabled="true">Bayar sekarang</a>
     <p class="pay" id="paytx">Transfer bank langsung ke rekening pemilik. Paket langsung terbuka setelah transfer dikonfirmasi.</p>
     <p id="msg">Memuat info pembayaran…</p>
