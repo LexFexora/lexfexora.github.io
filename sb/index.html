@@ -1692,7 +1692,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       if(k&&await cek(k)){buka=true;pkRender();return;}if(k){try{localStorage.removeItem(KK);}catch(e){}}kunci(k?'Kode akses sudah diganti. Masukkan kode yang baru.':'');};
     // Pemilik: ubah kode akses langsung dari kartu ini.
     const kodeOwner=async()=>{if($('pkown'))return;const d=document.createElement('div');d.id='pkown';d.className='pkown';
-      d.innerHTML='<b>Kode akses pengguna lain</b><div class="linkrow"><input id="pkkode" autocomplete="off" placeholder="Belum diatur" aria-label="Kode akses"><button class="btn copy" type="button" id="pksimpan">Simpan kode</button><button class="btn copy" type="button" id="pksalin">⧉ Salin</button></div><small id="pkkinfo">Pengguna lain wajib memasukkan kode ini untuk membuka paket. Saat kode diganti, akses lama otomatis tertutup.</small>';
+      d.innerHTML='<b>Access Code</b><div class="linkrow"><input id="pkkode" autocomplete="off" placeholder="Belum diatur" aria-label="Kode akses"><button class="btn copy" type="button" id="pksimpan">Simpan kode</button><button class="btn copy" type="button" id="pksalin">⧉ Salin</button></div><small id="pkkinfo">Pengguna lain wajib memasukkan kode ini untuk membuka paket. Saat kode diganti, akses lama otomatis tertutup.</small>';
       $('pklist').before(d);
       try{const {data,error}=await sb.from('cat_kode').select('kode').eq('id','paket').maybeSingle();if(error)throw error;$('pkkode').value=(data&&data.kode)||'';}
       catch(e){$('pkkinfo').textContent='Tabel kode belum ada. Jalankan supabase-update-3.sql di Supabase dulu.';}
