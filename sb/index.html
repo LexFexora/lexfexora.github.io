@@ -1185,6 +1185,10 @@ function buildSession(fresh,onlyIds){
 }
 // Timer Total: 40 detik per soal dikali jumlah soal yang dipilih; Per question memakai pilihan Duration.
 const SEC_TOTAL=40;
+// Paket Prediksi: selalu timer 54 detik per soal; habis waktu → soal terkunci dan pindah ke soal berikutnya.
+function PKT_ON(){return !!(state.ulang&&/^paket\|/.test(state.ulang.k));}
+function tmode(){return PKT_ON()?"per":tMode;}
+function sec(){return PKT_ON()?54:SEC;}
 function resetTimer(){state.tLeft=SEC_TOTAL*state.list.length;state.timeUp=false;state.qLeft=SEC;state.qId=null;state.expired={};}
 function persist(){const pk=sessionKey(),mine={list:state.list,pos:state.pos,mulai:!!state.mulai,ans:state.ans,perm:state.perm,order:state.order,tLeft:state.tLeft,timeUp:state.timeUp,qLeft:state.qLeft,qId:state.qId,expired:state.expired,ep:state.ep||0};store[pk]=mine;store.last={cat:state.cat,sub:state.sub,bag:state.bag};if(state.cat!=="all"&&state.sub!=="all"){store.subAkhir=store.subAkhir||{};store.subAkhir[state.cat]={sub:state.sub,bag:state.bag};}save();
   // Tab ini ternyata tertinggal (perangkat menyimpan sesi yang lebih maju): pakai versi itu, jangan timpa.
@@ -1332,7 +1336,7 @@ function renderCard(){
   // Soal baru tampil dan timer baru berjalan setelah pengguna menekan Mulai.
   if(state.cat!=="all"&&!state.mulai&&state.pos<state.list.length){
     const n=state.list.length,sub=state.sub==="all"?CATS[state.cat].short:SUBS[state.cat][state.sub-1],bg=state.ulang?state.ulang.label:state.sub==="all"||state.bag==="all"?"":state.bag==="bonus"?"Bonus Questions":"Part "+state.bag;
-    const tm={off:"No timer",cum:"Total timer "+fmt(SEC_TOTAL*n),per:"Timer "+SEC+" sec per question"}[tMode]||"";
+    const tm={off:"No timer",cum:"Total timer "+fmt(SEC_TOTAL*n),per:"Timer "+sec()+" sec per question"}[tmode()]||"";
     card.innerHTML=`<div class="kunci mulaikartu mk${window.__gulTutup?" tertutup":""}"><svg class="mkscene" viewBox="0 0 400 800" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs>
 <linearGradient id="mkSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0c1016"/><stop offset=".5" stop-color="#18212b"/><stop offset="1" stop-color="#0a0d11"/></linearGradient>
 <linearGradient id="mkBeam" x1="1" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfe2ff" stop-opacity=".5"/><stop offset="1" stop-color="#cfe2ff" stop-opacity="0"/></linearGradient>
@@ -1381,7 +1385,7 @@ function renderCard(){
 <ellipse cx="20" cy="44" rx="14" ry="4" fill="#8f939a"/><ellipse cx="20" cy="42.5" rx="11" ry="3" fill="#c9ccd1"/><path d="M33 44c4 0 5 3 2 4" fill="none" stroke="#8f939a" stroke-width="1.6"/></svg><b class="mkb1">Cahaya Lilin</b><p>Terpancar saat analisismu tepat sasaran. Rawat apinya, jangan biarkan ia padam di tengah jalan.</p><div class="mkchain" aria-hidden="true"></div><svg class="mkico" viewBox="0 0 44 44" aria-hidden="true"><defs><linearGradient id="mkPp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f3e2bb"/><stop offset="1" stop-color="#c9a873"/></linearGradient><linearGradient id="mkRl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e8d1a2"/><stop offset=".5" stop-color="#b38d55"/><stop offset="1" stop-color="#7c5f33"/></linearGradient></defs>
 <rect x="9" y="8" width="26" height="28" fill="url(#mkPp)"/><path d="M13 14h18M13 18h16M13 22h18M13 26h14M13 30h17" stroke="#9b7d4f" stroke-width=".9"/>
 <rect x="6" y="5" width="32" height="5" rx="2.5" fill="url(#mkRl)"/><rect x="6" y="34" width="32" height="5" rx="2.5" fill="url(#mkRl)"/></svg><b class="mkb2">Gulungan Naskah</b><p>Muncul saat langkahmu keliru. Bukan tanda kekalahan, melainkan isyarat bagimu untuk membuka kembali lembaran naskah kuno dan meluruskan pemahaman.</p></div><span class="mkrol mkrol-b" aria-hidden="true"></span></div><p class="mkhint">Tekan <b>Keep it</b> untuk membuka gulungan.</p><button class="btn primary mulai" id="mulaibtn" type="button">START</button><div class="info"><span>${n} questions</span><span>${state.order==="rand"?"Shuffle":"Sequential"}</span><span>${tm}</span></div></div>`;
-    $("mulaibtn").onclick=()=>{if(tMode==="per"){const i=state.list.findIndex(id=>state.ans[id]===undefined&&!state.expired[id]);if(i>=0)state.pos=i;}state.mulai=true;state.qLeft=SEC;state.qId=null;lastTick=Date.now();persist();render();window.scrollTo({top:Math.max(0,$("card").offsetTop-12)});};return;}
+    $("mulaibtn").onclick=()=>{if(tmode()==="per"){const i=state.list.findIndex(id=>state.ans[id]===undefined&&!state.expired[id]);if(i>=0)state.pos=i;}state.mulai=true;state.qLeft=sec();state.qId=null;lastTick=Date.now();persist();render();window.scrollTo({top:Math.max(0,$("card").offsetTop-12)});};return;}
   if(state.pos>=state.list.length){
     const {ok,bad,n}=tally();
     const nilai=n?Math.round(ok*100/n):0;
@@ -1445,30 +1449,30 @@ function bagNext(){if(state.ulang||state.sub==="all"||state.bag==="all"||state.b
 let siapCat=null;
 // Soal baru tampil setelah klaster dipilih dan Keep it ditekan (juga untuk pengguna baru tanpa pilihan tersimpan).
 function siapOK(){return siapCat===state.cat;}
-function timerActive(){return siapOK()&&state.mulai&&tMode!=="off"&&state.cat!=="all"&&state.list.length&&!state.timeUp&&state.pos<state.list.length;}
-function syncQ(){const id=state.list[state.pos];if(id!==state.qId){state.qId=id;state.qLeft=SEC;}}
+function timerActive(){return siapOK()&&state.mulai&&tmode()!=="off"&&state.cat!=="all"&&state.list.length&&!state.timeUp&&state.pos<state.list.length;}
+function syncQ(){const id=state.list[state.pos];if(id!==state.qId){state.qId=id;state.qLeft=sec();}}
 const TB=document.getElementById("timerbox");
 function pasangAlat(){const s=$("tslot");if(s)s.replaceWith(TB);const f=$("cfs");if(f)f.onclick=()=>fokus(true);}
 function renderTimer(){
   const b=TB;
-  if(tMode==="off"||!state.list.length||state.cat==="all"||!siapOK()||!state.mulai&&state.pos<state.list.length){b.hidden=true;return;}
+  if(tmode()==="off"||!state.list.length||state.cat==="all"||!siapOK()||!state.mulai&&state.pos<state.list.length){b.hidden=true;return;}
   b.hidden=false;
-  if(tMode==="cum"){b.className="timer"+(state.tLeft<=60||state.timeUp?" warn":"");b.innerHTML=`⏱ ${state.timeUp?"Time's up":fmt(state.tLeft)} <small>of ${fmt(SEC_TOTAL*state.list.length)} · ${state.list.length} questions × ${SEC_TOTAL} sec</small>`;}
+  if(tmode()==="cum"){b.className="timer"+(state.tLeft<=60||state.timeUp?" warn":"");b.innerHTML=`⏱ ${state.timeUp?"Time's up":fmt(state.tLeft)} <small>of ${fmt(SEC_TOTAL*state.list.length)} · ${state.list.length} questions × ${SEC_TOTAL} sec</small>`;}
   else{const id=state.list[state.pos];const idle=state.pos>=state.list.length||state.ans[id]!==undefined||state.expired[id];
-    b.className="timer"+(!idle&&state.qLeft<=10?" warn":"");b.innerHTML=`⏱ ${state.expired[id]&&state.ans[id]===undefined?"Time's up":idle?"--:--":fmt(state.qLeft)} <small>${SEC} sec per question</small>`;}
+    b.className="timer"+(!idle&&state.qLeft<=10?" warn":"");b.innerHTML=`⏱ ${state.expired[id]&&state.ans[id]===undefined?"Time's up":idle?"--:--":fmt(state.qLeft)} <small>${sec()} sec per question</small>`;}
 }
 let lastTick=Date.now(),tickN=0;
 setInterval(()=>{
   const now=Date.now(),dt=(now-lastTick)/1000;lastTick=now;
   if(!timerActive()){renderTimer();return;}
-  if(tMode==="cum"){
+  if(tmode()==="cum"){
     state.tLeft-=dt;
     if(state.tLeft<=0){state.tLeft=0;state.timeUp=true;state.pos=state.list.length;persist();render();return;}
   }else{
     syncQ();const id=state.qId;
     if(state.ans[id]===undefined&&!state.expired[id]){
       state.qLeft-=dt;
-      if(state.qLeft<=0){state.expired[id]=true;tandaiCoba(id);state.qLeft=0;if(!window.__isOwner)state.pos++;persist();render();window.scrollTo({top:Math.max(0,$("card").offsetTop-12)});return;}
+      if(state.qLeft<=0){state.expired[id]=true;tandaiCoba(id);state.qLeft=0;if(!window.__isOwner||PKT_ON())state.pos++;persist();render();window.scrollTo({top:Math.max(0,$("card").offsetTop-12)});return;}
     }
   }
   if(++tickN%5===0)persist();
@@ -1520,7 +1524,7 @@ document.querySelector("#pkcard>summary").addEventListener("click",e=>{const d=$
   const h0=d.offsetHeight;d.open=true;turunPerlahan(d,h0,[d.querySelector(".toisi")].filter(Boolean));});
 function renderRingkas(){const st=$("setelan");if(st){if(!st.dataset.anim)st.hidden=state.cat==="all"||!!state.setHilang;st.classList.toggle("perlu",!siapOK());document.querySelector(".wrap").classList.toggle("blmsiap",!siapOK()&&!(window.__gulTutup&&state.cat!=="all"));document.querySelector(".wrap").classList.toggle("blmmulai",state.cat!=="all"&&siapOK()&&!state.mulai&&state.pos<state.list.length);const sr=$("siaprow");if(sr)sr.hidden=siapOK();}const r=$("ringkas");if(!r)return;const s=state.cat==="all"||state.sub==="all"?"All Sections":state.sub+". "+SUBS[state.cat][state.sub-1]+(state.ulang?" · "+state.ulang.label:state.bag==="bonus"?" · Bonus":state.bag!=="all"?" · Part "+state.bag:"");
   r.textContent=s+" · "+(state.order==="rand"?"Shuffle":"Sequential")+" · "+({off:"Timer off",cum:"Total timer",per:"Timer per question"}[tMode]||"");}
-function render(){renderUlang();if(tMode==="per")syncQ();renderScore();renderCard();renderMap();renderTimer();renderRingkas();sinkronTimer();}
+function render(){renderUlang();if(tmode()==="per")syncQ();renderScore();renderCard();renderMap();renderTimer();renderRingkas();sinkronTimer();}
 function retake(){buildSession(true);render();}
 function retryWrong(){const w=state.list.filter(isBad);if(!w.length)return;buildSession(true,w);render();}
 
