@@ -1678,29 +1678,29 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       $('pkket').innerHTML=`<span class="pklead">CAT-Lex Fexora prediction packages with no repeated questions, each containing 25 questions on Legal Theory, Formal Law, Material Law, and ICT.</span><small class="pkcat">These packages are predictions built from the question bank, not leaked exam questions.</small>`;
       $('pklist').innerHTML=L.map((ids,i)=>{const ok=ids.filter(id=>B[id]).length,ss=window.__quiz&&window.__quiz.sesi&&window.__quiz.sesi('paket|'+(i+1)),
           dj=ss&&ss.ans?Object.keys(ss.ans).length:0,lanjut=ss&&(ss.pos>0||dj>0)&&ss.pos<ids.length;
-        return `<div class="tr pk"><span class="trj"><b>Paket ${i+1}</b></span><span class="muted trm pkpct" title="${dj} dari ${ids.length} soal sudah dijawab">${Math.round(dj*100/ids.length)}%</span><button class="btn copy" type="button" data-pk="${i+1}">${lanjut?'Lanjut':'Mulai'}</button></div>`;}).join('');
+        return `<div class="tr pk"><span class="trj"><b>Package ${i+1}</b></span><span class="muted trm pkpct" title="${dj} of ${ids.length} questions answered">${Math.round(dj*100/ids.length)}%</span><button class="btn copy" type="button" data-pk="${i+1}">${lanjut?'Continue':'Start'}</button></div>`;}).join('');
       $('pklist').querySelectorAll('[data-pk]').forEach(b=>b.onclick=()=>{const n=+b.dataset.pk,ids=susunPaket()[n-1];if(!window.__ulang||!ids||!ids.length)return;
-        window.__ulang(2,'all',ids,'Paket '+n,'paket|'+n,true);});};
+        window.__ulang(2,'all',ids,'Package '+n,'paket|'+n,true);});};
     const KK='pk-kode',sb=window.__sb;let buka=isOwner;
     const kunci=(pesan)=>{$('pkket').innerHTML='<span class="pklead">CAT-Lex Fexora prediction packages with no repeated questions, each containing 25 questions on Legal Theory, Formal Law, Material Law, and ICT.</span>';
-      $('pklist').innerHTML=`<div class="pkkunci"><b>🔒 Akses terbatas</b><span>Masukkan kode akses dari pengembang untuk membuka paket.</span><div class="linkrow"><input id="pkinput" type="password" autocomplete="off" placeholder="Kode akses" aria-label="Kode akses"><button class="btn copy" type="button" id="pkbuka">Buka Akses</button></div><small id="pkpesan">${pesan||''}</small></div>`;
-      const coba=async()=>{const k=$('pkinput').value.trim();if(!k)return;$('pkbuka').disabled=true;$('pkpesan').textContent='Memeriksa…';
-        const ok=await cek(k);$('pkbuka').disabled=false;if(ok){try{localStorage.setItem(KK,k);}catch(e){}buka=true;pkRender();}else $('pkpesan').textContent='Kode akses tidak sesuai.';};
+      $('pklist').innerHTML=`<div class="pkkunci"><b>🔒 Restricted Access</b><span>Enter the access code provided by the developer to unlock the packages.</span><div class="linkrow"><input id="pkinput" type="password" autocomplete="off" placeholder="Access code" aria-label="Access code"><button class="btn copy" type="button" id="pkbuka">Unlock</button></div><small id="pkpesan">${pesan||''}</small></div>`;
+      const coba=async()=>{const k=$('pkinput').value.trim();if(!k)return;$('pkbuka').disabled=true;$('pkpesan').textContent='Checking…';
+        const ok=await cek(k);$('pkbuka').disabled=false;if(ok){try{localStorage.setItem(KK,k);}catch(e){}buka=true;pkRender();}else $('pkpesan').textContent='Incorrect access code.';};
       $('pkbuka').onclick=coba;$('pkinput').onkeydown=e=>{if(e.key==='Enter')coba();};};
     const cek=async k=>{try{const {data,error}=await sb.rpc('cat_cek_kode',{p_id:'paket',p_kode:k});return !error&&data===true;}catch(e){return false;}};
     const tampil=async()=>{if(buka){pkRender();if(isOwner)kodeOwner();return;}let k='';try{k=localStorage.getItem(KK)||'';}catch(e){}
-      if(k&&await cek(k)){buka=true;pkRender();return;}if(k){try{localStorage.removeItem(KK);}catch(e){}}kunci(k?'Kode akses sudah diganti. Masukkan kode yang baru.':'');};
+      if(k&&await cek(k)){buka=true;pkRender();return;}if(k){try{localStorage.removeItem(KK);}catch(e){}}kunci(k?'The access code has been changed. Please enter the new code.':'');};
     // Pemilik: ubah kode akses langsung dari kartu ini.
     const kodeOwner=async()=>{if($('pkown'))return;const d=document.createElement('div');d.id='pkown';d.className='pkown';
-      d.innerHTML='<b>Access Code</b><div class="linkrow"><input id="pkkode" autocomplete="off" placeholder="Belum diatur" aria-label="Kode akses"><button class="btn copy" type="button" id="pksimpan">Simpan kode</button><button class="btn copy" type="button" id="pksalin">⧉ Salin</button></div><small id="pkkinfo">Pengguna lain wajib memasukkan kode ini untuk membuka paket. Saat kode diganti, akses lama otomatis tertutup.</small>';
+      d.innerHTML='<b>Access Code</b><div class="linkrow"><input id="pkkode" autocomplete="off" placeholder="Not set yet" aria-label="Access code"><button class="btn copy" type="button" id="pksimpan">Save code</button><button class="btn copy" type="button" id="pksalin">⧉ Copy</button></div><small id="pkkinfo">Other users must enter this code to unlock the packages. Changing the code automatically revokes previous access.</small>';
       $('pklist').before(d);
       try{const {data,error}=await sb.from('cat_kode').select('kode').eq('id','paket').maybeSingle();if(error)throw error;$('pkkode').value=(data&&data.kode)||'';}
-      catch(e){$('pkkinfo').textContent='Tabel kode belum ada. Jalankan supabase-update-3.sql di Supabase dulu.';}
-      $('pksalin').onclick=()=>{const v=$('pkkode').value.trim();if(!v){alert('Kode belum diisi.');return;}const b=$('pksalin'),ok=()=>{b.textContent='✓ Tersalin';setTimeout(()=>b.textContent='⧉ Salin',1500);};
+      catch(e){$('pkkinfo').textContent='The code table does not exist yet. Run supabase-update-3.sql in Supabase first.';}
+      $('pksalin').onclick=()=>{const v=$('pkkode').value.trim();if(!v){alert('Please enter a code first.');return;}const b=$('pksalin'),ok=()=>{b.textContent='✓ Copied';setTimeout(()=>b.textContent='⧉ Copy',1500);};
         if(navigator.clipboard)navigator.clipboard.writeText(v).then(ok).catch(()=>{$('pkkode').select();document.execCommand('copy');ok();});else{$('pkkode').select();document.execCommand('copy');ok();}};
-      $('pksimpan').onclick=async()=>{const v=$('pkkode').value.trim();if(v.length<6){alert('Kode minimal 6 karakter agar tidak mudah ditebak.');return;}
+      $('pksimpan').onclick=async()=>{const v=$('pkkode').value.trim();if(v.length<6){alert('The code must be at least 6 characters long.');return;}
         $('pksimpan').disabled=true;const {error}=await sb.from('cat_kode').upsert({id:'paket',kode:v,diubah:new Date().toISOString()});$('pksimpan').disabled=false;
-        $('pkkinfo').textContent=error?'Gagal menyimpan: '+(error.message||error.code):'Kode tersimpan. Pengguna lain kini harus memakai kode ini.';};};
+        $('pkkinfo').textContent=error?'Save failed: '+(error.message||error.code):'Code saved. Other users must now use this code.';};};
     box.addEventListener('toggle',()=>{if(box.open)tampil();});
   }
   async function start(){
