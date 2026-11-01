@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Beli Akses Paket Prediksi SKB Calon Hakim Peradilan Agama | CAT - Lex Fexora</title>
-<meta name="description" content="Beli akses Paket Prediksi CAT - Lex Fexora: simulasi CAT lengkap. Sekali bayar, akses selamanya.">
+<meta name="description" content="Beli akses Paket Prediksi CAT - Lex Fexora: simulasi CAT lengkap. Rp1.500.000 untuk akses 1 tahun penuh.">
 <meta name="theme-color" content="#000000">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <link rel="icon" href="../favicon-32.png" sizes="32x32" type="image/png">
@@ -13,7 +13,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="CAT - Lex Fexora">
 <meta property="og:title" content="Paket Prediksi SKB Calon Hakim Peradilan Agama - CAT Lex Fexora">
-<meta property="og:description" content="Simulasi CAT lengkap dengan pembahasan dan dasar hukum. Sekali bayar, akses selamanya.">
+<meta property="og:description" content="Simulasi CAT lengkap dengan pembahasan dan dasar hukum. Rp1.500.000 untuk akses 1 tahun penuh.">
 <meta property="og:url" content="https://lexfexora.github.io/beli/">
 <meta property="og:image" content="https://lexfexora.github.io/logo-tautan.png?v=5">
 <meta name="twitter:card" content="summary">
@@ -75,9 +75,9 @@ ol{margin:0;padding-left:20px;color:var(--muted)}ol li{margin:6px 0}ol b{color:v
     <ul class="fitur">
       <li><span class="fi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8.3-7 9.5C8 19.3 5 15.5 5 11V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg></span><div><b>Dasar hukum sudah diperbarui</b><span>Seluruh pembahasan dan dasar hukum telah diperbarui berdasarkan aturan terbaru.</span></div></li>
       <li><span class="fi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11l3 3v13H5z"/><path d="M9 10h6M9 14h6M9 18h3"/></svg></span><div><b>Pembahasan lengkap</b><span>Setiap soal disertai pembahasan dan dasar hukum yang spesifik.</span></div></li>
-      <li><span class="fi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.5 15.5c-2 0-3.5-1.6-3.5-3.5s1.5-3.5 3.5-3.5c3.5 0 5.5 7 9 7 2 0 3.5-1.6 3.5-3.5s-1.5-3.5-3.5-3.5c-3.5 0-5.5 7-9 7z"/></svg></span><div><b>Akses selamanya</b><span>Sekali bayar, tanpa langganan dan tanpa batas waktu. Semua paket bisa dikerjakan berulang kali.</span></div></li>
+      <li><span class="fi"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5.5" width="16" height="14" rx="2"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4"/></svg></span><div><b>Akses 1 tahun penuh</b><span>Sekali bayar untuk 12 bulan, tanpa tagihan otomatis. Semua paket bisa dikerjakan berulang kali selama masa akses.</span></div></li>
     </ul>
-    <div class="hargabox"><small>Harga · sekali bayar</small><div class="harga" id="harga"></div></div>
+    <div class="hargabox"><small>Harga · akses 1 tahun</small><div class="harga" id="harga"></div></div>
     <a class="btn" id="bayar" href="https://lexfexora.github.io/?beli=1" aria-disabled="true">Bayar sekarang</a>
     <p class="pay" id="paytx">Transfer bank langsung ke rekening pemilik. Paket langsung terbuka setelah transfer dikonfirmasi.</p>
     <p id="msg">Memuat info pembayaran…</p>
@@ -89,7 +89,7 @@ ol{margin:0;padding-left:20px;color:var(--muted)}ol li{margin:6px 0}ol b{color:v
       <li><b>Ketuk Bayar sekarang</b>, lalu masuk dengan akun Google Anda.</li>
       <li><b>Transfer sesuai nominal</b> yang tampil (berakhiran 3 digit unik) ke rekening yang tertera.</li>
       <li><b>Ketuk &ldquo;Saya sudah transfer&rdquo;</b>, lalu isi nama pengirim.</li>
-      <li><b>Selesai.</b> Setelah transfer dikonfirmasi, akun Anda disetujui dan Paket Prediksi langsung terbuka untuk selamanya.</li>
+      <li><b>Selesai.</b> Setelah transfer dikonfirmasi, akun Anda disetujui dan Paket Prediksi langsung terbuka selama 1 tahun.</li>
     </ol>
     <a class="btn sec" id="wa" href="#" target="_blank" rel="noopener" hidden>Butuh bantuan? Chat WhatsApp</a>
   </section>
@@ -111,7 +111,7 @@ ol{margin:0;padding-left:20px;color:var(--muted)}ol li{margin:6px 0}ol b{color:v
       [1,2,3,4].forEach(function(c){if(per[c])h+='<li><span>'+NM[c]+'</span><b>'+f(per[c])+' soal</b></li>';});
       if(h){$('kat').innerHTML=h+'<li class="tot"><span>Total</span><b>'+f(info.soal)+' soal · '+f(info.paket)+' paket</b></li>';$('kat').hidden=false;}}
     if(!d.rekening){$('paytx').textContent='Virtual Account atau QRIS. Paket langsung terbuka setelah pembayaran berhasil.';
-      $('langkah').innerHTML='<li><b>Ketuk Bayar sekarang</b>, lalu masuk dengan akun Google Anda.</li><li><b>Bayar tagihan</b> dengan Virtual Account atau QRIS yang tampil.</li><li><b>Selesai.</b> Akun Anda disetujui dan Paket Prediksi langsung terbuka untuk selamanya.</li>';}
+      $('langkah').innerHTML='<li><b>Ketuk Bayar sekarang</b>, lalu masuk dengan akun Google Anda.</li><li><b>Bayar tagihan</b> dengan Virtual Account atau QRIS yang tampil.</li><li><b>Selesai.</b> Akun Anda disetujui dan Paket Prediksi langsung terbuka selama 1 tahun.</li>';}
     if(n>=10000){$('harga').textContent='Rp'+f(n);bayar.removeAttribute('aria-disabled');msg.textContent='';}else gagal(TUTUP);
     var wa=String(d.wa||'').replace(/[^0-9]/g,'').replace(/^0/,'62');
     if(wa.length>=9){var w=$('wa');w.href='https://wa.me/'+wa+'?text='+encodeURIComponent('Halo, saya ingin bertanya tentang Paket Prediksi CAT - Lex Fexora.');w.hidden=false;}

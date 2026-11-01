@@ -1601,7 +1601,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       <span>Ke rekening:</span><div class="tfrow"><span class="tfrek">${escH(d.rekening)}</span>${noRek?`<button class="btn copy" type="button" data-c="${noRek}">⧉ Salin</button>`:''}</div>
       <span>2. Isi nama pengirim sesuai rekening Anda, lalu ketuk tombol di bawah.</span><input id="tfnama" autocomplete="name" placeholder="Nama pengirim" value="${escH(d.pengirim)}" aria-label="Nama pengirim">
       <button class="btn primary" type="button" id="tfkirim">${d.dikirim?'Perbarui nama pengirim':'Saya sudah transfer'}</button>
-      <small id="tfinfo">${d.dikirim?'Transfer sudah dikirim. Paket terbuka otomatis setelah pemilik mengonfirmasi.':'Paket terbuka otomatis setelah pemilik mengonfirmasi transfer Anda. Sekali bayar, akses selamanya.'}</small>
+      <small id="tfinfo">${d.dikirim?'Transfer sudah dikirim. Paket terbuka otomatis setelah pemilik mengonfirmasi.':'Paket terbuka otomatis setelah pemilik mengonfirmasi transfer Anda. Akses berlaku 1 tahun sejak dikonfirmasi.'}</small>
       ${d.wa?`<a class="btn" id="tfwa" target="_blank" rel="noopener" ${d.dikirim?'':'hidden'}>Kabari pemilik via WhatsApp</a>`:''}
       <button class="btn" type="button" id="tftutup">Tutup</button></div>`;
     document.body.appendChild(m);
