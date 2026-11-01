@@ -450,8 +450,8 @@ html.beranim .tema,html.beranim .akunexit{background:#1c2320!important}
 @media (prefers-color-scheme:light){html.beranim:not([data-theme="dark"]) .tema,html.beranim:not([data-theme="dark"]) .akunexit{background:#f3f4f2!important}}
 html.beranim[data-theme="light"] .tema,html.beranim[data-theme="light"] .akunexit{background:#f3f4f2!important}
 /* Segitiga buka/tutup di Quiz Options dan Mock Exam sama dengan segitiga Select Cluster. */
-html body #setelan>summary::after,html body #tocard>summary::after,html body #pkcard>summary::after{font-family:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif!important;font-size:15px!important;font-weight:400!important;letter-spacing:0!important;color:var(--muted)!important;-webkit-text-fill-color:var(--muted);text-shadow:none!important;line-height:1}
-:root[data-theme="dark"] body #setelan>summary::after,:root[data-theme="dark"] body #tocard.setelan.tocard>summary::after,:root[data-theme="dark"] body #pkcard.setelan.tocard>summary::after{color:#9aaba0!important;-webkit-text-fill-color:#9aaba0}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body #setelan>summary::after,:root:not([data-theme="light"]) body #tocard.setelan.tocard>summary::after,:root:not([data-theme="light"]) body #pkcard.setelan.tocard>summary::after{color:#9aaba0!important;-webkit-text-fill-color:#9aaba0}}
+html body #setelan>summary::after,html body #tocard>summary::after,html body #pkcard>summary::after,html body #kpcard>summary::after{font-family:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif!important;font-size:15px!important;font-weight:400!important;letter-spacing:0!important;color:var(--muted)!important;-webkit-text-fill-color:var(--muted);text-shadow:none!important;line-height:1}
+:root[data-theme="dark"] body #setelan>summary::after,:root[data-theme="dark"] body #tocard.setelan.tocard>summary::after,:root[data-theme="dark"] body #pkcard.setelan.tocard>summary::after,:root[data-theme="dark"] body #kpcard.setelan.tocard>summary::after{color:#9aaba0!important;-webkit-text-fill-color:#9aaba0}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body #setelan>summary::after,:root:not([data-theme="light"]) body #tocard.setelan.tocard>summary::after,:root:not([data-theme="light"]) body #pkcard.setelan.tocard>summary::after,:root:not([data-theme="light"]) body #kpcard.setelan.tocard>summary::after{color:#9aaba0!important;-webkit-text-fill-color:#9aaba0}}
 /* Label dan isi pilihan di Quiz Options (Section Details/All Sections, Order, Timer, Duration) berwarna putih di mode gelap. */
 :root[data-theme="dark"] #setelan .controls label,:root[data-theme="dark"] #setelan .controls .lbl,:root[data-theme="dark"] #setelan .controls select{color:#fff!important;-webkit-text-fill-color:#fff}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #setelan .controls label,:root:not([data-theme="light"]) #setelan .controls .lbl,:root:not([data-theme="light"]) #setelan .controls select{color:#fff!important;-webkit-text-fill-color:#fff}}
@@ -559,15 +559,20 @@ html .tojoin{border:1px solid color-mix(in srgb,var(--brass) 40%,var(--line));ba
 html .tojoin>b{color:var(--brass)}
 /* Bar Mock Exam: ukuran sama dengan Quiz Options, sedikit lebih menonjol. */
 :root[data-theme="dark"] #tocard.setelan.tocard, sedikit lebih menonjol. */
-:root[data-theme="dark"] #pkcard.setelan.tocard{border:1px solid #000;border-radius:6px;background:radial-gradient(80% 60% at 50% 0,rgb(255 170 70 / .07),transparent 70%),linear-gradient(180deg,#0e0a08,#070605);box-shadow:inset 0 0 18px rgb(0 0 0 / .8),0 0 0 1px #7a5a28,0 0 0 3px #070605,0 0 0 4px #4a3820,0 10px 24px rgb(0 0 0 / .7)}
+:root[data-theme="dark"] #pkcard.setelan.tocard, sedikit lebih menonjol. */
+:root[data-theme="dark"] #kpcard.setelan.tocard{border:1px solid #000;border-radius:6px;background:radial-gradient(80% 60% at 50% 0,rgb(255 170 70 / .07),transparent 70%),linear-gradient(180deg,#0e0a08,#070605);box-shadow:inset 0 0 18px rgb(0 0 0 / .8),0 0 0 1px #7a5a28,0 0 0 3px #070605,0 0 0 4px #4a3820,0 10px 24px rgb(0 0 0 / .7)}
 :root[data-theme="dark"] #tocard.setelan.tocard>summary,
-:root[data-theme="dark"] #pkcard.setelan.tocard>summary{padding:11px 14px}
+:root[data-theme="dark"] #pkcard.setelan.tocard>summary,
+:root[data-theme="dark"] #kpcard.setelan.tocard>summary{padding:11px 14px}
 :root[data-theme="dark"] #tocard.setelan.tocard>summary .stl,
-:root[data-theme="dark"] #pkcard.setelan.tocard>summary .stl{font-family:var(--f-display,Georgia,serif);font-size:17px;font-weight:700;letter-spacing:.01em;-webkit-text-fill-color:#dcae55;color:#dcae55;text-shadow:0 1px 0 #000,0 0 10px rgb(217 168 73 / .15)}
+:root[data-theme="dark"] #pkcard.setelan.tocard>summary .stl,
+:root[data-theme="dark"] #kpcard.setelan.tocard>summary .stl{font-family:var(--f-display,Georgia,serif);font-size:17px;font-weight:700;letter-spacing:.01em;-webkit-text-fill-color:#dcae55;color:#dcae55;text-shadow:0 1px 0 #000,0 0 10px rgb(217 168 73 / .15)}
 :root[data-theme="dark"] #tocard.setelan.tocard>summary .stl svg.piala,
-:root[data-theme="dark"] #pkcard.setelan.tocard>summary .stl svg.piala{width:22px;height:22px}
+:root[data-theme="dark"] #pkcard.setelan.tocard>summary .stl svg.piala,
+:root[data-theme="dark"] #kpcard.setelan.tocard>summary .stl svg.piala{width:22px;height:22px}
 :root[data-theme="dark"] #tocard.setelan.tocard>summary::after,
-:root[data-theme="dark"] #pkcard.setelan.tocard>summary::after{color:#a07a3a}
+:root[data-theme="dark"] #pkcard.setelan.tocard>summary::after,
+:root[data-theme="dark"] #kpcard.setelan.tocard>summary::after{color:#a07a3a}
 :root[data-theme="dark"] #setelan>summary{font-family:var(--f-display,Georgia,serif);font-size:16px;letter-spacing:.01em}
 /* Judul "Select Cluster - SKB" memakai huruf yang sama dengan judul "Quiz Options & Sections". */
 :root[data-theme="dark"] #tabs .tab.pilih .kt>b{font-family:var(--f-display,Georgia,serif);font-size:16px;font-weight:700;letter-spacing:.01em}
@@ -578,7 +583,8 @@ html .tojoin>b{color:var(--brass)}
 html body #tabs .tab.pilih .ki{width:22px;height:22px;border-radius:6px;box-shadow:0 1px 3px rgb(0 0 0 / .2)}html body #tabs .tab.pilih .ki svg{width:86%;height:86%}
 html body #setelan>summary .stl svg{width:22px;height:22px;flex:none}
 html body #tocard>summary .stl svg.piala,
-html body #pkcard>summary .stl svg.piala{width:22px;height:22px}
+html body #pkcard>summary .stl svg.piala,
+html body #kpcard>summary .stl svg.piala{width:22px;height:22px}
 /* Kartu kategori terpilih: hanya garis tepi putih tegas (tanpa isi warna dan tanpa centang). */
 html body .tabs .tab.kl[aria-selected="true"]{border-color:color-mix(in srgb,var(--ink) 55%,transparent);background:var(--surface);box-shadow:none}
 html body .tabs .tab.kl[aria-selected="true"]::after{content:none;display:none}
@@ -633,12 +639,12 @@ html body #tabs .tab.pilih{justify-content:center;text-align:center;padding-left
 :root[data-theme="dark"] body #tabs .tab.pilih{border:1px solid #000!important;border-radius:6px!important;background:linear-gradient(180deg,#111413,#0a0b0b)!important;box-shadow:0 0 0 1px #59615c,0 0 0 3px #070807,0 0 0 4px #3a413d,0 10px 24px rgb(0 0 0 / .7)!important}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body #tabs .tab.pilih{border:1px solid #000!important;border-radius:6px!important;background:linear-gradient(180deg,#111413,#0a0b0b)!important;box-shadow:0 0 0 1px #59615c,0 0 0 3px #070807,0 0 0 4px #3a413d,0 10px 24px rgb(0 0 0 / .7)!important}}
 /* Judul tiga baris utama (Select Cluster, Quiz Options, Mock Exam) berukuran sama persis: 17px. */
-:root[data-theme="dark"] body #tabs .tab.pilih .kt>b,:root[data-theme="dark"] body #setelan>summary .stl,:root[data-theme="dark"] body #tocard.setelan.tocard>summary .stl,:root[data-theme="dark"] body #pkcard.setelan.tocard>summary .stl{font-family:var(--f-display,Georgia,serif)!important;font-size:17px!important;font-weight:700!important;letter-spacing:.01em!important}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body #tabs .tab.pilih .kt>b,:root:not([data-theme="light"]) body #setelan>summary .stl,:root:not([data-theme="light"]) body #tocard.setelan.tocard>summary .stl,:root:not([data-theme="light"]) body #pkcard.setelan.tocard>summary .stl{font-family:var(--f-display,Georgia,serif)!important;font-size:17px!important;font-weight:700!important;letter-spacing:.01em!important}}html body #tabs .tab.pilih .ki{margin-left:2px}
+:root[data-theme="dark"] body #tabs .tab.pilih .kt>b,:root[data-theme="dark"] body #setelan>summary .stl,:root[data-theme="dark"] body #tocard.setelan.tocard>summary .stl,:root[data-theme="dark"] body #pkcard.setelan.tocard>summary .stl,:root[data-theme="dark"] body #kpcard.setelan.tocard>summary .stl{font-family:var(--f-display,Georgia,serif)!important;font-size:17px!important;font-weight:700!important;letter-spacing:.01em!important}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body #tabs .tab.pilih .kt>b,:root:not([data-theme="light"]) body #setelan>summary .stl,:root:not([data-theme="light"]) body #tocard.setelan.tocard>summary .stl,:root:not([data-theme="light"]) body #pkcard.setelan.tocard>summary .stl,:root:not([data-theme="light"]) body #kpcard.setelan.tocard>summary .stl{font-family:var(--f-display,Georgia,serif)!important;font-size:17px!important;font-weight:700!important;letter-spacing:.01em!important}}html body #tabs .tab.pilih .ki{margin-left:2px}
 /* Tulisan Keep it: emas hangat serasi dengan tombol coklat, huruf lebih kecil. */
 html:root[data-theme="dark"] #siapbtn{color:#d6b170;font-size:15px;letter-spacing:.1em;text-shadow:0 1px 0 #000,0 0 8px rgb(214 160 80 / .18);box-shadow:inset 0 0 0 2px #110906,inset 0 0 0 3px #6e5232,inset 0 1px 8px rgb(255 140 60 / .12),0 0 0 1px #000,0 4px 10px rgb(0 0 0 / .8)}
 @media (prefers-color-scheme:dark){html:root:not([data-theme="light"]) #siapbtn{color:#d6b170;font-size:15px;letter-spacing:.1em;text-shadow:0 1px 0 #000,0 0 8px rgb(214 160 80 / .18);box-shadow:inset 0 0 0 2px #110906,inset 0 0 0 3px #6e5232,inset 0 1px 8px rgb(255 140 60 / .12),0 0 0 1px #000,0 4px 10px rgb(0 0 0 / .8)}}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #tocard.setelan.tocard,:root:not([data-theme="light"]) #pkcard.setelan.tocard{border:1px solid #000;border-radius:6px;background:radial-gradient(80% 60% at 50% 0,rgb(255 170 70 / .07),transparent 70%),linear-gradient(180deg,#0e0a08,#070605);box-shadow:inset 0 0 18px rgb(0 0 0 / .8),0 0 0 1px #7a5a28,0 0 0 3px #070605,0 0 0 4px #4a3820,0 10px 24px rgb(0 0 0 / .7)}:root:not([data-theme="light"]) #tocard.setelan.tocard>summary,:root:not([data-theme="light"]) #pkcard.setelan.tocard>summary{padding:11px 14px}:root:not([data-theme="light"]) #tocard.setelan.tocard>summary .stl,:root:not([data-theme="light"]) #pkcard.setelan.tocard>summary .stl{font-family:var(--f-display,Georgia,serif);font-size:17px;font-weight:700;letter-spacing:.01em;-webkit-text-fill-color:#dcae55;color:#dcae55;text-shadow:0 1px 0 #000,0 0 10px rgb(217 168 73 / .15)}:root:not([data-theme="light"]) #tocard.setelan.tocard>summary .stl svg.piala,:root:not([data-theme="light"]) #pkcard.setelan.tocard>summary .stl svg.piala{width:22px;height:22px}:root:not([data-theme="light"]) #tocard.setelan.tocard>summary::after,:root:not([data-theme="light"]) #pkcard.setelan.tocard>summary::after{color:#a07a3a}:root:not([data-theme="light"]) #setelan>summary{font-family:var(--f-display,Georgia,serif);font-size:16px;letter-spacing:.01em}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #tocard.setelan.tocard,:root:not([data-theme="light"]) #pkcard.setelan.tocard,:root:not([data-theme="light"]) #kpcard.setelan.tocard{border:1px solid #000;border-radius:6px;background:radial-gradient(80% 60% at 50% 0,rgb(255 170 70 / .07),transparent 70%),linear-gradient(180deg,#0e0a08,#070605);box-shadow:inset 0 0 18px rgb(0 0 0 / .8),0 0 0 1px #7a5a28,0 0 0 3px #070605,0 0 0 4px #4a3820,0 10px 24px rgb(0 0 0 / .7)}:root:not([data-theme="light"]) #tocard.setelan.tocard>summary,:root:not([data-theme="light"]) #pkcard.setelan.tocard>summary,:root:not([data-theme="light"]) #kpcard.setelan.tocard>summary{padding:11px 14px}:root:not([data-theme="light"]) #tocard.setelan.tocard>summary .stl,:root:not([data-theme="light"]) #pkcard.setelan.tocard>summary .stl,:root:not([data-theme="light"]) #kpcard.setelan.tocard>summary .stl{font-family:var(--f-display,Georgia,serif);font-size:17px;font-weight:700;letter-spacing:.01em;-webkit-text-fill-color:#dcae55;color:#dcae55;text-shadow:0 1px 0 #000,0 0 10px rgb(217 168 73 / .15)}:root:not([data-theme="light"]) #tocard.setelan.tocard>summary .stl svg.piala,:root:not([data-theme="light"]) #pkcard.setelan.tocard>summary .stl svg.piala,:root:not([data-theme="light"]) #kpcard.setelan.tocard>summary .stl svg.piala{width:22px;height:22px}:root:not([data-theme="light"]) #tocard.setelan.tocard>summary::after,:root:not([data-theme="light"]) #pkcard.setelan.tocard>summary::after,:root:not([data-theme="light"]) #kpcard.setelan.tocard>summary::after{color:#a07a3a}:root:not([data-theme="light"]) #setelan>summary{font-family:var(--f-display,Georgia,serif);font-size:16px;letter-spacing:.01em}}
 #siapbtn .inkt{position:relative;display:inline;line-height:1;margin-right:-.08em}
 .qhead .qkoin{display:inline-flex;align-items:center;gap:6px;margin:0 auto;white-space:nowrap}
 .qhead .qkoin .kn{display:inline-flex;align-items:center;gap:4px;height:28px;padding:0 9px;border-radius:999px;font-size:14px;line-height:1;border:1px solid color-mix(in srgb,var(--brass) 35%,var(--line));background:color-mix(in srgb,var(--brass-soft) 55%,transparent)}
@@ -655,16 +661,17 @@ html:not(.fokus) header .akunku{margin-top:10px;padding-top:8px}
 .exitbawah:not([hidden]){padding-top:6px}.exitbawah:not([hidden])~footer{margin-top:6px}}
 /* Beranda: tidak ada oranye/emas selain VVIP dan piala. */
 :root{--k1:#aeb6b1;--k2:#aeb6b1;--k3:#aeb6b1;--k4:#aeb6b1}
-:root[data-theme="dark"] #setelan,:root[data-theme="dark"] #tocard.setelan.tocard,:root[data-theme="dark"] #pkcard.setelan.tocard{box-shadow:0 0 0 1px #3c433f,0 0 0 3px #070807,0 0 0 4px #2a302c,0 10px 24px rgb(0 0 0 / .6)!important;background:linear-gradient(180deg,#111413,#0a0b0b)!important;animation:none!important}
+:root[data-theme="dark"] #setelan,:root[data-theme="dark"] #tocard.setelan.tocard,:root[data-theme="dark"] #pkcard.setelan.tocard,:root[data-theme="dark"] #kpcard.setelan.tocard{box-shadow:0 0 0 1px #3c433f,0 0 0 3px #070807,0 0 0 4px #2a302c,0 10px 24px rgb(0 0 0 / .6)!important;background:linear-gradient(180deg,#111413,#0a0b0b)!important;animation:none!important}
 :root[data-theme="dark"] #tocard.setelan.tocard,
-:root[data-theme="dark"] #pkcard.setelan.tocard{box-shadow:0 0 0 1px #59615c,0 0 0 3px #070807,0 0 0 4px #3a413d,0 10px 24px rgb(0 0 0 / .7)!important}
-:root[data-theme="dark"] #setelan>summary,:root[data-theme="dark"] #setelan.perlu>summary{color:#e3e7e4!important;text-shadow:0 1px 0 #000!important}:root[data-theme="dark"] #tocard.setelan.tocard>summary .stl,:root[data-theme="dark"] #pkcard.setelan.tocard>summary .stl{color:#e3e7e4!important;-webkit-text-fill-color:#e3e7e4!important;text-shadow:0 1px 0 #000!important}
+:root[data-theme="dark"] #pkcard.setelan.tocard,
+:root[data-theme="dark"] #kpcard.setelan.tocard{box-shadow:0 0 0 1px #59615c,0 0 0 3px #070807,0 0 0 4px #3a413d,0 10px 24px rgb(0 0 0 / .7)!important}
+:root[data-theme="dark"] #setelan>summary,:root[data-theme="dark"] #setelan.perlu>summary{color:#e3e7e4!important;text-shadow:0 1px 0 #000!important}:root[data-theme="dark"] #tocard.setelan.tocard>summary .stl,:root[data-theme="dark"] #pkcard.setelan.tocard>summary .stl,:root[data-theme="dark"] #kpcard.setelan.tocard>summary .stl{color:#e3e7e4!important;-webkit-text-fill-color:#e3e7e4!important;text-shadow:0 1px 0 #000!important}
 :root[data-theme="dark"] #setelan>summary svg{color:#aeb6b1}
-:root[data-theme="dark"] #setelan>summary::after,:root[data-theme="dark"] #tocard.setelan.tocard>summary::after,:root[data-theme="dark"] #pkcard.setelan.tocard>summary::after{color:#8a948e!important}
+:root[data-theme="dark"] #setelan>summary::after,:root[data-theme="dark"] #tocard.setelan.tocard>summary::after,:root[data-theme="dark"] #pkcard.setelan.tocard>summary::after,:root[data-theme="dark"] #kpcard.setelan.tocard>summary::after{color:#8a948e!important}
 :root[data-theme="dark"] #setelan .controls label,:root[data-theme="dark"] #setelan .controls .lbl{color:#9aa39e}
 :root[data-theme="dark"] #setelan select,:root[data-theme="dark"] #setelan input{border-color:#353b37}
 :root[data-theme="dark"] #siapbtn{color:#e3e7e4;box-shadow:inset 0 0 0 2px #110906,inset 0 0 0 3px #59615c,0 0 0 1px #000,0 4px 10px rgb(0 0 0 / .8)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #setelan,:root:not([data-theme="light"]) #tocard.setelan.tocard,:root:not([data-theme="light"]) #pkcard.setelan.tocard{box-shadow:0 0 0 1px #3c433f,0 0 0 3px #070807,0 0 0 4px #2a302c,0 10px 24px rgb(0 0 0 / .6)!important;background:linear-gradient(180deg,#111413,#0a0b0b)!important;animation:none!important}:root:not([data-theme="light"]) #tocard.setelan.tocard,:root:not([data-theme="light"]) #pkcard.setelan.tocard{box-shadow:0 0 0 1px #59615c,0 0 0 3px #070807,0 0 0 4px #3a413d,0 10px 24px rgb(0 0 0 / .7)!important}:root:not([data-theme="light"]) #setelan>summary,:root:not([data-theme="light"]) #setelan.perlu>summary{color:#e3e7e4!important;text-shadow:0 1px 0 #000!important}:root:not([data-theme="light"]) #tocard.setelan.tocard>summary .stl,:root:not([data-theme="light"]) #pkcard.setelan.tocard>summary .stl{color:#e3e7e4!important;-webkit-text-fill-color:#e3e7e4!important;text-shadow:0 1px 0 #000!important}:root:not([data-theme="light"]) #setelan>summary svg{color:#aeb6b1}:root:not([data-theme="light"]) #setelan>summary::after,:root:not([data-theme="light"]) #tocard.setelan.tocard>summary::after,:root:not([data-theme="light"]) #pkcard.setelan.tocard>summary::after{color:#8a948e!important}:root:not([data-theme="light"]) #setelan .controls label,:root:not([data-theme="light"]) #setelan .controls .lbl{color:#9aa39e}:root:not([data-theme="light"]) #setelan select,:root:not([data-theme="light"]) #setelan input{border-color:#353b37}:root:not([data-theme="light"]) #siapbtn{color:#e3e7e4;box-shadow:inset 0 0 0 2px #110906,inset 0 0 0 3px #59615c,0 0 0 1px #000,0 4px 10px rgb(0 0 0 / .8)}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #setelan,:root:not([data-theme="light"]) #tocard.setelan.tocard,:root:not([data-theme="light"]) #pkcard.setelan.tocard,:root:not([data-theme="light"]) #kpcard.setelan.tocard{box-shadow:0 0 0 1px #3c433f,0 0 0 3px #070807,0 0 0 4px #2a302c,0 10px 24px rgb(0 0 0 / .6)!important;background:linear-gradient(180deg,#111413,#0a0b0b)!important;animation:none!important}:root:not([data-theme="light"]) #tocard.setelan.tocard,:root:not([data-theme="light"]) #pkcard.setelan.tocard,:root:not([data-theme="light"]) #kpcard.setelan.tocard{box-shadow:0 0 0 1px #59615c,0 0 0 3px #070807,0 0 0 4px #3a413d,0 10px 24px rgb(0 0 0 / .7)!important}:root:not([data-theme="light"]) #setelan>summary,:root:not([data-theme="light"]) #setelan.perlu>summary{color:#e3e7e4!important;text-shadow:0 1px 0 #000!important}:root:not([data-theme="light"]) #tocard.setelan.tocard>summary .stl,:root:not([data-theme="light"]) #pkcard.setelan.tocard>summary .stl,:root:not([data-theme="light"]) #kpcard.setelan.tocard>summary .stl{color:#e3e7e4!important;-webkit-text-fill-color:#e3e7e4!important;text-shadow:0 1px 0 #000!important}:root:not([data-theme="light"]) #setelan>summary svg{color:#aeb6b1}:root:not([data-theme="light"]) #setelan>summary::after,:root:not([data-theme="light"]) #tocard.setelan.tocard>summary::after,:root:not([data-theme="light"]) #pkcard.setelan.tocard>summary::after,:root:not([data-theme="light"]) #kpcard.setelan.tocard>summary::after{color:#8a948e!important}:root:not([data-theme="light"]) #setelan .controls label,:root:not([data-theme="light"]) #setelan .controls .lbl{color:#9aa39e}:root:not([data-theme="light"]) #setelan select,:root:not([data-theme="light"]) #setelan input{border-color:#353b37}:root:not([data-theme="light"]) #siapbtn{color:#e3e7e4;box-shadow:inset 0 0 0 2px #110906,inset 0 0 0 3px #59615c,0 0 0 1px #000,0 4px 10px rgb(0 0 0 / .8)}}
 @keyframes perluk2{0%,100%{box-shadow:0 0 0 1px #3c433f,0 0 0 3px #070807,0 0 0 4px #2a302c,0 10px 24px rgb(0 0 0 / .6)}50%{box-shadow:0 0 0 1px #8a948e,0 0 0 3px #070807,0 0 0 4px #4a524d,0 0 18px rgb(220 230 225 / .12)}}
 :root[data-theme="dark"] #setelan.perlu{animation:perluk2 2.8s ease-in-out infinite!important}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #setelan.perlu{animation:perluk2 2.8s ease-in-out infinite!important}}@media (prefers-reduced-motion:reduce){#setelan.perlu{animation:none!important}}
 /* HP: header dan kotak klaster lebih ringkas agar footer muat di atas bilah Safari. */
@@ -849,7 +856,8 @@ html:root[data-theme="dark"] body #siapbtn:hover{background:radial-gradient(120%
 .tolist .tr.pk .trj b{margin:0;font-size:13.5px}
 .tolist .tr.pk .trj small{color:var(--muted);font-size:12px;line-height:1.35}
 #pklist .pkpct{font-variant-numeric:tabular-nums;min-width:3.2em;text-align:right}
-#pkket .pklead{color:var(--muted)}.pkkunci>b,.pkown>b{display:block;font-family:var(--f-display);font-size:1.08em;color:color-mix(in srgb,var(--brass) 85%,var(--ink))}#pkket b{color:var(--ink);font-weight:600}#pkket .pkcat{display:block;margin-top:6px;font-size:11.5px;opacity:.8}
+#pkket .pklead,
+#kpket .pklead{color:var(--muted)}.pkkunci>b,.pkown>b{display:block;font-family:var(--f-display);font-size:1.08em;color:color-mix(in srgb,var(--brass) 85%,var(--ink))}#pkket b,#kpket b{color:var(--ink);font-weight:600}#pkket .pkcat,#kpket .pkcat{display:block;margin-top:6px;font-size:11.5px;opacity:.8}
 .pkkunci,.pkown{display:flex;flex-direction:column;gap:6px;border:1px solid rgb(255 255 255 / .1);border-radius:12px;padding:12px;margin:2px 0 8px;background:linear-gradient(160deg,rgb(255 255 255 / .04),rgb(255 255 255 / .01))}
 .pkown .pkbsub{margin-top:10px}.pkown #pkbharga,.pkown #pkbwa{flex:1 1 140px}.pkkunci .pkbeli{align-self:flex-start;margin-top:4px}#pkbjual:empty{display:none}.adm .siapa .nm.lunas{color:#c9962e!important;font-weight:700}.adm .lunaschip.gratis{color:#7fb3d9;border-color:color-mix(in srgb,#7fb3d9 60%,transparent)}.adm .lunaschip{flex:none;font-size:9.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#c9962e;border:1px solid color-mix(in srgb,#c9962e 60%,transparent);border-radius:999px;padding:1px 6px;margin-left:4px}.pkown #pkbrek{width:100%;font:12.5px var(--f-mono);padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink)}
 .pkown .pkbsub .btn{float:right;font-size:11.5px;padding:2px 8px}.pkbtunggu{display:flex;flex-direction:column;gap:6px}.pkbrow{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:8px;padding:8px}.pkbrow>span{flex:1;min-width:0;font-size:13px;overflow-wrap:anywhere}
@@ -857,7 +865,8 @@ html:root[data-theme="dark"] body #siapbtn:hover{background:radial-gradient(120%
 .tfbox>b{font-family:var(--f-display);font-size:1.25em}.tfbox>span,.tfbox small{font-size:13px;color:var(--muted)}.tfrow{display:flex;align-items:center;gap:8px;justify-content:space-between;border:1px solid var(--line);border-radius:10px;padding:8px 10px}.tfrow big{font-family:var(--f-display);font-size:1.5em;color:var(--brass)}.tfrek{font-size:13.5px;overflow-wrap:anywhere}
 .tfbox input{font:15px var(--f-body);padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}.tfrow .btn{white-space:nowrap;flex:none}.tfbox .btn{justify-content:center;text-align:center;text-decoration:none}
 .pkkunci span,.pkkunci small,.pkown small{font-size:12.5px;color:var(--muted)}.pkkunci .linkrow,.pkown .linkrow{margin:2px 0}
-#pkket{margin:0 0 8px;font-size:12.5px;color:var(--muted)}
+#pkket,
+#kpket{margin:0 0 8px;font-size:12.5px;color:var(--muted)}
 
 /* Paket Prediksi: kisi rapat 3 paket per baris (juga di ponsel). */
 #pklist{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
@@ -876,8 +885,31 @@ html:root[data-theme="dark"] body #siapbtn:hover{background:radial-gradient(120%
 #pklist .pkghost{pointer-events:none;user-select:none;filter:blur(1.2px);opacity:.75}
 #pklist .pkghost .pkgbtn{font-size:12px;color:var(--muted);padding:4px 0;border:1px solid rgb(255 255 255 / .08);border-radius:8px}
 #pklist .pkmore{grid-column:1/-1;margin:2px 0 0;text-align:center;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:color-mix(in srgb,var(--brass) 70%,var(--muted))}
-html.beranim #pkcard *,html.beranim #tocard *,html.beranim #setelan *{box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;text-shadow:none!important;transition:none!important}
+html.beranim #pkcard *,html.beranim #tocard *,html.beranim #setelan *,
+html.beranim #kpcard *{box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;text-shadow:none!important;transition:none!important}
 html.beranim #pklist .pkghost{filter:none}
+/* Category Packages: satu kelompok per kategori, satu paket per sub-materi (judul = nama sub-materi). */
+#kplist{display:flex;flex-direction:column;gap:8px}
+#kplist .kpkat{border:1px solid rgb(255 255 255 / .09);border-radius:12px;background:linear-gradient(160deg,rgb(255 255 255 / .04),rgb(255 255 255 / .01));overflow:hidden}
+#kplist .kpkat>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:11px 12px}
+#kplist .kpkat>summary::-webkit-details-marker{display:none}
+#kplist .kpkat>summary::after{content:"▾";margin-left:auto;color:var(--muted);transition:transform .2s}
+#kplist .kpkat[open]>summary::after{transform:rotate(180deg)}
+#kplist .kpkat>summary span{display:flex;flex-direction:column;gap:2px;min-width:0}
+#kplist .kpkat>summary b{font-family:var(--f-display);font-size:15px;color:color-mix(in srgb,var(--brass) 85%,var(--ink))}
+#kplist .kpkat>summary small{font-size:11.5px;color:var(--muted)}
+#kplist .kprows{display:flex;flex-direction:column;gap:6px;padding:0 8px 10px}
+#kplist .tr.pk{display:flex;flex-direction:row;flex-wrap:wrap;align-items:center;gap:4px 10px;padding:9px 10px;border-radius:10px;margin:0;text-align:left}
+#kplist .tr.pk{flex-wrap:nowrap}#kplist .tr.pk .trj{flex:1 1 0;min-width:0}
+#kplist .tr.pk .trj b{font-size:13px;white-space:normal;line-height:1.3}
+#kplist .tr.pk .kpr{display:flex;flex-direction:column;align-items:flex-end;gap:4px;margin-left:auto;flex:none}
+#kplist .pkpct{font-variant-numeric:tabular-nums;font-size:12px;white-space:nowrap}
+#kplist .pkbs{display:flex;gap:6px;font-size:11.5px;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}#kplist .pkbs i{font-style:normal}#kplist .pkbs .ok{color:#3fb26f}#kplist .pkbs .no{color:#e0645a}
+#kplist .tr.pk .btn{min-width:84px;justify-content:center;padding:4px 10px;font-size:12.5px;min-height:0}
+#kplist .pkghost .kpr{pointer-events:none;user-select:none}
+#kplist .pkghost .pkgbtn{font-size:12px;color:var(--muted);padding:4px 10px;border:1px solid rgb(255 255 255 / .08);border-radius:8px}
+#kplist .pkmore{margin:2px 0 0;text-align:center;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:color-mix(in srgb,var(--brass) 70%,var(--muted))}
+html.beranim #kpcard *{box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;text-shadow:none!important;transition:none!important}
 html.beranim .toisi,html.beranim #setelan .controls{contain:layout paint style}
 #pklist .tr.pk .trj b{text-transform:uppercase;letter-spacing:.06em;font-size:12px}
 /* Previous/Next terkunci di dasar layar (juga di Safari iPhone dengan bilah browser terlihat). */
@@ -961,6 +993,14 @@ html.fokus body #card{padding-bottom:calc(72px + env(safe-area-inset-bottom,0px)
     <div class="toisi">
       <p class="note" id="pkket"></p>
       <div id="pklist" class="tolist"></div>
+    </div>
+  </details>
+
+  <details class="setelan tocard" id="kpcard" hidden>
+    <summary><span class="stl"><svg class="piala" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="url(#pialaEmas)" stroke-width="1.8"><rect x="3.5" y="3.5" width="7" height="7" rx="1.6"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.6"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.6"/></g><rect x="13.5" y="13.5" width="7" height="7" rx="1.6" fill="url(#pialaEmas)"/></svg>Category Packages</span></summary>
+    <div class="toisi">
+      <p class="note" id="kpket"></p>
+      <div id="kplist" class="tolist"></div>
     </div>
   </details>
 
@@ -1143,7 +1183,7 @@ function gabungStore(src){let ubah=false;Object.keys(src||{}).forEach(k=>{const 
   if(d&&typeof d==="object"&&d.ans){const g=gabung(store[k],d);if(g!==store[k]){store[k]=g;ubah=true;}}});return ubah;}
 function pkCloud(raw){const o={};Object.keys(raw||{}).forEach(n=>{try{const v=JSON.parse(raw[n]);if(v)o["ulang|paket|"+n]=v;}catch(e){}});return o;}
 (()=>{const C=pkCloud(window.__PK_AWAL);if(gabungStore(C))try{localStorage.setItem(KEY,JSON.stringify(store));}catch(e){}
-  if(window.__simpanPaket)Object.keys(store).forEach(k=>{const m=/^ulang\|paket\|(\d+)$/.exec(k);if(!m)return;
+  if(window.__simpanPaket)Object.keys(store).forEach(k=>{const m=/^ulang\|paket\|([\w-]+)$/.exec(k);if(!m)return;
     if(gabung(C[k],store[k])!==C[k])kirimPaket(m[1],true);});})();
 // Menyimpan ke akun: baca dulu versi akun, gabungkan, baru tulis. Jadi tab/HP lama yang baru "bangun" tidak bisa menimpa progres yang lebih jauh.
 function kirimPaket(n,segera){if(!window.__simpanPaket)return;clearTimeout(PKT[n]);
@@ -1219,7 +1259,7 @@ function persist(){const pk=sessionKey(),mine={list:state.list,pos:state.pos,mul
   store[pk]=mine;store.last={cat:state.cat,sub:state.sub,bag:state.bag};if(state.cat!=="all"&&state.sub!=="all"){store.subAkhir=store.subAkhir||{};store.subAkhir[state.cat]={sub:state.sub,bag:state.bag};}save();
   // Tab ini ternyata tertinggal (perangkat menyimpan sesi yang lebih maju): pakai versi itu, jangan timpa.
   if(store[pk]!==mine){if(!persist.muat){persist.muat=1;try{restore();}finally{persist.muat=0;}setTimeout(()=>render(),0);}return;}
-  if(state.ulang&&/^paket\|\d+$/.test(state.ulang.k))kirimPaket(state.ulang.k.split("|")[1]);}
+  if(state.ulang&&/^paket\|[\w-]+$/.test(state.ulang.k))kirimPaket(state.ulang.k.split("|")[1]);}
 // Tab lain menyimpan progres: segarkan tab ini agar tidak tertinggal.
 window.addEventListener("storage",e=>{if(e.key!==KEY||!e.newValue)return;let disk={};try{disk=JSON.parse(e.newValue)||{};}catch(x){return;}
   const pk=sessionKey(),lama=store[pk];gabungStore(disk);
@@ -1551,6 +1591,9 @@ function bukaSetelan(){const st=$("setelan");if(!st||st.hidden||st.open)return;
 // Bar Mock Exam: dibuka dan ditutup dengan gerak perlahan yang sama.
 document.querySelector("#tocard>summary").addEventListener("click",e=>{const d=$("tocard");e.preventDefault();if(d.dataset.anim)return;if(d.open){tutupPerlahan(d,[d.querySelector(".toisi")].filter(Boolean));return;}
   const h0=d.offsetHeight;d.open=true;turunPerlahan(d,h0,[d.querySelector(".toisi")].filter(Boolean));});
+// Category Packages: gerak buka/tutup sama dengan Prediction Packages.
+document.querySelector("#kpcard>summary").addEventListener("click",e=>{const d=$("kpcard");e.preventDefault();if(d.dataset.anim)return;if(d.open){tutupPerlahan(d,[d.querySelector(".toisi")].filter(Boolean));return;}
+  const h0=d.offsetHeight;d.open=true;turunPerlahan(d,h0,[d.querySelector(".toisi")].filter(Boolean));});
 // Prediction Packages: gerak buka/tutup sama persis dengan Mock Exam.
 document.querySelector("#pkcard>summary").addEventListener("click",e=>{const d=$("pkcard");e.preventDefault();if(d.dataset.anim)return;if(d.open){tutupPerlahan(d,[d.querySelector(".toisi")].filter(Boolean));return;}
   const h0=d.offsetHeight;d.open=true;turunPerlahan(d,h0,[d.querySelector(".toisi")].filter(Boolean));});
@@ -1800,6 +1843,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
     const pkRender=()=>{const L=susunPaket(),B=(window.__quiz&&window.__quiz.benar&&window.__quiz.benar())||{};
       const BYQ={};QB.forEach(q=>BYQ[q.id]=q);const kom=ids=>{const h={};ids.forEach(id=>{const q=BYQ[id];if(q)h[q.c]=(h[q.c]||0)+1;});return Object.keys(CATS).filter(c=>h[c]).map(c=>({1:'IH',2:'Formil',3:'Materil',4:'TIK'}[c]||CATS[c].short)+' '+h[c]).join(' · ');};
       if(!buka){kunci();return;}
+      kpRender();
       $('pkket').innerHTML=`<span class="pklead">Each package is a full CAT simulation with 25 questions from each cluster: Legal Theory, Formal Law, Material Law, and ICT.</span>${pkStat()}<small class="pkcat">Predictions built from the CAT-Lex Fexora question bank, not leaked exam questions.</small>`;
       $('pklist').innerHTML=L.map((ids,i)=>{const ok=ids.filter(id=>B[id]).length,ss=window.__quiz&&window.__quiz.sesi&&window.__quiz.sesi('paket|'+(i+1)),
           dj=ss&&ss.ans?Object.keys(ss.ans).length:0,lanjut=ss&&(ss.pos>0||dj>0)&&ss.pos<ids.length,
@@ -1808,7 +1852,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       $('pklist').querySelectorAll('[data-pk]').forEach(b=>b.onclick=()=>{const n=+b.dataset.pk,ids=susunPaket()[n-1];if(!window.__ulang||!ids||!ids.length)return;
         window.__ulang(2,'all',ids,'Package '+n,'paket|'+n,true);});};
     const KK='pk-kode',sb=window.__sb;let buka=isOwner;
-    const kunci=(pesan)=>{const L=susunPaket();$('pkket').innerHTML='<span class="pklead">Built to mirror the CAT exam for Religious Court judge candidates. Somewhere inside are the questions that will decide your result. How many can you clear?</span>'+pkStat();
+    const kunci=(pesan)=>{kpRender();const L=susunPaket();$('pkket').innerHTML='<span class="pklead">Built to mirror the CAT exam for Religious Court judge candidates. Somewhere inside are the questions that will decide your result. How many can you clear?</span>'+pkStat();
       $('pklist').innerHTML=`<div class="pkkunci"><b>🔒 Restricted Access</b><span>Available to buyers only. One payment unlocks every package for life.</span><small id="pkpesan">${pesan||''}</small><button class="btn copy pkbeli" type="button" id="pkbeli">Buy access</button></div>`+[1,2,3,4,5,6].map(n=>`<div class="tr pk pkghost" aria-hidden="true"><span class="trj"><b>Package ${n}</b></span><span class="pkpct">🔒</span><span class="pkgbtn">Sealed</span></div>`).join('')+`<p class="pkmore">+ ${L.length-6} more sealed packages</p>`;
       $('pkbeli').onclick=()=>beliAkses($('pkbeli'));
       sb.from('cat_beli').select('order_id').eq('status','menunggu').eq('metode','transfer').not('dikirim_pada','is',null).limit(1).then(({data})=>{if(data&&data.length&&$('pkpesan')&&!$('pkpesan').textContent){$('pkpesan').textContent='Transfer submitted. Waiting for the owner to confirm it.';if(window.__tfTunggu)window.__tfTunggu();}},()=>{});
@@ -1845,6 +1889,39 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       $('pkbsalin').onclick=()=>{const b=$('pkbsalin'),ok=()=>{b.textContent='✓ Copied';setTimeout(()=>b.textContent='⧉ Copy public link',1500);};
         if(navigator.clipboard)navigator.clipboard.writeText(PUBLIK).then(ok).catch(()=>prompt('Copy this link:',PUBLIK));else prompt('Copy this link:',PUBLIK);};
     };
+    // Category Packages: satu paket untuk setiap sub-materi, judulnya nama sub-materi itu, dikelompokkan per kategori.
+    // Isi paket = semua soal sub-materi itu (termasuk soal yang juga dipetakan ke sub ini), tanpa soal kembar. Sub > 100 soal dibagi rata menjadi beberapa Part.
+    // Hak akses sama dengan Prediction Packages (pemilik dan pembeli lunas). Progres disimpan dengan kunci paket|k<c>-<s>-<part>, jadi ikut tersimpan di akun dan memakai timer 54 detik.
+    const KP_MAX=100,kpBox=$('kpcard'),kpBuka=new Set();let KPS=null;
+    const susunKat=()=>{if(KPS)return KPS;const r=benih('paket-kategori');KPS=[];
+      Object.keys(CATS).forEach(c=>{c=+c;(SUBS[c]||[]).forEach((nm,i)=>{const s=i+1,seen=new Set(),perJwb={},T={};
+        acakB(QB.filter(q=>(q.mappings||[{c:q.c,s:q.s}]).some(m=>m.c===c&&m.s===s)),r).forEach(q=>{const k=normT(q.q);if(seen.has(k))return;const j=normT(q.o[q.a]),W=kata(q.q),L=perJwb[j]=perJwb[j]||[];
+          if(L.some(X=>mirip(W,X)>=.6))return;seen.add(k);L.push(W);const t=getQuestionTier(q);(T[t]=T[t]||[]).push(q.id);});
+        const ids=Object.keys(T).sort((a,b)=>a-b).flatMap(t=>T[t]);if(!ids.length)return;
+        const P=Math.ceil(ids.length/KP_MAX),parts=Array.from({length:P},()=>[]);ids.forEach((id,k)=>parts[k%P].push(id));
+        parts.forEach((p,k)=>KPS.push({c,s,nm,part:k+1,of:P,ids:acakB(p,r),key:'paket|k'+c+'-'+s+'-'+(k+1)}));});});
+      return KPS;};
+    const kpStat=()=>{const L=susunKat(),u=new Set();L.forEach(p=>p.ids.forEach(id=>u.add(id)));const subs=new Set(L.map(p=>p.c+'-'+p.s)).size,f=v=>v.toLocaleString('en-US');
+      return `<span class="pkstat"><span><b>${f(u.size)}</b><i>Questions</i></span><span><b>${subs}</b><i>Sub-topics</i></span><span><b>${L.length}</b><i>Packages</i></span></span>`;};
+    const kpJudul=p=>`${p.s}. ${escH(p.nm)}`,kpKet=p=>(p.of>1?`Part ${p.part} of ${p.of} · `:'')+p.ids.length+' questions';
+    const kpKat=(c,isi,ket)=>`<details class="kpkat" data-kat="${c}"${kpBuka.has(String(c))?' open':''}><summary><span><b>${escH(CATS[c].short)}</b><small>${ket}</small></span></summary><div class="kprows">${isi}</div></details>`;
+    const kpIkat=()=>$('kplist').querySelectorAll('.kpkat').forEach(d=>d.addEventListener('toggle',()=>{d.open?kpBuka.add(d.dataset.kat):kpBuka.delete(d.dataset.kat);}));
+    const kpRender=()=>{if(!kpBox)return;kpBox.hidden=false;const L=susunKat();
+      if(!buka){$('kpket').innerHTML='<span class="pklead">Study one sub-topic at a time. Every package is named after its sub-topic and holds only that sub-topic\'s questions, grouped by category.</span>'+kpStat();
+        $('kplist').innerHTML=`<div class="pkkunci"><b>🔒 Restricted Access</b><span>Available to buyers only. The same purchase unlocks Prediction Packages and Category Packages.</span><button class="btn copy pkbeli" type="button" id="kpbeli">Buy access</button></div>`+
+          Object.keys(CATS).map(c=>{const P=L.filter(p=>p.c===+c);return kpKat(c,P.slice(0,4).map(p=>`<div class="tr pk pkghost" aria-hidden="true"><span class="trj"><b>${kpJudul(p)}</b><small>${kpKet(p)}</small></span><span class="kpr"><span class="pkgbtn">🔒 Sealed</span></span></div>`).join('')+(P.length>4?`<p class="pkmore">+ ${P.length-4} more sealed packages</p>`:''),P.length+' packages · locked');}).join('');
+        $('kpbeli').onclick=()=>beliAkses($('kpbeli'));kpIkat();return;}
+      const BYQ={};QB.forEach(q=>BYQ[q.id]=q);
+      $('kpket').innerHTML='<span class="pklead">Study one sub-topic at a time. Every package is named after its sub-topic and holds only that sub-topic\'s questions, with the same 54-second timer as Prediction Packages. Sub-topics with more than 100 questions are split into parts.</span>'+kpStat();
+      $('kplist').innerHTML=Object.keys(CATS).map(c=>{const P=L.filter(p=>p.c===+c);let tot=0,jw=0;
+        const rows=P.map((p,i)=>{const ss=window.__quiz&&window.__quiz.sesi&&window.__quiz.sesi(p.key),dj=ss&&ss.ans?Object.keys(ss.ans).length:0,lanjut=ss&&(ss.pos>0||dj>0)&&ss.pos<p.ids.length,
+            bn=dj?Object.keys(ss.ans).filter(id=>BYQ[id]&&ss.ans[id]===BYQ[id].a).length:0,pb=dj?Math.round(bn*100/dj):0;tot+=p.ids.length;jw+=Math.min(dj,p.ids.length);
+          return `<div class="tr pk"><span class="trj"><b>${kpJudul(p)}</b><small>${kpKet(p)}</small></span><span class="kpr"><span class="muted pkpct" title="${dj} of ${p.ids.length} questions answered">${Math.round(dj*100/p.ids.length)}% done</span>${dj?`<span class="pkbs" title="${bn} correct, ${dj-bn} wrong of ${dj} answered"><i class="ok">✓ ${pb}%</i><i class="no">✗ ${100-pb}%</i></span>`:''}<button class="btn copy" type="button" data-kp="${L.indexOf(p)}">${lanjut?'Continue':'Start'}</button></span></div>`;}).join('');
+        return kpKat(c,rows,`${new Set(P.map(p=>p.s)).size} sub-topics · ${P.length} packages · ${tot?Math.round(jw*100/tot):0}% done`);}).join('');
+      kpIkat();
+      $('kplist').querySelectorAll('[data-kp]').forEach(b=>b.onclick=()=>{const p=susunKat()[+b.dataset.kp];if(!window.__ulang||!p||!p.ids.length)return;
+        window.__ulang(p.c,'all',p.ids,p.nm+(p.of>1?' · Part '+p.part:''),p.key,true);});};
+    if(kpBox)kpBox.addEventListener('toggle',()=>{if(!kpBox.open)return;const t=()=>{if(kpBox.dataset.anim)return setTimeout(t,120);kpRender();};setTimeout(t,120);});
     window.__pkBuka=()=>{buka=true;pkRender();};
     tampil();window.__pkSegar=()=>{if(buka)pkRender();};
     box.addEventListener('toggle',()=>{if(!box.open)return;const t=()=>{if(box.dataset.anim)return setTimeout(t,120);if(buka)pkRender();};setTimeout(t,120);});
@@ -2161,7 +2238,7 @@ document.addEventListener('click',e=>{if(!(e.target.closest&&e.target.closest('#
 </script>
 <script>
 // Semua kotak lipat lainnya (panel admin, Buat Mock Exam baru, Question Map, dll.) dibuka/ditutup halus tanpa patah.
-(function(){const ease='cubic-bezier(.33,0,.2,1)',LEWAT='#setelan,#tocard,#pkcard,details.ket';
+(function(){const ease='cubic-bezier(.33,0,.2,1)',LEWAT='#setelan,#tocard,#pkcard,#kpcard,details.ket';
   document.addEventListener('click',e=>{const sm=e.target.closest&&e.target.closest('details>summary');if(!sm)return;const d=sm.parentElement;
     if(d.matches(LEWAT)||!d.animate||matchMedia('(prefers-reduced-motion:reduce)').matches)return;
     e.preventDefault();const h0=d.getBoundingClientRect().height;if(d._an){d._an.cancel();d._an=null;}(d._fa||[]).forEach(a=>a.cancel());d._fa=[];
