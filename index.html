@@ -846,6 +846,9 @@ html:root[data-theme="dark"] body #siapbtn:hover{background:radial-gradient(120%
 .tolist .tr.pk .trj b{margin:0;font-size:13.5px}
 .tolist .tr.pk .trj small{color:var(--muted);font-size:12px;line-height:1.35}
 #pklist .pkpct{font-variant-numeric:tabular-nums;min-width:3.2em;text-align:right}
+#pkket .pklead{color:var(--ink)}#pkket b{color:var(--ink);font-weight:600}#pkket .pkcat{display:block;margin-top:6px;font-size:11.5px;opacity:.8}
+.pkkunci,.pkown{display:flex;flex-direction:column;gap:6px;border:1px solid rgb(255 255 255 / .1);border-radius:12px;padding:12px;margin:2px 0 8px;background:linear-gradient(160deg,rgb(255 255 255 / .04),rgb(255 255 255 / .01))}
+.pkkunci span,.pkkunci small,.pkown small{font-size:12.5px;color:var(--muted)}.pkkunci .linkrow,.pkown .linkrow{margin:2px 0}
 #pkket{margin:0 0 8px;font-size:12.5px;color:var(--muted)}
 </style>
 </head>
@@ -1615,10 +1618,79 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       $('tolist').querySelectorAll('[data-hapus]').forEach(b=>b.onclick=()=>{if(!confirm('Hapus mock exam ini? Tautannya tidak bisa dibuka lagi. Soalnya kembali dihitung belum diujikan.'))return;const id=b.dataset.hapus;
         Promise.resolve(window.__toLepas&&window.__toLepas(id)).catch(()=>{}).then(()=>db.doc('tryout/'+id).delete());});},
       ()=>{$('tolist').innerHTML=isOwner?'<p class="note">Mock exam list unavailable.</p>':'';if(!isOwner)$('toket').textContent='There are no quizzes available right now.';});}
+  // Paket Prediksi: tampil untuk semua pengguna yang disetujui, tetapi daftar paket baru terbuka setelah kode akses benar.
+  // Kode disimpan di tabel Supabase cat_kode (hanya pemilik yang bisa membaca/mengubah); pengguna lain hanya bisa mencocokkan lewat fungsi cat_cek_kode.
+  function paketKartu(){const box=$('pkcard');if(!box)return;box.hidden=false;
+    // Paket Prediksi (khusus pemilik): paket tetap 100 soal = 25 soal dari tiap klaster, setiap paket memuat semua sub-materi klaster itu.
+    // Tidak ada soal yang berulang antar paket; jumlah paket mengikuti klaster dengan soal paling sedikit. Urutan acak berbenih, jadi isi paket selalu sama.
+    // Di tiap sub-materi, soal dasar hukum (tier 1) lalu istilah/prosedur (tier 2) didahulukan, jadi paket awal berisi materi yang paling sering diujikan.
+    const PER_KL=25;
+    const benih=t=>{let h=2166136261;for(const ch of t)h=Math.imul(h^ch.charCodeAt(0),16777619);return ()=>{h+=0x6D2B79F5;let x=h;x=Math.imul(x^x>>>15,x|1);x^=x+Math.imul(x^x>>>7,x|61);return ((x^x>>>14)>>>0)/4294967296;};};
+    const acakB=(a,r)=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+    // Soal kembar dibuang lebih dulu: teks soal sama persis, atau jawaban benar sama dan kata-kata soalnya ≥60% sama (soal serupa dengan id berbeda).
+    const normT=t=>String(t||'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
+    const STOP=new Set('yang dan atau dalam untuk dengan pada dari oleh adalah ini itu tersebut menurut apa apakah berikut kecuali sebagai bahwa tidak dapat harus akan telah suatu secara karena maka'.split(' '));
+    const kata=t=>new Set(normT(t).split(' ').filter(w=>w.length>2&&!STOP.has(w)));
+    const mirip=(A,B)=>{let n=0;A.forEach(w=>{if(B.has(w))n++;});return n/Math.max(1,A.size+B.size-n);};
+    let PKS=null;const susunPaket=()=>{if(PKS)return PKS;const r=benih('paket-prediksi'),seen=new Set(),perJwb={},kl={};
+      const kembar=q=>{const k=normT(q.q);if(seen.has(k))return true;const j=normT(q.o[q.a]),W=kata(q.q),L=perJwb[j]=perJwb[j]||[];
+        if(L.some(X=>mirip(W,X)>=.6))return true;seen.add(k);L.push(W);return false;};
+      Object.keys(CATS).forEach(c=>{const G={};QB.filter(q=>q.c===+c).forEach(q=>{if(kembar(q))return;(G[q.s]=G[q.s]||[]).push(q);});
+        // tiap sub: tier 1 dulu, lalu 2, lalu 3; di dalam tier diacak berbenih
+        Object.keys(G).forEach(s=>{const T={};acakB(G[s],r).forEach(q=>{const t=getQuestionTier(q);(T[t]=T[t]||[]).push(q);});G[s]=[1,2,3].flatMap(t=>T[t]||[]).concat(Object.keys(T).filter(t=>![1,2,3].includes(+t)).flatMap(t=>T[t]));});
+        kl[c]={subs:Object.keys(G).map(Number).sort((a,b)=>a-b),G,n:Object.values(G).reduce((t,g)=>t+g.length,0)};});
+      const P=Math.min(...Object.values(kl).map(k=>Math.floor(k.n/PER_KL)));PKS=Array.from({length:P},()=>[]);
+      // Per klaster dipakai P×25 soal. Jatah tiap sub minimal P (bila soalnya cukup) agar muncul di setiap paket, sisanya sebanding jumlah soal sub.
+      // Soal tiap sub disebar merata sepanjang urutan P×25 posisi, lalu dipotong per 25: setiap sub dengan ≥P soal pasti ada di setiap paket.
+      Object.keys(kl).forEach(c=>{const K=kl[c],T=P*PER_KL,n={};K.subs.forEach(s=>n[s]=Math.min(K.G[s].length,P));
+        let sisa=T-Object.values(n).reduce((a,b)=>a+b,0);
+        while(sisa>0){const lebih=K.subs.filter(s=>K.G[s].length>n[s]);if(!lebih.length)break;const tot=lebih.reduce((t,s)=>t+K.G[s].length-n[s],0);
+          const tam=lebih.map(s=>({s,v:sisa*(K.G[s].length-n[s])/tot}));let pakai=0;tam.forEach(x=>{const f=Math.min(Math.floor(x.v),K.G[x.s].length-n[x.s]);n[x.s]+=f;pakai+=f;x.r=x.v-Math.floor(x.v);});
+          sisa-=pakai;tam.sort((a,b)=>b.r-a.r);for(const x of tam){if(sisa<=0)break;if(K.G[x.s].length>n[x.s]){n[x.s]++;sisa--;}}}
+        const pos=[];K.subs.forEach(s=>{for(let k=0;k<n[s];k++)pos.push({t:(k+.5)/n[s]*T+s*1e-6,id:K.G[s][k].id});});
+        pos.sort((a,b)=>a.t-b.t);pos.forEach((x,i)=>{const p=Math.floor(i/PER_KL);if(p<P)PKS[p].push(x.id);});
+        // Sisa soal klaster ini (belum masuk paket seimbang), juga disebar merata antar sub, untuk paket lanjutan.
+        const sis=[];K.subs.forEach(s=>{const g=K.G[s].slice(n[s]);g.forEach((q,k)=>sis.push({t:(k+.5)/g.length+s*1e-6,id:q.id}));});
+        K.sisa=sis.sort((a,b)=>a.t-b.t).map(x=>x.id);});
+      // Paket lanjutan: semua sisa soal dicampur sebanding jumlah sisa tiap klaster, dipotong per 100 soal.
+      const S=Object.values(kl).reduce((t,K)=>t+K.sisa.length,0),camp=[];
+      Object.values(kl).forEach(K=>K.sisa.forEach((id,k)=>camp.push({t:(k+.5)/K.sisa.length,id})));
+      camp.sort((a,b)=>a.t-b.t);for(let i=0;i<S;i+=100)PKS.push(camp.slice(i,i+100).map(x=>x.id));
+      PKS.seimbang=P;const sb=PKS.seimbang;PKS=PKS.map(ids=>acakB(ids,r));PKS.seimbang=sb;
+      return PKS;};
+    const pkRender=()=>{const L=susunPaket(),B=(window.__quiz&&window.__quiz.benar&&window.__quiz.benar())||{};
+      const BYQ={};QB.forEach(q=>BYQ[q.id]=q);const kom=ids=>{const h={};ids.forEach(id=>{const q=BYQ[id];if(q)h[q.c]=(h[q.c]||0)+1;});return Object.keys(CATS).filter(c=>h[c]).map(c=>({1:'IH',2:'Formil',3:'Materil',4:'TIK'}[c]||CATS[c].short)+' '+h[c]).join(' · ');};
+      if(!buka){kunci();return;}
+      $('pkket').innerHTML=`<span class="pklead">Paket latihan terkurasi yang disusun dari seluruh bank soal CAT Lex Fexora untuk meniru pola ujian calon hakim Peradilan Agama.</span> <b>${L.seimbang} paket inti</b> menghadirkan komposisi seimbang, 25 soal untuk setiap klaster: Ilmu Hukum, Hukum Formil, Hukum Materil, dan TIK. Seluruh sub-materi terwakili dan soal dasar hukum mendapat prioritas. <b>Paket ${L.seimbang+1}–${L.length}</b> menuntaskan sisa bank soal, sehingga tidak ada materi yang terlewat dan tidak ada satu soal pun yang berulang. Kerjakan berurutan, ukur kesiapan Anda, dan masuki ruang ujian dengan keyakinan.<small class="pkcat">Paket ini merupakan prediksi berbasis bank soal, bukan bocoran soal ujian.</small>`;
+      $('pklist').innerHTML=L.map((ids,i)=>{const ok=ids.filter(id=>B[id]).length,ss=window.__quiz&&window.__quiz.sesi&&window.__quiz.sesi('paket|'+(i+1)),
+          dj=ss&&ss.ans?Object.keys(ss.ans).length:0,lanjut=ss&&(ss.pos>0||dj>0)&&ss.pos<ids.length;
+        return `<div class="tr pk"><span class="trj"><b>Paket ${i+1}</b></span><span class="muted trm pkpct" title="${dj} dari ${ids.length} soal sudah dijawab">${Math.round(dj*100/ids.length)}%</span><button class="btn copy" type="button" data-pk="${i+1}">${lanjut?'Lanjut':'Mulai'}</button></div>`;}).join('');
+      $('pklist').querySelectorAll('[data-pk]').forEach(b=>b.onclick=()=>{const n=+b.dataset.pk,ids=susunPaket()[n-1];if(!window.__ulang||!ids||!ids.length)return;
+        window.__ulang(2,'all',ids,'Paket '+n,'paket|'+n);});};
+    const KK='pk-kode',sb=window.__sb;let buka=isOwner;
+    const kunci=(pesan)=>{$('pkket').innerHTML='<span class="pklead">Paket latihan terkurasi yang disusun dari seluruh bank soal CAT Lex Fexora untuk meniru pola ujian calon hakim Peradilan Agama: komposisi seimbang di keempat klaster, seluruh sub-materi terwakili, tanpa satu soal pun yang berulang.</span>';
+      $('pklist').innerHTML=`<div class="pkkunci"><b>🔒 Akses terbatas</b><span>Masukkan kode akses dari pengembang untuk membuka paket.</span><div class="linkrow"><input id="pkinput" type="password" autocomplete="off" placeholder="Kode akses" aria-label="Kode akses"><button class="btn copy" type="button" id="pkbuka">Buka Akses</button></div><small id="pkpesan">${pesan||''}</small></div>`;
+      const coba=async()=>{const k=$('pkinput').value.trim();if(!k)return;$('pkbuka').disabled=true;$('pkpesan').textContent='Memeriksa…';
+        const ok=await cek(k);$('pkbuka').disabled=false;if(ok){try{localStorage.setItem(KK,k);}catch(e){}buka=true;pkRender();}else $('pkpesan').textContent='Kode akses tidak sesuai.';};
+      $('pkbuka').onclick=coba;$('pkinput').onkeydown=e=>{if(e.key==='Enter')coba();};};
+    const cek=async k=>{try{const {data,error}=await sb.rpc('cat_cek_kode',{p_id:'paket',p_kode:k});return !error&&data===true;}catch(e){return false;}};
+    const tampil=async()=>{if(buka){pkRender();if(isOwner)kodeOwner();return;}let k='';try{k=localStorage.getItem(KK)||'';}catch(e){}
+      if(k&&await cek(k)){buka=true;pkRender();return;}if(k){try{localStorage.removeItem(KK);}catch(e){}}kunci(k?'Kode akses sudah diganti. Masukkan kode yang baru.':'');};
+    // Pemilik: ubah kode akses langsung dari kartu ini.
+    const kodeOwner=async()=>{if($('pkown'))return;const d=document.createElement('div');d.id='pkown';d.className='pkown';
+      d.innerHTML='<b>Kode akses pengguna lain</b><div class="linkrow"><input id="pkkode" autocomplete="off" placeholder="Belum diatur" aria-label="Kode akses"><button class="btn copy" type="button" id="pksimpan">Simpan kode</button></div><small id="pkkinfo">Pengguna lain wajib memasukkan kode ini untuk membuka paket. Saat kode diganti, akses lama otomatis tertutup.</small>';
+      $('pklist').before(d);
+      try{const {data,error}=await sb.from('cat_kode').select('kode').eq('id','paket').maybeSingle();if(error)throw error;$('pkkode').value=(data&&data.kode)||'';}
+      catch(e){$('pkkinfo').textContent='Tabel kode belum ada. Jalankan supabase-update-3.sql di Supabase dulu.';}
+      $('pksimpan').onclick=async()=>{const v=$('pkkode').value.trim();if(v.length<6){alert('Kode minimal 6 karakter agar tidak mudah ditebak.');return;}
+        $('pksimpan').disabled=true;const {error}=await sb.from('cat_kode').upsert({id:'paket',kode:v,diubah:new Date().toISOString()});$('pksimpan').disabled=false;
+        $('pkkinfo').textContent=error?'Gagal menyimpan: '+(error.message||error.code):'Kode tersimpan. Pengguna lain kini harus memakai kode ini.';};};
+    box.addEventListener('toggle',()=>{if(box.open)tampil();});
+  }
   async function start(){
     if(started)return;started=true;
     show('Loading question bank…','The first load may take a few seconds.');
-    try{const arr=await loadBank();QB.push(...arr);await progres();startQuiz();open();tryoutKartu();}
+    try{const arr=await loadBank();QB.push(...arr);await progres();startQuiz();open();tryoutKartu();paketKartu();}
     catch(e){started=false;if(isOwner){open();$('adm').open=true;$('adm').scrollIntoView();return;}show(e.message==='kosong'?'Question bank not uploaded yet':'Could not load the question bank',e.message==='kosong'?'The owner needs to upload the question bank from the approval panel.':'Check your connection, then reload the page. ('+(e.code||e.message)+')',null,false,true);}
   }
   function posisi(){try{const s=window.__quiz&&window.__quiz.state;if(!s)return '';const c=s.cat;
@@ -1659,52 +1731,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
     $('pindahinfo').textContent=`Soal yang Anda ubah lewat pojok kanan atas setiap soal: ${n} dipindahkan (⇄ Pindahkan), ${ne} diedit (✎ Edit). Tombolnya hanya terlihat oleh Anda, sedangkan perubahannya berlaku untuk semua pengguna dan tetap berlaku setelah bank diunggah ulang.`;}).catch(()=>{});}
   function admin(){
     pinfo();
-    // Paket Prediksi (khusus pemilik): paket tetap 100 soal = 25 soal dari tiap klaster, setiap paket memuat semua sub-materi klaster itu.
-    // Tidak ada soal yang berulang antar paket; jumlah paket mengikuti klaster dengan soal paling sedikit. Urutan acak berbenih, jadi isi paket selalu sama.
-    // Di tiap sub-materi, soal dasar hukum (tier 1) lalu istilah/prosedur (tier 2) didahulukan, jadi paket awal berisi materi yang paling sering diujikan.
-    const PER_KL=25;
-    const benih=t=>{let h=2166136261;for(const ch of t)h=Math.imul(h^ch.charCodeAt(0),16777619);return ()=>{h+=0x6D2B79F5;let x=h;x=Math.imul(x^x>>>15,x|1);x^=x+Math.imul(x^x>>>7,x|61);return ((x^x>>>14)>>>0)/4294967296;};};
-    const acakB=(a,r)=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
-    // Soal kembar dibuang lebih dulu: teks soal sama persis, atau jawaban benar sama dan kata-kata soalnya ≥60% sama (soal serupa dengan id berbeda).
-    const normT=t=>String(t||'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
-    const STOP=new Set('yang dan atau dalam untuk dengan pada dari oleh adalah ini itu tersebut menurut apa apakah berikut kecuali sebagai bahwa tidak dapat harus akan telah suatu secara karena maka'.split(' '));
-    const kata=t=>new Set(normT(t).split(' ').filter(w=>w.length>2&&!STOP.has(w)));
-    const mirip=(A,B)=>{let n=0;A.forEach(w=>{if(B.has(w))n++;});return n/Math.max(1,A.size+B.size-n);};
-    let PKS=null;const susunPaket=()=>{if(PKS)return PKS;const r=benih('paket-prediksi'),seen=new Set(),perJwb={},kl={};
-      const kembar=q=>{const k=normT(q.q);if(seen.has(k))return true;const j=normT(q.o[q.a]),W=kata(q.q),L=perJwb[j]=perJwb[j]||[];
-        if(L.some(X=>mirip(W,X)>=.6))return true;seen.add(k);L.push(W);return false;};
-      Object.keys(CATS).forEach(c=>{const G={};QB.filter(q=>q.c===+c).forEach(q=>{if(kembar(q))return;(G[q.s]=G[q.s]||[]).push(q);});
-        // tiap sub: tier 1 dulu, lalu 2, lalu 3; di dalam tier diacak berbenih
-        Object.keys(G).forEach(s=>{const T={};acakB(G[s],r).forEach(q=>{const t=getQuestionTier(q);(T[t]=T[t]||[]).push(q);});G[s]=[1,2,3].flatMap(t=>T[t]||[]).concat(Object.keys(T).filter(t=>![1,2,3].includes(+t)).flatMap(t=>T[t]));});
-        kl[c]={subs:Object.keys(G).map(Number).sort((a,b)=>a-b),G,n:Object.values(G).reduce((t,g)=>t+g.length,0)};});
-      const P=Math.min(...Object.values(kl).map(k=>Math.floor(k.n/PER_KL)));PKS=Array.from({length:P},()=>[]);
-      // Per klaster dipakai P×25 soal. Jatah tiap sub minimal P (bila soalnya cukup) agar muncul di setiap paket, sisanya sebanding jumlah soal sub.
-      // Soal tiap sub disebar merata sepanjang urutan P×25 posisi, lalu dipotong per 25: setiap sub dengan ≥P soal pasti ada di setiap paket.
-      Object.keys(kl).forEach(c=>{const K=kl[c],T=P*PER_KL,n={};K.subs.forEach(s=>n[s]=Math.min(K.G[s].length,P));
-        let sisa=T-Object.values(n).reduce((a,b)=>a+b,0);
-        while(sisa>0){const lebih=K.subs.filter(s=>K.G[s].length>n[s]);if(!lebih.length)break;const tot=lebih.reduce((t,s)=>t+K.G[s].length-n[s],0);
-          const tam=lebih.map(s=>({s,v:sisa*(K.G[s].length-n[s])/tot}));let pakai=0;tam.forEach(x=>{const f=Math.min(Math.floor(x.v),K.G[x.s].length-n[x.s]);n[x.s]+=f;pakai+=f;x.r=x.v-Math.floor(x.v);});
-          sisa-=pakai;tam.sort((a,b)=>b.r-a.r);for(const x of tam){if(sisa<=0)break;if(K.G[x.s].length>n[x.s]){n[x.s]++;sisa--;}}}
-        const pos=[];K.subs.forEach(s=>{for(let k=0;k<n[s];k++)pos.push({t:(k+.5)/n[s]*T+s*1e-6,id:K.G[s][k].id});});
-        pos.sort((a,b)=>a.t-b.t);pos.forEach((x,i)=>{const p=Math.floor(i/PER_KL);if(p<P)PKS[p].push(x.id);});
-        // Sisa soal klaster ini (belum masuk paket seimbang), juga disebar merata antar sub, untuk paket lanjutan.
-        const sis=[];K.subs.forEach(s=>{const g=K.G[s].slice(n[s]);g.forEach((q,k)=>sis.push({t:(k+.5)/g.length+s*1e-6,id:q.id}));});
-        K.sisa=sis.sort((a,b)=>a.t-b.t).map(x=>x.id);});
-      // Paket lanjutan: semua sisa soal dicampur sebanding jumlah sisa tiap klaster, dipotong per 100 soal.
-      const S=Object.values(kl).reduce((t,K)=>t+K.sisa.length,0),camp=[];
-      Object.values(kl).forEach(K=>K.sisa.forEach((id,k)=>camp.push({t:(k+.5)/K.sisa.length,id})));
-      camp.sort((a,b)=>a.t-b.t);for(let i=0;i<S;i+=100)PKS.push(camp.slice(i,i+100).map(x=>x.id));
-      PKS.seimbang=P;const sb=PKS.seimbang;PKS=PKS.map(ids=>acakB(ids,r));PKS.seimbang=sb;
-      return PKS;};
-    const pkRender=()=>{const L=susunPaket(),B=(window.__quiz&&window.__quiz.benar&&window.__quiz.benar())||{};
-      const BYQ={};QB.forEach(q=>BYQ[q.id]=q);const kom=ids=>{const h={};ids.forEach(id=>{const q=BYQ[id];if(q)h[q.c]=(h[q.c]||0)+1;});return Object.keys(CATS).filter(c=>h[c]).map(c=>({1:'IH',2:'Formil',3:'Materil',4:'TIK'}[c]||CATS[c].short)+' '+h[c]).join(' · ');};
-      $('pkket').textContent=`Paket 1–${L.seimbang}: 100 soal seimbang, 25 per klaster. Paket ${L.seimbang+1}–${L.length}: lanjutan dari sisa soal yang belum masuk, dicampur sebanding sisa tiap klaster (soal TIK sudah habis di paket seimbang). Total ${L.reduce((t,x)=>t+x.length,0)} soal, tidak ada soal yang sama atau serupa antar paket. Paket seimbang mencakup semua sub-materi tiap klaster, kecuali beberapa sub yang soalnya kurang dari ${L.seimbang}. Soal dasar hukum dan istilah didahulukan, jadi paket awal memuat materi yang paling sering diujikan. Ini prediksi, bukan bocoran soal.`;
-      $('pklist').innerHTML=L.map((ids,i)=>{const ok=ids.filter(id=>B[id]).length,ss=window.__quiz&&window.__quiz.sesi&&window.__quiz.sesi('paket|'+(i+1)),
-          dj=ss&&ss.ans?Object.keys(ss.ans).length:0,lanjut=ss&&(ss.pos>0||dj>0)&&ss.pos<ids.length;
-        return `<div class="tr pk"><span class="trj"><b>Paket ${i+1}</b>${i<L.seimbang?'':`<small>${ids.length} soal lanjutan · ${kom(ids)}</small>`}</span><span class="muted trm pkpct" title="${dj} dari ${ids.length} soal sudah dijawab">${Math.round(dj*100/ids.length)}%</span><button class="btn copy" type="button" data-pk="${i+1}">${lanjut?'Lanjut':'Mulai'}</button></div>`;}).join('');
-      $('pklist').querySelectorAll('[data-pk]').forEach(b=>b.onclick=()=>{const n=+b.dataset.pk,ids=susunPaket()[n-1];if(!window.__ulang||!ids||!ids.length)return;
-        window.__ulang(2,'all',ids,'Paket '+n,'paket|'+n);});};
-    $('pkcard').hidden=false;$('pkcard').addEventListener('toggle',()=>{if($('pkcard').open)pkRender();});
+
     // Mock Exam bersama: pemilik memilih sub-materi dan jumlah soal; peserta ikut lewat tryout.html?t=<id>.
     const toPool=()=>{const sel=new Set([...document.querySelectorAll('#tosub input[data-cs]:checked')].map(i=>i.dataset.cs));
       return QB.filter(q=>q.mappings.some(m=>sel.has(m.c+'|'+m.s)));};
