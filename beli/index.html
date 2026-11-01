@@ -38,7 +38,7 @@ h1{font-family:var(--f-d);font-weight:650;font-size:30px;line-height:1.15;margin
 .kat li{display:flex;justify-content:space-between;gap:10px;padding:10px 14px;border-top:1px solid var(--line);font-size:14.5px}
 .kat li:first-child{border-top:0}.kat li span{color:var(--muted)}.kat li b{font-weight:600;font-variant-numeric:tabular-nums}
 .kat li.tot span,.kat li.tot b{color:var(--brass);font-weight:700}
-.selamanya{display:flex;gap:10px;align-items:flex-start;border:1px solid rgb(212 166 74 / .45);background:rgb(212 166 74 / .09);border-radius:12px;padding:12px 14px;margin:0 0 16px;font-size:14px;color:var(--muted)}
+.selamanya{display:flex;gap:10px;align-items:flex-start;border:1px solid rgb(212 166 74 / .45);background:rgb(212 166 74 / .09);border-radius:12px;padding:12px 14px;margin:0 0 10px;font-size:14px;color:var(--muted)}.selamanya+.harga,.selamanya:last-of-type{margin-bottom:16px}
 .selamanya b{color:var(--brass)}
 .harga{font-family:var(--f-d);font-size:28px;color:var(--brass);margin:4px 0 14px}
 .harga:empty{display:none}
@@ -61,6 +61,7 @@ ol{margin:0;padding-left:20px;color:var(--muted)}ol li{margin:6px 0}ol b{color:v
     <p class="lead">Simulasi CAT lengkap. Soal disusun dari empat kategori, yaitu Ilmu Hukum, Hukum Formil, Hukum Materil, dan TIK, dan setiap soal dilengkapi pembahasan serta dasar hukum.</p>
     <div class="stat"><div><b id="stsoal">4.514</b><i>Soal</i></div><div><b id="stpaket">46</b><i>Paket</i></div><div><b>0</b><i>Duplikat</i></div></div>
     <ul class="kat" id="kat" hidden></ul>
+    <div class="selamanya"><span aria-hidden="true">📜</span><span><b>Mengikuti aturan terbaru.</b> Pembahasan dan dasar hukum diperbarui sesuai regulasi terkini, antara lain Buku II Peradilan Agama 2026 (SK KMA Nomor 159/KMA/SK.HK2/VIII/2026), SEMA Rumusan Pleno Kamar hingga 2025, PERMA terbaru, KHI, KHES, dan KEPPH.</span></div>
     <div class="selamanya"><span aria-hidden="true">♾️</span><span><b>Sekali bayar, akses selamanya.</b> Tidak ada langganan dan tidak ada batas waktu. Semua paket bisa dikerjakan berulang kali, kapan saja, dengan akun Google Anda.</span></div>
     <div class="harga" id="harga"></div>
     <a class="btn" id="bayar" href="https://lexfexora.github.io/?beli=1" aria-disabled="true">Bayar sekarang</a>
