@@ -1,14 +1,14 @@
 -- CAT Lex Fexora: pembaruan 9 (harga Rp1.500.000 untuk akses 1 tahun). Aman dijalankan ulang.
 -- Aturan akses Paket Prediksi:
 --   * Pembelian baru: aktif 1 tahun sejak transfer dikonfirmasi, lalu bisa diperpanjang dengan membeli lagi.
---   * Pembelian lama (pesanan dibuat sebelum perubahan ini): tetap selamanya, sesuai janji saat mereka membeli.
+--   * Pembelian lama (pesanan dibuat sebelum 1 Nov 2026 20.00 WIB): tetap selamanya, sesuai janji saat mereka membeli.
 --   * Akses gratis dari pemilik: tidak kedaluwarsa, bisa dicabut kapan saja lewat tombol "Cabut paket".
 
 create or replace function public.cat_beli_aktif(p_uid uuid) returns boolean
 language sql stable security definer set search_path = public as $$
   select exists (select 1 from public.cat_beli b where b.uid = p_uid and b.status = 'lunas' and (
     b.metode = 'gratis'
-    or b.dibuat < timestamptz '2026-11-01 13:10:00+00'
+    or b.dibuat < timestamptz '2026-11-01 13:00:00+00'
     or coalesce(b.lunas_pada, b.dibuat) > now() - interval '1 year'))
 $$;
 revoke all on function public.cat_beli_aktif(uuid) from public, anon, authenticated;
@@ -23,7 +23,7 @@ grant execute on function public.cat_sudah_beli() to authenticated;
 -- Tanggal akses berakhir untuk akun yang sedang login (null = selamanya atau belum membeli).
 create or replace function public.cat_akses_sampai() returns timestamptz
 language sql stable security definer set search_path = public as $$
-  select case when bool_or(b.metode = 'gratis' or b.dibuat < timestamptz '2026-11-01 13:10:00+00') then null
+  select case when bool_or(b.metode = 'gratis' or b.dibuat < timestamptz '2026-11-01 13:00:00+00') then null
               else max(coalesce(b.lunas_pada, b.dibuat)) + interval '1 year' end
   from public.cat_beli b where b.uid = auth.uid() and b.status = 'lunas'
 $$;
