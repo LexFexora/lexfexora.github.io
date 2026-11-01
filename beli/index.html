@@ -57,13 +57,13 @@ a.plain{color:var(--brass)}
     <div class="stat"><div><b>4</b><i>Clusters</i></div><div><b>100</b><i>Per package</i></div><div><b>0</b><i>Repeats</i></div></div>
     <div class="harga" id="harga"></div>
     <a class="btn" id="bayar" href="https://lexfexora.github.io/?beli=1" aria-disabled="true">Pay now</a>
-    <p class="pay">Virtual Account (BCA, BNI, BRI, Mandiri, and others) or QRIS, processed securely by Xendit. Access opens automatically once your payment is confirmed.</p>
+    <p class="pay" id="paytx">Virtual Account (BCA, BNI, BRI, Mandiri, and others) or QRIS, processed securely by Xendit. Access opens automatically once your payment is confirmed.</p>
     <p id="msg">Loading payment details…</p>
   </section>
 
   <section class="card">
     <h2>How it works</h2>
-    <ol>
+    <ol id="langkah">
       <li><b>Tap Pay now</b> and sign in with your Google account.</li>
       <li><b>Pay the bill</b> with the Virtual Account number or QRIS shown.</li>
       <li><b>Done.</b> Your account is approved and the Prediction Packages unlock automatically. No code needed.</li>
@@ -79,11 +79,13 @@ a.plain{color:var(--brass)}
   var C=window.SUPABASE_CONFIG||{},msg=document.getElementById('msg'),bayar=document.getElementById('bayar');
   function gagal(t){msg.textContent=t;}
   if(!C.url||!C.key){gagal('Sales are not open yet. Please check back later.');return;}
-  fetch(C.url+'/rest/v1/cat_bayar?id=eq.paket&select=nominal,harga,wa',{headers:{apikey:C.key}})
+  fetch(C.url+'/rest/v1/cat_bayar?id=eq.paket&select=nominal,harga,wa,rekening',{headers:{apikey:C.key}})
     .then(function(r){if(!r.ok)throw new Error(r.status);return r.json();})
     .then(function(rows){
       var d=rows&&rows[0]||{};
       var n=Number(d.nominal)||0;
+      if(d.rekening){document.getElementById('paytx').textContent='Bank transfer straight to the owner\'s account. Your packages unlock as soon as the owner confirms your transfer.';
+        document.getElementById('langkah').innerHTML='<li><b>Tap Pay now</b> and sign in with your Google account.</li><li><b>Transfer the exact amount</b> shown (it ends with 3 unique digits) to the account shown.</li><li><b>Tap \u201cI have transferred\u201d</b> and enter the sender name.</li><li><b>Done.</b> Once the owner confirms your transfer, your account is approved and the Prediction Packages unlock automatically.</li>';}
       if(n>=10000){document.getElementById('harga').textContent='Rp'+n.toLocaleString('id-ID');bayar.removeAttribute('aria-disabled');msg.textContent='';}
       else gagal('Sales are not open yet. Please check back later.');
       var wa=String(d.wa||'').replace(/[^0-9]/g,'').replace(/^0/,'62');
