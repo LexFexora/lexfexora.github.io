@@ -56,41 +56,40 @@ a.plain{color:var(--brass)}
     <p class="lead">Full CAT simulations for Religious Court judge candidates. Each package has 25 questions from each cluster: Legal Theory, Formal Law, Material Law, and ICT, with explanations and legal bases.</p>
     <div class="stat"><div><b>4</b><i>Clusters</i></div><div><b>100</b><i>Per package</i></div><div><b>0</b><i>Repeats</i></div></div>
     <div class="harga" id="harga"></div>
-    <a class="btn" id="bayar" href="#" target="_blank" rel="noopener" aria-disabled="true">Pay now</a>
-    <p class="pay">Virtual Account (BCA, BNI, BRI, Mandiri, and others) or QRIS, handled by a licensed payment provider.</p>
+    <a class="btn" id="bayar" href="https://lexfexora.github.io/?beli=1" aria-disabled="true">Pay now</a>
+    <p class="pay">Virtual Account (BCA, BNI, BRI, Mandiri, and others) or QRIS, processed securely by Xendit. Access opens automatically once your payment is confirmed.</p>
     <p id="msg">Loading payment details…</p>
   </section>
 
   <section class="card">
-    <h2>After you pay</h2>
+    <h2>How it works</h2>
     <ol>
-      <li><b>Keep your payment receipt.</b></li>
-      <li id="langkahwa"><b>Send the receipt</b> to the owner on WhatsApp.</li>
-      <li><b>Receive your access code.</b></li>
-      <li>Open <a class="plain" href="https://lexfexora.github.io/">lexfexora.github.io</a>, sign in with Google, then enter the code under <b>Prediction Packages</b>.</li>
+      <li><b>Tap Pay now</b> and sign in with your Google account.</li>
+      <li><b>Pay the bill</b> with the Virtual Account number or QRIS shown.</li>
+      <li><b>Done.</b> Your account is approved and the Prediction Packages unlock automatically. No code needed.</li>
     </ol>
-    <a class="btn sec" id="wa" href="#" target="_blank" rel="noopener" hidden>Send receipt via WhatsApp</a>
+    <a class="btn sec" id="wa" href="#" target="_blank" rel="noopener" hidden>Need help? Chat on WhatsApp</a>
   </section>
 
-  <p class="note">The packages are predictions built from the CAT-Lex Fexora question bank. They are not leaked exam questions, and no exam result is guaranteed. The access code is for your personal use only.</p>
+  <p class="note">The packages are predictions built from the CAT-Lex Fexora question bank. They are not leaked exam questions, and no exam result is guaranteed. Access is tied to the Google account you pay with and is for personal use only.</p>
 </main>
 <script src="../sb/supabase-config.js"></script>
 <script>
 (function(){
   var C=window.SUPABASE_CONFIG||{},msg=document.getElementById('msg'),bayar=document.getElementById('bayar');
   function gagal(t){msg.textContent=t;}
-  if(!C.url||!C.key){gagal('Payment is not available yet. Please try again later.');return;}
-  fetch(C.url+'/rest/v1/cat_bayar?id=eq.paket&select=url,harga,wa',{headers:{apikey:C.key,Authorization:'Bearer '+C.key}})
+  if(!C.url||!C.key){gagal('Sales are not open yet. Please check back later.');return;}
+  fetch(C.url+'/rest/v1/cat_bayar?id=eq.paket&select=nominal,harga,wa',{headers:{apikey:C.key}})
     .then(function(r){if(!r.ok)throw new Error(r.status);return r.json();})
     .then(function(rows){
       var d=rows&&rows[0]||{};
-      if(d.harga)document.getElementById('harga').textContent=d.harga;
-      if(/^https:\/\//.test(d.url||'')){bayar.href=d.url;bayar.removeAttribute('aria-disabled');msg.textContent='';}
-      else gagal('Payment is not available yet. Please try again later.');
+      var n=Number(d.nominal)||0;
+      if(n>=10000){document.getElementById('harga').textContent='Rp'+n.toLocaleString('id-ID');bayar.removeAttribute('aria-disabled');msg.textContent='';}
+      else gagal('Sales are not open yet. Please check back later.');
       var wa=String(d.wa||'').replace(/[^0-9]/g,'').replace(/^0/,'62');
-      if(wa.length>=9){var w=document.getElementById('wa');w.href='https://wa.me/'+wa+'?text='+encodeURIComponent('Hello, I have paid for the CAT - Lex Fexora Prediction Packages. Here is my receipt. My Google email: ');w.hidden=false;}
+      if(wa.length>=9){var w=document.getElementById('wa');w.href='https://wa.me/'+wa+'?text='+encodeURIComponent('Hello, I have a question about the CAT - Lex Fexora Prediction Packages.');w.hidden=false;}
     })
-    .catch(function(){gagal('Payment is not available yet. Please try again later.');});
+    .catch(function(){gagal('Sales are not open yet. Please check back later.');});
 })();
 </script>
 </body>
