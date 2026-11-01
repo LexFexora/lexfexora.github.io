@@ -1469,6 +1469,9 @@ function bukaSetelan(){const st=$("setelan");if(!st||st.hidden||st.open)return;
 // Bar Mock Exam: dibuka dan ditutup dengan gerak perlahan yang sama.
 document.querySelector("#tocard>summary").addEventListener("click",e=>{const d=$("tocard");e.preventDefault();if(d.dataset.anim)return;if(d.open){tutupPerlahan(d,[d.querySelector(".toisi")].filter(Boolean));return;}
   const h0=d.offsetHeight;d.open=true;turunPerlahan(d,h0,[d.querySelector(".toisi")].filter(Boolean));});
+// Prediction Packages: gerak buka/tutup sama persis dengan Mock Exam.
+document.querySelector("#pkcard>summary").addEventListener("click",e=>{const d=$("pkcard");e.preventDefault();if(d.dataset.anim)return;if(d.open){tutupPerlahan(d,[d.querySelector(".toisi")].filter(Boolean));return;}
+  const h0=d.offsetHeight;d.open=true;turunPerlahan(d,h0,[d.querySelector(".toisi")].filter(Boolean));});
 function renderRingkas(){const st=$("setelan");if(st){if(!st.dataset.anim)st.hidden=state.cat==="all"||!!state.setHilang;st.classList.toggle("perlu",!siapOK());document.querySelector(".wrap").classList.toggle("blmsiap",!siapOK()&&!(window.__gulTutup&&state.cat!=="all"));document.querySelector(".wrap").classList.toggle("blmmulai",state.cat!=="all"&&siapOK()&&!state.mulai&&state.pos<state.list.length);const sr=$("siaprow");if(sr)sr.hidden=siapOK();}const r=$("ringkas");if(!r)return;const s=state.cat==="all"||state.sub==="all"?"All Sections":state.sub+". "+SUBS[state.cat][state.sub-1]+(state.ulang?" · "+state.ulang.label:state.bag==="bonus"?" · Bonus":state.bag!=="all"?" · Part "+state.bag:"");
   r.textContent=s+" · "+(state.order==="rand"?"Shuffle":"Sequential")+" · "+({off:"Timer off",cum:"Total timer",per:"Timer per question"}[tMode]||"");}
 function render(){renderUlang();if(tMode==="per")syncQ();renderScore();renderCard();renderMap();renderTimer();renderRingkas();sinkronTimer();}
@@ -1988,6 +1991,21 @@ document.addEventListener('click',e=>{if(!(e.target.closest&&e.target.closest('#
     if(isi)d._fa=isi.animate({opacity:buka?[0,1]:[1,0],transform:buka?['translateY(-6px)','none']:['none','translateY(-6px)']},{duration:dur*(buka?1:.7),easing:ease,fill:'both'});
     d._an.onfinish=()=>{d._an=null;d.style.overflow='';if(d._tutup){d.open=false;d._tutup=false;}if(d._fa){d._fa.cancel();d._fa=null;}};
   },true);})();
+</script>
+<script>
+// Semua kotak lipat lainnya (panel admin, Buat Mock Exam baru, Question Map, dll.) dibuka/ditutup halus tanpa patah.
+(function(){const ease='cubic-bezier(.33,0,.2,1)',LEWAT='#setelan,#tocard,#pkcard,details.ket';
+  document.addEventListener('click',e=>{const sm=e.target.closest&&e.target.closest('details>summary');if(!sm)return;const d=sm.parentElement;
+    if(d.matches(LEWAT)||!d.animate||matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+    e.preventDefault();const h0=d.getBoundingClientRect().height;if(d._an){d._an.cancel();d._an=null;}(d._fa||[]).forEach(a=>a.cancel());d._fa=[];
+    const buka=!d.open||d._tutup;d._tutup=false;d.open=true;const hBuka=d.getBoundingClientRect().height;
+    d.open=false;const hTutup=d.getBoundingClientRect().height;d.open=true;
+    const h1=buka?hBuka:hTutup,dur=Math.min(700,Math.max(360,Math.abs(h1-h0)*.9));
+    d.style.overflow='hidden';d._tutup=!buka;
+    d._an=d.animate({height:[h0+'px',h1+'px']},{duration:dur,easing:ease});
+    d._fa=[...d.children].filter(x=>x!==sm).map(x=>x.animate({opacity:buka?[0,1]:[1,0],transform:buka?['translateY(-8px)','none']:['none','translateY(-8px)']},{duration:dur*(buka?1:.75),easing:ease,fill:'both'}));
+    d._an.onfinish=()=>{d._an=null;d.style.overflow='';if(d._tutup){d.open=false;d._tutup=false;}d._fa.forEach(a=>a.cancel());d._fa=[];};
+  });})();
 </script>
 </body>
 </html>
