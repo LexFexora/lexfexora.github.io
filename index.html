@@ -2249,15 +2249,11 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
 /* Pencegah salin & tangkapan layar: browser tidak bisa memblokir screenshot sepenuhnya,
    jadi ini hanya mempersulit. */
 // Pemilik (body.bebas) dan layar masuk/menunggu izin (html.gate-wait, tanpa soal) dikecualikan agar bisa screenshot.
-// Ahmad Miftahul Fauzi (window.BEBAS_SALIN) juga dikecualikan lewat body.bebas-ss. Akun lain mendapat tanda air nama + email.
-(()=>{const BS=(window.BEBAS_SALIN||[]).map(e=>String(e).toLowerCase());let wmKey="";
+// Ahmad Miftahul Fauzi (window.BEBAS_SALIN) juga dikecualikan lewat body.bebas-ss. Tanpa tanda air (dihapus atas permintaan pemilik).
+(()=>{const BS=(window.BEBAS_SALIN||[]).map(e=>String(e).toLowerCase());
   const segar=()=>{let u=null;try{u=firebase.auth().currentUser;}catch(e){}const em=((u&&u.email)||"").toLowerCase();
     document.body.classList.toggle("bebas-ss",!!em&&u.emailVerified!==false&&BS.includes(em));
-    const on=!!u&&!document.body.classList.contains("bebas")&&!document.body.classList.contains("bebas-ss")&&!document.documentElement.classList.contains("gate-wait");
-    let wm=document.getElementById("tandaair");
-    if(on){const k=(u.displayName||"")+" · "+(u.email||"");if(!wm){wm=document.createElement("div");wm.id="tandaair";wm.setAttribute("aria-hidden","true");document.body.appendChild(wm);}
-      if(wmKey!==k){wmKey=k;const sp=document.createElement("span");sp.textContent=k;wm.replaceChildren(...Array.from({length:60},()=>sp.cloneNode(true)));}}
-    else if(wm){wm.remove();wmKey="";}};
+    const wm=document.getElementById("tandaair");if(wm)wm.remove();};
   segar();setInterval(segar,1000);})();
 (()=>{const bebas=()=>document.body.classList.contains("bebas")||document.body.classList.contains("bebas-ss")||document.documentElement.classList.contains("gate-wait");const no=e=>{if(bebas())return;const t=e.target;if(t&&t.closest&&t.closest('input,textarea,select,[contenteditable]'))return;e.preventDefault();};
   ["contextmenu","copy","cut","dragstart","selectstart"].forEach(k=>document.addEventListener(k,no));
