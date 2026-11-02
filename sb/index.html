@@ -359,6 +359,11 @@ html.gate-wait .wrap{display:none}
 #tosub legend label{font-size:13px;font-weight:600;align-items:center}#tosub legend label>input{margin-top:0}
 #tosub legend{width:100%;padding:4px 0}
 #tosub label[hidden],#tosub fieldset[hidden]{display:none!important}
+/* Sumber soal Mock Exam: Sub-materi, Prediction Packages, Category Packages. */
+.tosrc{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:6px 0 0}
+.tosrc button{font:inherit;font-size:12.5px;font-weight:600;line-height:1.25;padding:7px 6px;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--muted);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:1px}
+.tosrc button small{font-size:10.5px;font-weight:700;color:var(--brass,#c9a24a);min-height:1em}
+.tosrc button.on{color:var(--ink);border-color:color-mix(in srgb,var(--brass,#c9a24a) 70%,var(--line));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--brass,#c9a24a) 45%,transparent)}
 #tobox input.tocari{width:100%;box-sizing:border-box;font:inherit;font-size:14px;padding:9px 12px 9px 34px;margin:8px 0 6px;border:1px solid var(--line);border-radius:9px;color:var(--ink);
   background:var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3.5-3.5'/%3E%3C/svg%3E") no-repeat 11px center/16px}
 #tobox input.tocari:focus{outline:none;border-color:color-mix(in srgb,var(--ink) 40%,var(--line))}
@@ -915,6 +920,8 @@ html.beranim .toisi,html.beranim #setelan .controls{contain:layout paint style}
 /* Previous/Next terkunci di dasar layar (juga di Safari iPhone dengan bilah browser terlihat). */
 html.fokus body #card .nav{position:fixed!important;left:0;right:0;bottom:0;top:auto;z-index:30;margin:0!important;max-width:720px;margin-inline:auto!important;box-sizing:border-box;padding:12px max(16px,env(safe-area-inset-right,0px)) max(12px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))!important;justify-content:center}
 html.fokus body #card{padding-bottom:calc(72px + env(safe-area-inset-bottom,0px))!important}
+.gkode{display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:14px;font-size:13px;color:var(--muted)}.gkode .linkrow{margin:0;justify-content:center}.gkode input{max-width:200px}.gkode small{font-size:12px;min-height:1em}.gkodeada{color:color-mix(in srgb,var(--brass) 80%,var(--ink))}
+.akslink{margin:10px 0 4px}.akslink .aksrow{display:flex;flex-direction:column;gap:4px;padding:10px 0;border-top:1px solid var(--line)}.akslink .aksrow>small{font-size:12px;color:var(--muted)}.akslink .aksrow .linkrow{margin:2px 0;flex-wrap:wrap}.akslink .aksrow input{flex:1 1 220px;min-width:0;font-size:12px}.akslink .aksinfo:empty{display:none}.akslink code{font-size:.95em}
 </style>
 </head>
 <body>
@@ -928,6 +935,8 @@ html.fokus body #card{padding-bottom:calc(72px + env(safe-area-inset-bottom,0px)
     <button class="btn primary" id="g-beli" type="button" hidden>Buy instant access</button>
     <button class="btn" id="g-logout" type="button" hidden>Switch account</button>
   </div>
+  <div class="gkode" id="g-kode" hidden><span>Have an access code?</span><div class="linkrow"><input id="g-kodein" autocomplete="off" placeholder="Access code" aria-label="Access code"><button class="btn" type="button" id="g-kodebtn">Activate</button></div><small id="g-kodemsg"></small></div>
+  <p class="note gkodeada" id="g-kodeada" hidden>✓ Access code received. Sign in with Google to activate it.</p>
   <p class="note" id="gate-note" hidden>If the sign-in button does not work, open this link in Chrome or Safari (not inside the WhatsApp/Instagram app).</p>
 </div>
 
@@ -941,6 +950,10 @@ html.fokus body #card{padding-bottom:calc(72px + env(safe-area-inset-bottom,0px)
   <details class="online adm" id="adm" hidden>
     <summary><span class="dot" aria-hidden="true"></span><span>Access approvals: <strong id="admcount">0</strong> pending · <strong id="admon">0</strong> active</span><button class="btn keluar admout" type="button" id="adm-logout">EXIT</button></summary>
     <div class="linkrow"><input id="admlink" readonly aria-label="Tautan latihan"><button class="btn copy" type="button" id="admcopy">⧉ Salin tautan</button></div>
+    <div class="akslink" id="akslink"><h4>Tautan akses gratis</h4>
+      <div class="aksrow" data-aks="gratis"><b>Latihan 4 klaster</b><small>Ilmu Hukum, Hukum Formil, Hukum Materil, TIK</small><div class="linkrow"><input readonly placeholder="Belum dibuat" aria-label="Tautan latihan 4 klaster"><button class="btn copy" type="button" data-a="salin">⧉ Salin</button><button class="btn copy" type="button" data-a="buat">↻ Buat baru</button><button class="btn copy" type="button" data-a="mati">Nonaktifkan</button></div><small class="aksinfo"></small></div>
+      <div class="aksrow" data-aks="penuh"><b>Akses seluruhnya</b><small>4 klaster + Prediction Packages + Category Packages (kecuali Mock Exam)</small><div class="linkrow"><input readonly placeholder="Belum dibuat" aria-label="Tautan akses seluruhnya"><button class="btn copy" type="button" data-a="salin">⧉ Salin</button><button class="btn copy" type="button" data-a="buat">↻ Buat baru</button><button class="btn copy" type="button" data-a="mati">Nonaktifkan</button></div><small class="aksinfo"></small></div>
+      <p class="note">Bagikan tautannya. Siapa pun yang membukanya lalu masuk dengan Gmail langsung mendapat akses itu, tanpa menunggu persetujuan. Kodenya (bagian setelah <code>akses=</code>) juga bisa diketik di layar tunggu. Buat baru atau Nonaktifkan untuk menutup tautan lama; akun yang sudah aktif tetap aktif sampai Anda Cabut.</p></div>
     <div id="admbody"></div>
     <div class="linkrow" id="izinsqlrow" style="display:none"><button class="btn copy" type="button" id="izinsql">⧉ Salin daftar izin (SQL untuk Supabase)</button></div>
     <h4>Bank soal</h4>
@@ -976,7 +989,8 @@ html.fokus body #card{padding-bottom:calc(72px + env(safe-area-inset-bottom,0px)
         <label>Title<input id="tojudul" value="Mock Exam"></label>
         <div class="torow"><label>Number of Questions<input type="number" id="tojml" min="1" max="1000" step="1" value="100" inputmode="numeric" list="tojmlsaran" aria-label="Jumlah soal (ketik bebas)"><datalist id="tojmlsaran"><option value="25"></option><option value="50"></option><option value="75"></option><option value="100"></option><option value="150"></option><option value="200"></option></datalist></label>
         <label>Seconds per Question<input id="todetik" type="number" min="10" max="600" value="54"></label></div>
-        <p class="note" style="margin:4px 0 0">Pilih satu atau beberapa sub-materi. Soal diracik otomatis: jatah tiap sub-materi sebanding jumlah soalnya, seimbang antara dasar hukum, istilah &amp; prosedur, dan pendapat ahli, tanpa soal kembar, dengan urutan sub-materi diselang-seling.</p>
+        <p class="note" style="margin:4px 0 0">Pilih sumber soal: sub-materi, Prediction Packages, atau Category Packages (boleh dicampur). Sub-materi diracik otomatis: jatah tiap sub-materi sebanding jumlah soalnya, seimbang antara dasar hukum, istilah &amp; prosedur, dan pendapat ahli, tanpa soal kembar. Paket dipakai apa adanya, soal dari beberapa paket diselang-seling.</p>
+        <div class="tosrc" id="tosrc" role="group" aria-label="Sumber soal"><button type="button" class="on" data-src="sub">Sub-materi<small id="tosrcn-sub"></small></button><button type="button" data-src="pk">Prediction Packages<small id="tosrcn-pk"></small></button><button type="button" data-src="kp">Category Packages<small id="tosrcn-kp"></small></button></div>
         <input type="search" id="tocari" class="tocari" placeholder="Cari sub-materi (mis. waris, kasasi, mediasi)…" autocomplete="off" aria-label="Cari sub-materi">
         <div class="tosub" id="tosub"></div>
         <p class="note" id="toinfo"></p>
@@ -1019,6 +1033,9 @@ html.fokus body #card{padding-bottom:calc(72px + env(safe-area-inset-bottom,0px)
 </div>
 
 <script>
+// Tautan akses gratis: ?akses=<kode> disimpan dulu, lalu diaktifkan setelah masuk dengan Google.
+(function(){try{const u=new URL(location.href),k=u.searchParams.get('akses');if(k){localStorage.setItem('akses-kode',k.trim());u.searchParams.delete('akses');history.replaceState(null,'',u.pathname+(u.search||'')+u.hash);}}catch(e){}})();
+
 const QB=[];
 // Perpindahan soal oleh pemilik (dokumen bank/pindah): id -> ["c|s|nama sub", ...], mapping pertama = kamar utama. Diabaikan bila nama sub tidak lagi cocok dengan meta.
 // Suntingan soal oleh pemilik (dokumen bank/edit): id -> {q,o,a,p,d}. Diabaikan bila jumlah pilihan berbeda dari soal asli.
@@ -1659,7 +1676,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
   const H=document.documentElement,$=id=>document.getElementById(id);
   const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
   const gh=$('gate-h'),gp=$('gate-p'),gw=$('gate-who'),bIn=$('g-login'),bOut=$('g-logout'),gnote=$('gate-note');
-  const show=(h,p,who,login,logout)=>{$('gate').hidden=false;H.classList.add('gate-wait');gh.textContent=h;gp.textContent=p||'';gw.textContent=who||'';bIn.hidden=!login;bOut.hidden=!logout;gnote.hidden=!login;$('g-beli').hidden=true;};
+  const show=(h,p,who,login,logout)=>{$('gate').hidden=false;H.classList.add('gate-wait');gh.textContent=h;gp.textContent=p||'';gw.textContent=who||'';bIn.hidden=!login;bOut.hidden=!logout;gnote.hidden=!login;$('g-beli').hidden=true;$('g-kode').hidden=true;let ak='';try{ak=localStorage.getItem('akses-kode')||'';}catch(e){}$('g-kodeada').hidden=!(login&&ak);};
   // Pembelian akses: Edge Function beli-akses membuat tagihan Xendit (VA/QRIS) lalu pembeli diarahkan ke halaman bayar.
   // Setelah lunas, webhook menyetujui akun dan Paket Prediksi langsung terbuka.
   try{if(/[?&]beli=1\b/.test(location.search))localStorage.setItem('beli-niat','1');}catch(e){}
@@ -1922,6 +1939,8 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       $('kplist').querySelectorAll('[data-kp]').forEach(b=>b.onclick=()=>{const p=susunKat()[+b.dataset.kp];if(!window.__ulang||!p||!p.ids.length)return;
         window.__ulang(p.c,'all',p.ids,p.nm+(p.of>1?' · Part '+p.part:''),p.key,true);});};
     if(kpBox)kpBox.addEventListener('toggle',()=>{if(!kpBox.open)return;const t=()=>{if(kpBox.dataset.anim)return setTimeout(t,120);kpRender();};setTimeout(t,120);});
+    // Dipakai form Buat Mock Exam (khusus pemilik) untuk mengambil isi Prediction Packages dan Category Packages.
+    window.__pkSusun=susunPaket;window.__kpSusun=susunKat;
     window.__pkBuka=()=>{buka=true;pkRender();};
     tampil();window.__pkSegar=()=>{if(buka)pkRender();};
     box.addEventListener('toggle',()=>{if(!box.open)return;const t=()=>{if(box.dataset.anim)return setTimeout(t,120);if(buka)pkRender();};setTimeout(t,120);});
@@ -1960,12 +1979,20 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       if(!s.exists)await ref.set({email:u.email||'',nama:u.displayName||'',foto:u.photoURL||'',status:'menunggu',diminta:FV.serverTimestamp(),terakhir:FV.serverTimestamp(),posisi:''});
     }catch(e){show('Could not check access','Please reload the page. ('+(e.code||e.message)+')',who,false,true);return;}
     try{if(localStorage.getItem('beli-niat')){localStorage.removeItem('beli-niat');beliAkses(null);}}catch(e){}
+    // Kode akses gratis dari pemilik (tautan ?akses=… atau diketik di layar tunggu): akses langsung aktif.
+    const klaim=async k=>{try{const {data,error}=await window.__sb.rpc('cat_klaim_kode',{p_kode:k});if(error)return {err:error.message||error.code};return {jenis:data};}catch(e){return {err:e.message};}};
+    let akk='';try{akk=localStorage.getItem('akses-kode')||'';localStorage.removeItem('akses-kode');}catch(e){}
+    const akHasil=akk?await klaim(akk):null;
+    $('g-kodebtn').onclick=async()=>{const k=$('g-kodein').value.trim();if(!k)return;$('g-kodebtn').disabled=true;$('g-kodemsg').textContent='Checking…';
+      const r=await klaim(k);$('g-kodebtn').disabled=false;
+      $('g-kodemsg').textContent=r.err?'Access codes are not available yet. Please try again later.':r.jenis==='ditolak'?'This account cannot be activated with a code.':r.jenis?'✓ Code accepted. Opening…':'Incorrect access code.';};
+    $('g-kodein').onkeydown=e=>{if(e.key==='Enter')$('g-kodebtn').click();};
     unsub=ref.onSnapshot(s=>{const st=s.exists?s.data().status:'menunggu';
       if(st==='disetujui'){if(!beat)heartbeat(ref);start();}
       else if(st==='ditolak'){show('Access denied','The owner has not granted access to this account.',who,false,true);}
       else{const sdh=/[?&]bayar=ok\b/.test(location.search);
         show(sdh?'Payment received':'Waiting for approval',sdh?'Your payment is being confirmed. This page will open automatically in a moment.':'Your access request has been sent. This page will open automatically once the owner approves it, or right away after you buy access.',who,false,true);
-        if(!sdh)$('g-beli').hidden=false;}
+        if(!sdh){$('g-beli').hidden=false;$('g-kode').hidden=false;if(akHasil&&!$('g-kodemsg').textContent)$('g-kodemsg').textContent=akHasil.err?'Access codes are not available yet. Please try again later.':akHasil.jenis?'':'The access code from your link is no longer valid.';}}
     },e=>show('Could not check access','Please reload the page. ('+(e.code||e.message)+')',who,false,true));
   });
 
@@ -1977,6 +2004,14 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
     // Mock Exam bersama: pemilik memilih sub-materi dan jumlah soal; peserta ikut lewat tryout.html?t=<id>.
     const toPool=()=>{const sel=new Set([...document.querySelectorAll('#tosub input[data-cs]:checked')].map(i=>i.dataset.cs));
       return QB.filter(q=>q.mappings.some(m=>sel.has(m.c+'|'+m.s)));};
+    // Paket terpilih (Prediction Packages / Category Packages): [{nm, ids}] dengan urutan soal paket apa adanya.
+    const toPaket=()=>[...document.querySelectorAll('#tosub input[data-pkg]:checked')].map(i=>{const [t,n]=i.dataset.pkg.split(':'),k=+n;
+      if(t==='pk'){const L=window.__pkSusun?window.__pkSusun():[];return L[k]?{nm:'Package '+(k+1),ids:L[k]}:null;}
+      const L=window.__kpSusun?window.__kpSusun():[],p=L[k];return p?{nm:p.nm+(p.of>1?' · Part '+p.part:''),ids:p.ids}:null;}).filter(Boolean);
+    // Soal dari paket: diselang-seling antar paket, tanpa soal ganda, dipotong sampai j soal.
+    const ambilPaket=(P,j)=>{const out=[],seen=new Set(),it=P.map(p=>p.ids.slice());
+      while(out.length<j&&it.some(a=>a.length))it.forEach(a=>{while(a.length&&out.length<j){const id=a.shift();if(!seen.has(id)){seen.add(id);out.push(id);break;}}});return out;};
+    const pkgIds=()=>{const s=new Set();toPaket().forEach(p=>p.ids.forEach(id=>s.add(id)));return s;};
     // Rotasi soal: bank/terpakai mencatat berapa kali tiap soal diujikan (m) dan mock exam yang sudah dihitung (x).
     // Soal yang belum atau paling jarang diujikan diutamakan, jadi sisa yang tidak terpakai muncul di sesi berikutnya.
     let PK=null;const pakaiRef=db.doc('bank/terpakai');
@@ -1988,11 +2023,13 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       if(k>0)PK.x[id]=1;else delete PK.x[id];return pakaiRef.set(PK);};
     window.__toLepas=async id=>{await pakaiMuat();if(!PK.x[id])return;const t=await db.doc('tryout/'+id).get();if(t.exists)await pakaiCatat(id,(t.data().soal||[]).map(q=>q.id),-1);};
     const jmlSoal=()=>Math.max(1,Math.min(1000,Math.round(+$('tojml').value)||0));
-    const toInfo=()=>{const pool=toPool(),j=jmlSoal(),n=new Set(pool.map(q=>q.id)).size;
-      if(!n){$('toinfo').textContent='Belum ada sub-materi dipilih.';return;}
-      const baru=PK?pool.filter(q=>!PK.m[q.id]).length:null,pakai=Math.min(n,j);
-      $('toinfo').innerHTML=`<b>${n}</b> soal tersedia dari sub-materi terpilih`+(baru!==null?` (<b>${baru}</b> belum pernah diujikan)`:'')+`. `+
-        (n>j?`Diujikan <b>${j}</b> soal; sisa ${n-j} soal tidak dipakai sekarang dan diutamakan muncul di mock exam berikutnya.`:n<j?`Kurang dari ${j}, jadi semua ${n} soal dipakai.`:`Semua ${n} soal dipakai.`)+
+    const toInfo=()=>{const pool=toPool(),j=jmlSoal(),ps=pkgIds(),u=new Set(ps);pool.forEach(q=>u.add(q.id));const n=u.size,np=toPaket().length,nsub=document.querySelectorAll('#tosub input[data-cs]:checked').length;
+      const hit=(sel,id)=>{const e=$(id);if(e){const k=document.querySelectorAll(sel).length;e.textContent=k?k+' dipilih':'';}};
+      hit('#tosub input[data-cs]:checked','tosrcn-sub');hit('#tosub input[data-pkg^="pk:"]:checked','tosrcn-pk');hit('#tosub input[data-pkg^="kp:"]:checked','tosrcn-kp');
+      if(!n){$('toinfo').textContent='Belum ada sub-materi atau paket dipilih.';return;}
+      const baru=PK?[...u].filter(id=>!PK.m[id]).length:null,pakai=Math.min(n,j),asal=[nsub?nsub+' sub-materi':'',np?np+' paket':''].filter(Boolean).join(' + ');
+      $('toinfo').innerHTML=`<b>${n}</b> soal tersedia dari ${asal} terpilih`+(baru!==null?` (<b>${baru}</b> belum pernah diujikan)`:'')+`. `+
+        (n>j?`Diujikan <b>${j}</b> soal`+(np?' (soal paket didahulukan)':'')+`; sisa ${n-j} soal tidak dipakai sekarang`+(nsub?' dan diutamakan muncul di mock exam berikutnya':'')+`.`:n<j?`Kurang dari ${j}, jadi semua ${n} soal dipakai.`:`Semua ${n} soal dipakai.`)+
         ` Semua peserta mengerjakan soal yang sama secara serentak: ${+$('todetik').value||54} detik per soal (sekitar ${Math.ceil(pakai*(+$('todetik').value||54)/60)} menit), lalu room master menekan Next.`;};
     // Mock exam selalu serentak: semua peserta di soal yang sama, tiap soal dibatasi detik, room master menekan Next.
     $('todetik').oninput=toInfo;
@@ -2000,19 +2037,33 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
     $('tojml').oninput=toInfo;$('tojml').onchange=()=>{const v=Math.round(+$('tojml').value);if(!(v>=1))$('tojml').value=100;else if(v>1000)$('tojml').value=1000;else $('tojml').value=v;toInfo();};
     $('tobox').addEventListener('toggle',()=>{if(!$('tobox').open)return;pakaiMuat().then(toInfo);if($('tosub').childElementCount)return;
       if(!QB.length){$('tosub').textContent='Bank soal belum dimuat.';return;}
-      $('tosub').innerHTML=Object.keys(CATS).map(c=>`<fieldset><legend><label><input type="checkbox" data-all="${c}"> ${esc(CATS[c].short)}</label></legend>`+
-        SUBS[c].map((nm,i)=>{const k=QB.filter(q=>q.mappings.some(m=>m.c===+c&&m.s===i+1)).length;return `<label><input type="checkbox" data-cs="${c}|${i+1}"><span>${i+1}. ${esc(nm)} <small>(${k})</small></span></label>`;}).join('')+`</fieldset>`).join('');
-      // Centang kategori hanya mengenai sub-materi yang sedang tampil (hasil pencarian), atau semuanya bila kolom cari kosong.
-      $('tosub').querySelectorAll('input[data-all]').forEach(a=>a.onchange=()=>{$('tosub').querySelectorAll(`input[data-cs^="${a.dataset.all}|"]`).forEach(i=>{if(!i.closest('label').hidden)i.checked=a.checked;});toInfo();});
+      const PKL=window.__pkSusun?window.__pkSusun():[],KPL=window.__kpSusun?window.__kpSusun():[];
+      $('tosub').innerHTML=Object.keys(CATS).map(c=>`<fieldset data-src="sub"><legend><label><input type="checkbox" data-all="${c}"> ${esc(CATS[c].short)}</label></legend>`+
+        SUBS[c].map((nm,i)=>{const k=QB.filter(q=>q.mappings.some(m=>m.c===+c&&m.s===i+1)).length;return `<label><input type="checkbox" data-cs="${c}|${i+1}" data-g="${c}"><span>${i+1}. ${esc(nm)} <small>(${k})</small></span></label>`;}).join('')+`</fieldset>`).join('')+
+        (PKL.length?`<fieldset data-src="pk" hidden><legend><label><input type="checkbox" data-all="pk"> Prediction Packages</label></legend>`+
+          PKL.map((ids,i)=>`<label><input type="checkbox" data-pkg="pk:${i}" data-g="pk"><span>Package ${i+1} <small>(${ids.length})</small></span></label>`).join('')+`</fieldset>`
+          :`<fieldset data-src="pk" hidden><p class="note">Prediction Packages belum tersedia.</p></fieldset>`)+
+        Object.keys(CATS).map(c=>{const P=KPL.map((p,i)=>[p,i]).filter(([p])=>p.c===+c);if(!P.length)return '';
+          return `<fieldset data-src="kp" hidden><legend><label><input type="checkbox" data-all="kp${c}"> Category Packages · ${esc(CATS[c].short)}</label></legend>`+
+            P.map(([p,i])=>`<label><input type="checkbox" data-pkg="kp:${i}" data-g="kp${c}"><span>${p.s}. ${esc(p.nm)}${p.of>1?` · Part ${p.part} of ${p.of}`:''} <small>(${p.ids.length})</small></span></label>`).join('')+`</fieldset>`;}).join('');
+      // Centang kategori hanya mengenai baris yang sedang tampil (hasil pencarian), atau semuanya bila kolom cari kosong.
+      $('tosub').querySelectorAll('input[data-all]').forEach(a=>a.onchange=()=>{$('tosub').querySelectorAll(`input[data-g="${a.dataset.all}"]`).forEach(i=>{if(!i.closest('label').hidden)i.checked=a.checked;});
+        if(a.dataset.all.startsWith('p')||a.dataset.all.startsWith('k'))pkgJml();toInfo();});
+      // Sumber soal: tombol Sub-materi / Prediction Packages / Category Packages hanya mengganti daftar yang tampil; pilihan tetap tersimpan.
+      let SRC='sub';const PH={sub:'Cari sub-materi (mis. waris, kasasi, mediasi)…',pk:'Cari paket (mis. 12)…',kp:'Cari Category Package (mis. waris, kasasi)…'};
+      $('tosrc').querySelectorAll('button').forEach(b=>b.onclick=()=>{SRC=b.dataset.src;$('tosrc').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));$('tocari').placeholder=PH[SRC];$('tocari').oninput();});
       // Cari sub-materi: semua kata kunci harus ada (tanpa beda huruf besar/kecil dan tanda baca).
       const norm=t=>t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ');
       $('tocari').oninput=()=>{const ks=norm($('tocari').value).split(' ').filter(Boolean);let ada=0;
-        $('tosub').querySelectorAll('fieldset').forEach(f=>{const kat=norm(f.querySelector('legend').textContent);let n=0;
+        $('tosub').querySelectorAll('fieldset').forEach(f=>{if(f.dataset.src!==SRC){f.hidden=true;return;}const lg=f.querySelector('legend');if(!lg){f.hidden=false;ada++;return;}const kat=norm(lg.textContent);let n=0;
           f.querySelectorAll('label:not(legend label)').forEach(l=>{const t=kat+' '+norm(l.textContent),ok=ks.every(k=>t.includes(k));l.hidden=!ok;if(ok)n++;});
           f.hidden=!n;ada+=n;});
         let k=$('tokosong');if(!k){k=document.createElement('p');k.id='tokosong';k.className='note';k.style.margin='6px 0';$('tosub').appendChild(k);}
-        k.textContent=ada?'':'Tidak ada sub-materi yang cocok dengan "'+$('tocari').value.trim()+'".';k.hidden=!!ada;};
-      $('tosub').querySelectorAll('input[data-cs]').forEach(i=>i.onchange=toInfo);toInfo();});
+        k.textContent=ada?'':'Tidak ada '+(SRC==='sub'?'sub-materi':'paket')+' yang cocok dengan "'+$('tocari').value.trim()+'".';k.hidden=!!ada;};
+      $('tosub').querySelectorAll('input[data-cs]').forEach(i=>i.onchange=toInfo);
+      $('tosub').querySelectorAll('input[data-pkg]').forEach(i=>i.onchange=()=>{pkgJml();toInfo();});toInfo();});
+    // Saat paket dicentang: Number of Questions otomatis = total soal paket terpilih (+ sub-materi, bila ada yang dicentang tetap bisa diubah manual).
+    const pkgJml=()=>{const n=pkgIds().size;if(!n)return;const sub=document.querySelectorAll('#tosub input[data-cs]:checked').length;if(!sub)$('tojml').value=Math.min(1000,n);};
     // Racik otomatis: jatah tiap sub-materi sebanding jumlah soalnya (minimal 1), di dalam sub seimbang antar jenis soal
     // (dasar hukum, istilah & prosedur, pendapat ahli), tanpa soal kembar, lalu urutan sub-materi diselang-seling.
     const acakArr=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const k=Math.floor(Math.random()*(i+1));[a[i],a[k]]=[a[k],a[i]];}return a;};
@@ -2031,14 +2082,19 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
         ambil(q=>!U[q.id]);ambil(()=>true);return out;});
       const hasil=[];for(let r=0;hasil.length<n&&pilih.some(p=>p.length);r++)acakArr(pilih).forEach(p=>{if(p.length&&hasil.length<n)hasil.push(p.shift());});
       return hasil;};
-    $('tobuat').onclick=async()=>{const pool=toPool();if(!pool.length){alert('Pilih minimal satu sub-materi.');return;}await pakaiMuat();
-      const j=jmlSoal();
-      const soal=racik(pool,j).map(q=>({id:q.id,q:q.q,o:q.o.slice(),a:q.a,p:q.p||'',d:q.d||''}));
+    $('tobuat').onclick=async()=>{const pool=toPool(),P=toPaket();if(!pool.length&&!P.length){alert('Pilih minimal satu sub-materi atau paket.');return;}await pakaiMuat();
+      const j=jmlSoal(),BY=new Map(QB.map(q=>[q.id,q]));
+      // Soal paket didahulukan (urutan paket apa adanya), sisa jatah diisi racikan sub-materi tanpa mengulang soal paket.
+      const dariPk=ambilPaket(P,j).map(id=>BY.get(id)).filter(Boolean),ada=new Set(dariPk.map(q=>q.id)),
+        dariSub=j>dariPk.length&&pool.length?racik(pool.filter(q=>!ada.has(q.id)),j-dariPk.length):[];
+      const soal=dariPk.concat(dariSub).map(q=>({id:q.id,q:q.q,o:q.o.slice(),a:q.a,p:q.p||'',d:q.d||''}));
+      const nmPk=P.filter(p=>p.ids.some(id=>ada.has(id))).map(p=>p.nm),sjSub=dariSub.length?subMock({soal:dariSub}):'',
+        lbl=nmPk.concat(sjSub?[sjSub]:[]),subJudul=!nmPk.length?subMock({soal}):lbl.length===1?lbl[0]:lbl[0]+' +'+(lbl.length-1)+' lainnya';
       $('tobuat').disabled=true;
       const det=Math.max(10,Math.min(600,+$('todetik').value||54)),me=auth.currentUser.uid;
       // Serentak: batas total longgar (tiap soal + jeda Next); yang mengatur tempo adalah detik per soal.
       const ext={mode:'sinkron',detikSoal:det,idx:0,idxMulai:null,master:me,pembuat:me};
-      try{const r=await db.collection('tryout').add(Object.assign({judul:($('tojudul').value||'Mock Exam').trim().slice(0,120),subJudul:subMock({soal}),soal,durasi:soal.length*(det+60)+600,status:'menunggu',mulai:null,dibuat:FV.serverTimestamp()},ext));
+      try{const r=await db.collection('tryout').add(Object.assign({judul:($('tojudul').value||'Mock Exam').trim().slice(0,120),subJudul,soal,durasi:soal.length*(det+60)+600,status:'menunggu',mulai:null,dibuat:FV.serverTimestamp()},ext));
         await pakaiCatat(r.id,soal.map(q=>q.id),1).catch(()=>{});
         $('tobox').open=false;$('toinfo').textContent='';$('tocard').open=true;$('tolist').scrollIntoView({behavior:'smooth',block:'start'});}
       catch(e){alert('Gagal membuat mock exam: '+(e.code||e.message));}
@@ -2047,6 +2103,17 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(QB,null,1)],{type:'application/json'}));a.download='bank-soal.json';document.body.appendChild(a);a.click();a.remove();};
     const box=$('adm'),body=$('admbody');box.hidden=false;
     const link=location.origin+location.pathname;$('admlink').value=link;
+    // Tautan akses gratis: kode acak disimpan di cat_kode ('gratis' = 4 klaster, 'penuh' = seluruhnya kecuali Mock Exam).
+    (()=>{const sb=window.__sb,acak=()=>{const a=new Uint8Array(9);crypto.getRandomValues(a);return Array.from(a,x=>'abcdefghjkmnpqrstuvwxyz23456789'[x%31]).join('');},
+      url=k=>location.origin+location.pathname+'?akses='+k;
+      document.querySelectorAll('#akslink .aksrow').forEach(row=>{const id=row.dataset.aks,inp=row.querySelector('input'),inf=row.querySelector('.aksinfo'),btn=a=>row.querySelector('[data-a="'+a+'"]');
+        const isi=k=>{inp.value=k?url(k):'';btn('salin').disabled=btn('mati').disabled=!k;};isi('');
+        sb.from('cat_kode').select('kode').eq('id',id).maybeSingle().then(({data,error})=>{if(error){inf.textContent='Jalankan supabase-update-4.sql di Supabase dulu.';return;}isi(data&&data.kode);});
+        btn('salin').onclick=()=>{if(!inp.value)return;const ok=()=>{btn('salin').textContent='✓ Tersalin';setTimeout(()=>btn('salin').textContent='⧉ Salin',1500);};
+          if(navigator.clipboard)navigator.clipboard.writeText(inp.value).then(ok).catch(()=>{inp.select();document.execCommand('copy');ok();});else{inp.select();document.execCommand('copy');ok();}};
+        btn('buat').onclick=async()=>{if(inp.value&&!confirm('Buat tautan baru? Tautan lama tidak bisa dipakai lagi.'))return;const k=acak();
+          const {error}=await sb.from('cat_kode').upsert({id,kode:k,diubah:new Date().toISOString()});if(error){inf.textContent='Gagal: '+(error.message||error.code);return;}isi(k);inf.textContent='Tautan baru siap dibagikan.';};
+        btn('mati').onclick=async()=>{if(!confirm('Nonaktifkan tautan ini?'))return;const {error}=await sb.from('cat_kode').delete().eq('id',id);if(error){inf.textContent='Gagal: '+(error.message||error.code);return;}isi('');inf.textContent='Tautan dinonaktifkan.';};});})();
     $('admcopy').onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(link).then(()=>{$('admcopy').textContent='✓ Tersalin';setTimeout(()=>$('admcopy').textContent='⧉ Salin tautan',1500);});};
     const fmt=t=>{if(!t||!t.toDate)return '';const d=t.toDate(),m=Math.round((Date.now()-d)/60000);
       return m<2?'aktif sekarang':m<60?m+' menit lalu':m<1440?Math.round(m/60)+' jam lalu':d.toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'});};
@@ -2087,7 +2154,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       izinOK=g.disetujui.map(([,x])=>String(x.email||'').trim().toLowerCase()).filter(e=>/^[^@\s']+@[^@\s']+$/.test(e));
       $('admcount').textContent=g.menunggu.length;$('admon').textContent=on;
       body.innerHTML=Object.keys(g).filter(k=>g[k].length).map(k=>`<h4>${TTL[k]} (${g[k].length})</h4><ul>`+g[k].map(([id,x])=>
-        `<li><button class="siapa" type="button" data-u="${esc(id)}" aria-expanded="${emBuka.has(id)}" title="Ketuk untuk melihat email"><span class="av">${x.foto?`<img src="${esc(x.foto)}" alt="" referrerpolicy="no-referrer" onerror="this.replaceWith(document.createTextNode('${esc((x.nama||x.email||'?')[0].toUpperCase()).replace(/'/g,'')}'))">`:esc((x.nama||x.email||'?')[0].toUpperCase())}</span><span class="nm${BAYAR.has(id)?' lunas':''}"${BAYAR.has(id)?' title="Sudah bayar"':''}>${esc(x.nama||(x.email||'').split('@')[0])}</span>${BAYAR.has(id)?'<span class="lunaschip">Lunas</span>':GRATIS.has(id)?'<span class="lunaschip gratis">Gratis</span>':''}${k==='disetujui'?(on=>`<span class="stt ${on?'on':'off'}">${on?'Online':'Offline'}</span>`)(!!(x.terakhir&&x.terakhir.toDate&&Date.now()-x.terakhir.toDate()<180000)):''}</button><span class="acts">${ACT[k].map(([v,l,c])=>`<button class="btn ${c}" data-id="${id}" data-v="${v}" type="button">${l}</button>`).join('')}${k==='disetujui'&&!BAYAR.has(id)?`<button class="btn" data-gratis="${esc(id)}" data-on="${GRATIS.has(id)?1:0}" type="button">${GRATIS.has(id)?'Cabut paket':'Paket gratis'}</button>`:''}</span>`+
+        `<li><button class="siapa" type="button" data-u="${esc(id)}" aria-expanded="${emBuka.has(id)}" title="Ketuk untuk melihat email"><span class="av">${x.foto?`<img src="${esc(x.foto)}" alt="" referrerpolicy="no-referrer" onerror="this.replaceWith(document.createTextNode('${esc((x.nama||x.email||'?')[0].toUpperCase()).replace(/'/g,'')}'))">`:esc((x.nama||x.email||'?')[0].toUpperCase())}</span><span class="nm${BAYAR.has(id)?' lunas':''}"${BAYAR.has(id)?' title="Sudah bayar"':''}>${esc(x.nama||(x.email||'').split('@')[0])}</span>${BAYAR.has(id)?'<span class="lunaschip">Lunas</span>':GRATIS.has(id)?'<span class="lunaschip gratis">Gratis</span>':x.jalur==='gratis'?'<span class="lunaschip gratis">Tautan</span>':''}${k==='disetujui'?(on=>`<span class="stt ${on?'on':'off'}">${on?'Online':'Offline'}</span>`)(!!(x.terakhir&&x.terakhir.toDate&&Date.now()-x.terakhir.toDate()<180000)):''}</button><span class="acts">${ACT[k].map(([v,l,c])=>`<button class="btn ${c}" data-id="${id}" data-v="${v}" type="button">${l}</button>`).join('')}${k==='disetujui'&&!BAYAR.has(id)?`<button class="btn" data-gratis="${esc(id)}" data-on="${GRATIS.has(id)?1:0}" type="button">${GRATIS.has(id)?'Cabut paket':'Paket gratis'}</button>`:''}</span>`+
         `<span class="em"${k==='disetujui'&&!emBuka.has(id)?' hidden':''}><span class="mail">${esc(x.email)}</span>${k==='disetujui'?`<button class="kat" type="button" data-skor="${esc(id)}" aria-expanded="${skorBuka.has(id)}">Skor</button>`:''}${k==='disetujui'&&x.posisi?(p=>`<button class="kat" type="button" data-kat="${esc(id)}" aria-expanded="${katBuka.has(id)}">${esc(p[0])}</button><span class="katd"${katBuka.has(id)?'':' hidden'}>${p[1]?`<span>${esc(p[1])}</span>`:''}${p[2]?`<span>${esc(p[2].replace(/^soal (\d+)\/(\d+)$/,'Soal ke-$1 dari $2'))}</span>`:''}</span>`)(String(x.posisi).split(' · ')):''}</span>${k==='disetujui'?`<div class="skord" data-skord="${esc(id)}"${skorBuka.has(id)?'':' hidden'}>${skorHtml(id,x)}</div>`:''}<span class="dur">${k==='menunggu'?'Meminta '+fmt(x.diminta):'Terakhir '+(fmt(x.terakhir)||'-')}</span></li>`).join('')+'</ul>').join('')||'<p class="note">Belum ada yang meminta akses.</p>';
       // Akun disetujui: foto dan nama saja, email muncul saat nama diketuk.
       // Chip kategori: ketuk untuk melihat sub-materi dan posisi soal yang sedang dikerjakan.

@@ -919,6 +919,8 @@ html.beranim .toisi,html.beranim #setelan .controls{contain:layout paint style}
 /* Previous/Next terkunci di dasar layar (juga di Safari iPhone dengan bilah browser terlihat). */
 html.fokus body #card .nav{position:fixed!important;left:0;right:0;bottom:0;top:auto;z-index:30;margin:0!important;max-width:720px;margin-inline:auto!important;box-sizing:border-box;padding:12px max(16px,env(safe-area-inset-right,0px)) max(12px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))!important;justify-content:center}
 html.fokus body #card{padding-bottom:calc(72px + env(safe-area-inset-bottom,0px))!important}
+.gkode{display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:14px;font-size:13px;color:var(--muted)}.gkode .linkrow{margin:0;justify-content:center}.gkode input{max-width:200px}.gkode small{font-size:12px;min-height:1em}.gkodeada{color:color-mix(in srgb,var(--brass) 80%,var(--ink))}
+.akslink{margin:10px 0 4px}.akslink .aksrow{display:flex;flex-direction:column;gap:4px;padding:10px 0;border-top:1px solid var(--line)}.akslink .aksrow>small{font-size:12px;color:var(--muted)}.akslink .aksrow .linkrow{margin:2px 0;flex-wrap:wrap}.akslink .aksrow input{flex:1 1 220px;min-width:0;font-size:12px}.akslink .aksinfo:empty{display:none}.akslink code{font-size:.95em}
 </style>
 </head>
 <body>
@@ -932,6 +934,8 @@ html.fokus body #card{padding-bottom:calc(72px + env(safe-area-inset-bottom,0px)
     <button class="btn primary" id="g-beli" type="button" hidden>Buy instant access</button>
     <button class="btn" id="g-logout" type="button" hidden>Switch account</button>
   </div>
+  <div class="gkode" id="g-kode" hidden><span>Have an access code?</span><div class="linkrow"><input id="g-kodein" autocomplete="off" placeholder="Access code" aria-label="Access code"><button class="btn" type="button" id="g-kodebtn">Activate</button></div><small id="g-kodemsg"></small></div>
+  <p class="note gkodeada" id="g-kodeada" hidden>✓ Access code received. Sign in with Google to activate it.</p>
   <p class="note" id="gate-note" hidden>If the sign-in button does not work, open this link in Chrome or Safari (not inside the WhatsApp/Instagram app).</p>
 </div>
 
@@ -945,6 +949,10 @@ html.fokus body #card{padding-bottom:calc(72px + env(safe-area-inset-bottom,0px)
   <details class="online adm" id="adm" hidden>
     <summary><span class="dot" aria-hidden="true"></span><span>Access approvals: <strong id="admcount">0</strong> pending · <strong id="admon">0</strong> active</span><button class="btn keluar admout" type="button" id="adm-logout">EXIT</button></summary>
     <div class="linkrow"><input id="admlink" readonly aria-label="Tautan latihan"><button class="btn copy" type="button" id="admcopy">⧉ Salin tautan</button></div>
+    <div class="akslink" id="akslink"><h4>Tautan akses gratis</h4>
+      <div class="aksrow" data-aks="gratis"><b>Latihan 4 klaster</b><small>Ilmu Hukum, Hukum Formil, Hukum Materil, TIK</small><div class="linkrow"><input readonly placeholder="Belum dibuat" aria-label="Tautan latihan 4 klaster"><button class="btn copy" type="button" data-a="salin">⧉ Salin</button><button class="btn copy" type="button" data-a="buat">↻ Buat baru</button><button class="btn copy" type="button" data-a="mati">Nonaktifkan</button></div><small class="aksinfo"></small></div>
+      <div class="aksrow" data-aks="penuh"><b>Akses seluruhnya</b><small>4 klaster + Prediction Packages + Category Packages (kecuali Mock Exam)</small><div class="linkrow"><input readonly placeholder="Belum dibuat" aria-label="Tautan akses seluruhnya"><button class="btn copy" type="button" data-a="salin">⧉ Salin</button><button class="btn copy" type="button" data-a="buat">↻ Buat baru</button><button class="btn copy" type="button" data-a="mati">Nonaktifkan</button></div><small class="aksinfo"></small></div>
+      <p class="note">Bagikan tautannya. Siapa pun yang membukanya lalu masuk dengan Gmail langsung mendapat akses itu, tanpa menunggu persetujuan. Kodenya (bagian setelah <code>akses=</code>) juga bisa diketik di layar tunggu. Buat baru atau Nonaktifkan untuk menutup tautan lama; akun yang sudah aktif tetap aktif sampai Anda Cabut.</p></div>
     <div id="admbody"></div>
     <div class="linkrow" id="izinsqlrow" style="display:none"><button class="btn copy" type="button" id="izinsql">⧉ Salin daftar izin (SQL untuk Supabase)</button></div>
     <h4>Bank soal</h4>
@@ -1024,6 +1032,9 @@ html.fokus body #card{padding-bottom:calc(72px + env(safe-area-inset-bottom,0px)
 </div>
 
 <script>
+// Tautan akses gratis: ?akses=<kode> disimpan dulu, lalu diaktifkan setelah masuk dengan Google.
+(function(){try{const u=new URL(location.href),k=u.searchParams.get('akses');if(k){localStorage.setItem('akses-kode',k.trim());u.searchParams.delete('akses');history.replaceState(null,'',u.pathname+(u.search||'')+u.hash);}}catch(e){}})();
+
 const QB=[];
 // Perpindahan soal oleh pemilik (dokumen bank/pindah): id -> ["c|s|nama sub", ...], mapping pertama = kamar utama. Diabaikan bila nama sub tidak lagi cocok dengan meta.
 // Suntingan soal oleh pemilik (dokumen bank/edit): id -> {q,o,a,p,d}. Diabaikan bila jumlah pilihan berbeda dari soal asli.
@@ -1664,7 +1675,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
   const H=document.documentElement,$=id=>document.getElementById(id);
   const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
   const gh=$('gate-h'),gp=$('gate-p'),gw=$('gate-who'),bIn=$('g-login'),bOut=$('g-logout'),gnote=$('gate-note');
-  const show=(h,p,who,login,logout)=>{$('gate').hidden=false;H.classList.add('gate-wait');gh.textContent=h;gp.textContent=p||'';gw.textContent=who||'';bIn.hidden=!login;bOut.hidden=!logout;gnote.hidden=!login;$('g-beli').hidden=true;};
+  const show=(h,p,who,login,logout)=>{$('gate').hidden=false;H.classList.add('gate-wait');gh.textContent=h;gp.textContent=p||'';gw.textContent=who||'';bIn.hidden=!login;bOut.hidden=!logout;gnote.hidden=!login;$('g-beli').hidden=true;$('g-kode').hidden=true;let ak='';try{ak=localStorage.getItem('akses-kode')||'';}catch(e){}$('g-kodeada').hidden=!(login&&ak);};
   // Pembelian akses: Edge Function beli-akses membuat tagihan Xendit (VA/QRIS) lalu pembeli diarahkan ke halaman bayar.
   // Setelah lunas, webhook menyetujui akun dan Paket Prediksi langsung terbuka.
   try{if(/[?&]beli=1\b/.test(location.search))localStorage.setItem('beli-niat','1');}catch(e){}
@@ -1967,12 +1978,20 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       if(!s.exists)await ref.set({email:u.email||'',nama:u.displayName||'',foto:u.photoURL||'',status:'menunggu',diminta:FV.serverTimestamp(),terakhir:FV.serverTimestamp(),posisi:''});
     }catch(e){show('Could not check access','Please reload the page. ('+(e.code||e.message)+')',who,false,true);return;}
     try{if(localStorage.getItem('beli-niat')){localStorage.removeItem('beli-niat');beliAkses(null);}}catch(e){}
+    // Kode akses gratis dari pemilik (tautan ?akses=… atau diketik di layar tunggu): akses langsung aktif.
+    const klaim=async k=>{try{const {data,error}=await window.__sb.rpc('cat_klaim_kode',{p_kode:k});if(error)return {err:error.message||error.code};return {jenis:data};}catch(e){return {err:e.message};}};
+    let akk='';try{akk=localStorage.getItem('akses-kode')||'';localStorage.removeItem('akses-kode');}catch(e){}
+    const akHasil=akk?await klaim(akk):null;
+    $('g-kodebtn').onclick=async()=>{const k=$('g-kodein').value.trim();if(!k)return;$('g-kodebtn').disabled=true;$('g-kodemsg').textContent='Checking…';
+      const r=await klaim(k);$('g-kodebtn').disabled=false;
+      $('g-kodemsg').textContent=r.err?'Access codes are not available yet. Please try again later.':r.jenis==='ditolak'?'This account cannot be activated with a code.':r.jenis?'✓ Code accepted. Opening…':'Incorrect access code.';};
+    $('g-kodein').onkeydown=e=>{if(e.key==='Enter')$('g-kodebtn').click();};
     unsub=ref.onSnapshot(s=>{const st=s.exists?s.data().status:'menunggu';
       if(st==='disetujui'){if(!beat)heartbeat(ref);start();}
       else if(st==='ditolak'){show('Access denied','The owner has not granted access to this account.',who,false,true);}
       else{const sdh=/[?&]bayar=ok\b/.test(location.search);
         show(sdh?'Payment received':'Waiting for approval',sdh?'Your payment is being confirmed. This page will open automatically in a moment.':'Your access request has been sent. This page will open automatically once the owner approves it, or right away after you buy access.',who,false,true);
-        if(!sdh)$('g-beli').hidden=false;}
+        if(!sdh){$('g-beli').hidden=false;$('g-kode').hidden=false;if(akHasil&&!$('g-kodemsg').textContent)$('g-kodemsg').textContent=akHasil.err?'Access codes are not available yet. Please try again later.':akHasil.jenis?'':'The access code from your link is no longer valid.';}}
     },e=>show('Could not check access','Please reload the page. ('+(e.code||e.message)+')',who,false,true));
   });
 
@@ -2083,6 +2102,17 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(QB,null,1)],{type:'application/json'}));a.download='bank-soal.json';document.body.appendChild(a);a.click();a.remove();};
     const box=$('adm'),body=$('admbody');box.hidden=false;
     const link=location.origin+location.pathname;$('admlink').value=link;
+    // Tautan akses gratis: kode acak disimpan di cat_kode ('gratis' = 4 klaster, 'penuh' = seluruhnya kecuali Mock Exam).
+    (()=>{const sb=window.__sb,acak=()=>{const a=new Uint8Array(9);crypto.getRandomValues(a);return Array.from(a,x=>'abcdefghjkmnpqrstuvwxyz23456789'[x%31]).join('');},
+      url=k=>location.origin+location.pathname+'?akses='+k;
+      document.querySelectorAll('#akslink .aksrow').forEach(row=>{const id=row.dataset.aks,inp=row.querySelector('input'),inf=row.querySelector('.aksinfo'),btn=a=>row.querySelector('[data-a="'+a+'"]');
+        const isi=k=>{inp.value=k?url(k):'';btn('salin').disabled=btn('mati').disabled=!k;};isi('');
+        sb.from('cat_kode').select('kode').eq('id',id).maybeSingle().then(({data,error})=>{if(error){inf.textContent='Jalankan supabase-update-4.sql di Supabase dulu.';return;}isi(data&&data.kode);});
+        btn('salin').onclick=()=>{if(!inp.value)return;const ok=()=>{btn('salin').textContent='✓ Tersalin';setTimeout(()=>btn('salin').textContent='⧉ Salin',1500);};
+          if(navigator.clipboard)navigator.clipboard.writeText(inp.value).then(ok).catch(()=>{inp.select();document.execCommand('copy');ok();});else{inp.select();document.execCommand('copy');ok();}};
+        btn('buat').onclick=async()=>{if(inp.value&&!confirm('Buat tautan baru? Tautan lama tidak bisa dipakai lagi.'))return;const k=acak();
+          const {error}=await sb.from('cat_kode').upsert({id,kode:k,diubah:new Date().toISOString()});if(error){inf.textContent='Gagal: '+(error.message||error.code);return;}isi(k);inf.textContent='Tautan baru siap dibagikan.';};
+        btn('mati').onclick=async()=>{if(!confirm('Nonaktifkan tautan ini?'))return;const {error}=await sb.from('cat_kode').delete().eq('id',id);if(error){inf.textContent='Gagal: '+(error.message||error.code);return;}isi('');inf.textContent='Tautan dinonaktifkan.';};});})();
     $('admcopy').onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(link).then(()=>{$('admcopy').textContent='✓ Tersalin';setTimeout(()=>$('admcopy').textContent='⧉ Salin tautan',1500);});};
     const fmt=t=>{if(!t||!t.toDate)return '';const d=t.toDate(),m=Math.round((Date.now()-d)/60000);
       return m<2?'aktif sekarang':m<60?m+' menit lalu':m<1440?Math.round(m/60)+' jam lalu':d.toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'});};
@@ -2123,7 +2153,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       izinOK=g.disetujui.map(([,x])=>String(x.email||'').trim().toLowerCase()).filter(e=>/^[^@\s']+@[^@\s']+$/.test(e));
       $('admcount').textContent=g.menunggu.length;$('admon').textContent=on;
       body.innerHTML=Object.keys(g).filter(k=>g[k].length).map(k=>`<h4>${TTL[k]} (${g[k].length})</h4><ul>`+g[k].map(([id,x])=>
-        `<li><button class="siapa" type="button" data-u="${esc(id)}" aria-expanded="${emBuka.has(id)}" title="Ketuk untuk melihat email"><span class="av">${x.foto?`<img src="${esc(x.foto)}" alt="" referrerpolicy="no-referrer" onerror="this.replaceWith(document.createTextNode('${esc((x.nama||x.email||'?')[0].toUpperCase()).replace(/'/g,'')}'))">`:esc((x.nama||x.email||'?')[0].toUpperCase())}</span><span class="nm${BAYAR.has(id)?' lunas':''}"${BAYAR.has(id)?' title="Sudah bayar"':''}>${esc(x.nama||(x.email||'').split('@')[0])}</span>${BAYAR.has(id)?'<span class="lunaschip">Lunas</span>':GRATIS.has(id)?'<span class="lunaschip gratis">Gratis</span>':''}${k==='disetujui'?(on=>`<span class="stt ${on?'on':'off'}">${on?'Online':'Offline'}</span>`)(!!(x.terakhir&&x.terakhir.toDate&&Date.now()-x.terakhir.toDate()<180000)):''}</button><span class="acts">${ACT[k].map(([v,l,c])=>`<button class="btn ${c}" data-id="${id}" data-v="${v}" type="button">${l}</button>`).join('')}${k==='disetujui'&&!BAYAR.has(id)?`<button class="btn" data-gratis="${esc(id)}" data-on="${GRATIS.has(id)?1:0}" type="button">${GRATIS.has(id)?'Cabut paket':'Paket gratis'}</button>`:''}</span>`+
+        `<li><button class="siapa" type="button" data-u="${esc(id)}" aria-expanded="${emBuka.has(id)}" title="Ketuk untuk melihat email"><span class="av">${x.foto?`<img src="${esc(x.foto)}" alt="" referrerpolicy="no-referrer" onerror="this.replaceWith(document.createTextNode('${esc((x.nama||x.email||'?')[0].toUpperCase()).replace(/'/g,'')}'))">`:esc((x.nama||x.email||'?')[0].toUpperCase())}</span><span class="nm${BAYAR.has(id)?' lunas':''}"${BAYAR.has(id)?' title="Sudah bayar"':''}>${esc(x.nama||(x.email||'').split('@')[0])}</span>${BAYAR.has(id)?'<span class="lunaschip">Lunas</span>':GRATIS.has(id)?'<span class="lunaschip gratis">Gratis</span>':x.jalur==='gratis'?'<span class="lunaschip gratis">Tautan</span>':''}${k==='disetujui'?(on=>`<span class="stt ${on?'on':'off'}">${on?'Online':'Offline'}</span>`)(!!(x.terakhir&&x.terakhir.toDate&&Date.now()-x.terakhir.toDate()<180000)):''}</button><span class="acts">${ACT[k].map(([v,l,c])=>`<button class="btn ${c}" data-id="${id}" data-v="${v}" type="button">${l}</button>`).join('')}${k==='disetujui'&&!BAYAR.has(id)?`<button class="btn" data-gratis="${esc(id)}" data-on="${GRATIS.has(id)?1:0}" type="button">${GRATIS.has(id)?'Cabut paket':'Paket gratis'}</button>`:''}</span>`+
         `<span class="em"${k==='disetujui'&&!emBuka.has(id)?' hidden':''}><span class="mail">${esc(x.email)}</span>${k==='disetujui'?`<button class="kat" type="button" data-skor="${esc(id)}" aria-expanded="${skorBuka.has(id)}">Skor</button>`:''}${k==='disetujui'&&x.posisi?(p=>`<button class="kat" type="button" data-kat="${esc(id)}" aria-expanded="${katBuka.has(id)}">${esc(p[0])}</button><span class="katd"${katBuka.has(id)?'':' hidden'}>${p[1]?`<span>${esc(p[1])}</span>`:''}${p[2]?`<span>${esc(p[2].replace(/^soal (\d+)\/(\d+)$/,'Soal ke-$1 dari $2'))}</span>`:''}</span>`)(String(x.posisi).split(' · ')):''}</span>${k==='disetujui'?`<div class="skord" data-skord="${esc(id)}"${skorBuka.has(id)?'':' hidden'}>${skorHtml(id,x)}</div>`:''}<span class="dur">${k==='menunggu'?'Meminta '+fmt(x.diminta):'Terakhir '+(fmt(x.terakhir)||'-')}</span></li>`).join('')+'</ul>').join('')||'<p class="note">Belum ada yang meminta akses.</p>';
       // Akun disetujui: foto dan nama saja, email muncul saat nama diketuk.
       // Chip kategori: ketuk untuk melihat sub-materi dan posisi soal yang sedang dikerjakan.
