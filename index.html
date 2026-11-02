@@ -412,11 +412,13 @@ html.gate-wait .wrap{display:none}
 .gate .note{font-size:12px;margin-top:12px}
 @media (max-width:552px){.gate{margin:12vh 16px}}
 /* Pencegah salin & tangkapan layar (deterensi, bukan jaminan) */
-body:not(.bebas){-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+body:not(.bebas):not(.bebas-ss){-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 input,textarea,select,[contenteditable]{-webkit-user-select:text;user-select:text}
 #tirai{position:fixed;inset:0;z-index:2147483647;display:none;align-items:center;justify-content:center;text-align:center;padding:24px;background:var(--bg,#111);color:var(--muted,#999);font:500 15px/1.5 system-ui,sans-serif}
 body.tertutup #tirai{display:flex}
-@media print{body:not(.bebas){display:none!important}}
+@media print{body:not(.bebas):not(.bebas-ss){display:none!important}}
+/* Tanda air nama + email untuk akun selain pemilik dan BEBAS_SALIN, agar screenshot bisa dilacak. */
+#tandaair{position:fixed;inset:-20%;z-index:2147483000;pointer-events:none;display:flex;flex-wrap:wrap;gap:70px 90px;align-content:flex-start;padding:40px;transform:rotate(-24deg);opacity:.07;font:600 15px/1 "Public Sans",system-ui,sans-serif;color:var(--ink,#888);overflow:hidden;white-space:nowrap}
 /* Pengalih tema (desktop): pilihan disimpan per perangkat di localStorage "cat-tema". */
 /* Pengalih tema (desktop): sakelar geser dengan ikon garis matahari/bulan; pilihan disimpan di localStorage "cat-tema". */
 .tema{appearance:none;position:relative;flex:none;width:64px;height:34px;padding:0 9px;border-radius:999px;border:1px solid var(--line);cursor:pointer;
@@ -1686,7 +1688,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
 </script>
 <script src="/editsoal.js?v=3"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3/dist/umd/supabase.js"></script>
+<script src="/sb/supabase-js-2.117.3.js"></script>
 <script src="sb/supabase-config.js"></script>
 <script src="sb/fb-shim.js"></script>
 <script>
@@ -2004,7 +2006,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
     const akHasil=akk?await klaim(akk):null;
     $('g-kodebtn').onclick=async()=>{const k=$('g-kodein').value.trim();if(!k)return;$('g-kodebtn').disabled=true;$('g-kodemsg').textContent='Checking…';
       const r=await klaim(k);$('g-kodebtn').disabled=false;
-      $('g-kodemsg').textContent=r.err?(/could not find|does not exist|schema cache/i.test(r.err)?'Access codes are not set up yet (setup step pending).':'Could not check the code: '+r.err):r.jenis==='ditolak'?'This account cannot be activated with a code.':r.jenis?'✓ Code accepted. Opening…':'Incorrect access code.';};
+      $('g-kodemsg').textContent=r.err?(/could not find|does not exist|schema cache/i.test(r.err)?'Access codes are not set up yet (setup step pending).':'Could not check the code: '+r.err):r.jenis==='terlalu'?'Too many wrong attempts. Please try again in 1 hour.':r.jenis==='ditolak'?'This account cannot be activated with a code.':r.jenis?'✓ Code accepted. Opening…':'Incorrect access code.';};
     $('g-kodein').onkeydown=e=>{if(e.key==='Enter')$('g-kodebtn').click();};
     unsub=ref.onSnapshot(s=>{const st=s.exists?s.data().status:'menunggu';
       if(st==='disetujui'){
@@ -2015,7 +2017,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       else if(st==='ditolak'){show('Access denied','The owner has not granted access to this account.',who,false,true);}
       else{const sdh=/[?&]bayar=ok\b/.test(location.search);
         show(sdh?'Payment received':'Waiting for approval',sdh?'Your payment is being confirmed. This page will open automatically in a moment.':'Your access request has been sent. This page will open automatically once the owner approves it, or right away after you buy access.',who,false,true);
-        if(!sdh){$('g-beli').hidden=false;$('g-kode').hidden=false;if(akHasil&&!$('g-kodemsg').textContent)$('g-kodemsg').textContent=akHasil.err?'Access codes are not available yet. Please try again later.':akHasil.jenis?'':'The access code from your link is no longer valid.';}}
+        if(!sdh){$('g-beli').hidden=false;$('g-kode').hidden=false;if(akHasil&&!$('g-kodemsg').textContent)$('g-kodemsg').textContent=akHasil.err?'Access codes are not available yet. Please try again later.':akHasil.jenis==='terlalu'?'Too many wrong attempts. Please try again in 1 hour.':akHasil.jenis?'':'The access code from your link is no longer valid.';}}
     },e=>show('Could not check access','Please reload the page. ('+(e.code||e.message)+')',who,false,true));
   });
 
@@ -2247,7 +2249,17 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
 /* Pencegah salin & tangkapan layar: browser tidak bisa memblokir screenshot sepenuhnya,
    jadi ini hanya mempersulit. */
 // Pemilik (body.bebas) dan layar masuk/menunggu izin (html.gate-wait, tanpa soal) dikecualikan agar bisa screenshot.
-(()=>{const bebas=()=>document.body.classList.contains("bebas")||document.documentElement.classList.contains("gate-wait");const no=e=>{if(bebas())return;const t=e.target;if(t&&t.closest&&t.closest('input,textarea,select,[contenteditable]'))return;e.preventDefault();};
+// Ahmad Miftahul Fauzi (window.BEBAS_SALIN) juga dikecualikan lewat body.bebas-ss. Akun lain mendapat tanda air nama + email.
+(()=>{const BS=(window.BEBAS_SALIN||[]).map(e=>String(e).toLowerCase());let wmKey="";
+  const segar=()=>{let u=null;try{u=firebase.auth().currentUser;}catch(e){}const em=((u&&u.email)||"").toLowerCase();
+    document.body.classList.toggle("bebas-ss",!!em&&u.emailVerified!==false&&BS.includes(em));
+    const on=!!u&&!document.body.classList.contains("bebas")&&!document.body.classList.contains("bebas-ss")&&!document.documentElement.classList.contains("gate-wait");
+    let wm=document.getElementById("tandaair");
+    if(on){const k=(u.displayName||"")+" · "+(u.email||"");if(!wm){wm=document.createElement("div");wm.id="tandaair";wm.setAttribute("aria-hidden","true");document.body.appendChild(wm);}
+      if(wmKey!==k){wmKey=k;const sp=document.createElement("span");sp.textContent=k;wm.replaceChildren(...Array.from({length:60},()=>sp.cloneNode(true)));}}
+    else if(wm){wm.remove();wmKey="";}};
+  segar();setInterval(segar,1000);})();
+(()=>{const bebas=()=>document.body.classList.contains("bebas")||document.body.classList.contains("bebas-ss")||document.documentElement.classList.contains("gate-wait");const no=e=>{if(bebas())return;const t=e.target;if(t&&t.closest&&t.closest('input,textarea,select,[contenteditable]'))return;e.preventDefault();};
   ["contextmenu","copy","cut","dragstart","selectstart"].forEach(k=>document.addEventListener(k,no));
   const tutup=()=>{if(!bebas())document.body.classList.add("tertutup");},buka=()=>document.body.classList.remove("tertutup");
   const kosongkan=()=>{try{navigator.clipboard&&navigator.clipboard.writeText("")}catch(e){}};

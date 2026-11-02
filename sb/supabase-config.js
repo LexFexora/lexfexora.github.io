@@ -7,6 +7,8 @@ window.SUPABASE_CONFIG = {
 window.FIREBASE_CONFIG = { apiKey: "supabase" };
 // Email Google pemilik: harus sama dengan email di supabase-schema.sql.
 window.OWNER_EMAIL = "febriankusumaa@gmail.com";
+// Akun selain pemilik yang boleh salin & screenshot (Ahmad Miftahul Fauzi). Email lain mendapat tanda air dan pencegah screenshot.
+window.BEBAS_SALIN = ["amifaveiro9@gmail.com"];
 // Firebase lama: hanya dipakai tombol "Pulihkan riwayat lama" untuk menyalin progres pengguna.
 window.FIREBASE_LAMA = {
   apiKey: "AIzaSyCaSFcNSQ47Vc2O80mZtylHokYUW4HprRs",

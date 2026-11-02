@@ -363,7 +363,7 @@ header .tema .knop{background:linear-gradient(180deg,#c9b98f,#a8925c)}header .te
 </div>
 
 <script src="/editsoal.js?v=3"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3/dist/umd/supabase.js"></script>
+<script src="/sb/supabase-js-2.117.3.js"></script>
 <script src="sb/supabase-config.js"></script>
 <script src="sb/fb-shim.js"></script>
 <script>
@@ -418,7 +418,7 @@ function isiBahas(html,cari){const w=cari&&window.IstilahCari&&IstilahCari.node,
   [...bahas.childNodes].forEach(n=>{if(n!==w)n.remove();});const nodes=[...tmp.childNodes],i=nodes.indexOf(h);
   if(w.parentNode!==bahas)bahas.appendChild(w);w.before(...nodes.slice(0,i+1));w.after(...nodes.slice(i+1));}
 const OWNER=(window.OWNER_EMAIL||"").toLowerCase();
-const BEBAS_SALIN=["amifaveiro9@gmail.com"]; // boleh salin & screenshot di mock exam, selain pemilik
+const BEBAS_SALIN=(window.BEBAS_SALIN||["amifaveiro9@gmail.com"]).map(e=>String(e).toLowerCase()); // boleh salin & screenshot di mock exam, selain pemilik
 let U=null,isOwner=false,T=null,P={},aku=null,pos=0,urutLama={},deltaUntil={},simpanT=null,tick=null,unsubT=null,unsubP=null,selesaiKirim=false,pMuat=false;
 
 function login(){const p=new firebase.auth.GoogleAuthProvider();p.setCustomParameters({prompt:"select_account"});
