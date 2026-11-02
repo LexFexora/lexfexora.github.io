@@ -1891,7 +1891,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       $('pklist').innerHTML=L.map((ids,i)=>{const ok=ids.filter(id=>B[id]).length,ss=window.__quiz&&window.__quiz.sesi&&window.__quiz.sesi('paket|'+(i+1)),
           dj=ss&&ss.ans?Object.keys(ss.ans).length:0,lanjut=ss&&(ss.pos>0||dj>0)&&ss.pos<ids.length,
           bn=dj?Object.keys(ss.ans).filter(id=>BYQ[id]&&ss.ans[id]===BYQ[id].a).length:0,pb=dj?Math.round(bn*100/dj):0;
-        return `<div class="tr pk"><span class="trj"><b>Package ${i+1}</b></span><span class="muted trm pkpct" title="${dj} of ${ids.length} questions answered">${Math.round(dj*100/ids.length)}% complete</span>${dj?`<span class="pkbs" title="${bn} correct and ${dj-bn} wrong out of ${dj} answered"><i class="ok">✓ ${pb}%</i><i class="no">✗ ${100-pb}%</i></span>`:''}<button class="btn copy" type="button" data-pk="${i+1}">${lanjut?'Continue':'Start'}</button></div>`;}).join('');
+        return `<div class="tr pk"><span class="trj"><b>Package ${i+1}</b></span><span class="muted trm pkpct" title="${dj} of ${ids.length} questions answered">${Math.round(dj*100/ids.length)}%</span>${dj?`<span class="pkbs" title="${bn} correct and ${dj-bn} wrong out of ${dj} answered"><i class="ok">✓ ${pb}%</i><i class="no">✗ ${100-pb}%</i></span>`:''}<button class="btn copy" type="button" data-pk="${i+1}">${lanjut?'Continue':'Start'}</button></div>`;}).join('');
       $('pklist').querySelectorAll('[data-pk]').forEach(b=>b.onclick=()=>{const n=+b.dataset.pk,ids=susunPaket()[n-1];if(!window.__ulang||!ids||!ids.length)return;
         window.__ulang(2,'all',ids,'Package '+n,'paket|'+n,true);});};
     const KK='pk-kode',sb=window.__sb;let buka=isOwner;
@@ -1959,8 +1959,8 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       $('kplist').innerHTML=Object.keys(CATS).map(c=>{const P=L.filter(p=>p.c===+c);let tot=0,jw=0;
         const rows=P.map((p,i)=>{const ss=window.__quiz&&window.__quiz.sesi&&window.__quiz.sesi(p.key),dj=ss&&ss.ans?Object.keys(ss.ans).length:0,lanjut=ss&&(ss.pos>0||dj>0)&&ss.pos<p.ids.length,
             bn=dj?Object.keys(ss.ans).filter(id=>BYQ[id]&&ss.ans[id]===BYQ[id].a).length:0,pb=dj?Math.round(bn*100/dj):0;tot+=p.ids.length;jw+=Math.min(dj,p.ids.length);
-          return `<div class="tr pk"><span class="trj"><b>${kpJudul(p)}</b><small>${kpKet(p)}</small></span><span class="kpr"><span class="muted pkpct" title="${dj} of ${p.ids.length} questions answered">${Math.round(dj*100/p.ids.length)}% complete</span>${dj?`<span class="pkbs" title="${bn} correct and ${dj-bn} wrong out of ${dj} answered"><i class="ok">✓ ${pb}%</i><i class="no">✗ ${100-pb}%</i></span>`:''}<button class="btn copy" type="button" data-kp="${L.indexOf(p)}">${lanjut?'Continue':'Start'}</button></span></div>`;}).join('');
-        return kpKat(c,rows,`${new Set(P.map(p=>p.s)).size} sub-topics · ${P.length} packages · ${tot?Math.round(jw*100/tot):0}% complete`);}).join('');
+          return `<div class="tr pk"><span class="trj"><b>${kpJudul(p)}</b><small>${kpKet(p)}</small></span><span class="kpr"><span class="muted pkpct" title="${dj} of ${p.ids.length} questions answered">${Math.round(dj*100/p.ids.length)}%</span>${dj?`<span class="pkbs" title="${bn} correct and ${dj-bn} wrong out of ${dj} answered"><i class="ok">✓ ${pb}%</i><i class="no">✗ ${100-pb}%</i></span>`:''}<button class="btn copy" type="button" data-kp="${L.indexOf(p)}">${lanjut?'Continue':'Start'}</button></span></div>`;}).join('');
+        return kpKat(c,rows,`${new Set(P.map(p=>p.s)).size} sub-topics · ${P.length} packages · ${tot?Math.round(jw*100/tot):0}%`);}).join('');
       kpIkat();
       $('kplist').querySelectorAll('[data-kp]').forEach(b=>b.onclick=()=>{const p=susunKat()[+b.dataset.kp];if(!window.__ulang||!p||!p.ids.length)return;
         window.__ulang(p.c,'all',p.ids,p.nm+(p.of>1?' · Part '+p.part:''),p.key,true);});};
