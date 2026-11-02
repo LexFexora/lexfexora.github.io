@@ -1256,7 +1256,7 @@ function bagNum(b){return b==="bonus"?"bonus":b==="all"?"all":+b;}
 // Status per akun (izin.sub): 'penuh' = semua sub-materi, 'terbatas' = hanya yang terbuka; kosong = otomatis
 // (pembeli/kode Akses seluruhnya dan pengguna yang bergabung sebelum 2 Nov 2026 21.50 WIB = penuh).
 const SUB_GRATIS=3,bukaSub=(c,s)=>{const m=window.__aksesBuka;return m&&Array.isArray(m[c])?m[c].includes(+s):+s<=SUB_GRATIS;};
-const terbatas=()=>{if(window.__isOwner)return false;const md=window.__subMode;if(md==='penuh')return false;if(md==='terbatas')return true;return !window.__penuh&&!window.__lama;};
+const terbatas=()=>{if(window.__isOwner||window.__penuh)return false;const md=window.__subMode;if(md==='penuh')return false;if(md==='terbatas')return true;return !window.__penuh&&!window.__lama;};
 const subBuka=(c,s)=>!terbatas()||(s!=="all"&&bukaSub(c,s));
 const inBuka=q=>!terbatas()||q.mappings.some(m=>bukaSub(m.c,m.s));
 function pool(){
@@ -2182,10 +2182,10 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
     db.doc('bank/akses').get().then(d=>{AKS=d.exists?(d.data().buka||null):null;aksAtur();}).catch(()=>aksAtur());
     $('assimpan').onclick=()=>{const m={};Object.keys(SUBS).forEach(c=>m[c]=[]);document.querySelectorAll('#asatur input:checked').forEach(i=>m[i.dataset.c].push(+i.dataset.s));
       $('assimpan').disabled=true;db.doc('bank/akses').set({buka:m}).then(()=>{AKS=m;$('asinfo').textContent='✓ Tersimpan. Berlaku langsung untuk akun terbatas.';}).catch(e=>{$('asinfo').textContent='Gagal: '+(e.code||e.message);}).finally(()=>{$('assimpan').disabled=false;});};
-    const aksEfektif=(id,x)=>{if(x.sub==='penuh'||x.sub==='terbatas')return [x.sub,false];const dm=x.diminta&&x.diminta.toDate?x.diminta.toDate():null,lama=dm?dm<new Date('2026-11-02T14:50:00Z'):!x.jalur;
+    const aksEfektif=(id,x)=>{if(BAYAR.has(id)||GRATIS.has(id))return ['penuh','paket'];if(x.sub==='penuh'||x.sub==='terbatas')return [x.sub,false];const dm=x.diminta&&x.diminta.toDate?x.diminta.toDate():null,lama=dm?dm<new Date('2026-11-02T14:50:00Z'):!x.jalur;
       return [(BAYAR.has(id)||GRATIS.has(id)||x.jalur==='penuh'||lama)?'penuh':'terbatas',true];};
     const aksNama=list=>{const G={penuh:[],terbatas:[]};list.forEach(([id,x])=>{const [lv,oto]=aksEfektif(id,x);G[lv].push([id,x,oto]);});
-      const chip=([id,x,oto],lv)=>`<button type="button" class="aschip" data-asu="${esc(id)}" data-ke="${lv==='penuh'?'terbatas':'penuh'}" title="Pindahkan ke Akses ${lv==='penuh'?'terbatas':'penuh'}">${esc(x.nama||(x.email||'').split('@')[0])}${oto?' <i>otomatis</i>':''} <span class="aspin">${lv==='penuh'?'↓':'↑'}</span></button>`;
+      const chip=([id,x,oto],lv)=>oto==='paket'?`<span class="aschip lunas" title="Punya akses paket: selalu akses penuh">${esc(x.nama||(x.email||'').split('@')[0])} <i>paket</i></span>`:`<button type="button" class="aschip" data-asu="${esc(id)}" data-ke="${lv==='penuh'?'terbatas':'penuh'}" title="Pindahkan ke Akses ${lv==='penuh'?'terbatas':'penuh'}">${esc(x.nama||(x.email||'').split('@')[0])}${oto?' <i>otomatis</i>':''} <span class="aspin">${lv==='penuh'?'↓':'↑'}</span></button>`;
       $('aspenuh').innerHTML=G.penuh.map(r=>chip(r,'penuh')).join('')||'<small>Belum ada.</small>';$('asbatas').innerHTML=G.terbatas.map(r=>chip(r,'terbatas')).join('')||'<small>Belum ada.</small>';
       const nm=x=>esc(x.nama||(x.email||'').split('@')[0]),pk=list.filter(([id])=>BAYAR.has(id)||GRATIS.has(id)),tp=list.filter(([id])=>!BAYAR.has(id)&&!GRATIS.has(id));
       $('aspaket').innerHTML=pk.map(([id,x])=>BAYAR.has(id)?`<span class="aschip lunas">${nm(x)} <i>lunas</i></span>`:`<button type="button" class="aschip" data-cabut="${esc(id)}" title="Cabut akses paket">${nm(x)} <span class="aspin">✕</span></button>`).join('')||'<small>Belum ada.</small>';
