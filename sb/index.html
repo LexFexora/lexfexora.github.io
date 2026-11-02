@@ -940,7 +940,7 @@ html.fokus body #card{padding-bottom:calc(72px + env(safe-area-inset-bottom,0px)
   </div>
   <div class="gkode" id="g-kode" hidden><span>Have an access code?</span><div class="linkrow"><input id="g-kodein" autocomplete="off" placeholder="Access code" aria-label="Access code"><button class="btn" type="button" id="g-kodebtn">Activate</button></div><small id="g-kodemsg"></small></div>
   <p class="note gkodeada" id="g-kodeada" hidden>✓ Access code received. Sign in with Google to activate it.</p>
-  <p class="note" id="gate-note" hidden>If the sign-in button does not work, open this link in Chrome or Safari (not inside the WhatsApp/Instagram app).</p>
+  <p class="note" id="gate-note" hidden>If the sign-in button doesn't work, open this link in Chrome or Safari instead of the WhatsApp or Instagram in-app browser.</p>
 </div>
 
 <div class="wrap">
@@ -980,8 +980,8 @@ html.fokus body #card{padding-bottom:calc(72px + env(safe-area-inset-bottom,0px)
     <summary><span class="stl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg> Quiz Options &amp; Sections</span><span class="ringkas" id="ringkas"></span></summary>
     <div class="controls">
       <label class="ctl-sub" for="sub"><span id="sublbl">Section Details</span><select id="sub"></select></label>
-      <label class="ctl-sub" for="bag" id="bagwrap" hidden><span>Question Part</span><select id="bag"></select></label>
-      <label for="order">Order <select id="order"><option value="seq">Sequential</option><option value="rand">Shuffle</option></select></label>
+      <label class="ctl-sub" for="bag" id="bagwrap" hidden><span>Part</span><select id="bag"></select></label>
+      <label for="order">Order <select id="order"><option value="seq">Sequential</option><option value="rand">Shuffled</option></select></label>
       <select id="timer" hidden aria-hidden="true"><option value="off"></option><option value="cum"></option><option value="cum45"></option><option value="cum35"></option><option value="cum30"></option><option value="per"></option><option value="per45"></option><option value="per35"></option><option value="per30"></option></select><label for="tmode">Timer <select id="tmode"><option value="off">Off</option><option value="cum">Total</option><option value="per">Per question</option></select></label><label for="tsec">Duration <select id="tsec"><option value="54">54 sec</option><option value="45">45 sec</option><option value="35">35 sec</option><option value="30">30 sec</option></select></label>
       <div class="siaprow" id="siaprow"><button class="btn primary" id="siapbtn" type="button"><span class="inkt">Keep it</span></button></div>
     </div>
@@ -989,7 +989,7 @@ html.fokus body #card{padding-bottom:calc(72px + env(safe-area-inset-bottom,0px)
   <details class="setelan tocard" id="tocard" hidden>
     <summary><span class="stl"><svg class="piala" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="pialaEmas" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff3c4"/><stop offset=".35" stop-color="#e9b949"/><stop offset=".7" stop-color="#b07a16"/><stop offset="1" stop-color="#f3cf6b"/></linearGradient><linearGradient id="pialaKilap" x1="0" y1="0" x2="1" y2="0" gradientUnits="objectBoundingBox"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".95"/><stop offset="1" stop-color="#fff" stop-opacity="0"/><animateTransform attributeName="gradientTransform" type="translate" values="-1.2 0;1.2 0;1.2 0" keyTimes="0;.45;1" dur="3.2s" repeatCount="indefinite"/></linearGradient></defs><g stroke="#8a5d10" stroke-width=".6" stroke-linejoin="round"><path fill="url(#pialaEmas)" d="M7 3.5h10v5.5a5 5 0 0 1-10 0z"/><path fill="none" stroke="url(#pialaEmas)" stroke-width="1.8" stroke-linecap="round" d="M7 5.5H4.6a2.6 2.6 0 0 0 2.7 3.6M17 5.5h2.4a2.6 2.6 0 0 1-2.7 3.6"/><path fill="url(#pialaEmas)" d="M10.8 13.6h2.4v3.6h-2.4z"/><path fill="url(#pialaEmas)" d="M8 17.2h8l.8 3.3H7.2z"/></g><path fill="url(#pialaKilap)" opacity=".85" d="M7 3.5h10v5.5a5 5 0 0 1-10 0z"/><path fill="#fff" opacity=".7" d="M9 5h1.2v3.6a2.6 2.6 0 0 0 .6 1.7l-.7.6A3.6 3.6 0 0 1 9 8.6z"/></svg> Mock Exam</span></summary>
     <div class="toisi">
-      <p class="note" id="toket">There are no quizzes available right now.</p>
+      <p class="note" id="toket">No mock exams are available right now.</p>
       <div id="tolist" class="tolist"></div>
       <div id="toown" hidden>
     <details class="tobox" id="tobox"><summary class="btn copy">＋ Buat Mock Exam baru</summary>
@@ -1034,7 +1034,7 @@ html.fokus body #card{padding-bottom:calc(72px + env(safe-area-inset-bottom,0px)
   <div class="ulangbar" id="ulangbar" hidden></div>
   <section class="card" id="card" aria-live="polite"></section>
 
-  <details class="mapbox" id="mapbox"><summary id="mapsum">Question Map</summary><div class="map" id="map"></div><p class="mapket"><span><i class="tk lil" id="ketlil"></i>answered correctly</span><span><i class="tk gul" id="ketgul"></i>answered wrong or time ran out</span></p></details>
+  <details class="mapbox" id="mapbox"><summary id="mapsum">Question Map</summary><div class="map" id="map"></div><p class="mapket"><span><i class="tk lil" id="ketlil"></i>answered correctly</span><span><i class="tk gul" id="ketgul"></i>answered incorrectly or timed out</span></p></details>
 
   <div class="exitbawah" id="exitbawah" hidden><button class="btn keluar akunexit" id="akunexit2" type="button" aria-label="Exit" title="Exit"></button></div>
   <footer><span>© 2026 CAT - Lex Fexora. All rights reserved.</span></footer>
@@ -1491,7 +1491,7 @@ function renderCard(){
 <path d="M14 18H26V42H14Z" fill="url(#mkWax)"/><path d="M14 18c2 0 2 6 4 6s1-6 3-6 1 4 3 4 2-4 2-4" fill="#fffaf0"/><path d="M20 15V18" stroke="#333"/>
 <ellipse cx="20" cy="44" rx="14" ry="4" fill="#8f939a"/><ellipse cx="20" cy="42.5" rx="11" ry="3" fill="#c9ccd1"/><path d="M33 44c4 0 5 3 2 4" fill="none" stroke="#8f939a" stroke-width="1.6"/></svg><b class="mkb1">Cahaya Lilin</b><p>Terpancar saat analisismu tepat sasaran. Rawat apinya, jangan biarkan ia padam di tengah jalan.</p><div class="mkchain" aria-hidden="true"></div><svg class="mkico" viewBox="0 0 44 44" aria-hidden="true"><defs><linearGradient id="mkPp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f3e2bb"/><stop offset="1" stop-color="#c9a873"/></linearGradient><linearGradient id="mkRl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e8d1a2"/><stop offset=".5" stop-color="#b38d55"/><stop offset="1" stop-color="#7c5f33"/></linearGradient></defs>
 <rect x="9" y="8" width="26" height="28" fill="url(#mkPp)"/><path d="M13 14h18M13 18h16M13 22h18M13 26h14M13 30h17" stroke="#9b7d4f" stroke-width=".9"/>
-<rect x="6" y="5" width="32" height="5" rx="2.5" fill="url(#mkRl)"/><rect x="6" y="34" width="32" height="5" rx="2.5" fill="url(#mkRl)"/></svg><b class="mkb2">Gulungan Naskah</b><p>Muncul saat langkahmu keliru. Bukan tanda kekalahan, melainkan isyarat bagimu untuk membuka kembali lembaran naskah kuno dan meluruskan pemahaman.</p></div><span class="mkrol mkrol-b" aria-hidden="true"></span></div><p class="mkhint">Tekan <b>Keep it</b> untuk membuka gulungan.</p><button class="btn primary mulai" id="mulaibtn" type="button">START</button><div class="info"><span>${n} questions</span><span>${state.order==="rand"?"Shuffle":"Sequential"}</span><span>${tm}</span></div></div>`;
+<rect x="6" y="5" width="32" height="5" rx="2.5" fill="url(#mkRl)"/><rect x="6" y="34" width="32" height="5" rx="2.5" fill="url(#mkRl)"/></svg><b class="mkb2">Gulungan Naskah</b><p>Muncul saat langkahmu keliru. Bukan tanda kekalahan, melainkan isyarat bagimu untuk membuka kembali lembaran naskah kuno dan meluruskan pemahaman.</p></div><span class="mkrol mkrol-b" aria-hidden="true"></span></div><p class="mkhint">Tekan <b>Keep it</b> untuk membuka gulungan.</p><button class="btn primary mulai" id="mulaibtn" type="button">START</button><div class="info"><span>${n} questions</span><span>${state.order==="rand"?"Shuffled":"Sequential"}</span><span>${tm}</span></div></div>`;
     $("mulaibtn").onclick=()=>{if(tmode()==="per"){const bisa=id=>state.ans[id]===undefined&&!state.expired[id];if(!bisa(state.list[state.pos])){let i=state.list.findIndex((id,j)=>j>state.pos&&bisa(id));if(i<0)i=state.list.findIndex(bisa);if(i>=0)state.pos=i;}}state.mulai=true;state.qLeft=sec();state.qId=null;lastTick=Date.now();persist();render();window.scrollTo({top:Math.max(0,$("card").offsetTop-12)});};return;}
   if(state.pos>=state.list.length){
     const {ok,bad,n}=tally();
@@ -1634,7 +1634,7 @@ document.querySelector("#kpcard>summary").addEventListener("click",e=>{const d=$
 document.querySelector("#pkcard>summary").addEventListener("click",e=>{const d=$("pkcard");e.preventDefault();if(d.dataset.anim)return;if(d.open){tutupPerlahan(d,[d.querySelector(".toisi")].filter(Boolean));return;}
   const h0=d.offsetHeight;d.open=true;turunPerlahan(d,h0,[d.querySelector(".toisi")].filter(Boolean));});
 function renderRingkas(){const st=$("setelan");if(st){if(!st.dataset.anim)st.hidden=state.cat==="all"||!!state.setHilang;st.classList.toggle("perlu",!siapOK());document.querySelector(".wrap").classList.toggle("blmsiap",!siapOK()&&!(window.__gulTutup&&state.cat!=="all"));document.querySelector(".wrap").classList.toggle("blmmulai",state.cat!=="all"&&siapOK()&&!state.mulai&&state.pos<state.list.length);const sr=$("siaprow");if(sr)sr.hidden=siapOK();}const r=$("ringkas");if(!r)return;const s=state.cat==="all"||state.sub==="all"?"All Sections":state.sub+". "+SUBS[state.cat][state.sub-1]+(state.ulang?" · "+state.ulang.label:state.bag==="bonus"?" · Bonus":state.bag!=="all"?" · Part "+state.bag:"");
-  r.textContent=s+" · "+(state.order==="rand"?"Shuffle":"Sequential")+" · "+({off:"Timer off",cum:"Total timer",per:"Timer per question"}[tMode]||"");}
+  r.textContent=s+" · "+(state.order==="rand"?"Shuffled":"Sequential")+" · "+({off:"No timer",cum:"Total timer",per:"Timer per question"}[tMode]||"");}
 function render(){renderUlang();if(tmode()==="per")syncQ();renderScore();renderCard();renderMap();renderTimer();renderRingkas();sinkronTimer();}
 function retake(){buildSession(true,null,true);render();}
 function retryWrong(){const w=state.list.filter(isBad);if(!w.length)return;buildSession(true,w,true);render();}
@@ -1819,7 +1819,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
     return pilih.length===1?nm(pilih[0]):nm(pilih[0])+' +'+(pilih.length-1)+' sub lainnya';}
   function tryoutKartu(){$('tocard').hidden=false;if(isOwner){$('toown').hidden=false;$('toket').hidden=true;}
     // Selain pemilik: panel tetap tampil, hanya keterangan; ikut mock exam lewat tautan join yang dibagikan pemilik.
-    else{$('toket').hidden=false;$('toket').innerHTML='<b class="toket-h">🔒 Restricted Examination Chamber</b><span>Full-length mock exams run on scheduled sessions only. Access is strictly granted via direct links shared by the developer. Contact the developer to schedule a joint practice session.</span>';$('tolist').innerHTML='';return;}
+    else{$('toket').hidden=false;$('toket').innerHTML='<b class="toket-h">🔒 Restricted Examination Chamber</b><span>Full-length mock exams run only in scheduled sessions. Access is granted only through direct links shared by the developer. Contact the developer to schedule a group practice session.</span>';$('tolist').innerHTML='';return;}
     const ST={menunggu:'ruang tunggu',siap:'cek kesiapan',mulai:'sedang berjalan',jeda:'disimpan · bisa dilanjutkan',selesai:'selesai'};
     db.collection('tryout').orderBy('dibuat','desc').limit(15).onSnapshot(qs=>{const rows=[];qs.forEach(d=>{const t=d.data(),u=location.origin+location.pathname.replace(/[^/]*$/,'')+'tryout.html?t='+d.id;
         if(!isOwner&&t.status==='selesai')return;
@@ -1830,11 +1830,11 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       $('tolist').innerHTML=rows.join('')+jl;
       $('tolist').querySelectorAll('[data-bagi]').forEach(b=>b.onclick=()=>{const u=b.dataset.bagi,tx='Ikut Mock Exam bersama: '+u;if(navigator.share)navigator.share({title:'Mock Exam',text:'Ikut Mock Exam bersama',url:u}).catch(()=>{});else window.open('https://wa.me/?text='+encodeURIComponent(tx),'_blank');});
       // Peserta: teks kosong bila tidak ada mock exam yang dibuka, ajakan Ikut bila ada.
-      if(!isOwner)$('toket').textContent=rows.length?'Mock exam yang sedang dibuka. Ketuk Ikut untuk bergabung.':'There are no quizzes available right now.';
+      if(!isOwner)$('toket').textContent=rows.length?'Mock exam yang sedang dibuka. Ketuk Ikut untuk bergabung.':'No mock exams are available right now.';
       $('tolist').querySelectorAll('[data-salin]').forEach(b=>b.onclick=()=>navigator.clipboard&&navigator.clipboard.writeText(b.dataset.salin).then(()=>{b.textContent='✓ Tersalin';}));
       $('tolist').querySelectorAll('[data-hapus]').forEach(b=>b.onclick=()=>{if(!confirm('Hapus mock exam ini? Tautannya tidak bisa dibuka lagi. Soalnya kembali dihitung belum diujikan.'))return;const id=b.dataset.hapus;
         Promise.resolve(window.__toLepas&&window.__toLepas(id)).catch(()=>{}).then(()=>db.doc('tryout/'+id).delete());});},
-      ()=>{$('tolist').innerHTML=isOwner?'<p class="note">Mock exam list unavailable.</p>':'';if(!isOwner)$('toket').textContent='There are no quizzes available right now.';});}
+      ()=>{$('tolist').innerHTML=isOwner?'<p class="note">Could not load the mock exam list.</p>':'';if(!isOwner)$('toket').textContent='No mock exams are available right now.';});}
   // Paket Prediksi: tampil untuk semua pengguna yang disetujui, tetapi daftar paket baru terbuka setelah kode akses benar.
   // Hanya pemilik dan pembeli yang sudah lunas (cat_sudah_beli) yang bisa membuka paket. Kode akses lama (cat_kode) tidak dipakai lagi.
   function paketKartu(){const box=$('pkcard');if(!box)return;box.hidden=false;
@@ -1850,7 +1850,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
     const kata=t=>new Set(normT(t).split(' ').filter(w=>w.length>2&&!STOP.has(w)));
     const mirip=(A,B)=>{let n=0;A.forEach(w=>{if(B.has(w))n++;});return n/Math.max(1,A.size+B.size-n);};
     const pkStat=()=>{const L=susunPaket(),n=L.reduce((t,x)=>t+x.length,0),f=v=>v.toLocaleString('en-US');
-      return `<span class="pkstat"><span><b>${f(n)}</b><i>Questions</i></span><span><b>${L.length}</b><i>Packages</i></span><span><b>0</b><i>Repeats</i></span></span>`;};
+      return `<span class="pkstat"><span><b>${f(n)}</b><i>Questions</i></span><span><b>${L.length}</b><i>Packages</i></span><span><b>0</b><i>Duplicates</i></span></span>`;};
     let PKS=null;const susunPaket=()=>{if(PKS)return PKS;const r=benih('paket-prediksi'),seen=new Set(),perJwb={},kl={};
       const kembar=q=>{const k=normT(q.q);if(seen.has(k))return true;const j=normT(q.o[q.a]),W=kata(q.q),L=perJwb[j]=perJwb[j]||[];
         if(L.some(X=>mirip(W,X)>=.6))return true;seen.add(k);L.push(W);return false;};
@@ -1881,16 +1881,16 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       const BYQ={};QB.forEach(q=>BYQ[q.id]=q);const kom=ids=>{const h={};ids.forEach(id=>{const q=BYQ[id];if(q)h[q.c]=(h[q.c]||0)+1;});return Object.keys(CATS).filter(c=>h[c]).map(c=>({1:'IH',2:'Formil',3:'Materil',4:'TIK'}[c]||CATS[c].short)+' '+h[c]).join(' · ');};
       if(!buka){kunci();return;}
       kpRender();
-      $('pkket').innerHTML=`<span class="pklead">Each package is a full CAT simulation with 25 questions from each cluster: Legal Theory, Formal Law, Material Law, and ICT.</span>${pkStat()}<small class="pkcat">Predictions built from the CAT-Lex Fexora question bank, not leaked exam questions.</small>`;
+      $('pkket').innerHTML=`<span class="pklead">Each package is a full CAT simulation with 25 questions from each cluster: Legal Theory, Procedural Law, Substantive Law, and ICT.</span>${pkStat()}<small class="pkcat">The predictions are drawn from the CAT - Lex Fexora question bank. They are not leaked exam questions.</small>`;
       $('pklist').innerHTML=L.map((ids,i)=>{const ok=ids.filter(id=>B[id]).length,ss=window.__quiz&&window.__quiz.sesi&&window.__quiz.sesi('paket|'+(i+1)),
           dj=ss&&ss.ans?Object.keys(ss.ans).length:0,lanjut=ss&&(ss.pos>0||dj>0)&&ss.pos<ids.length,
           bn=dj?Object.keys(ss.ans).filter(id=>BYQ[id]&&ss.ans[id]===BYQ[id].a).length:0,pb=dj?Math.round(bn*100/dj):0;
-        return `<div class="tr pk"><span class="trj"><b>Package ${i+1}</b></span><span class="muted trm pkpct" title="${dj} of ${ids.length} questions answered">${Math.round(dj*100/ids.length)}% done</span>${dj?`<span class="pkbs" title="${bn} correct, ${dj-bn} wrong of ${dj} answered"><i class="ok">✓ ${pb}%</i><i class="no">✗ ${100-pb}%</i></span>`:''}<button class="btn copy" type="button" data-pk="${i+1}">${lanjut?'Continue':'Start'}</button></div>`;}).join('');
+        return `<div class="tr pk"><span class="trj"><b>Package ${i+1}</b></span><span class="muted trm pkpct" title="${dj} of ${ids.length} questions answered">${Math.round(dj*100/ids.length)}% complete</span>${dj?`<span class="pkbs" title="${bn} correct and ${dj-bn} wrong out of ${dj} answered"><i class="ok">✓ ${pb}%</i><i class="no">✗ ${100-pb}%</i></span>`:''}<button class="btn copy" type="button" data-pk="${i+1}">${lanjut?'Continue':'Start'}</button></div>`;}).join('');
       $('pklist').querySelectorAll('[data-pk]').forEach(b=>b.onclick=()=>{const n=+b.dataset.pk,ids=susunPaket()[n-1];if(!window.__ulang||!ids||!ids.length)return;
         window.__ulang(2,'all',ids,'Package '+n,'paket|'+n,true);});};
     const KK='pk-kode',sb=window.__sb;let buka=isOwner;
-    const kunci=(pesan)=>{kpRender();const L=susunPaket();$('pkket').innerHTML='<span class="pklead">Built to mirror the CAT exam for Religious Court judge candidates. Somewhere inside are the questions that will decide your result. How many can you clear?</span>'+pkStat();
-      $('pklist').innerHTML=`<div class="pkkunci"><b>🔒 Restricted Access</b><span>Available to buyers only. One payment unlocks every package for life.</span><small id="pkpesan">${pesan||''}</small><button class="btn copy pkbeli" type="button" id="pkbeli">Buy access</button></div>`+[1,2,3,4,5,6].map(n=>`<div class="tr pk pkghost" aria-hidden="true"><span class="trj"><b>Package ${n}</b></span><span class="pkpct">🔒</span><span class="pkgbtn">Sealed</span></div>`).join('')+`<p class="pkmore">+ ${L.length-6} more sealed packages</p>`;
+    const kunci=(pesan)=>{kpRender();const L=susunPaket();$('pkket').innerHTML='<span class="pklead">Built to mirror the CAT for Religious Court judge candidates. Somewhere inside are the questions that will decide your result. How many can you clear?</span>'+pkStat();
+      $('pklist').innerHTML=`<div class="pkkunci"><b>🔒 Restricted Access</b><span>Available to buyers only. One payment unlocks every package for a full year.</span><small id="pkpesan">${pesan||''}</small><button class="btn copy pkbeli" type="button" id="pkbeli">Buy access</button></div>`+[1,2,3,4,5,6].map(n=>`<div class="tr pk pkghost" aria-hidden="true"><span class="trj"><b>Package ${n}</b></span><span class="pkpct">🔒</span><span class="pkgbtn">Sealed</span></div>`).join('')+`<p class="pkmore">+ ${L.length-6} more sealed packages</p>`;
       $('pkbeli').onclick=()=>beliAkses($('pkbeli'));
       sb.from('cat_beli').select('order_id').eq('status','menunggu').eq('metode','transfer').not('dikirim_pada','is',null).limit(1).then(({data})=>{if(data&&data.length&&$('pkpesan')&&!$('pkpesan').textContent){$('pkpesan').textContent='Transfer submitted. Waiting for the owner to confirm it.';if(window.__tfTunggu)window.__tfTunggu();}},()=>{});
       if(/[?&]bayar=ok\b/.test(location.search)&&!window.__pkTunggu){window.__pkTunggu=1;$('pkpesan').textContent='Payment received. Unlocking your packages…';let n=0;
@@ -1902,7 +1902,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       try{localStorage.removeItem(KK);}catch(e){}kunci('');};
     // Pemilik: pengaturan penjualan (harga, rekening, konfirmasi transfer).
     const kodeOwner=async()=>{if($('pkown'))return;const d=document.createElement('div');d.id='pkown';d.className='pkown';
-      d.insertAdjacentHTML('beforeend','<b>Sales</b><div class="linkrow"><input id="pkbharga" autocomplete="off" inputmode="numeric" placeholder="Price in Rp, e.g. 99000" aria-label="Price in rupiah"><input id="pkbwa" autocomplete="off" inputmode="tel" placeholder="WhatsApp for help, e.g. 0812…" aria-label="WhatsApp number"></div><input id="pkbrek" autocomplete="off" placeholder="Bank account, e.g. BRI 0123 4567 8901 234 a.n. Your Name" aria-label="Bank account for transfers"><div class="linkrow"><button class="btn copy" type="button" id="pkbsimpan">Save price</button><button class="btn copy" type="button" id="pkbsalin">⧉ Copy public link</button></div><small id="pkbinfo">Buyers transfer an exact amount (price + 3 unique digits) to your account. Check the mutation in BRImo, then tap Confirm below: their account is approved and the packages unlock immediately. Leave the bank account empty to use Xendit instead.</small><small id="pkbjual"></small><b class="pkbsub">Transfers to confirm <button class="btn copy" type="button" id="pkbmuat">↻ Refresh</button></b><div id="pkbtunggu" class="pkbtunggu"><small>No transfers waiting.</small></div>');
+      d.insertAdjacentHTML('beforeend','<b>Sales</b><div class="linkrow"><input id="pkbharga" autocomplete="off" inputmode="numeric" placeholder="Price in Rp, e.g. 99000" aria-label="Price in rupiah"><input id="pkbwa" autocomplete="off" inputmode="tel" placeholder="WhatsApp for help, e.g. 0812…" aria-label="WhatsApp number"></div><input id="pkbrek" autocomplete="off" placeholder="Bank account, e.g. BRI 0123 4567 8901 234 a.n. Your Name" aria-label="Bank account for transfers"><div class="linkrow"><button class="btn copy" type="button" id="pkbsimpan">Save price</button><button class="btn copy" type="button" id="pkbsalin">⧉ Copy public link</button></div><small id="pkbinfo">Buyers transfer the exact amount (price plus 3 unique digits) to your account. Check your BRImo transaction history, then tap Confirm below. The buyer&#39;s account is approved and the packages unlock right away. Leave the bank account empty to use Xendit instead.</small><small id="pkbjual"></small><b class="pkbsub">Transfers to confirm <button class="btn copy" type="button" id="pkbmuat">↻ Refresh</button></b><div id="pkbtunggu" class="pkbtunggu"><small>No transfers waiting.</small></div>');
       $('pklist').before(d);
       const PUBLIK='https://lexfexora.github.io/beli/',rp=v=>'Rp'+Number(v).toLocaleString('id-ID');
       try{const {data,error}=await sb.from('cat_bayar').select('nominal,wa,rekening').eq('id','paket').maybeSingle();if(error)throw error;if(data){$('pkbharga').value=data.nominal||'';$('pkbwa').value=data.wa||'';$('pkbrek').value=data.rekening||'';}
@@ -1920,7 +1920,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
         if(error){box.innerHTML='<small>Run sb/supabase-update-6.sql in Supabase to enable bank transfers.</small>';return;}
         box.innerHTML=data.length?data.map(x=>`<div class="pkbrow"><span><b>${rp(x.nominal)}</b> · ${escH(x.pengirim)}<br><small>${escH(x.email)} · ${new Date(x.dikirim_pada).toLocaleString('id-ID',{dateStyle:'short',timeStyle:'short'})}</small></span><button class="btn copy" type="button" data-ok="${escH(x.order_id)}">✓ Confirm</button><button class="btn copy" type="button" data-no="${escH(x.order_id)}">✕</button></div>`).join(''):'<small>No transfers waiting.</small>';
         box.querySelectorAll('[data-ok],[data-no]').forEach(b=>b.onclick=async()=>{const ok=!!b.dataset.ok,id=b.dataset.ok||b.dataset.no;
-          if(!confirm(ok?'Confirm this transfer? Make sure the exact amount is in your BRImo mutation.':'Reject this transfer?'))return;b.disabled=true;
+          if(!confirm(ok?'Confirm this transfer? Make sure the exact amount appears in your BRImo transaction history.':'Reject this transfer?'))return;b.disabled=true;
           const {error}=await sb.rpc('cat_beli_konfirmasi',{p_order:id,p_terima:ok});if(error){alert('Failed: '+(error.message||error.code));b.disabled=false;return;}muat();if(window.__muatBayar)window.__muatBayar();});};
       $('pkbmuat').onclick=muat;muat();
       $('pkbsalin').onclick=()=>{const b=$('pkbsalin'),ok=()=>{b.textContent='✓ Copied';setTimeout(()=>b.textContent='⧉ Copy public link',1500);};
@@ -1953,8 +1953,8 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       $('kplist').innerHTML=Object.keys(CATS).map(c=>{const P=L.filter(p=>p.c===+c);let tot=0,jw=0;
         const rows=P.map((p,i)=>{const ss=window.__quiz&&window.__quiz.sesi&&window.__quiz.sesi(p.key),dj=ss&&ss.ans?Object.keys(ss.ans).length:0,lanjut=ss&&(ss.pos>0||dj>0)&&ss.pos<p.ids.length,
             bn=dj?Object.keys(ss.ans).filter(id=>BYQ[id]&&ss.ans[id]===BYQ[id].a).length:0,pb=dj?Math.round(bn*100/dj):0;tot+=p.ids.length;jw+=Math.min(dj,p.ids.length);
-          return `<div class="tr pk"><span class="trj"><b>${kpJudul(p)}</b><small>${kpKet(p)}</small></span><span class="kpr"><span class="muted pkpct" title="${dj} of ${p.ids.length} questions answered">${Math.round(dj*100/p.ids.length)}% done</span>${dj?`<span class="pkbs" title="${bn} correct, ${dj-bn} wrong of ${dj} answered"><i class="ok">✓ ${pb}%</i><i class="no">✗ ${100-pb}%</i></span>`:''}<button class="btn copy" type="button" data-kp="${L.indexOf(p)}">${lanjut?'Continue':'Start'}</button></span></div>`;}).join('');
-        return kpKat(c,rows,`${new Set(P.map(p=>p.s)).size} sub-topics · ${P.length} packages · ${tot?Math.round(jw*100/tot):0}% done`);}).join('');
+          return `<div class="tr pk"><span class="trj"><b>${kpJudul(p)}</b><small>${kpKet(p)}</small></span><span class="kpr"><span class="muted pkpct" title="${dj} of ${p.ids.length} questions answered">${Math.round(dj*100/p.ids.length)}% complete</span>${dj?`<span class="pkbs" title="${bn} correct and ${dj-bn} wrong out of ${dj} answered"><i class="ok">✓ ${pb}%</i><i class="no">✗ ${100-pb}%</i></span>`:''}<button class="btn copy" type="button" data-kp="${L.indexOf(p)}">${lanjut?'Continue':'Start'}</button></span></div>`;}).join('');
+        return kpKat(c,rows,`${new Set(P.map(p=>p.s)).size} sub-topics · ${P.length} packages · ${tot?Math.round(jw*100/tot):0}% complete`);}).join('');
       kpIkat();
       $('kplist').querySelectorAll('[data-kp]').forEach(b=>b.onclick=()=>{const p=susunKat()[+b.dataset.kp];if(!window.__ulang||!p||!p.ids.length)return;
         window.__ulang(p.c,'all',p.ids,p.nm+(p.of>1?' · Part '+p.part:''),p.key,true);});};
@@ -1969,7 +1969,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
     if(started)return;started=true;
     show('Loading question bank…','The first load may take a few seconds.');
     try{const arr=await loadBank();QB.push(...arr);await progres();startQuiz();open();tryoutKartu();paketKartu();}
-    catch(e){started=false;if(isOwner){open();$('adm').open=true;$('adm').scrollIntoView();return;}show(e.message==='kosong'?'Question bank not uploaded yet':'Could not load the question bank',e.message==='kosong'?'The owner needs to upload the question bank from the approval panel.':'Check your connection, then reload the page. ('+(e.code||e.message)+')',null,false,true);}
+    catch(e){started=false;if(isOwner){open();$('adm').open=true;$('adm').scrollIntoView();return;}show(e.message==='kosong'?'The question bank has not been uploaded yet':'Could not load the question bank',e.message==='kosong'?'The owner needs to upload the question bank from the approval panel.':'Check your connection, then reload the page. ('+(e.code||e.message)+')',null,false,true);}
   }
   function posisi(){try{const s=window.__quiz&&window.__quiz.state;if(!s)return '';const c=s.cat;
     const cat=c==='all'?'Semua Kategori':(CATS[c]&&CATS[c].short)||'';const sub=c==='all'||s.sub==='all'?'Semua sub-materi':(SUBS[c]&&SUBS[c][s.sub-1])||'';
@@ -2005,7 +2005,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
     const akHasil=akk?await klaim(akk):null;
     $('g-kodebtn').onclick=async()=>{const k=$('g-kodein').value.trim();if(!k)return;$('g-kodebtn').disabled=true;$('g-kodemsg').textContent='Checking…';
       const r=await klaim(k);$('g-kodebtn').disabled=false;
-      $('g-kodemsg').textContent=r.err?(/could not find|does not exist|schema cache/i.test(r.err)?'Access codes are not set up yet (setup step pending).':'Could not check the code: '+r.err):r.jenis==='ditolak'?'This account cannot be activated with a code.':r.jenis?'✓ Code accepted. Opening…':'Incorrect access code.';};
+      $('g-kodemsg').textContent=r.err?(/could not find|does not exist|schema cache/i.test(r.err)?'Access codes have not been set up yet.':'Could not check the code: '+r.err):r.jenis==='ditolak'?'This account cannot be activated with a code.':r.jenis?'✓ Code accepted. Opening…':'Incorrect access code.';};
     $('g-kodein').onkeydown=e=>{if(e.key==='Enter')$('g-kodebtn').click();};
     unsub=ref.onSnapshot(s=>{const st=s.exists?s.data().status:'menunggu';
       if(st==='disetujui'){

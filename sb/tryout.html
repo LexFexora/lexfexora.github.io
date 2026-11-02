@@ -661,9 +661,9 @@ function hasil(){papan.hidden=false;document.body.dataset.v="hasil";if(aku&&!aku
 function pembahasan(p){const j=(aku&&aku.jawab)||p.jawab||{},n=T.soal.length;let salah=0;
   const it=T.soal.map((q,i)=>{const perm=acak(q.o.length,U.uid+q.id),hur=oi=>L[perm.indexOf(oi)],pil=j[q.id],kos=pil===undefined,ok=pil===q.a;if(!ok)salah++;
     return `<li class="${kos?"k":ok?"":"x"}"><span class="no">Question ${i+1} · ${kos?"unanswered":ok?"correct":"wrong"}</span><p class="q">${esc(q.q)}</p>
-    <p class="jw">${!kos&&!ok?`Your answer: <span class="s">${hur(pil)}. ${esc(q.o[pil])}</span><br>`:""}Answer key: <span class="b">${hur(q.a)}. ${esc(q.o[q.a])}</span></p>
+    <p class="jw">${!kos&&!ok?`Your answer: <span class="s">${hur(pil)}. ${esc(q.o[pil])}</span><br>`:""}Correct answer: <span class="b">${hur(q.a)}. ${esc(q.o[q.a])}</span></p>
     ${q.p||q.d?`<p class="pb">${esc(q.p)}${q.d?`<small>Source: ${esc(q.d)}</small>`:""}</p>`:""}</li>`;}).join("");
-  return `<details class="rev"><summary>Answer review <span class="muted" style="font-weight:400;font-size:13px">${salah} of ${n} to study</span></summary>
+  return `<details class="rev"><summary>Answer review <span class="muted" style="font-weight:400;font-size:13px">${salah} of ${n} to review</span></summary>
   <div class="revf"><button class="btn on" type="button" data-f="semua">All questions</button><button class="btn" type="button" data-f="salah">Wrong &amp; unanswered only</button></div><ol class="rv" id="rv">${it}</ol></details>`;}
 // Save: pemilik menyimpan mock exam (status "jeda"). Sisa waktu dibekukan; jawaban dan nomor soal tetap tersimpan di akun
 // sampai mock exam dihapus pemilik. Membuka tautan kapan saja menampilkan progres; pemilik menekan Lanjutkan untuk meneruskan.
