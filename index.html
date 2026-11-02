@@ -927,6 +927,7 @@ html.fokus body #card{padding-bottom:calc(72px + env(safe-area-inset-bottom,0px)
 .aksesub .asnama{display:flex;flex-wrap:wrap;gap:6px}.aksesub .aschip{font:600 12.5px/1.2 var(--f-body,inherit);padding:5px 10px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer}.aksesub .aspin{color:color-mix(in srgb,var(--brass) 80%,var(--ink));font-weight:700}.aksesub .aschip i{font-style:normal;font-weight:400;font-size:11px;color:var(--muted)}.aksesub .aschip:hover{border-color:color-mix(in srgb,var(--brass) 60%,var(--line))}
 .aksesub .aschip.lunas{cursor:default;color:#c9962e;border-color:color-mix(in srgb,#c9962e 40%,var(--line))}.aksesub #aspilih{flex:1 1 180px;min-width:0}.aksesub .asatur{margin:8px 0}.aksesub .asatur>summary{cursor:pointer;font-weight:600;font-size:13px}.aksesub .ascat{margin:8px 0}.aksesub .ascat>b{display:block;margin-bottom:4px;font-size:12.5px}.aksesub .ascat input{flex:none;width:16px;height:16px;margin:2px 0 0}.aksesub .ascat label{display:flex;gap:6px;align-items:flex-start;font-size:12.5px;padding:2px 0;color:var(--ink)}.aksesub #asinfo{font-size:12px;color:var(--muted)}
 .setelan.tocard>summary .vvipakses{flex:none;margin-left:8px;padding:2px 8px;border-radius:999px;font:800 9.5px/1.4 var(--f-body,inherit);letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;color:color-mix(in srgb,var(--brass) 85%,var(--ink));border:1.5px solid color-mix(in srgb,var(--brass) 50%,var(--line));background:color-mix(in srgb,var(--brass) 10%,transparent);-webkit-text-fill-color:currentColor;align-self:center}
+html:not(.vvip) .setelan.tocard>summary .vvipakses{display:none}
 </style>
 </head>
 <body>
@@ -1991,7 +1992,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       setTimeout(()=>{if(window.__sbAuthErr&&!auth.currentUser)gp.textContent='Sign-in failed: '+window.__sbAuthErr;},800);
       return;}
     const who='Signed in as '+(u.displayName?u.displayName+' · ':'')+u.email;
-    if(OWNER&&(u.email||'').toLowerCase()===OWNER&&u.emailVerified){isOwner=true;window.__isOwner=true;document.body.classList.add('bebas');document.documentElement.classList.add('vvip');
+    if(OWNER&&(u.email||'').toLowerCase()===OWNER&&u.emailVerified){isOwner=true;window.__isOwner=true;document.body.classList.add('bebas');
       window.__pindah=(id,list)=>db.doc('bank/pindah').set({m:{[id]:list}},{merge:true}).then(()=>pinfo());
       window.__edit=(id,rec)=>db.doc('bank/edit').set({m:{[id]:rec}},{merge:true}).then(()=>pinfo());
       // ✎ Edit soal di kartu akun: cari soal mana pun di bank lalu sunting tanpa harus membuka kategorinya.
