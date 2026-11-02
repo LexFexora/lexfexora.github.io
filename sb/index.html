@@ -1985,7 +1985,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
     const akHasil=akk?await klaim(akk):null;
     $('g-kodebtn').onclick=async()=>{const k=$('g-kodein').value.trim();if(!k)return;$('g-kodebtn').disabled=true;$('g-kodemsg').textContent='Checking…';
       const r=await klaim(k);$('g-kodebtn').disabled=false;
-      $('g-kodemsg').textContent=r.err?'Access codes are not available yet. Please try again later.':r.jenis==='ditolak'?'This account cannot be activated with a code.':r.jenis?'✓ Code accepted. Opening…':'Incorrect access code.';};
+      $('g-kodemsg').textContent=r.err?(/could not find|does not exist|schema cache/i.test(r.err)?'Access codes are not set up yet (setup step pending).':'Could not check the code: '+r.err):r.jenis==='ditolak'?'This account cannot be activated with a code.':r.jenis?'✓ Code accepted. Opening…':'Incorrect access code.';};
     $('g-kodein').onkeydown=e=>{if(e.key==='Enter')$('g-kodebtn').click();};
     unsub=ref.onSnapshot(s=>{const st=s.exists?s.data().status:'menunggu';
       if(st==='disetujui'){if(!beat)heartbeat(ref);start();}
