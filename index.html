@@ -926,6 +926,7 @@ html.fokus body #card{padding-bottom:calc(72px + env(safe-area-inset-bottom,0px)
 .aksesub{margin:6px 0 10px;padding-top:8px;border-top:1px solid var(--line)}.aksesub .asgrup{display:flex;flex-direction:column;gap:4px;margin:8px 0}.aksesub .asgrup>small{font-size:12px;color:var(--muted)}.aksesub .asn{color:var(--muted);font-weight:500}
 .aksesub .asnama{display:flex;flex-wrap:wrap;gap:6px}.aksesub .aschip{font:600 12.5px/1.2 var(--f-body,inherit);padding:5px 10px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer}.aksesub .aspin{color:color-mix(in srgb,var(--brass) 80%,var(--ink));font-weight:700}.aksesub .aschip i{font-style:normal;font-weight:400;font-size:11px;color:var(--muted)}.aksesub .aschip:hover{border-color:color-mix(in srgb,var(--brass) 60%,var(--line))}
 .aksesub .aschip.lunas{cursor:default;color:#c9962e;border-color:color-mix(in srgb,#c9962e 40%,var(--line))}.aksesub #aspilih{flex:1 1 180px;min-width:0}.aksesub .asatur{margin:8px 0}.aksesub .asatur>summary{cursor:pointer;font-weight:600;font-size:13px}.aksesub .ascat{margin:8px 0}.aksesub .ascat>b{display:block;margin-bottom:4px;font-size:12.5px}.aksesub .ascat input{flex:none;width:16px;height:16px;margin:2px 0 0}.aksesub .ascat label{display:flex;gap:6px;align-items:flex-start;font-size:12.5px;padding:2px 0;color:var(--ink)}.aksesub #asinfo{font-size:12px;color:var(--muted)}
+.setelan.tocard>summary .vvipakses{flex:none;margin-left:8px;padding:2px 8px;border-radius:999px;font:800 9.5px/1.4 var(--f-body,inherit);letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;color:color-mix(in srgb,var(--brass) 85%,var(--ink));border:1.5px solid color-mix(in srgb,var(--brass) 50%,var(--line));background:color-mix(in srgb,var(--brass) 10%,transparent);-webkit-text-fill-color:currentColor;align-self:center}
 </style>
 </head>
 <body>
@@ -960,8 +961,8 @@ html.fokus body #card{padding-bottom:calc(72px + env(safe-area-inset-bottom,0px)
     <div class="aksesub" id="aksesub"><h4>Akses sub materi</h4>
       <div class="asgrup"><b>Akses penuh <span class="asn" id="asnpenuh"></span></b><small>Bisa membuka semua sub materi dan All Sections.</small><div class="asnama" id="aspenuh"></div></div>
       <div class="asgrup"><b>Akses terbatas <span class="asn" id="asnbatas"></span></b><small>Hanya sub materi yang terbuka di bawah. All Sections terkunci.</small><div class="asnama" id="asbatas"></div></div>
-      <div class="asgrup"><b>Akses Prediction &amp; Category Packages <span class="asn" id="asnpaket"></span></b><small>Ketuk nama bertanda ✕ untuk mencabut akses paket gratis. Akun Lunas (membeli) tidak bisa dicabut dari sini.</small><div class="asnama" id="aspaket"></div>
-        <div class="linkrow"><select id="aspilih" aria-label="Pilih akun"></select><button class="btn copy" type="button" id="asberi">＋ Beri akses paket</button></div></div>
+      <div class="asgrup"><b>VVIP Akses <span class="asn" id="asnpaket"></span></b><small>Prediction &amp; Category Packages + semua sub materi (kecuali Mock Exam).</small><small>Ketuk nama bertanda ✕ untuk mencabut akses paket gratis. Akun Lunas (membeli) tidak bisa dicabut dari sini.</small><div class="asnama" id="aspaket"></div>
+        <div class="linkrow"><select id="aspilih" aria-label="Pilih akun"></select><button class="btn copy" type="button" id="asberi">＋ Beri VVIP Akses</button></div></div>
       <details class="asatur"><summary>Sub materi yang terbuka untuk akses terbatas</summary><div id="asatur"></div><div class="linkrow"><button class="btn copy" type="button" id="assimpan">Simpan pengaturan</button><small id="asinfo"></small></div></details>
       <p class="note">Ketuk nama untuk memindahkan akun antara Akses penuh dan Akses terbatas. Tanda <i>otomatis</i> = mengikuti aturan bawaan (pembeli, kode Akses seluruhnya, dan pengguna lama mendapat akses penuh). Akses Prediction/Category Packages tetap diatur lewat tombol Paket gratis.</p></div>
     <div class="linkrow"><input id="admlink" readonly aria-label="Tautan latihan"><button class="btn copy" type="button" id="admcopy">⧉ Salin tautan</button></div>
@@ -1014,7 +1015,7 @@ html.fokus body #card{padding-bottom:calc(72px + env(safe-area-inset-bottom,0px)
   </details>
 
   <details class="setelan tocard" id="pkcard" hidden>
-    <summary><span class="stl"><svg class="piala" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="url(#pialaEmas)" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5.2"/></g><circle cx="12" cy="12" r="1.9" fill="url(#pialaEmas)"/></svg>Prediction Packages</span></summary>
+    <summary><span class="stl"><svg class="piala" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="url(#pialaEmas)" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5.2"/></g><circle cx="12" cy="12" r="1.9" fill="url(#pialaEmas)"/></svg>Prediction Packages</span><span class="vvipakses" title="Khusus VVIP Akses">VVIP Akses</span></summary>
     <div class="toisi">
       <p class="note" id="pkket"></p>
       <div id="pklist" class="tolist"></div>
@@ -1022,7 +1023,7 @@ html.fokus body #card{padding-bottom:calc(72px + env(safe-area-inset-bottom,0px)
   </details>
 
   <details class="setelan tocard" id="kpcard" hidden>
-    <summary><span class="stl"><svg class="piala" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="url(#pialaEmas)" stroke-width="1.8"><rect x="3.5" y="3.5" width="7" height="7" rx="1.6"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.6"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.6"/></g><rect x="13.5" y="13.5" width="7" height="7" rx="1.6" fill="url(#pialaEmas)"/></svg>Category Packages</span></summary>
+    <summary><span class="stl"><svg class="piala" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="url(#pialaEmas)" stroke-width="1.8"><rect x="3.5" y="3.5" width="7" height="7" rx="1.6"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.6"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.6"/></g><rect x="13.5" y="13.5" width="7" height="7" rx="1.6" fill="url(#pialaEmas)"/></svg>Category Packages</span><span class="vvipakses" title="Khusus VVIP Akses">VVIP Akses</span></summary>
     <div class="toisi">
       <p class="note" id="kpket"></p>
       <div id="kplist" class="tolist"></div>
@@ -1964,7 +1965,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
     if(kpBox)kpBox.addEventListener('toggle',()=>{if(!kpBox.open)return;const t=()=>{if(kpBox.dataset.anim)return setTimeout(t,120);kpRender();};setTimeout(t,120);});
     // Dipakai form Buat Mock Exam (khusus pemilik) untuk mengambil isi Prediction Packages dan Category Packages.
     window.__pkSusun=susunPaket;window.__kpSusun=susunKat;
-    window.__pkBuka=()=>{buka=true;pkRender();if(!window.__penuh){window.__penuh=true;window.__segarSub&&window.__segarSub();}};
+    window.__pkBuka=()=>{buka=true;pkRender();document.documentElement.classList.add('vvip');if(!window.__penuh){window.__penuh=true;window.__segarSub&&window.__segarSub();}};
     tampil();window.__pkSegar=()=>{if(buka)pkRender();};
     box.addEventListener('toggle',()=>{if(!box.open)return;const t=()=>{if(box.dataset.anim)return setTimeout(t,120);if(buka)pkRender();};setTimeout(t,120);});
   }
@@ -1990,7 +1991,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       setTimeout(()=>{if(window.__sbAuthErr&&!auth.currentUser)gp.textContent='Sign-in failed: '+window.__sbAuthErr;},800);
       return;}
     const who='Signed in as '+(u.displayName?u.displayName+' · ':'')+u.email;
-    if(OWNER&&(u.email||'').toLowerCase()===OWNER&&u.emailVerified){isOwner=true;window.__isOwner=true;document.body.classList.add('bebas');
+    if(OWNER&&(u.email||'').toLowerCase()===OWNER&&u.emailVerified){isOwner=true;window.__isOwner=true;document.body.classList.add('bebas');document.documentElement.classList.add('vvip');
       window.__pindah=(id,list)=>db.doc('bank/pindah').set({m:{[id]:list}},{merge:true}).then(()=>pinfo());
       window.__edit=(id,rec)=>db.doc('bank/edit').set({m:{[id]:rec}},{merge:true}).then(()=>pinfo());
       // ✎ Edit soal di kartu akun: cari soal mana pun di bank lalu sunting tanpa harus membuka kategorinya.
@@ -2015,7 +2016,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
         // Pengguna yang bergabung sebelum batas 3 sub-materi diaktifkan (2 Nov 2026 21.50 WIB) tetap bebas membuka semua sub-materi.
         {const x=s.data()||{},dm=x.diminta&&x.diminta.toDate?x.diminta.toDate():null,lama=dm?dm<new Date('2026-11-02T14:50:00Z'):!x.jalur,md=x.sub||'';if(lama!==!!window.__lama||md!==(window.__subMode||'')){window.__lama=lama;window.__subMode=md;window.__segarSub&&window.__segarSub();}}
         if(!window.__aksesPantau){window.__aksesPantau=1;db.doc('bank/akses').onSnapshot(d=>{window.__aksesBuka=d.exists?(d.data().buka||null):null;window.__segarSub&&window.__segarSub();},()=>{});}
-        if(!beat)heartbeat(ref);start();if(!window.__penuh)window.__sb.rpc('cat_sudah_beli').then(({data})=>{if(data===true&&!window.__penuh){window.__penuh=true;window.__segarSub&&window.__segarSub();}}).catch(()=>{});}
+        if(!beat)heartbeat(ref);start();if(!window.__penuh)window.__sb.rpc('cat_sudah_beli').then(({data})=>{if(data===true&&!window.__penuh){window.__penuh=true;document.documentElement.classList.add('vvip');window.__segarSub&&window.__segarSub();}}).catch(()=>{});}
       else if(st==='ditolak'){show('Access denied','The owner has not granted access to this account.',who,false,true);}
       else{const sdh=/[?&]bayar=ok\b/.test(location.search);
         show(sdh?'Payment received':'Waiting for approval',sdh?'Your payment is being confirmed. This page will open automatically in a moment.':'Your access request has been sent. This page will open automatically once the owner approves it, or right away after you buy access.',who,false,true);
@@ -2185,15 +2186,15 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
     const aksEfektif=(id,x)=>{if(BAYAR.has(id)||GRATIS.has(id))return ['penuh','paket'];if(x.sub==='penuh'||x.sub==='terbatas')return [x.sub,false];const dm=x.diminta&&x.diminta.toDate?x.diminta.toDate():null,lama=dm?dm<new Date('2026-11-02T14:50:00Z'):!x.jalur;
       return [(BAYAR.has(id)||GRATIS.has(id)||x.jalur==='penuh'||lama)?'penuh':'terbatas',true];};
     const aksNama=list=>{const G={penuh:[],terbatas:[]};list.forEach(([id,x])=>{const [lv,oto]=aksEfektif(id,x);G[lv].push([id,x,oto]);});
-      const chip=([id,x,oto],lv)=>oto==='paket'?`<span class="aschip lunas" title="Punya akses paket: selalu akses penuh">${esc(x.nama||(x.email||'').split('@')[0])} <i>paket</i></span>`:`<button type="button" class="aschip" data-asu="${esc(id)}" data-ke="${lv==='penuh'?'terbatas':'penuh'}" title="Pindahkan ke Akses ${lv==='penuh'?'terbatas':'penuh'}">${esc(x.nama||(x.email||'').split('@')[0])}${oto?' <i>otomatis</i>':''} <span class="aspin">${lv==='penuh'?'↓':'↑'}</span></button>`;
+      const chip=([id,x,oto],lv)=>oto==='paket'?`<span class="aschip lunas" title="Punya akses paket: selalu akses penuh">${esc(x.nama||(x.email||'').split('@')[0])} <i>VVIP</i></span>`:`<button type="button" class="aschip" data-asu="${esc(id)}" data-ke="${lv==='penuh'?'terbatas':'penuh'}" title="Pindahkan ke Akses ${lv==='penuh'?'terbatas':'penuh'}">${esc(x.nama||(x.email||'').split('@')[0])}${oto?' <i>otomatis</i>':''} <span class="aspin">${lv==='penuh'?'↓':'↑'}</span></button>`;
       $('aspenuh').innerHTML=G.penuh.map(r=>chip(r,'penuh')).join('')||'<small>Belum ada.</small>';$('asbatas').innerHTML=G.terbatas.map(r=>chip(r,'terbatas')).join('')||'<small>Belum ada.</small>';
       const nm=x=>esc(x.nama||(x.email||'').split('@')[0]),pk=list.filter(([id])=>BAYAR.has(id)||GRATIS.has(id)),tp=list.filter(([id])=>!BAYAR.has(id)&&!GRATIS.has(id));
-      $('aspaket').innerHTML=pk.map(([id,x])=>BAYAR.has(id)?`<span class="aschip lunas">${nm(x)} <i>lunas</i></span>`:`<button type="button" class="aschip" data-cabut="${esc(id)}" title="Cabut akses paket">${nm(x)} <span class="aspin">✕</span></button>`).join('')||'<small>Belum ada.</small>';
+      $('aspaket').innerHTML=pk.map(([id,x])=>BAYAR.has(id)?`<span class="aschip lunas">${nm(x)} <i>VVIP · lunas</i></span>`:`<button type="button" class="aschip" data-cabut="${esc(id)}" title="Cabut VVIP Akses">${nm(x)} <i>VVIP</i> <span class="aspin">✕</span></button>`).join('')||'<small>Belum ada.</small>';
       $('asnpaket').textContent='('+pk.length+')';
       const sel=$('aspilih'),pv=sel.value;sel.innerHTML='<option value="">Pilih akun…</option>'+tp.map(([id,x])=>`<option value="${esc(id)}">${nm(x)}</option>`).join('');if(tp.some(([id])=>id===pv))sel.value=pv;
       const paket=async(uid,on,b)=>{b.disabled=true;const {error}=await window.__sb.rpc(on?'cat_beri_gratis':'cat_cabut_gratis',{p_uid:uid});b.disabled=false;
         if(error){alert(/function|schema cache/i.test(error.message||'')?'Jalankan dulu SQL "paket gratis" di Supabase.':'Gagal: '+(error.message||error.code));return;}muatBayar.sidik='';muatBayar();};
-      $('asberi').onclick=()=>{const u=sel.value;if(!u){alert('Pilih akun dulu.');return;}if(!confirm('Beri akses Prediction & Category Packages gratis ke '+sel.selectedOptions[0].textContent+'?'))return;paket(u,true,$('asberi'));};
+      $('asberi').onclick=()=>{const u=sel.value;if(!u){alert('Pilih akun dulu.');return;}if(!confirm('Beri VVIP Akses (Prediction & Category Packages + semua sub materi) gratis ke '+sel.selectedOptions[0].textContent+'?'))return;paket(u,true,$('asberi'));};
       document.querySelectorAll('#aspaket [data-cabut]').forEach(b=>b.onclick=()=>{if(!confirm('Cabut akses paket gratis untuk '+b.textContent.replace('✕','').trim()+'?'))return;paket(b.dataset.cabut,false,b);});
       $('asnpenuh').textContent='('+G.penuh.length+')';$('asnbatas').textContent='('+G.terbatas.length+')';
       document.querySelectorAll('#aksesub .aschip').forEach(b=>b.onclick=()=>{const ke=b.dataset.ke;if(!confirm('Pindahkan '+b.textContent.replace(/ otomatis| [↑↓]/g,'').trim()+' ke Akses '+ke+'?'))return;b.disabled=true;
@@ -2204,7 +2205,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       izinOK=g.disetujui.map(([,x])=>String(x.email||'').trim().toLowerCase()).filter(e=>/^[^@\s']+@[^@\s']+$/.test(e));
       $('admcount').textContent=g.menunggu.length;$('admon').textContent=on;aksNama(g.disetujui);
       body.innerHTML=Object.keys(g).filter(k=>g[k].length).map(k=>`<h4>${TTL[k]} (${g[k].length})</h4><ul>`+g[k].map(([id,x])=>
-        `<li><button class="siapa" type="button" data-u="${esc(id)}" aria-expanded="${emBuka.has(id)}" title="Ketuk untuk melihat email"><span class="av">${x.foto?`<img src="${esc(x.foto)}" alt="" referrerpolicy="no-referrer" onerror="this.replaceWith(document.createTextNode('${esc((x.nama||x.email||'?')[0].toUpperCase()).replace(/'/g,'')}'))">`:esc((x.nama||x.email||'?')[0].toUpperCase())}</span><span class="nm${BAYAR.has(id)?' lunas':''}"${BAYAR.has(id)?' title="Sudah bayar"':''}>${esc(x.nama||(x.email||'').split('@')[0])}</span>${BAYAR.has(id)?'<span class="lunaschip">Lunas</span>':GRATIS.has(id)?'<span class="lunaschip gratis">Gratis</span>':x.jalur==='gratis'?'<span class="lunaschip gratis">Tautan</span>':''}${k==='disetujui'?(on=>`<span class="stt ${on?'on':'off'}">${on?'Online':'Offline'}</span>`)(!!(x.terakhir&&x.terakhir.toDate&&Date.now()-x.terakhir.toDate()<180000)):''}</button><span class="acts">${ACT[k].map(([v,l,c])=>`<button class="btn ${c}" data-id="${id}" data-v="${v}" type="button">${l}</button>`).join('')}${k==='disetujui'&&!BAYAR.has(id)?`<button class="btn" data-gratis="${esc(id)}" data-on="${GRATIS.has(id)?1:0}" type="button">${GRATIS.has(id)?'Cabut paket':'Paket gratis'}</button>`:''}</span>`+
+        `<li><button class="siapa" type="button" data-u="${esc(id)}" aria-expanded="${emBuka.has(id)}" title="Ketuk untuk melihat email"><span class="av">${x.foto?`<img src="${esc(x.foto)}" alt="" referrerpolicy="no-referrer" onerror="this.replaceWith(document.createTextNode('${esc((x.nama||x.email||'?')[0].toUpperCase()).replace(/'/g,'')}'))">`:esc((x.nama||x.email||'?')[0].toUpperCase())}</span><span class="nm${BAYAR.has(id)?' lunas':''}"${BAYAR.has(id)?' title="Sudah bayar"':''}>${esc(x.nama||(x.email||'').split('@')[0])}</span>${BAYAR.has(id)?'<span class="lunaschip">VVIP · Lunas</span>':GRATIS.has(id)?'<span class="lunaschip gratis">VVIP</span>':x.jalur==='gratis'?'<span class="lunaschip gratis">Tautan</span>':''}${k==='disetujui'?(on=>`<span class="stt ${on?'on':'off'}">${on?'Online':'Offline'}</span>`)(!!(x.terakhir&&x.terakhir.toDate&&Date.now()-x.terakhir.toDate()<180000)):''}</button><span class="acts">${ACT[k].map(([v,l,c])=>`<button class="btn ${c}" data-id="${id}" data-v="${v}" type="button">${l}</button>`).join('')}${k==='disetujui'&&!BAYAR.has(id)?`<button class="btn" data-gratis="${esc(id)}" data-on="${GRATIS.has(id)?1:0}" type="button">${GRATIS.has(id)?'Cabut paket':'Paket gratis'}</button>`:''}</span>`+
         `<span class="em"${k==='disetujui'&&!emBuka.has(id)?' hidden':''}><span class="mail">${esc(x.email)}</span>${k==='disetujui'?`<button class="kat" type="button" data-skor="${esc(id)}" aria-expanded="${skorBuka.has(id)}">Skor</button>`:''}${k==='disetujui'&&x.posisi?(p=>`<button class="kat" type="button" data-kat="${esc(id)}" aria-expanded="${katBuka.has(id)}">${esc(p[0])}</button><span class="katd"${katBuka.has(id)?'':' hidden'}>${p[1]?`<span>${esc(p[1])}</span>`:''}${p[2]?`<span>${esc(p[2].replace(/^soal (\d+)\/(\d+)$/,'Soal ke-$1 dari $2'))}</span>`:''}</span>`)(String(x.posisi).split(' · ')):''}</span>${k==='disetujui'?`<div class="skord" data-skord="${esc(id)}"${skorBuka.has(id)?'':' hidden'}>${skorHtml(id,x)}</div>`:''}<span class="dur">${k==='menunggu'?'Meminta '+fmt(x.diminta):'Terakhir '+(fmt(x.terakhir)||'-')}</span></li>`).join('')+'</ul>').join('')||'<p class="note">Belum ada yang meminta akses.</p>';
       // Akun disetujui: foto dan nama saja, email muncul saat nama diketuk.
       // Chip kategori: ketuk untuk melihat sub-materi dan posisi soal yang sedang dikerjakan.
