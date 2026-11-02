@@ -1957,7 +1957,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
           return `<div class="tr pk"><span class="trj"><b>${kpJudul(p)}</b><small>${kpKet(p)}</small></span><span class="kpr"><span class="muted pkpct" title="${dj} of ${p.ids.length} questions answered">${Math.round(dj*100/p.ids.length)}%</span>${dj?`<span class="pkbs" title="${bn} correct and ${dj-bn} wrong out of ${dj} answered"><i class="ok">✓ ${pb}%</i><i class="no">✗ ${100-pb}%</i></span>`:''}<button class="btn copy" type="button" data-kp="${L.indexOf(p)}">${lanjut?'Continue':'Start'}</button></span></div>`;}).join('');
         // Persentase dikuasai = soal dijawab benar dibagi seluruh soal di paket-paket kategori ini.
         const pkv=tot?bt*100/tot:0,pk=pkv>0&&pkv<10?pkv.toFixed(1):Math.round(pkv),pa=jw?Math.round(bt*100/jw):0;
-        const kuasa=`<span class="kpkuasa" title="${bt} of ${tot} questions answered correctly"><b>${pk}%</b><i>mastered</i>${jw?`<span class="pkbs"><i class="ok">✓ ${pa}%</i><i class="no">✗ ${100-pa}%</i></span>`:''}</span>`;
+        const kuasa=`<span class="kpkuasa" title="${bt} of ${tot} questions answered correctly"><b>${pk}%</b><i>mastered</i></span>`;
         return kpKat(c,rows,`${new Set(P.map(p=>p.s)).size} sub-topics · ${P.length} packages · ${tot?Math.round(jw*100/tot):0}% answered`,kuasa);}).join('');
       kpIkat();
       $('kplist').querySelectorAll('[data-kp]').forEach(b=>b.onclick=()=>{const p=susunKat()[+b.dataset.kp];if(!window.__ulang||!p||!p.ids.length)return;
