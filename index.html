@@ -1240,7 +1240,7 @@ function bagInfo(n){const k=Math.min(n,3),sz=Math.min(50,Math.ceil(n/(k||1)));re
 function bagNum(b){return b==="bonus"?"bonus":b==="all"?"all":+b;}
 
 // Tanpa akses penuh (bukan pemilik, belum membeli/kode Akses seluruhnya): tiap kategori hanya 3 sub-materi teratas.
-const SUB_GRATIS=3,terbatas=()=>!window.__isOwner&&!window.__penuh,subBuka=(c,s)=>!terbatas()||(s!=="all"&&+s<=SUB_GRATIS);
+const SUB_GRATIS=3,terbatas=()=>!window.__isOwner&&!window.__penuh&&!window.__lama,subBuka=(c,s)=>!terbatas()||(s!=="all"&&+s<=SUB_GRATIS);
 const inBuka=q=>!terbatas()||q.mappings.some(m=>m.s<=SUB_GRATIS);
 function pool(){
   if(state.ulang) return state.ulang.ids.map(id=>BYID[id]).filter(Boolean);
@@ -1993,7 +1993,10 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       $('g-kodemsg').textContent=r.err?(/could not find|does not exist|schema cache/i.test(r.err)?'Access codes are not set up yet (setup step pending).':'Could not check the code: '+r.err):r.jenis==='ditolak'?'This account cannot be activated with a code.':r.jenis?'✓ Code accepted. Opening…':'Incorrect access code.';};
     $('g-kodein').onkeydown=e=>{if(e.key==='Enter')$('g-kodebtn').click();};
     unsub=ref.onSnapshot(s=>{const st=s.exists?s.data().status:'menunggu';
-      if(st==='disetujui'){if(!beat)heartbeat(ref);start();if(!window.__penuh)window.__sb.rpc('cat_sudah_beli').then(({data})=>{if(data===true&&!window.__penuh){window.__penuh=true;window.__segarSub&&window.__segarSub();}}).catch(()=>{});}
+      if(st==='disetujui'){
+        // Pengguna yang bergabung sebelum batas 3 sub-materi diaktifkan (2 Nov 2026 21.50 WIB) tetap bebas membuka semua sub-materi.
+        {const x=s.data()||{},dm=x.diminta&&x.diminta.toDate?x.diminta.toDate():null,lama=dm?dm<new Date('2026-11-02T14:50:00Z'):!x.jalur;if(lama!==!!window.__lama){window.__lama=lama;window.__segarSub&&window.__segarSub();}}
+        if(!beat)heartbeat(ref);start();if(!window.__penuh)window.__sb.rpc('cat_sudah_beli').then(({data})=>{if(data===true&&!window.__penuh){window.__penuh=true;window.__segarSub&&window.__segarSub();}}).catch(()=>{});}
       else if(st==='ditolak'){show('Access denied','The owner has not granted access to this account.',who,false,true);}
       else{const sdh=/[?&]bayar=ok\b/.test(location.search);
         show(sdh?'Payment received':'Waiting for approval',sdh?'Your payment is being confirmed. This page will open automatically in a moment.':'Your access request has been sent. This page will open automatically once the owner approves it, or right away after you buy access.',who,false,true);
