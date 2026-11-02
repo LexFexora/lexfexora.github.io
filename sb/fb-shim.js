@@ -7,6 +7,12 @@
   try{const q=new URLSearchParams(location.search),h=new URLSearchParams(location.hash.replace(/^#/,''));
     const e=q.get('error_description')||h.get('error_description')||q.get('error')||h.get('error');
     if(e)window.__sbAuthErr=e.replace(/\+/g,' ');window.__sbHadCode=q.has('code');}catch(e){}
+  // Buang parameter galat login dari alamat halaman. Tanpa ini, galat lama ikut terbawa ke login berikutnya
+  // (redirectTo memakai alamat halaman) dan supabase-js menolak menukar kode login, sehingga login gagal terus.
+  const BUANG=['error','error_code','error_description'];
+  const bersih=(href,lain)=>{try{const x=new URL(href);x.hash='';BUANG.concat(lain||[]).forEach(k=>x.searchParams.delete(k));return x.toString();}catch(e){return String(href).split('#')[0];}};
+  try{const q=new URLSearchParams(location.search),h=new URLSearchParams(location.hash.replace(/^#/,''));
+    if(BUANG.some(k=>q.has(k)||h.has(k))){const x=new URL(location.href);BUANG.forEach(k=>x.searchParams.delete(k));if(BUANG.some(k=>h.has(k)))x.hash='';history.replaceState(history.state,'',x.toString());}}catch(e){}
   // Catatan kejadian login (10 terakhir, di perangkat ini) untuk melacak keluar sendiri: siapa yang mengakhiri sesi dan kenapa.
   const LOG='sb-authlog',catat=(ev,info)=>{try{const l=JSON.parse(localStorage.getItem(LOG)||'[]');l.push({t:Date.now(),ev,info:String(info||'').slice(0,200)});localStorage.setItem(LOG,JSON.stringify(l.slice(-10)));}catch(e){}};
   window.__sbCatat=catat;
@@ -138,7 +144,7 @@
   const auth={currentUser:null,_ready:false,_subs:new Set(),
     onAuthStateChanged(f){this._subs.add(f);if(this._ready)setTimeout(()=>f(this.currentUser));return ()=>this._subs.delete(f);},
     signInWithPopup(p){return this.signInWithRedirect(p);},
-    async signInWithRedirect(p){const back=location.href.split('#')[0];
+    async signInWithRedirect(p){const back=bersih(location.href,['code','state']);
       const r=await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:back,queryParams:(p&&p._q)||{}}});
       if(r.error)throw err(r.error);return new Promise(()=>{});},
     async signOut(){await sb.auth.signOut({scope:'local'}).catch(()=>{});}};
