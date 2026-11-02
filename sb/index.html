@@ -901,6 +901,7 @@ html.beranim #pklist .pkghost{filter:none}
 #kplist .kpkat>summary::after{content:"▾";margin-left:auto;color:var(--muted);transition:transform .2s}
 #kplist .kpkat[open]>summary::after{transform:rotate(180deg)}
 #kplist .kpkat>summary span{display:flex;flex-direction:column;gap:2px;min-width:0}
+#kplist .kpkat>summary .kpkuasa{display:flex;flex-direction:column;align-items:center;gap:1px;margin-left:auto;flex:none;min-width:84px;text-align:center}#kplist .kpkat>summary .kpkuasa .pkbs{flex-direction:row;gap:6px;margin-top:2px}#kplist .kpkat>summary .kpkuasa>b{font-size:19px;line-height:1.1}#kplist .kpkat>summary .kpkuasa>i{font-style:normal;font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}#kplist .kpkat>summary::after{margin-left:6px!important}#kplist .kpkat>summary>span:first-child{flex:1 1 auto}
 #kplist .kpkat>summary b{font-family:var(--f-display);font-size:15px;color:color-mix(in srgb,var(--brass) 85%,var(--ink))}
 #kplist .kpkat>summary small{font-size:11.5px;color:var(--muted)}
 #kplist .kprows{display:flex;flex-direction:column;gap:6px;padding:0 8px 10px}
@@ -1941,7 +1942,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
     const kpStat=()=>{const L=susunKat(),u=new Set();L.forEach(p=>p.ids.forEach(id=>u.add(id)));const subs=new Set(L.map(p=>p.c+'-'+p.s)).size,f=v=>v.toLocaleString('en-US');
       return `<span class="pkstat"><span><b>${f(u.size)}</b><i>Questions</i></span><span><b>${subs}</b><i>Sub-topics</i></span><span><b>${L.length}</b><i>Packages</i></span></span>`;};
     const kpJudul=p=>`${p.s}. ${escH(p.nm)}`,kpKet=p=>(p.of>1?`Part ${p.part} of ${p.of} · `:'')+p.ids.length+' questions';
-    const kpKat=(c,isi,ket)=>`<details class="kpkat" data-kat="${c}"${kpBuka.has(String(c))?' open':''}><summary><span><b>${escH(CATS[c].short)}</b><small>${ket}</small></span></summary><div class="kprows">${isi}</div></details>`;
+    const kpKat=(c,isi,ket,kuasa)=>`<details class="kpkat" data-kat="${c}"${kpBuka.has(String(c))?' open':''}><summary><span><b>${escH(CATS[c].short)}</b><small>${ket}</small></span>${kuasa||''}</summary><div class="kprows">${isi}</div></details>`;
     const kpIkat=()=>$('kplist').querySelectorAll('.kpkat').forEach(d=>d.addEventListener('toggle',()=>{d.open?kpBuka.add(d.dataset.kat):kpBuka.delete(d.dataset.kat);}));
     const kpRender=()=>{if(!kpBox)return;kpBox.hidden=false;const L=susunKat();
       if(!buka){$('kpket').innerHTML='<span class="pklead">Study one sub-topic at a time. Every package is named after its sub-topic and holds only that sub-topic\'s questions, grouped by category.</span>'+kpStat();
@@ -1950,11 +1951,14 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
         $('kpbeli').onclick=()=>beliAkses($('kpbeli'));kpIkat();return;}
       const BYQ={};QB.forEach(q=>BYQ[q.id]=q);
       $('kpket').innerHTML='<span class="pklead">Study one sub-topic at a time. Every package is named after its sub-topic and holds only that sub-topic\'s questions, with the same 54-second timer as Prediction Packages. Sub-topics with more than 100 questions are split into parts.</span>'+kpStat();
-      $('kplist').innerHTML=Object.keys(CATS).map(c=>{const P=L.filter(p=>p.c===+c);let tot=0,jw=0;
+      $('kplist').innerHTML=Object.keys(CATS).map(c=>{const P=L.filter(p=>p.c===+c);let tot=0,jw=0,bt=0;
         const rows=P.map((p,i)=>{const ss=window.__quiz&&window.__quiz.sesi&&window.__quiz.sesi(p.key),dj=ss&&ss.ans?Object.keys(ss.ans).length:0,lanjut=ss&&(ss.pos>0||dj>0)&&ss.pos<p.ids.length,
-            bn=dj?Object.keys(ss.ans).filter(id=>BYQ[id]&&ss.ans[id]===BYQ[id].a).length:0,pb=dj?Math.round(bn*100/dj):0;tot+=p.ids.length;jw+=Math.min(dj,p.ids.length);
+            bn=dj?Object.keys(ss.ans).filter(id=>BYQ[id]&&ss.ans[id]===BYQ[id].a).length:0,pb=dj?Math.round(bn*100/dj):0;tot+=p.ids.length;jw+=Math.min(dj,p.ids.length);bt+=bn;
           return `<div class="tr pk"><span class="trj"><b>${kpJudul(p)}</b><small>${kpKet(p)}</small></span><span class="kpr"><span class="muted pkpct" title="${dj} of ${p.ids.length} questions answered">${Math.round(dj*100/p.ids.length)}%</span>${dj?`<span class="pkbs" title="${bn} correct and ${dj-bn} wrong out of ${dj} answered"><i class="ok">✓ ${pb}%</i><i class="no">✗ ${100-pb}%</i></span>`:''}<button class="btn copy" type="button" data-kp="${L.indexOf(p)}">${lanjut?'Continue':'Start'}</button></span></div>`;}).join('');
-        return kpKat(c,rows,`${new Set(P.map(p=>p.s)).size} sub-topics · ${P.length} packages · ${tot?Math.round(jw*100/tot):0}%`);}).join('');
+        // Persentase dikuasai = soal dijawab benar dibagi seluruh soal di paket-paket kategori ini.
+        const pkv=tot?bt*100/tot:0,pk=pkv>0&&pkv<10?pkv.toFixed(1):Math.round(pkv),pa=jw?Math.round(bt*100/jw):0;
+        const kuasa=`<span class="kpkuasa" title="${bt} of ${tot} questions answered correctly"><b>${pk}%</b><i>mastered</i>${jw?`<span class="pkbs"><i class="ok">✓ ${pa}%</i><i class="no">✗ ${100-pa}%</i></span>`:''}</span>`;
+        return kpKat(c,rows,`${new Set(P.map(p=>p.s)).size} sub-topics · ${P.length} packages · ${tot?Math.round(jw*100/tot):0}% answered`,kuasa);}).join('');
       kpIkat();
       $('kplist').querySelectorAll('[data-kp]').forEach(b=>b.onclick=()=>{const p=susunKat()[+b.dataset.kp];if(!window.__ulang||!p||!p.ids.length)return;
         window.__ulang(p.c,'all',p.ids,p.nm+(p.of>1?' · Part '+p.part:''),p.key,true);});};
