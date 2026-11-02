@@ -1239,10 +1239,13 @@ function sessionKey(){if(state.ulang)return "ulang|"+state.ulang.k;return state.
 function bagInfo(n){const k=Math.min(n,3),sz=Math.min(50,Math.ceil(n/(k||1)));return {k,sz,bonus:Math.max(0,n-k*sz)};}
 function bagNum(b){return b==="bonus"?"bonus":b==="all"?"all":+b;}
 
+// Tanpa akses penuh (bukan pemilik, belum membeli/kode Akses seluruhnya): tiap kategori hanya 3 sub-materi teratas.
+const SUB_GRATIS=3,terbatas=()=>!window.__isOwner&&!window.__penuh,subBuka=(c,s)=>!terbatas()||s==="all"||+s<=SUB_GRATIS;
+const inBuka=q=>!terbatas()||q.mappings.some(m=>m.s<=SUB_GRATIS);
 function pool(){
   if(state.ulang) return state.ulang.ids.map(id=>BYID[id]).filter(Boolean);
-  if(state.cat==="all") return QB.slice();
-  const p=QB.filter(q=>inCat(q,state.cat,state.sub));
+  if(state.cat==="all") return QB.filter(inBuka);
+  const p=QB.filter(q=>inCat(q,state.cat,state.sub)&&(!terbatas()||state.sub!=="all"||q.mappings.some(m=>m.c===state.cat&&m.s<=SUB_GRATIS)));
   if(state.sub==="all"||state.bag==="all") return p;
   const {k,sz}=bagInfo(p.length);
   if(state.bag==="bonus") return sortSeq(p).slice(k*sz);
@@ -1335,7 +1338,8 @@ function renderSub(){
   if(state.cat==="all"){s.innerHTML=`<option value="all">All Sections</option>`;s.disabled=true;return;}
   s.disabled=false;
   const c=state.cat;
-  s.innerHTML=`<option value="all">All Sections</option>`+SUBS[c].map((n,i)=>`<option value="${i+1}">${i+1}. ${esc(n)}</option>`).join("");
+  const tb=terbatas();
+  s.innerHTML=`<option value="all">${tb?"All Sections (1–"+SUB_GRATIS+")":"All Sections"}</option>`+SUBS[c].map((n,i)=>`<option value="${i+1}"${tb&&i>=SUB_GRATIS?" disabled":""}>${tb&&i>=SUB_GRATIS?"🔒 ":""}${i+1}. ${esc(n)}</option>`).join("");
   s.value=String(state.sub);
   renderBag();
 }
@@ -1348,6 +1352,7 @@ function renderBag(){
   s.value=String(state.bag);
 }
 function selectCat(k,sub,bag){
+  if(k!=="all"&&!subBuka(k,sub))sub="all";
   state.ulang=null;state.cat=k; state.sub=sub; state.bag=sub==="all"?"all":(bag==null||bag==="all"?1:bagNum(bag));
   try{history.replaceState(null,"",k==="all"?location.pathname:"#"+CATS[k].key);}catch(e){}
   restore(); $("order").value=state.order; renderTabs(); renderSub(); render();
@@ -1660,6 +1665,7 @@ window.__ulang=(c,s,ids,label,k,langsung)=>{ids=ids.filter(id=>BYID[id]);if(!ids
   siapCat=state.cat;window.__gulTutup=false;state.setHilang=false;const st=$("setelan");if(st){st.hidden=false;st.open=false;}render();
   if(langsung){const mb=$("mulaibtn");if(mb)mb.click();fokus(true);return;}
   requestAnimationFrame(()=>window.scrollTo({top:Math.max(0,$("ulangbar").offsetTop-12),behavior:"smooth"}));};
+window.__segarSub=()=>{if(state.ulang){renderSub();return;}selectCat(state.cat,state.sub,state.bag);};
 window.__quiz={state,render:()=>render(),benar:()=>BENAR,sesi:k=>store["ulang|"+k]||null};window.__soalKini=()=>BYID[state.list[state.pos]];
 window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add(id);state.edOpen=false;render();};
 }
@@ -1940,7 +1946,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
     if(kpBox)kpBox.addEventListener('toggle',()=>{if(!kpBox.open)return;const t=()=>{if(kpBox.dataset.anim)return setTimeout(t,120);kpRender();};setTimeout(t,120);});
     // Dipakai form Buat Mock Exam (khusus pemilik) untuk mengambil isi Prediction Packages dan Category Packages.
     window.__pkSusun=susunPaket;window.__kpSusun=susunKat;
-    window.__pkBuka=()=>{buka=true;pkRender();};
+    window.__pkBuka=()=>{buka=true;pkRender();if(!window.__penuh){window.__penuh=true;window.__segarSub&&window.__segarSub();}};
     tampil();window.__pkSegar=()=>{if(buka)pkRender();};
     box.addEventListener('toggle',()=>{if(!box.open)return;const t=()=>{if(box.dataset.anim)return setTimeout(t,120);if(buka)pkRender();};setTimeout(t,120);});
   }
@@ -1987,7 +1993,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       $('g-kodemsg').textContent=r.err?(/could not find|does not exist|schema cache/i.test(r.err)?'Access codes are not set up yet (setup step pending).':'Could not check the code: '+r.err):r.jenis==='ditolak'?'This account cannot be activated with a code.':r.jenis?'✓ Code accepted. Opening…':'Incorrect access code.';};
     $('g-kodein').onkeydown=e=>{if(e.key==='Enter')$('g-kodebtn').click();};
     unsub=ref.onSnapshot(s=>{const st=s.exists?s.data().status:'menunggu';
-      if(st==='disetujui'){if(!beat)heartbeat(ref);start();}
+      if(st==='disetujui'){if(!beat)heartbeat(ref);start();if(!window.__penuh)window.__sb.rpc('cat_sudah_beli').then(({data})=>{if(data===true&&!window.__penuh){window.__penuh=true;window.__segarSub&&window.__segarSub();}}).catch(()=>{});}
       else if(st==='ditolak'){show('Access denied','The owner has not granted access to this account.',who,false,true);}
       else{const sdh=/[?&]bayar=ok\b/.test(location.search);
         show(sdh?'Payment received':'Waiting for approval',sdh?'Your payment is being confirmed. This page will open automatically in a moment.':'Your access request has been sent. This page will open automatically once the owner approves it, or right away after you buy access.',who,false,true);
