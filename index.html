@@ -926,7 +926,8 @@ html.fokus body #card{padding-bottom:calc(72px + env(safe-area-inset-bottom,0px)
 .aksesub{margin:6px 0 10px;padding-top:8px;border-top:1px solid var(--line)}.aksesub .asgrup{display:flex;flex-direction:column;gap:4px;margin:8px 0}.aksesub .asgrup>small{font-size:12px;color:var(--muted)}.aksesub .asn{color:var(--muted);font-weight:500}
 .aksesub .asnama{display:flex;flex-wrap:wrap;gap:6px}.aksesub .aschip{font:600 12.5px/1.2 var(--f-body,inherit);padding:5px 10px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer}.aksesub .aspin{color:color-mix(in srgb,var(--brass) 80%,var(--ink));font-weight:700}.aksesub .aschip i{font-style:normal;font-weight:400;font-size:11px;color:var(--muted)}.aksesub .aschip:hover{border-color:color-mix(in srgb,var(--brass) 60%,var(--line))}
 .aksesub .aschip.lunas{cursor:default;color:#c9962e;border-color:color-mix(in srgb,#c9962e 40%,var(--line))}.aksesub #aspilih{flex:1 1 180px;min-width:0}.aksesub .asatur{margin:8px 0}.aksesub .asatur>summary{cursor:pointer;font-weight:600;font-size:13px}.aksesub .ascat{margin:8px 0}.aksesub .ascat>b{display:block;margin-bottom:4px;font-size:12.5px}.aksesub .ascat input{flex:none;width:16px;height:16px;margin:2px 0 0}.aksesub .ascat label{display:flex;gap:6px;align-items:flex-start;font-size:12.5px;padding:2px 0;color:var(--ink)}.aksesub #asinfo{font-size:12px;color:var(--muted)}
-.setelan.tocard>summary .vvipakses{flex:none;margin-left:8px;padding:2px 8px;border-radius:999px;font:800 9.5px/1.4 var(--f-body,inherit);letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;color:color-mix(in srgb,var(--brass) 85%,var(--ink));border:1.5px solid color-mix(in srgb,var(--brass) 50%,var(--line));background:color-mix(in srgb,var(--brass) 10%,transparent);-webkit-text-fill-color:currentColor;align-self:center}
+.setelan.tocard>summary .vvipakses{position:absolute;right:40px;top:50%;transform:translateY(-50%);padding:1px 7px;border-radius:999px;font:600 8.5px/1.5 var(--f-body,inherit);letter-spacing:.14em;text-transform:uppercase;white-space:nowrap;color:var(--muted);-webkit-text-fill-color:var(--muted);border:1px solid color-mix(in srgb,var(--muted) 35%,transparent);background:transparent;text-shadow:none;align-self:center}
+#pkcard>summary,#kpcard>summary{position:relative}
 html:not(.vvip) .setelan.tocard>summary .vvipakses{display:none}
 </style>
 </head>
@@ -1016,7 +1017,7 @@ html:not(.vvip) .setelan.tocard>summary .vvipakses{display:none}
   </details>
 
   <details class="setelan tocard" id="pkcard" hidden>
-    <summary><span class="stl"><svg class="piala" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="url(#pialaEmas)" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5.2"/></g><circle cx="12" cy="12" r="1.9" fill="url(#pialaEmas)"/></svg>Prediction Packages</span><span class="vvipakses" title="Khusus VVIP Akses">VVIP Akses</span></summary>
+    <summary><span class="stl"><svg class="piala" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="url(#pialaEmas)" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5.2"/></g><circle cx="12" cy="12" r="1.9" fill="url(#pialaEmas)"/></svg>Prediction Packages</span><span class="vvipakses" title="VVIP Access">VVIP Access</span></summary>
     <div class="toisi">
       <p class="note" id="pkket"></p>
       <div id="pklist" class="tolist"></div>
@@ -1024,7 +1025,7 @@ html:not(.vvip) .setelan.tocard>summary .vvipakses{display:none}
   </details>
 
   <details class="setelan tocard" id="kpcard" hidden>
-    <summary><span class="stl"><svg class="piala" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="url(#pialaEmas)" stroke-width="1.8"><rect x="3.5" y="3.5" width="7" height="7" rx="1.6"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.6"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.6"/></g><rect x="13.5" y="13.5" width="7" height="7" rx="1.6" fill="url(#pialaEmas)"/></svg>Category Packages</span><span class="vvipakses" title="Khusus VVIP Akses">VVIP Akses</span></summary>
+    <summary><span class="stl"><svg class="piala" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="url(#pialaEmas)" stroke-width="1.8"><rect x="3.5" y="3.5" width="7" height="7" rx="1.6"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.6"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.6"/></g><rect x="13.5" y="13.5" width="7" height="7" rx="1.6" fill="url(#pialaEmas)"/></svg>Category Packages</span><span class="vvipakses" title="VVIP Access">VVIP Access</span></summary>
     <div class="toisi">
       <p class="note" id="kpket"></p>
       <div id="kplist" class="tolist"></div>
