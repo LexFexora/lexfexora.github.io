@@ -948,11 +948,11 @@ html.fokus body #card{padding-bottom:calc(72px + env(safe-area-inset-bottom,0px)
 
   <details class="online adm" id="adm" hidden>
     <summary><span class="dot" aria-hidden="true"></span><span>Access approvals: <strong id="admcount">0</strong> pending · <strong id="admon">0</strong> active</span><button class="btn keluar admout" type="button" id="adm-logout">EXIT</button></summary>
-    <div class="linkrow"><input id="admlink" readonly aria-label="Tautan latihan"><button class="btn copy" type="button" id="admcopy">⧉ Salin tautan</button></div>
     <div class="akslink" id="akslink"><h4>Tautan akses gratis</h4>
-      <div class="aksrow" data-aks="gratis"><b>Latihan 4 klaster</b><small>Ilmu Hukum, Hukum Formil, Hukum Materil, TIK</small><div class="linkrow"><input readonly placeholder="Belum dibuat" aria-label="Tautan latihan 4 klaster"><button class="btn copy" type="button" data-a="salin">⧉ Salin</button><button class="btn copy" type="button" data-a="buat">↻ Buat baru</button><button class="btn copy" type="button" data-a="mati">Nonaktifkan</button></div><small class="aksinfo"></small></div>
-      <div class="aksrow" data-aks="penuh"><b>Akses seluruhnya</b><small>4 klaster + Prediction Packages + Category Packages (kecuali Mock Exam)</small><div class="linkrow"><input readonly placeholder="Belum dibuat" aria-label="Tautan akses seluruhnya"><button class="btn copy" type="button" data-a="salin">⧉ Salin</button><button class="btn copy" type="button" data-a="buat">↻ Buat baru</button><button class="btn copy" type="button" data-a="mati">Nonaktifkan</button></div><small class="aksinfo"></small></div>
-      <p class="note">Bagikan tautannya. Siapa pun yang membukanya lalu masuk dengan Gmail langsung mendapat akses itu, tanpa menunggu persetujuan. Kodenya (bagian setelah <code>akses=</code>) juga bisa diketik di layar tunggu. Buat baru atau Nonaktifkan untuk menutup tautan lama; akun yang sudah aktif tetap aktif sampai Anda Cabut.</p></div>
+      <div class="aksrow" data-aks="gratis"><b>Latihan 4 klaster</b><small>Ilmu Hukum, Hukum Formil, Hukum Materil, TIK</small><div class="linkrow"><input class="akskode" autocomplete="off" placeholder="Ketik kode, min. 6 karakter" aria-label="Kode latihan 4 klaster"><button class="btn copy" type="button" data-a="simpan">Simpan kode</button></div><div class="linkrow"><input class="aksurl" readonly placeholder="Tautan muncul setelah kode disimpan" aria-label="Tautan latihan 4 klaster"><button class="btn copy" type="button" data-a="salin">⧉ Salin tautan</button><button class="btn copy" type="button" data-a="mati">Nonaktifkan</button></div><small class="aksinfo"></small></div>
+      <div class="aksrow" data-aks="penuh"><b>Akses seluruhnya</b><small>4 klaster + Prediction Packages + Category Packages (kecuali Mock Exam)</small><div class="linkrow"><input class="akskode" autocomplete="off" placeholder="Ketik kode, min. 6 karakter" aria-label="Kode akses seluruhnya"><button class="btn copy" type="button" data-a="simpan">Simpan kode</button></div><div class="linkrow"><input class="aksurl" readonly placeholder="Tautan muncul setelah kode disimpan" aria-label="Tautan akses seluruhnya"><button class="btn copy" type="button" data-a="salin">⧉ Salin tautan</button><button class="btn copy" type="button" data-a="mati">Nonaktifkan</button></div><small class="aksinfo"></small></div>
+      <p class="note">Bagikan tautannya. Siapa pun yang membukanya lalu masuk dengan Gmail langsung mendapat akses itu, tanpa menunggu persetujuan. Kodenya juga bisa diketik langsung di layar tunggu. Ganti kode atau Nonaktifkan untuk menutup kode/tautan lama; akun yang sudah aktif tetap aktif sampai Anda Cabut.</p></div>
+    <div class="linkrow"><input id="admlink" readonly aria-label="Tautan latihan"><button class="btn copy" type="button" id="admcopy">⧉ Salin tautan</button></div>
     <div id="admbody"></div>
     <div class="linkrow" id="izinsqlrow" style="display:none"><button class="btn copy" type="button" id="izinsql">⧉ Salin daftar izin (SQL untuk Supabase)</button></div>
     <h4>Bank soal</h4>
@@ -2102,17 +2102,18 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(QB,null,1)],{type:'application/json'}));a.download='bank-soal.json';document.body.appendChild(a);a.click();a.remove();};
     const box=$('adm'),body=$('admbody');box.hidden=false;
     const link=location.origin+location.pathname;$('admlink').value=link;
-    // Tautan akses gratis: kode acak disimpan di cat_kode ('gratis' = 4 klaster, 'penuh' = seluruhnya kecuali Mock Exam).
-    (()=>{const sb=window.__sb,acak=()=>{const a=new Uint8Array(9);crypto.getRandomValues(a);return Array.from(a,x=>'abcdefghjkmnpqrstuvwxyz23456789'[x%31]).join('');},
-      url=k=>location.origin+location.pathname+'?akses='+k;
-      document.querySelectorAll('#akslink .aksrow').forEach(row=>{const id=row.dataset.aks,inp=row.querySelector('input'),inf=row.querySelector('.aksinfo'),btn=a=>row.querySelector('[data-a="'+a+'"]');
-        const isi=k=>{inp.value=k?url(k):'';btn('salin').disabled=btn('mati').disabled=!k;};isi('');
+    // Tautan akses gratis: kode dibuat pemilik, disimpan di cat_kode ('gratis' = 4 klaster, 'penuh' = seluruhnya kecuali Mock Exam).
+    (()=>{const sb=window.__sb,url=k=>location.origin+location.pathname+'?akses='+encodeURIComponent(k);
+      document.querySelectorAll('#akslink .aksrow').forEach(row=>{const id=row.dataset.aks,kd=row.querySelector('.akskode'),inp=row.querySelector('.aksurl'),inf=row.querySelector('.aksinfo'),btn=a=>row.querySelector('[data-a="'+a+'"]');
+        const isi=k=>{kd.value=k||'';inp.value=k?url(k):'';btn('salin').disabled=btn('mati').disabled=!k;};isi('');
         sb.from('cat_kode').select('kode').eq('id',id).maybeSingle().then(({data,error})=>{if(error){inf.textContent='Jalankan supabase-update-4.sql di Supabase dulu.';return;}isi(data&&data.kode);});
-        btn('salin').onclick=()=>{if(!inp.value)return;const ok=()=>{btn('salin').textContent='✓ Tersalin';setTimeout(()=>btn('salin').textContent='⧉ Salin',1500);};
+        btn('salin').onclick=()=>{if(!inp.value)return;const b=btn('salin'),ok=()=>{b.textContent='✓ Tersalin';setTimeout(()=>b.textContent='⧉ Salin tautan',1500);};
           if(navigator.clipboard)navigator.clipboard.writeText(inp.value).then(ok).catch(()=>{inp.select();document.execCommand('copy');ok();});else{inp.select();document.execCommand('copy');ok();}};
-        btn('buat').onclick=async()=>{if(inp.value&&!confirm('Buat tautan baru? Tautan lama tidak bisa dipakai lagi.'))return;const k=acak();
-          const {error}=await sb.from('cat_kode').upsert({id,kode:k,diubah:new Date().toISOString()});if(error){inf.textContent='Gagal: '+(error.message||error.code);return;}isi(k);inf.textContent='Tautan baru siap dibagikan.';};
-        btn('mati').onclick=async()=>{if(!confirm('Nonaktifkan tautan ini?'))return;const {error}=await sb.from('cat_kode').delete().eq('id',id);if(error){inf.textContent='Gagal: '+(error.message||error.code);return;}isi('');inf.textContent='Tautan dinonaktifkan.';};});})();
+        btn('simpan').onclick=async()=>{const k=kd.value.trim();if(k.length<6){alert('Kode minimal 6 karakter.');return;}
+          const lain=document.querySelector('#akslink .aksrow:not([data-aks="'+id+'"]) .akskode');if(lain&&lain.value.trim()===k){alert('Kode ini sudah dipakai untuk akses lainnya. Pakai kode yang berbeda.');return;}
+          btn('simpan').disabled=true;const {error}=await sb.from('cat_kode').upsert({id,kode:k,diubah:new Date().toISOString()});btn('simpan').disabled=false;
+          if(error){inf.textContent='Gagal menyimpan: '+(error.message||error.code);return;}isi(k);inf.textContent='Kode tersimpan. Bagikan kodenya atau tautan di bawah.';};
+        btn('mati').onclick=async()=>{if(!confirm('Nonaktifkan kode ini?'))return;const {error}=await sb.from('cat_kode').delete().eq('id',id);if(error){inf.textContent='Gagal: '+(error.message||error.code);return;}isi('');inf.textContent='Kode dinonaktifkan.';};});})();
     $('admcopy').onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(link).then(()=>{$('admcopy').textContent='✓ Tersalin';setTimeout(()=>$('admcopy').textContent='⧉ Salin tautan',1500);});};
     const fmt=t=>{if(!t||!t.toDate)return '';const d=t.toDate(),m=Math.round((Date.now()-d)/60000);
       return m<2?'aktif sekarang':m<60?m+' menit lalu':m<1440?Math.round(m/60)+' jam lalu':d.toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'});};
