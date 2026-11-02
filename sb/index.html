@@ -1241,7 +1241,7 @@ function bagInfo(n){const k=Math.min(n,3),sz=Math.min(50,Math.ceil(n/(k||1)));re
 function bagNum(b){return b==="bonus"?"bonus":b==="all"?"all":+b;}
 
 // Tanpa akses penuh (bukan pemilik, belum membeli/kode Akses seluruhnya): tiap kategori hanya 3 sub-materi teratas.
-const SUB_GRATIS=3,terbatas=()=>!window.__isOwner&&!window.__penuh,subBuka=(c,s)=>!terbatas()||s==="all"||+s<=SUB_GRATIS;
+const SUB_GRATIS=3,terbatas=()=>!window.__isOwner&&!window.__penuh,subBuka=(c,s)=>!terbatas()||(s!=="all"&&+s<=SUB_GRATIS);
 const inBuka=q=>!terbatas()||q.mappings.some(m=>m.s<=SUB_GRATIS);
 function pool(){
   if(state.ulang) return state.ulang.ids.map(id=>BYID[id]).filter(Boolean);
@@ -1340,7 +1340,7 @@ function renderSub(){
   s.disabled=false;
   const c=state.cat;
   const tb=terbatas();
-  s.innerHTML=`<option value="all">${tb?"All Sections (1–"+SUB_GRATIS+")":"All Sections"}</option>`+SUBS[c].map((n,i)=>`<option value="${i+1}"${tb&&i>=SUB_GRATIS?" disabled":""}>${tb&&i>=SUB_GRATIS?"🔒 ":""}${i+1}. ${esc(n)}</option>`).join("");
+  s.innerHTML=`<option value="all"${tb?" disabled":""}>${tb?"🔒 All Sections":"All Sections"}</option>`+SUBS[c].map((n,i)=>`<option value="${i+1}"${tb&&i>=SUB_GRATIS?" disabled":""}>${tb&&i>=SUB_GRATIS?"🔒 ":""}${i+1}. ${esc(n)}</option>`).join("");
   s.value=String(state.sub);
   renderBag();
 }
@@ -1353,7 +1353,7 @@ function renderBag(){
   s.value=String(state.bag);
 }
 function selectCat(k,sub,bag){
-  if(k!=="all"&&!subBuka(k,sub))sub="all";
+  if(k!=="all"&&!subBuka(k,sub)){sub=1;bag=null;}
   state.ulang=null;state.cat=k; state.sub=sub; state.bag=sub==="all"?"all":(bag==null||bag==="all"?1:bagNum(bag));
   try{history.replaceState(null,"",k==="all"?location.pathname:"#"+CATS[k].key);}catch(e){}
   restore(); $("order").value=state.order; renderTabs(); renderSub(); render();
