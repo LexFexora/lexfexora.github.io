@@ -1231,7 +1231,19 @@ function terapkan(k){if(typeof sessionKey!=="function"||!state.list||sessionKey(
 async function segarkanPaket(){window.__segar=1;setTimeout(()=>{window.__segar=0;},8000);try{const disk=JSON.parse(localStorage.getItem(KEY)||"{}")||{};const pk=sessionKey(),lama=store[pk];gabungStore(disk);
     if(window.__ambilSemuaPaket){const raw=await window.__ambilSemuaPaket();if(raw)gabungStore(pkCloud(raw));}
     if(store[pk]!==lama){save();terapkan(pk);}try{window.__pkSegar&&window.__pkSegar();}catch(e){}}catch(e){}finally{window.__segar=0;lastTick=Date.now();}}
-document.addEventListener("visibilitychange",()=>{if(document.hidden)Object.keys(PKT).forEach(n=>kirimPaket(n,true));else segarkanPaket();});
+// Jawaban Mock Exam (dicatat tryout.html di "to-riwayat") ikut masuk ke riwayat Prediction Packages dan Category Packages yang memuat soal itu.
+function serapMock(){let R;try{R=JSON.parse(localStorage.getItem("to-riwayat")||"{}")||{};}catch(e){return;}const ids=Object.keys(R);if(!ids.length||!window.__pkSusun)return;
+  const P=[];(window.__pkSusun()||[]).forEach((L,i)=>P.push({k:"paket|"+(i+1),ids:L}));(window.__kpSusun?window.__kpSusun():[]).forEach(p=>P.push({k:p.key,ids:p.ids}));
+  const ubah=new Set(),aktif=state.list&&typeof sessionKey==="function"?sessionKey():"";
+  P.forEach(p=>{const set=new Set(p.ids);ids.forEach(id=>{if(!set.has(id)||!BYID[id])return;const k="ulang|"+p.k;let v=store[k];
+    if(v&&(v.ans&&v.ans[id]!==undefined||v.expired&&v.expired[id]||Array.isArray(v.list)&&v.list.length&&!v.list.includes(id)))return;
+    if(k===aktif&&state.ans&&state.ans[id]!==undefined)return;
+    v=store[k]=Object.assign({pos:0,ep:0},v||{});v.ans=Object.assign({},v.ans,{[id]:+R[id]});v.t=Math.max(Date.now(),(v.t||0)+1);ubah.add(k);});});
+  try{localStorage.removeItem("to-riwayat");}catch(e){}
+  if(!ubah.size)return;save();ubah.forEach(k=>{kirimPaket(k.replace(/^ulang\|paket\|/,""),true);terapkan(k);});try{window.__pkSegar&&window.__pkSegar();}catch(e){}}
+window.__serapMock=serapMock;
+document.addEventListener("visibilitychange",()=>{if(document.hidden)Object.keys(PKT).forEach(n=>kirimPaket(n,true));else{segarkanPaket();serapMock();}});
+addEventListener("storage",e=>{if(e.key==="to-riwayat"&&e.newValue)serapMock();});
 addEventListener("pageshow",e=>{if(e.persisted)segarkanPaket();});
 // Sebelum menulis, gabungkan dulu dengan isi perangkat: sesi yang lebih baru (ep) atau jawabannya lebih banyak tidak boleh tertimpa
 // oleh tab/halaman lama yang masih terbuka (penyebab progres "mundur").
@@ -1982,7 +1994,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
   async function start(){
     if(started)return;started=true;
     show('Loading question bank…','The first load may take a few seconds.');
-    try{const arr=await loadBank();QB.push(...arr);await progres();startQuiz();open();tryoutKartu();paketKartu();}
+    try{const arr=await loadBank();QB.push(...arr);await progres();startQuiz();open();tryoutKartu();paketKartu();try{window.__serapMock&&window.__serapMock();}catch(e){}}
     catch(e){started=false;if(isOwner){open();$('adm').open=true;$('adm').scrollIntoView();return;}show(e.message==='kosong'?'The question bank has not been uploaded yet':'Could not load the question bank',e.message==='kosong'?'The owner needs to upload the question bank from the approval panel.':'Check your connection, then reload the page. ('+(e.code||e.message)+')',null,false,true);}
   }
   function posisi(){try{const s=window.__quiz&&window.__quiz.state;if(!s)return '';const c=s.cat;
