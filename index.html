@@ -159,6 +159,8 @@ html.fokus .opt{padding:calc(min(12px,1.3vh)*var(--fs,1)) 12px;font-size:calc(cl
 html.fokus .card .ket{flex:none;padding-top:min(12px,1.4vh)}
 html.fokus .card .ket>summary{padding:min(10px,1.2vh) 14px}
 html.fokus .card:has(.ket[open]){overflow-y:auto;overscroll-behavior:contain}
+/* Soal panjang (mis. 6 opsi A–F): kartu selalu bisa digulir agar opsi terbawah tidak terpotong sebelum menjawab. */
+html.fokus .card{overflow-y:auto!important;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}html.fokus .card>*:not(.nav){flex-shrink:0}
 html.fokus .card .ket .explain{font-size:15px;line-height:1.65;padding-top:10px}
 html.fokus .card .nav{margin-top:auto!important;flex:none;padding-top:min(10px,1.2vh);position:sticky;bottom:0;background:var(--bg)}
 html.fokus .card .nav .btn{min-height:44px;padding:8px 18px;font-size:15px;flex:1}
