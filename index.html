@@ -1311,7 +1311,8 @@ function restore(){
   const s=store[sessionKey()];
   const valid=s&&Array.isArray(s.list)&&s.list.length&&s.list.every(id=>BYID[id]&&s.perm&&s.perm[id]);
   const ids=new Set(pool().map(q=>q.id));
-  if(valid&&s.list.length===ids.size&&s.list.every(id=>ids.has(id))){state.list=(s.order||"seq")==="seq"?sortSeq(s.list.map(id=>BYID[id])).map(q=>q.id):s.list;state.pos=Math.min(s.pos||0,s.list.length);state.ans=s.ans||{};state.ep=s.ep||0;state.rs=!!s.rs;state.t=s.t||0;state.perm=s.perm;state.order=s.order||"seq";state.mulai=typeof s.mulai==="boolean"?s.mulai:!!(s.pos||Object.keys(s.ans||{}).length);state.tLeft=typeof s.tLeft==="number"?s.tLeft:SEC*s.list.length;state.timeUp=!!s.timeUp;state.qLeft=typeof s.qLeft==="number"?s.qLeft:SEC;state.qId=s.qId||null;state.expired=s.expired||{};}
+  // Ulangi yang salah (rs): daftarnya sengaja lebih kecil dari pool, tetap dipulihkan selama semua soalnya masih ada di pool.
+  if(valid&&(s.list.length===ids.size||(s.rs&&s.list.length<ids.size))&&s.list.every(id=>ids.has(id))){state.list=(s.order||"seq")==="seq"?sortSeq(s.list.map(id=>BYID[id])).map(q=>q.id):s.list;state.pos=Math.min(s.pos||0,s.list.length);state.ans=s.ans||{};state.ep=s.ep||0;state.rs=!!s.rs;state.t=s.t||0;state.perm=s.perm;state.order=s.order||"seq";state.mulai=typeof s.mulai==="boolean"?s.mulai:!!(s.pos||Object.keys(s.ans||{}).length);state.tLeft=typeof s.tLeft==="number"?s.tLeft:SEC*s.list.length;state.timeUp=!!s.timeUp;state.qLeft=typeof s.qLeft==="number"?s.qLeft:SEC;state.qId=s.qId||null;state.expired=s.expired||{};}
   else if(s&&s.ans&&Object.keys(s.ans).length){
     // Bank soal berubah (soal diedit/dihapus): susun ulang daftar, tapi jawaban dan posisi lama tetap dipakai.
     const lama=s;buildSession(true);const ada=new Set(state.list);
