@@ -1055,7 +1055,7 @@ html:not(.vvip) .setelan.tocard>summary .vvipakses{display:none}
   </details>
 
   <details class="setelan tocard" id="arcard" hidden>
-    <summary><span class="stl"><svg class="piala" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 3.5h11v17l-5.5-4-5.5 4z" fill="none" stroke="url(#pialaEmas)" stroke-width="1.8" stroke-linejoin="round"/><path d="M9.5 8.5h5" stroke="url(#pialaEmas)" stroke-width="1.8" stroke-linecap="round"/></svg>Bookmarked Questions</span><span class="arjml" id="arjml"></span></summary>
+    <summary><span class="stl"><svg class="piala" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 3.5h11v17l-5.5-4-5.5 4z" fill="none" stroke="url(#pialaEmas)" stroke-width="1.8" stroke-linejoin="round"/><path d="M9.5 8.5h5" stroke="url(#pialaEmas)" stroke-width="1.8" stroke-linecap="round"/></svg>Vital Test Record</span><span class="arjml" id="arjml"></span></summary>
     <div class="toisi">
       <p class="note" id="arket"></p>
       <div id="arlist" class="tolist"></div>
@@ -1736,20 +1736,20 @@ window.__ulang=(c,s,ids,label,k,langsung,tetap)=>{ids=ids.filter(id=>BYID[id]);i
 // Progres tiap bagian memakai kunci paket|ar-<n>, jadi ikut tersimpan di akun seperti Category Packages.
 function arsipLetak(id){const L=window.Arsip?Arsip.daftar().filter(x=>BYID[x]):[],i=L.indexOf(id);return i<0?null:{b:Math.floor(i/Arsip.BAGIAN)+1,no:i%Arsip.BAGIAN+1};}
 function arsipHTML(id){if(!window.Arsip)return "";const on=Arsip.ada(id),t=on&&arsipLetak(id);
-  return `<div class="arsiprow"><span class="arsipinfo" id="arsipinfo">${t?`Bookmarks Part ${t.b} · No. ${t.no}`:""}</span><button class="btn arsipbtn${on?" on":""}" id="arsipbtn" type="button" aria-pressed="${on}" title="${on?"Tap to remove from Bookmarked Questions":"Save this question to Bookmarked Questions"}">${on?"✓ Bookmarked":"🔖 Bookmark"}</button></div>`;}
+  return `<div class="arsiprow"><span class="arsipinfo" id="arsipinfo">${t?`Record Part ${t.b} · No. ${t.no}`:""}</span><button class="btn arsipbtn${on?" on":""}" id="arsipbtn" type="button" aria-pressed="${on}" title="${on?"Tap to remove from Vital Test Record":"Save this question to Vital Test Record"}">${on?"✓ Recorded":"🔖 Record"}</button></div>`;}
 function pasangArsip(id){const b=$("arsipbtn");if(!b)return;b.onclick=()=>{Arsip.ubah(id);const r=b.closest(".arsiprow");if(r)r.outerHTML=arsipHTML(id);pasangArsip(id);};}
 function renderArsip(){const box=$("arcard");if(!box||!window.Arsip)return;box.hidden=false;
   const P=Arsip.bagian(id=>!!BYID[id]),n=P.reduce((a,p)=>a+p.length,0);
   $("arjml").textContent=n?n+(n===1?" question":" questions"):"";
-  $("arket").innerHTML=`<span class="pklead">Questions you mark with 🔖 Bookmark in any mode are collected here in the order you bookmarked them. Each part holds ${Arsip.BAGIAN} questions. Once a part is full, the next bookmarked question becomes No. 1 of the next part.</span>`;
-  if(!n){$("arlist").innerHTML=`<p class="arkosong">No bookmarked questions yet. Tap 🔖 Bookmark below the answer options while working on a question.</p>`;return;}
+  $("arket").innerHTML=`<span class="pklead">Questions you mark with 🔖 Record in any mode are collected here in the order you recorded them. Each part holds ${Arsip.BAGIAN} questions. Once a part is full, the next recorded question becomes No. 1 of the next part.</span>`;
+  if(!n){$("arlist").innerHTML=`<p class="arkosong">No recorded questions yet. Tap 🔖 Record below the answer options while working on a question.</p>`;return;}
   $("arlist").innerHTML=P.map((ids,i)=>{const ss=store["ulang|paket|ar-"+(i+1)],A=ss&&ss.ans||{},dj=ids.filter(id=>A[id]!==undefined).length,
       bn=ids.filter(id=>A[id]!==undefined&&A[id]===BYID[id].a).length,pb=dj?Math.round(bn*100/dj):0,
       lanjut=ss&&(ss.pos>0||dj>0)&&(ss.pos||0)<ids.length&&dj<ids.length,selesai=dj>=ids.length,awal=i*Arsip.BAGIAN;
-    return `<div class="tr pk"><span class="trj"><b>Part ${i+1}</b><small>${ids.length} questions${ids.length<Arsip.BAGIAN?` · ${ids.length} of ${Arsip.BAGIAN} filled`:""} · bookmarks ${awal+1}–${awal+ids.length}</small></span><span class="kpr"><span class="muted pkpct" title="${dj} of ${ids.length} questions answered">${Math.round(dj*100/ids.length)}%</span>${dj?`<span class="pkbs" title="${bn} correct and ${dj-bn} wrong out of ${dj} answered"><i class="ok">✓ ${pb}%</i><i class="no">✗ ${100-pb}%</i></span>`:""}<button class="btn copy" type="button" data-ar="${i}" data-ulangi="${selesai?1:""}">${selesai?"Retry":lanjut?"Continue":"Start"}</button></span></div>`;}).join("");
+    return `<div class="tr pk"><span class="trj"><b>Part ${i+1}</b><small>${ids.length} questions${ids.length<Arsip.BAGIAN?` · ${ids.length} of ${Arsip.BAGIAN} filled`:""} · records ${awal+1}–${awal+ids.length}</small></span><span class="kpr"><span class="muted pkpct" title="${dj} of ${ids.length} questions answered">${Math.round(dj*100/ids.length)}%</span>${dj?`<span class="pkbs" title="${bn} correct and ${dj-bn} wrong out of ${dj} answered"><i class="ok">✓ ${pb}%</i><i class="no">✗ ${100-pb}%</i></span>`:""}<button class="btn copy" type="button" data-ar="${i}" data-ulangi="${selesai?1:""}">${selesai?"Retry":lanjut?"Continue":"Start"}</button></span></div>`;}).join("");
   $("arlist").querySelectorAll("[data-ar]").forEach(b=>b.onclick=()=>bukaArsip(+b.dataset.ar,!!b.dataset.ulangi));}
 function bukaArsip(i,ulangi){const ids=(Arsip.bagian(id=>!!BYID[id])[i]||[]);if(!ids.length)return;const c=BYID[ids[0]].c;
-  window.__ulang(c,"all",ids,"Bookmarks · Part "+(i+1),"paket|ar-"+(i+1),!ulangi,true);
+  window.__ulang(c,"all",ids,"Vital Test Record · Part "+(i+1),"paket|ar-"+(i+1),!ulangi,true);
   if(ulangi){retake();const mb=$("mulaibtn");if(mb)mb.click();fokus(true);}}
 window.__arSegar=()=>{const b=$("arcard");if(b&&!b.dataset.anim)renderArsip();};
 if(window.Arsip)Arsip.pantau(()=>{window.__arSegar();});
