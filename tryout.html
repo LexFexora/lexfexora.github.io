@@ -370,7 +370,7 @@ header .tema .knop{background:linear-gradient(180deg,#c9b98f,#a8925c)}header .te
 </div>
 
 <script src="/editsoal.js?v=3"></script>
-<script src="/arsip.js?v=2"></script>
+<script src="/arsip.js?v=3"></script>
 <script src="/sb/supabase-js-2.117.3.js"></script>
 <script src="sb/supabase-config.js?v=20261102b"></script>
 <script src="sb/fb-shim.js?v=20261102b"></script>
@@ -439,7 +439,7 @@ if(!TID){gate("Tautan mock exam tidak lengkap","Buka tautan mock exam yang dibag
 
 auth.onAuthStateChanged(u=>{U=u;pMuat=false;aku=null;P={};if(unsubT){unsubT();unsubT=null;}if(unsubP){unsubP();unsubP=null;}if(unsubC){unsubC();unsubC=null;}
   if(!u){gate("Mock Exam","Masuk dengan akun Google untuk ikut mock exam. Nama akun Anda akan tampil di papan peringkat.",true);return;}
-  if(window.Arsip)Arsip.mulai(u.uid,db.doc("progres/"+u.uid));
+  if(window.Arsip)Arsip.mulai(window.__sb,u.uid,!!OWNER&&(u.email||"").toLowerCase()===OWNER&&u.emailVerified).then(()=>{if($("arsipbtn")&&T&&T.status==="mulai")render();});
   isOwner=!!OWNER&&(u.email||"").toLowerCase()===OWNER&&u.emailVerified;$("edsoal").hidden=!isOwner;if(isOwner){siapkanEdit();pantauLoginMulai();}$("akun").hidden=false;$("akunav").innerHTML=av({foto:u.photoURL,nama:u.displayName||u.email});$("akunnm").textContent=u.displayName||(u.email||"").split("@")[0];document.body.classList.toggle("bebas",isOwner||BEBAS_SALIN.includes((u.email||"").toLowerCase())&&u.emailVerified);
   unsubT=db.doc("tryout/"+TID).onSnapshot(s=>{if(!s.exists){gate("Mock exam tidak ditemukan","Periksa kembali tautannya.");return;}
       T=s.data({serverTimestamps:"estimate"});T.id=s.id;if(!T.judul||T.judul==="Mock Exam Seleksi Kemampuan Bidang")T.judul="Mock Exam";if(T.subJudul)T.judul+=" - "+T.subJudul.replace(/^Package (\d)/,"Prediction Package $1");gabung();render();},
@@ -615,8 +615,11 @@ document.addEventListener("keydown",e=>{if(e.ctrlKey||e.metaKey||e.altKey||/INPU
   else if(e.key==="ArrowLeft"&&$("prev")&&!$("prev").disabled){e.preventDefault();$("prev").click();}});
 // Arsip soal penting: soal yang diarsipkan di Mock Exam masuk ke kartu Arsip Soal di halaman utama (arsip.js).
 function arsipHTML(id){if(!window.Arsip)return "";const on=Arsip.ada(id),L=on?Arsip.daftar():[],i=L.indexOf(id),t=i<0?"":`Record Part ${Math.floor(i/Arsip.BAGIAN)+1} · No. ${i%Arsip.BAGIAN+1}`;
-  return `<div class="arsiprow"><span class="arsipinfo">${t}</span><button class="btn arsipbtn${on?" on":""}" id="arsipbtn" type="button" aria-pressed="${on}" title="${on?"Tap to remove from Vital Test Record":"Save this question to Vital Test Record"}">${on?"✓ Recorded":"🔖 Record"}</button></div>`;}
-function pasangArsip(id){const b=$("arsipbtn");if(!b)return;b.onclick=()=>{Arsip.ubah(id);const r=b.closest(".arsiprow");if(r)r.outerHTML=arsipHTML(id);pasangArsip(id);};}
+  return `<div class="arsiprow"><span class="arsipinfo" id="arsipinfo">${t}</span><button class="btn arsipbtn${on?" on":""}" id="arsipbtn" type="button" aria-pressed="${on}" title="${on?(Arsip.bolehHapus(id)?"Tap to remove from Vital Test Record":"Recorded by another user. Only they or the owner can remove it."):"Save this question to the shared Vital Test Record"}">${on?"✓ Recorded":"🔖 Record"}</button></div>`;}
+function pasangArsip(id){const b=$("arsipbtn");if(!b)return;const gambar=()=>{const r=$("arsipbtn")&&$("arsipbtn").closest(".arsiprow");if(r){r.outerHTML=arsipHTML(id);pasangArsip(id);}};
+  b.onclick=async()=>{const on=Arsip.ada(id);if(on&&!Arsip.bolehHapus(id)){const i=$("arsipinfo");if(i)i.textContent="Recorded by another user";return;}
+    b.disabled=true;const p=Arsip.ubah(id,!on);gambar();await p;gambar();
+    if(Arsip.galat){const i=$("arsipinfo");if(i)i.textContent=Arsip.galat==="belum"?"Vital Test Record is not set up yet":"Could not save. Check your connection.";}};}
 function akhiri(){if(!confirm("Akhiri mock exam sekarang? Semua peserta langsung melihat hasil akhir."))return;db.doc("tryout/"+TID).update({status:"selesai"});}
 
 function tunggu(){papan.hidden=false;main.innerHTML=`<div class="hasilku"><p class="eyebrow" style="margin:0 0 6px">Jawaban terkumpul</p><div><span class="angka">${aku.skor}</span> <span class="poin">POIN</span></div>

@@ -1736,12 +1736,18 @@ window.__ulang=(c,s,ids,label,k,langsung,tetap)=>{ids=ids.filter(id=>BYID[id]);i
 // Progres tiap bagian memakai kunci paket|ar-<n>, jadi ikut tersimpan di akun seperti Category Packages.
 function arsipLetak(id){const L=window.Arsip?Arsip.daftar().filter(x=>BYID[x]):[],i=L.indexOf(id);return i<0?null:{b:Math.floor(i/Arsip.BAGIAN)+1,no:i%Arsip.BAGIAN+1};}
 function arsipHTML(id){if(!window.Arsip)return "";const on=Arsip.ada(id),t=on&&arsipLetak(id);
-  return `<div class="arsiprow"><span class="arsipinfo" id="arsipinfo">${t?`Record Part ${t.b} · No. ${t.no}`:""}</span><button class="btn arsipbtn${on?" on":""}" id="arsipbtn" type="button" aria-pressed="${on}" title="${on?"Tap to remove from Vital Test Record":"Save this question to Vital Test Record"}">${on?"✓ Recorded":"🔖 Record"}</button></div>`;}
-function pasangArsip(id){const b=$("arsipbtn");if(!b)return;b.onclick=()=>{Arsip.ubah(id);const r=b.closest(".arsiprow");if(r)r.outerHTML=arsipHTML(id);pasangArsip(id);};}
+  return `<div class="arsiprow"><span class="arsipinfo" id="arsipinfo">${t?`Record Part ${t.b} · No. ${t.no}`:""}</span><button class="btn arsipbtn${on?" on":""}" id="arsipbtn" type="button" aria-pressed="${on}" title="${on?(Arsip.bolehHapus(id)?"Tap to remove from Vital Test Record":"Recorded by another user. Only they or the owner can remove it."):"Save this question to the shared Vital Test Record"}">${on?"✓ Recorded":"🔖 Record"}</button></div>`;}
+function pasangArsip(id){const b=$("arsipbtn");if(!b)return;const gambar=()=>{const r=$("arsipbtn")&&$("arsipbtn").closest(".arsiprow");if(r){r.outerHTML=arsipHTML(id);pasangArsip(id);}};
+  b.onclick=async()=>{const on=Arsip.ada(id);if(on&&!Arsip.bolehHapus(id)){const i=$("arsipinfo");if(i)i.textContent="Recorded by another user";return;}
+    b.disabled=true;const p=Arsip.ubah(id,!on);gambar();await p;gambar();
+    if(Arsip.galat){const i=$("arsipinfo");if(i)i.textContent=Arsip.galat==="belum"?"Vital Test Record is not set up yet":"Could not save. Check your connection.";}};}
 function renderArsip(){const box=$("arcard");if(!box||!window.Arsip)return;box.hidden=false;
   const P=Arsip.bagian(id=>!!BYID[id]),n=P.reduce((a,p)=>a+p.length,0);
   $("arjml").textContent=n?n+(n===1?" question":" questions"):"";
-  $("arket").innerHTML=`<span class="pklead">Questions you mark with 🔖 Record in any mode are collected here in the order you recorded them. Each part holds ${Arsip.BAGIAN} questions. Once a part is full, the next recorded question becomes No. 1 of the next part.</span>`;
+  $("arket").innerHTML=`<span class="pklead">A shared record for all users. Every question anyone marks with 🔖 Record, in any mode, is collected here in the order it was recorded, so you can work through questions others saved and they can work through yours. Each part holds ${Arsip.BAGIAN} questions. Once a part is full, the next recorded question becomes No. 1 of the next part. Your answers and progress stay your own.</span>`;
+  if(!Arsip.siap){$("arlist").innerHTML=`<p class="arkosong">Loading…</p>`;return;}
+  if(Arsip.galat==="belum"){$("arlist").innerHTML=`<p class="arkosong">${window.__isOwner?"Run sb/supabase-update-11.sql in the Supabase SQL Editor to turn on the shared Vital Test Record.":"Vital Test Record is not available yet."}</p>`;return;}
+  if(!n&&Arsip.galat){$("arlist").innerHTML=`<p class="arkosong">Could not load Vital Test Record. Check your connection, then reopen this card.</p>`;return;}
   if(!n){$("arlist").innerHTML=`<p class="arkosong">No recorded questions yet. Tap 🔖 Record below the answer options while working on a question.</p>`;return;}
   $("arlist").innerHTML=P.map((ids,i)=>{const ss=store["ulang|paket|ar-"+(i+1)],A=ss&&ss.ans||{},dj=ids.filter(id=>A[id]!==undefined).length,
       bn=ids.filter(id=>A[id]!==undefined&&A[id]===BYID[id].a).length,pb=dj?Math.round(bn*100/dj):0,
@@ -1755,14 +1761,14 @@ window.__arSegar=()=>{const b=$("arcard");if(b&&!b.dataset.anim)renderArsip();};
 if(window.Arsip)Arsip.pantau(()=>{window.__arSegar();});
 renderArsip();
 document.querySelector("#arcard>summary").addEventListener("click",e=>{const d=$("arcard");e.preventDefault();if(d.dataset.anim)return;if(d.open){tutupPerlahan(d,[d.querySelector(".toisi")].filter(Boolean));return;}
-  renderArsip();const h0=d.offsetHeight;d.open=true;turunPerlahan(d,h0,[d.querySelector(".toisi")].filter(Boolean));});
+  renderArsip();Arsip.segarkan();const h0=d.offsetHeight;d.open=true;turunPerlahan(d,h0,[d.querySelector(".toisi")].filter(Boolean));});
 window.__segarSub=()=>{if(state.ulang){renderSub();return;}selectCat(state.cat,state.sub,state.bag);};
 window.__quiz={state,render:()=>render(),benar:()=>BENAR,sesi:k=>store["ulang|"+k]||null};window.__soalKini=()=>BYID[state.list[state.pos]];
 window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add(id);state.edOpen=false;render();};
 }
 </script>
 <script src="/editsoal.js?v=3"></script>
-<script src="/arsip.js?v=2"></script>
+<script src="/arsip.js?v=3"></script>
 
 <script src="/sb/supabase-js-2.117.3.js"></script>
 <script src="sb/supabase-config.js?v=20261102b"></script>
@@ -1856,7 +1862,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
     window.__simpanPaket=(n,v)=>{try{return ref.set({pk:{[n]:JSON.stringify(v)}},{merge:true}).catch(()=>{});}catch(e){}};
     window.__simpanCoba=id=>ref.set({c:{[id]:1}},{merge:true}).catch(()=>{});
     window.__sinkronCoba=m=>ref.set({c:m},{merge:true}).catch(()=>{});
-    if(window.Arsip)Arsip.mulai(u.uid,ref,arAwal);
+    if(window.Arsip)Arsip.mulai(window.__sb,u.uid,isOwner);
     if(window.__sb)tawarImpor(u,ref,imporSudah);}
   // Versi Supabase: salin riwayat progres/<uid> dari Firebase lama (sekali, atas klik pengguna; butuh masuk Google via popup).
   // Tanda "impor" disimpan di progres akun (bukan hanya di perangkat), jadi kotak ini cukup muncul sekali per akun.

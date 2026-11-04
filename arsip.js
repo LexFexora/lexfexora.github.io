@@ -1,46 +1,48 @@
-// Arsip soal penting: dipakai index.html (semua mode latihan dan paket) dan tryout.html (Mock Exam).
-// Data per akun: { idSoal: t } dengan t > 0 = diarsipkan pada waktu t (urutan arsip), t < 0 = dikeluarkan pada waktu |t|.
-// Disimpan di perangkat (localStorage "tkbcakim-arsip-<uid>") dan di akun (progres/<uid>, kolom "ar" berupa teks JSON).
-// Dua versi digabung per soal: catatan dengan waktu terbaru yang dipakai, jadi HP dan browser lain tidak saling menimpa.
+// Vital Test Record: satu arsip soal bersama untuk semua pengguna (tabel cat_arsip, lihat sb/supabase-update-11.sql).
+// Dipakai index.html (semua mode latihan dan paket) dan tryout.html (Mock Exam).
+// Soal yang direkam siapa pun terlihat oleh semua pengguna, urut menurut waktu direkam, dibagi per 50 soal.
+// Hanya perekamnya atau pemilik yang bisa mengeluarkan soal dari arsip. Progres tiap pengguna tetap milik masing-masing.
+// Rekaman pribadi versi sebelumnya (localStorage "tkbcakim-arsip-<uid>") dipindahkan sekali ke arsip bersama.
 (function(){
   'use strict';
   const BAGIAN=50;
-  let uid='lokal',ref=null,data={},kirimT=null;const pend=new Set();
-  const kunci=()=>'tkbcakim-arsip-'+uid;
+  let sb=null,uid='',owner=false,data=[],siap=false,galat='',muatP=null;const pend=new Set();
+  const kabari=()=>pend.forEach(f=>{try{f();}catch(e){}});
   const urai=s=>{try{const o=typeof s==='string'?JSON.parse(s):s;return o&&typeof o==='object'&&!Array.isArray(o)?o:{};}catch(e){return {};}};
-  // Gabungkan dua catatan: untuk setiap soal, ambil yang waktunya paling baru.
-  function gabung(a,b){const r=Object.assign({},a);let ubah=false;
-    for(const id in b){const v=+b[id];if(!v||!isFinite(v))continue;const w=+r[id]||0;if(Math.abs(v)>Math.abs(w)){r[id]=v;ubah=true;}}
-    return {r,ubah};}
-  function tulisLokal(){try{localStorage.setItem(kunci(),JSON.stringify(data));}catch(e){}}
-  function bacaLokal(){try{return urai(localStorage.getItem(kunci())||'{}');}catch(e){return {};}}
-  function kabari(){pend.forEach(f=>{try{f();}catch(e){}});}
-  // Simpan ke akun: baca dulu versi akun, gabungkan, baru tulis.
-  async function kirim(){kirimT=null;if(!ref)return;
-    try{const s=await ref.get();const c=urai(s.exists&&s.data().ar);const g=gabung(data,c);if(g.ubah){data=g.r;tulisLokal();kabari();}
-      if(gabung(c,data).ubah||!s.exists||!s.data().ar)await ref.set({ar:JSON.stringify(data)},{merge:true});}catch(e){}}
-  function jadwal(segera){clearTimeout(kirimT);if(!ref)return;if(segera)kirim();else kirimT=setTimeout(kirim,800);}
+  async function muat(){if(!sb)return;if(muatP)return muatP;
+    muatP=(async()=>{try{const {data:d,error}=await sb.from('cat_arsip').select('id,t,oleh').eq('aktif',true).order('t',{ascending:true}).order('id',{ascending:true});
+        if(error){galat=/does not exist|schema cache|relation/i.test(error.message||'')?'belum':'gagal';}
+        else{galat='';data=(d||[]).map(r=>({id:r.id,t:Date.parse(r.t)||0,oleh:r.oleh}));}}
+      catch(e){galat='gagal';}
+      siap=true;muatP=null;kabari();})();
+    return muatP;}
+  // Rekaman pribadi lama dipindahkan ke arsip bersama, sekali per akun, dengan urutan waktu aslinya.
+  async function pindahLama(){const k='tkbcakim-arsip-'+uid;let o={};try{o=urai(localStorage.getItem(k)||'{}');}catch(e){}
+    const ids=Object.keys(o).filter(id=>+o[id]>0).sort((a,b)=>o[a]-o[b]);if(!ids.length||galat)return;
+    for(const id of ids){if(!data.some(r=>r.id===id)){const {error}=await sb.rpc('cat_arsip_rekam',{p_id:id});if(error)return;}}
+    try{localStorage.removeItem(k);}catch(e){}await muat();}
   const A={
     BAGIAN,
-    // Dipanggil setelah login: uid akun, dokumen progres/<uid>, dan isi kolom "ar" yang sudah terbaca (opsional).
-    mulai(u,r,awal){uid=u||'lokal';ref=r||null;data=bacaLokal();const g=gabung(data,urai(awal));data=g.r;tulisLokal();
-      if(ref&&(awal===undefined||gabung(urai(awal),data).ubah))jadwal(true);kabari();},
-    // Ambil versi terbaru dari perangkat (tab lain) dan akun (HP lain).
-    async segarkan(){const lama=JSON.stringify(data);data=gabung(data,bacaLokal()).r;
-      if(ref){try{const s=await ref.get();data=gabung(data,urai(s.exists&&s.data().ar)).r;}catch(e){}}
-      if(JSON.stringify(data)!==lama){tulisLokal();kabari();}},
-    ada:id=>(+data[id]||0)>0,
-    // Daftar soal yang diarsipkan, urut sesuai waktu diarsipkan (paling awal di depan).
-    daftar(){return Object.keys(data).filter(id=>+data[id]>0).sort((a,b)=>data[a]-data[b]||(a<b?-1:1));},
-    // Bagian berisi 50 soal: soal ke-51 menjadi nomor 1 di Bagian 2, dan seterusnya.
+    get siap(){return siap;},get galat(){return galat;},
+    // Dipanggil setelah login: client Supabase, uid akun, dan apakah akun ini pemilik.
+    async mulai(client,u,isOwner){sb=client||window.__sb||null;uid=u||'';owner=!!isOwner;if(!sb)return;await muat();await pindahLama();},
+    segarkan:()=>muat(),
+    ada:id=>data.some(r=>r.id===id),
+    // Boleh dikeluarkan dari arsip: perekamnya sendiri atau pemilik.
+    bolehHapus:id=>{const r=data.find(x=>x.id===id);return !!r&&(owner||r.oleh===uid);},
+    daftar:()=>data.map(r=>r.id),
+    // Bagian berisi 50 soal: soal ke-51 menjadi nomor 1 di Part 2, dan seterusnya.
     bagian(saring){const L=A.daftar().filter(saring||(()=>true)),P=[];for(let i=0;i<L.length;i+=BAGIAN)P.push(L.slice(i,i+BAGIAN));return P;},
-    ubah(id,arsip){if(!id)return false;const now=Math.max(Date.now(),...Object.values(data).map(v=>Math.abs(+v)||0).concat(0).map(v=>v+1));
-      if(arsip===undefined)arsip=!A.ada(id);if(arsip===A.ada(id))return arsip;data[id]=arsip?now:-now;tulisLokal();jadwal();kabari();return arsip;},
-    pantau(f){pend.add(f);return ()=>pend.delete(f);},
-    kirimSekarang(){if(kirimT){clearTimeout(kirimT);kirim();}}
+    async ubah(id,rekam){if(!sb||!id)return false;if(rekam===undefined)rekam=!A.ada(id);
+      if(rekam){if(A.ada(id))return true;data.push({id,t:Date.now(),oleh:uid});kabari();
+        const {error}=await sb.rpc('cat_arsip_rekam',{p_id:id});if(error){data=data.filter(r=>r.id!==id||r.oleh!==uid);galat=/does not exist|schema cache|function/i.test(error.message||'')?'belum':'gagal';kabari();return false;}}
+      else{if(!A.bolehHapus(id))return true;const lama=data;data=data.filter(r=>r.id!==id);kabari();
+        const {error}=await sb.rpc('cat_arsip_hapus',{p_id:id});if(error){data=lama;kabari();return true;}}
+      await muat();return A.ada(id);},
+    pantau(f){pend.add(f);return ()=>pend.delete(f);}
   };
-  addEventListener('storage',e=>{if(e.key===kunci()&&e.newValue){const g=gabung(data,urai(e.newValue));if(g.ubah){data=g.r;kabari();}}});
-  document.addEventListener('visibilitychange',()=>{if(document.hidden)A.kirimSekarang();else A.segarkan();});
-  data=bacaLokal();
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)muat();});
+  // Arsip bersama bisa bertambah dari pengguna lain: segarkan tiap 60 detik selama halaman terbuka.
+  setInterval(()=>{if(!document.hidden&&sb)muat();},60000);
   window.Arsip=A;
 })();
