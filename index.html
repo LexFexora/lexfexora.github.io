@@ -1768,7 +1768,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
 }
 </script>
 <script src="/editsoal.js?v=3"></script>
-<script src="/arsip.js?v=3"></script>
+<script src="/arsip.js?v=4"></script>
 
 <script src="/sb/supabase-js-2.117.3.js"></script>
 <script src="sb/supabase-config.js?v=20261102b"></script>
@@ -1862,7 +1862,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
     window.__simpanPaket=(n,v)=>{try{return ref.set({pk:{[n]:JSON.stringify(v)}},{merge:true}).catch(()=>{});}catch(e){}};
     window.__simpanCoba=id=>ref.set({c:{[id]:1}},{merge:true}).catch(()=>{});
     window.__sinkronCoba=m=>ref.set({c:m},{merge:true}).catch(()=>{});
-    if(window.Arsip)Arsip.mulai(window.__sb,u.uid,isOwner);
+    if(window.Arsip)Arsip.mulai(window.__sb,u.uid,isOwner,arAwal,()=>ref.set({ar:"{}"},{merge:true}));
     if(window.__sb)tawarImpor(u,ref,imporSudah);}
   // Versi Supabase: salin riwayat progres/<uid> dari Firebase lama (sekali, atas klik pengguna; butuh masuk Google via popup).
   // Tanda "impor" disimpan di progres akun (bukan hanya di perangkat), jadi kotak ini cukup muncul sekali per akun.

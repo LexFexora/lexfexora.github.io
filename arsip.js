@@ -17,15 +17,18 @@
       siap=true;muatP=null;kabari();})();
     return muatP;}
   // Rekaman pribadi lama dipindahkan ke arsip bersama, sekali per akun, dengan urutan waktu aslinya.
-  async function pindahLama(){const k='tkbcakim-arsip-'+uid;let o={};try{o=urai(localStorage.getItem(k)||'{}');}catch(e){}
-    const ids=Object.keys(o).filter(id=>+o[id]>0).sort((a,b)=>o[a]-o[b]);if(!ids.length||galat)return;
+  // Sumbernya: perangkat ini dan kolom "ar" di progres akun (rekaman dari HP/browser lain).
+  async function pindahLama(lama,hapusLama){const k='tkbcakim-arsip-'+uid;let o={};try{o=urai(localStorage.getItem(k)||'{}');}catch(e){}
+    const c=urai(lama);for(const id in c){const v=+c[id]||0;if(Math.abs(v)>Math.abs(+o[id]||0))o[id]=v;}
+    const ids=Object.keys(o).filter(id=>+o[id]>0).sort((a,b)=>o[a]-o[b]);if(galat)return;
     for(const id of ids){if(!data.some(r=>r.id===id)){const {error}=await sb.rpc('cat_arsip_rekam',{p_id:id});if(error)return;}}
-    try{localStorage.removeItem(k);}catch(e){}await muat();}
+    try{localStorage.removeItem(k);}catch(e){}if(lama&&Object.keys(c).length&&hapusLama)try{await hapusLama();}catch(e){}if(ids.length)await muat();}
   const A={
     BAGIAN,
     get siap(){return siap;},get galat(){return galat;},
     // Dipanggil setelah login: client Supabase, uid akun, dan apakah akun ini pemilik.
-    async mulai(client,u,isOwner){sb=client||window.__sb||null;uid=u||'';owner=!!isOwner;if(!sb)return;await muat();await pindahLama();},
+    // lama: isi kolom "ar" progres akun (versi arsip pribadi), hapusLama: mengosongkannya setelah dipindahkan.
+    async mulai(client,u,isOwner,lama,hapusLama){sb=client||window.__sb||null;uid=u||'';owner=!!isOwner;if(!sb)return;await muat();await pindahLama(lama,hapusLama);},
     segarkan:()=>muat(),
     ada:id=>data.some(r=>r.id===id),
     // Boleh dikeluarkan dari arsip: perekamnya sendiri atau pemilik.
