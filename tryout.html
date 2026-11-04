@@ -614,7 +614,7 @@ document.addEventListener("keydown",e=>{if(e.ctrlKey||e.metaKey||e.altKey||/INPU
   else if(e.key==="ArrowRight"&&$("next")){e.preventDefault();$("next").click();}
   else if(e.key==="ArrowLeft"&&$("prev")&&!$("prev").disabled){e.preventDefault();$("prev").click();}});
 // Arsip soal penting: soal yang diarsipkan di Mock Exam masuk ke kartu Arsip Soal di halaman utama (arsip.js).
-function arsipHTML(id){if(!window.Arsip||!Arsip.boleh)return "";const on=Arsip.ada(id),L=on?Arsip.daftar():[],i=L.indexOf(id),t=i<0?"":`Record Part ${Math.floor(i/Arsip.BAGIAN)+1} · No. ${i%Arsip.BAGIAN+1}`;
+function arsipHTML(id){if(!window.Arsip||!Arsip.boleh)return "";const on=Arsip.ada(id),L=on?Arsip.daftar():[],i=L.indexOf(id),t=i<0?"":`Record PART ${Math.floor(i/Arsip.BAGIAN)+1} · No. ${i%Arsip.BAGIAN+1}`;
   return `<div class="arsiprow"><span class="arsipinfo" id="arsipinfo">${t}</span><button class="btn arsipbtn${on?" on":""}" id="arsipbtn" type="button" aria-pressed="${on}" title="${on?(Arsip.bolehHapus(id)?"Tap to remove from Vital Test Record":"Recorded by another user. Only they or the owner can remove it."):"Save this question to the shared Vital Test Record"}">${on?"✓ Recorded":"🔖 Record"}</button></div>`;}
 function pasangArsip(id){const b=$("arsipbtn");if(!b)return;const gambar=()=>{const r=$("arsipbtn")&&$("arsipbtn").closest(".arsiprow");if(r){r.outerHTML=arsipHTML(id);pasangArsip(id);}};
   b.onclick=async()=>{const on=Arsip.ada(id);if(on&&!Arsip.bolehHapus(id)){const i=$("arsipinfo");if(i)i.textContent="Recorded by another user";return;}

@@ -1737,7 +1737,7 @@ window.__ulang=(c,s,ids,label,k,langsung,tetap)=>{ids=ids.filter(id=>BYID[id]);i
 // Progres tiap bagian memakai kunci paket|ar-<n>, jadi ikut tersimpan di akun seperti Category Packages.
 function arsipLetak(id){const L=window.Arsip?Arsip.daftar().filter(x=>BYID[x]):[],i=L.indexOf(id);return i<0?null:{b:Math.floor(i/Arsip.BAGIAN)+1,no:i%Arsip.BAGIAN+1};}
 function arsipHTML(id){if(!window.Arsip||!Arsip.boleh)return "";const on=Arsip.ada(id),t=on&&arsipLetak(id);
-  return `<div class="arsiprow"><span class="arsipinfo" id="arsipinfo">${t?`Record Part ${t.b} · No. ${t.no}`:""}</span><button class="btn arsipbtn${on?" on":""}" id="arsipbtn" type="button" aria-pressed="${on}" title="${on?(Arsip.bolehHapus(id)?"Tap to remove from Vital Test Record":"Recorded by another user. Only they or the owner can remove it."):"Save this question to the shared Vital Test Record"}">${on?"✓ Recorded":"🔖 Record"}</button></div>`;}
+  return `<div class="arsiprow"><span class="arsipinfo" id="arsipinfo">${t?`Record PART ${t.b} · No. ${t.no}`:""}</span><button class="btn arsipbtn${on?" on":""}" id="arsipbtn" type="button" aria-pressed="${on}" title="${on?(Arsip.bolehHapus(id)?"Tap to remove from Vital Test Record":"Recorded by another user. Only they or the owner can remove it."):"Save this question to the shared Vital Test Record"}">${on?"✓ Recorded":"🔖 Record"}</button></div>`;}
 function pasangArsip(id){const b=$("arsipbtn");if(!b)return;const gambar=()=>{const r=$("arsipbtn")&&$("arsipbtn").closest(".arsiprow");if(r){r.outerHTML=arsipHTML(id);pasangArsip(id);}};
   b.onclick=async()=>{const on=Arsip.ada(id);if(on&&!Arsip.bolehHapus(id)){const i=$("arsipinfo");if(i)i.textContent="Recorded by another user";return;}
     b.disabled=true;const p=Arsip.ubah(id,!on);gambar();await p;gambar();
@@ -1755,10 +1755,10 @@ function renderArsip(){const box=$("arcard");if(!box||!window.Arsip)return;box.h
   $("arlist").innerHTML=P.map((ids,i)=>{const ss=store["ulang|paket|ar-"+(i+1)],A=ss&&ss.ans||{},dj=ids.filter(id=>A[id]!==undefined).length,
       bn=ids.filter(id=>A[id]!==undefined&&A[id]===BYID[id].a).length,pb=dj?Math.round(bn*100/dj):0,
       lanjut=ss&&(ss.pos>0||dj>0)&&(ss.pos||0)<ids.length&&dj<ids.length,selesai=dj>=ids.length,awal=i*Arsip.BAGIAN;
-    return `<div class="tr pk"><span class="trj"><b>Part ${i+1}</b><small>${ids.length} questions${ids.length<Arsip.BAGIAN?` · ${ids.length} of ${Arsip.BAGIAN} filled`:""} · records ${awal+1}–${awal+ids.length}</small></span><span class="kpr"><span class="muted pkpct" title="${dj} of ${ids.length} questions answered">${Math.round(dj*100/ids.length)}%</span>${dj?`<span class="pkbs" title="${bn} correct and ${dj-bn} wrong out of ${dj} answered"><i class="ok">✓ ${pb}%</i><i class="no">✗ ${100-pb}%</i></span>`:""}<button class="btn copy" type="button" data-ar="${i}" data-ulangi="${selesai?1:""}">${selesai?"Retry":lanjut?"Continue":"Start"}</button></span></div>`;}).join("");
+    return `<div class="tr pk"><span class="trj"><b>PART ${i+1}</b><small>${ids.length} questions${ids.length<Arsip.BAGIAN?` · ${ids.length} of ${Arsip.BAGIAN} filled`:""} · records ${awal+1}–${awal+ids.length}</small></span><span class="kpr"><span class="muted pkpct" title="${dj} of ${ids.length} questions answered">${Math.round(dj*100/ids.length)}%</span>${dj?`<span class="pkbs" title="${bn} correct and ${dj-bn} wrong out of ${dj} answered"><i class="ok">✓ ${pb}%</i><i class="no">✗ ${100-pb}%</i></span>`:""}<button class="btn copy" type="button" data-ar="${i}" data-ulangi="${selesai?1:""}">${selesai?"Retry":lanjut?"Continue":"Start"}</button></span></div>`;}).join("");
   $("arlist").querySelectorAll("[data-ar]").forEach(b=>b.onclick=()=>bukaArsip(+b.dataset.ar,!!b.dataset.ulangi));}
 function bukaArsip(i,ulangi){const ids=(Arsip.bagian(id=>!!BYID[id])[i]||[]);if(!ids.length)return;const c=BYID[ids[0]].c;
-  window.__ulang(c,"all",ids,"Vital Test Record · Part "+(i+1),"paket|ar-"+(i+1),!ulangi,true);
+  window.__ulang(c,"all",ids,"Vital Test Record · PART "+(i+1),"paket|ar-"+(i+1),!ulangi,true);
   if(ulangi){retake();const mb=$("mulaibtn");if(mb)mb.click();fokus(true);}}
 window.__arSegar=()=>{const b=$("arcard");if(b&&!b.dataset.anim)renderArsip();};
 if(window.Arsip)Arsip.pantau(()=>{window.__arSegar();});
