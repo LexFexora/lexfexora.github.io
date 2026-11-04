@@ -458,8 +458,8 @@ html.beranim .tema,html.beranim .akunexit{background:#1c2320!important}
 @media (prefers-color-scheme:light){html.beranim:not([data-theme="dark"]) .tema,html.beranim:not([data-theme="dark"]) .akunexit{background:#f3f4f2!important}}
 html.beranim[data-theme="light"] .tema,html.beranim[data-theme="light"] .akunexit{background:#f3f4f2!important}
 /* Segitiga buka/tutup di Quiz Options dan Mock Exam sama dengan segitiga Select Cluster. */
-html body #setelan>summary::after,html body #tocard>summary::after,html body #pkcard>summary::after,html body #kpcard>summary::after{font-family:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif!important;font-size:15px!important;font-weight:400!important;letter-spacing:0!important;color:var(--muted)!important;-webkit-text-fill-color:var(--muted);text-shadow:none!important;line-height:1}
-:root[data-theme="dark"] body #setelan>summary::after,:root[data-theme="dark"] body #tocard.setelan.tocard>summary::after,:root[data-theme="dark"] body #pkcard.setelan.tocard>summary::after,:root[data-theme="dark"] body #kpcard.setelan.tocard>summary::after{color:#9aaba0!important;-webkit-text-fill-color:#9aaba0}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body #setelan>summary::after,:root:not([data-theme="light"]) body #tocard.setelan.tocard>summary::after,:root:not([data-theme="light"]) body #pkcard.setelan.tocard>summary::after,:root:not([data-theme="light"]) body #kpcard.setelan.tocard>summary::after{color:#9aaba0!important;-webkit-text-fill-color:#9aaba0}}
+html body #setelan>summary::after,html body #tocard>summary::after,html body #pkcard>summary::after,html body #kpcard>summary::after,html body #arcard>summary::after{font-family:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif!important;font-size:15px!important;font-weight:400!important;letter-spacing:0!important;color:var(--muted)!important;-webkit-text-fill-color:var(--muted);text-shadow:none!important;line-height:1}
+:root[data-theme="dark"] body #setelan>summary::after,:root[data-theme="dark"] body #tocard.setelan.tocard>summary::after,:root[data-theme="dark"] body #pkcard.setelan.tocard>summary::after,:root[data-theme="dark"] body #kpcard.setelan.tocard>summary::after,:root[data-theme="dark"] body #arcard.setelan.tocard>summary::after{color:#9aaba0!important;-webkit-text-fill-color:#9aaba0}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body #setelan>summary::after,:root:not([data-theme="light"]) body #tocard.setelan.tocard>summary::after,:root:not([data-theme="light"]) body #pkcard.setelan.tocard>summary::after,:root:not([data-theme="light"]) body #kpcard.setelan.tocard>summary::after,:root:not([data-theme="light"]) body #arcard.setelan.tocard>summary::after{color:#9aaba0!important;-webkit-text-fill-color:#9aaba0}}
 /* Label dan isi pilihan di Quiz Options (Section Details/All Sections, Order, Timer, Duration) berwarna putih di mode gelap. */
 :root[data-theme="dark"] #setelan .controls label,:root[data-theme="dark"] #setelan .controls .lbl,:root[data-theme="dark"] #setelan .controls select{color:#fff!important;-webkit-text-fill-color:#fff}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #setelan .controls label,:root:not([data-theme="light"]) #setelan .controls .lbl,:root:not([data-theme="light"]) #setelan .controls select{color:#fff!important;-webkit-text-fill-color:#fff}}
@@ -568,19 +568,24 @@ html .tojoin>b{color:var(--brass)}
 /* Bar Mock Exam: ukuran sama dengan Quiz Options, sedikit lebih menonjol. */
 :root[data-theme="dark"] #tocard.setelan.tocard, sedikit lebih menonjol. */
 :root[data-theme="dark"] #pkcard.setelan.tocard, sedikit lebih menonjol. */
-:root[data-theme="dark"] #kpcard.setelan.tocard{border:1px solid #000;border-radius:6px;background:radial-gradient(80% 60% at 50% 0,rgb(255 170 70 / .07),transparent 70%),linear-gradient(180deg,#0e0a08,#070605);box-shadow:inset 0 0 18px rgb(0 0 0 / .8),0 0 0 1px #7a5a28,0 0 0 3px #070605,0 0 0 4px #4a3820,0 10px 24px rgb(0 0 0 / .7)}
+:root[data-theme="dark"] #kpcard.setelan.tocard, sedikit lebih menonjol. */
+:root[data-theme="dark"] #arcard.setelan.tocard{border:1px solid #000;border-radius:6px;background:radial-gradient(80% 60% at 50% 0,rgb(255 170 70 / .07),transparent 70%),linear-gradient(180deg,#0e0a08,#070605);box-shadow:inset 0 0 18px rgb(0 0 0 / .8),0 0 0 1px #7a5a28,0 0 0 3px #070605,0 0 0 4px #4a3820,0 10px 24px rgb(0 0 0 / .7)}
 :root[data-theme="dark"] #tocard.setelan.tocard>summary,
 :root[data-theme="dark"] #pkcard.setelan.tocard>summary,
-:root[data-theme="dark"] #kpcard.setelan.tocard>summary{padding:11px 14px}
+:root[data-theme="dark"] #kpcard.setelan.tocard>summary,
+:root[data-theme="dark"] #arcard.setelan.tocard>summary{padding:11px 14px}
 :root[data-theme="dark"] #tocard.setelan.tocard>summary .stl,
 :root[data-theme="dark"] #pkcard.setelan.tocard>summary .stl,
-:root[data-theme="dark"] #kpcard.setelan.tocard>summary .stl{font-family:var(--f-display,Georgia,serif);font-size:17px;font-weight:700;letter-spacing:.01em;-webkit-text-fill-color:#dcae55;color:#dcae55;text-shadow:0 1px 0 #000,0 0 10px rgb(217 168 73 / .15)}
+:root[data-theme="dark"] #kpcard.setelan.tocard>summary .stl,
+:root[data-theme="dark"] #arcard.setelan.tocard>summary .stl{font-family:var(--f-display,Georgia,serif);font-size:17px;font-weight:700;letter-spacing:.01em;-webkit-text-fill-color:#dcae55;color:#dcae55;text-shadow:0 1px 0 #000,0 0 10px rgb(217 168 73 / .15)}
 :root[data-theme="dark"] #tocard.setelan.tocard>summary .stl svg.piala,
 :root[data-theme="dark"] #pkcard.setelan.tocard>summary .stl svg.piala,
-:root[data-theme="dark"] #kpcard.setelan.tocard>summary .stl svg.piala{width:22px;height:22px}
+:root[data-theme="dark"] #kpcard.setelan.tocard>summary .stl svg.piala,
+:root[data-theme="dark"] #arcard.setelan.tocard>summary .stl svg.piala{width:22px;height:22px}
 :root[data-theme="dark"] #tocard.setelan.tocard>summary::after,
 :root[data-theme="dark"] #pkcard.setelan.tocard>summary::after,
-:root[data-theme="dark"] #kpcard.setelan.tocard>summary::after{color:#a07a3a}
+:root[data-theme="dark"] #kpcard.setelan.tocard>summary::after,
+:root[data-theme="dark"] #arcard.setelan.tocard>summary::after{color:#a07a3a}
 :root[data-theme="dark"] #setelan>summary{font-family:var(--f-display,Georgia,serif);font-size:16px;letter-spacing:.01em}
 /* Judul "Select Cluster - SKB" memakai huruf yang sama dengan judul "Quiz Options & Sections". */
 :root[data-theme="dark"] #tabs .tab.pilih .kt>b{font-family:var(--f-display,Georgia,serif);font-size:16px;font-weight:700;letter-spacing:.01em}
@@ -592,7 +597,8 @@ html body #tabs .tab.pilih .ki{width:22px;height:22px;border-radius:6px;box-shad
 html body #setelan>summary .stl svg{width:22px;height:22px;flex:none}
 html body #tocard>summary .stl svg.piala,
 html body #pkcard>summary .stl svg.piala,
-html body #kpcard>summary .stl svg.piala{width:22px;height:22px}
+html body #kpcard>summary .stl svg.piala,
+html body #arcard>summary .stl svg.piala{width:22px;height:22px}
 /* Kartu kategori terpilih: hanya garis tepi putih tegas (tanpa isi warna dan tanpa centang). */
 html body .tabs .tab.kl[aria-selected="true"]{border-color:color-mix(in srgb,var(--ink) 55%,transparent);background:var(--surface);box-shadow:none}
 html body .tabs .tab.kl[aria-selected="true"]::after{content:none;display:none}
@@ -647,12 +653,12 @@ html body #tabs .tab.pilih{justify-content:center;text-align:center;padding-left
 :root[data-theme="dark"] body #tabs .tab.pilih{border:1px solid #000!important;border-radius:6px!important;background:linear-gradient(180deg,#111413,#0a0b0b)!important;box-shadow:0 0 0 1px #59615c,0 0 0 3px #070807,0 0 0 4px #3a413d,0 10px 24px rgb(0 0 0 / .7)!important}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body #tabs .tab.pilih{border:1px solid #000!important;border-radius:6px!important;background:linear-gradient(180deg,#111413,#0a0b0b)!important;box-shadow:0 0 0 1px #59615c,0 0 0 3px #070807,0 0 0 4px #3a413d,0 10px 24px rgb(0 0 0 / .7)!important}}
 /* Judul tiga baris utama (Select Cluster, Quiz Options, Mock Exam) berukuran sama persis: 17px. */
-:root[data-theme="dark"] body #tabs .tab.pilih .kt>b,:root[data-theme="dark"] body #setelan>summary .stl,:root[data-theme="dark"] body #tocard.setelan.tocard>summary .stl,:root[data-theme="dark"] body #pkcard.setelan.tocard>summary .stl,:root[data-theme="dark"] body #kpcard.setelan.tocard>summary .stl{font-family:var(--f-display,Georgia,serif)!important;font-size:17px!important;font-weight:700!important;letter-spacing:.01em!important}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body #tabs .tab.pilih .kt>b,:root:not([data-theme="light"]) body #setelan>summary .stl,:root:not([data-theme="light"]) body #tocard.setelan.tocard>summary .stl,:root:not([data-theme="light"]) body #pkcard.setelan.tocard>summary .stl,:root:not([data-theme="light"]) body #kpcard.setelan.tocard>summary .stl{font-family:var(--f-display,Georgia,serif)!important;font-size:17px!important;font-weight:700!important;letter-spacing:.01em!important}}html body #tabs .tab.pilih .ki{margin-left:2px}
+:root[data-theme="dark"] body #tabs .tab.pilih .kt>b,:root[data-theme="dark"] body #setelan>summary .stl,:root[data-theme="dark"] body #tocard.setelan.tocard>summary .stl,:root[data-theme="dark"] body #pkcard.setelan.tocard>summary .stl,:root[data-theme="dark"] body #kpcard.setelan.tocard>summary .stl,:root[data-theme="dark"] body #arcard.setelan.tocard>summary .stl{font-family:var(--f-display,Georgia,serif)!important;font-size:17px!important;font-weight:700!important;letter-spacing:.01em!important}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body #tabs .tab.pilih .kt>b,:root:not([data-theme="light"]) body #setelan>summary .stl,:root:not([data-theme="light"]) body #tocard.setelan.tocard>summary .stl,:root:not([data-theme="light"]) body #pkcard.setelan.tocard>summary .stl,:root:not([data-theme="light"]) body #kpcard.setelan.tocard>summary .stl,:root:not([data-theme="light"]) body #arcard.setelan.tocard>summary .stl{font-family:var(--f-display,Georgia,serif)!important;font-size:17px!important;font-weight:700!important;letter-spacing:.01em!important}}html body #tabs .tab.pilih .ki{margin-left:2px}
 /* Tulisan Keep it: emas hangat serasi dengan tombol coklat, huruf lebih kecil. */
 html:root[data-theme="dark"] #siapbtn{color:#d6b170;font-size:15px;letter-spacing:.1em;text-shadow:0 1px 0 #000,0 0 8px rgb(214 160 80 / .18);box-shadow:inset 0 0 0 2px #110906,inset 0 0 0 3px #6e5232,inset 0 1px 8px rgb(255 140 60 / .12),0 0 0 1px #000,0 4px 10px rgb(0 0 0 / .8)}
 @media (prefers-color-scheme:dark){html:root:not([data-theme="light"]) #siapbtn{color:#d6b170;font-size:15px;letter-spacing:.1em;text-shadow:0 1px 0 #000,0 0 8px rgb(214 160 80 / .18);box-shadow:inset 0 0 0 2px #110906,inset 0 0 0 3px #6e5232,inset 0 1px 8px rgb(255 140 60 / .12),0 0 0 1px #000,0 4px 10px rgb(0 0 0 / .8)}}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #tocard.setelan.tocard,:root:not([data-theme="light"]) #pkcard.setelan.tocard,:root:not([data-theme="light"]) #kpcard.setelan.tocard{border:1px solid #000;border-radius:6px;background:radial-gradient(80% 60% at 50% 0,rgb(255 170 70 / .07),transparent 70%),linear-gradient(180deg,#0e0a08,#070605);box-shadow:inset 0 0 18px rgb(0 0 0 / .8),0 0 0 1px #7a5a28,0 0 0 3px #070605,0 0 0 4px #4a3820,0 10px 24px rgb(0 0 0 / .7)}:root:not([data-theme="light"]) #tocard.setelan.tocard>summary,:root:not([data-theme="light"]) #pkcard.setelan.tocard>summary,:root:not([data-theme="light"]) #kpcard.setelan.tocard>summary{padding:11px 14px}:root:not([data-theme="light"]) #tocard.setelan.tocard>summary .stl,:root:not([data-theme="light"]) #pkcard.setelan.tocard>summary .stl,:root:not([data-theme="light"]) #kpcard.setelan.tocard>summary .stl{font-family:var(--f-display,Georgia,serif);font-size:17px;font-weight:700;letter-spacing:.01em;-webkit-text-fill-color:#dcae55;color:#dcae55;text-shadow:0 1px 0 #000,0 0 10px rgb(217 168 73 / .15)}:root:not([data-theme="light"]) #tocard.setelan.tocard>summary .stl svg.piala,:root:not([data-theme="light"]) #pkcard.setelan.tocard>summary .stl svg.piala,:root:not([data-theme="light"]) #kpcard.setelan.tocard>summary .stl svg.piala{width:22px;height:22px}:root:not([data-theme="light"]) #tocard.setelan.tocard>summary::after,:root:not([data-theme="light"]) #pkcard.setelan.tocard>summary::after,:root:not([data-theme="light"]) #kpcard.setelan.tocard>summary::after{color:#a07a3a}:root:not([data-theme="light"]) #setelan>summary{font-family:var(--f-display,Georgia,serif);font-size:16px;letter-spacing:.01em}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #tocard.setelan.tocard,:root:not([data-theme="light"]) #pkcard.setelan.tocard,:root:not([data-theme="light"]) #kpcard.setelan.tocard,:root:not([data-theme="light"]) #arcard.setelan.tocard{border:1px solid #000;border-radius:6px;background:radial-gradient(80% 60% at 50% 0,rgb(255 170 70 / .07),transparent 70%),linear-gradient(180deg,#0e0a08,#070605);box-shadow:inset 0 0 18px rgb(0 0 0 / .8),0 0 0 1px #7a5a28,0 0 0 3px #070605,0 0 0 4px #4a3820,0 10px 24px rgb(0 0 0 / .7)}:root:not([data-theme="light"]) #tocard.setelan.tocard>summary,:root:not([data-theme="light"]) #pkcard.setelan.tocard>summary,:root:not([data-theme="light"]) #kpcard.setelan.tocard>summary,:root:not([data-theme="light"]) #arcard.setelan.tocard>summary{padding:11px 14px}:root:not([data-theme="light"]) #tocard.setelan.tocard>summary .stl,:root:not([data-theme="light"]) #pkcard.setelan.tocard>summary .stl,:root:not([data-theme="light"]) #kpcard.setelan.tocard>summary .stl,:root:not([data-theme="light"]) #arcard.setelan.tocard>summary .stl{font-family:var(--f-display,Georgia,serif);font-size:17px;font-weight:700;letter-spacing:.01em;-webkit-text-fill-color:#dcae55;color:#dcae55;text-shadow:0 1px 0 #000,0 0 10px rgb(217 168 73 / .15)}:root:not([data-theme="light"]) #tocard.setelan.tocard>summary .stl svg.piala,:root:not([data-theme="light"]) #pkcard.setelan.tocard>summary .stl svg.piala,:root:not([data-theme="light"]) #kpcard.setelan.tocard>summary .stl svg.piala,:root:not([data-theme="light"]) #arcard.setelan.tocard>summary .stl svg.piala{width:22px;height:22px}:root:not([data-theme="light"]) #tocard.setelan.tocard>summary::after,:root:not([data-theme="light"]) #pkcard.setelan.tocard>summary::after,:root:not([data-theme="light"]) #kpcard.setelan.tocard>summary::after,:root:not([data-theme="light"]) #arcard.setelan.tocard>summary::after{color:#a07a3a}:root:not([data-theme="light"]) #setelan>summary{font-family:var(--f-display,Georgia,serif);font-size:16px;letter-spacing:.01em}}
 #siapbtn .inkt{position:relative;display:inline;line-height:1;margin-right:-.08em}
 .qhead .qkoin{display:inline-flex;align-items:center;gap:6px;margin:0 auto;white-space:nowrap}
 .qhead .qkoin .kn{display:inline-flex;align-items:center;gap:4px;height:28px;padding:0 9px;border-radius:999px;font-size:14px;line-height:1;border:1px solid color-mix(in srgb,var(--brass) 35%,var(--line));background:color-mix(in srgb,var(--brass-soft) 55%,transparent)}
@@ -669,17 +675,18 @@ html:not(.fokus) header .akunku{margin-top:10px;padding-top:8px}
 .exitbawah:not([hidden]){padding-top:6px}.exitbawah:not([hidden])~footer{margin-top:6px}}
 /* Beranda: tidak ada oranye/emas selain VVIP dan piala. */
 :root{--k1:#aeb6b1;--k2:#aeb6b1;--k3:#aeb6b1;--k4:#aeb6b1}
-:root[data-theme="dark"] #setelan,:root[data-theme="dark"] #tocard.setelan.tocard,:root[data-theme="dark"] #pkcard.setelan.tocard,:root[data-theme="dark"] #kpcard.setelan.tocard{box-shadow:0 0 0 1px #3c433f,0 0 0 3px #070807,0 0 0 4px #2a302c,0 10px 24px rgb(0 0 0 / .6)!important;background:linear-gradient(180deg,#111413,#0a0b0b)!important;animation:none!important}
+:root[data-theme="dark"] #setelan,:root[data-theme="dark"] #tocard.setelan.tocard,:root[data-theme="dark"] #pkcard.setelan.tocard,:root[data-theme="dark"] #kpcard.setelan.tocard,:root[data-theme="dark"] #arcard.setelan.tocard{box-shadow:0 0 0 1px #3c433f,0 0 0 3px #070807,0 0 0 4px #2a302c,0 10px 24px rgb(0 0 0 / .6)!important;background:linear-gradient(180deg,#111413,#0a0b0b)!important;animation:none!important}
 :root[data-theme="dark"] #tocard.setelan.tocard,
 :root[data-theme="dark"] #pkcard.setelan.tocard,
-:root[data-theme="dark"] #kpcard.setelan.tocard{box-shadow:0 0 0 1px #59615c,0 0 0 3px #070807,0 0 0 4px #3a413d,0 10px 24px rgb(0 0 0 / .7)!important}
-:root[data-theme="dark"] #setelan>summary,:root[data-theme="dark"] #setelan.perlu>summary{color:#e3e7e4!important;text-shadow:0 1px 0 #000!important}:root[data-theme="dark"] #tocard.setelan.tocard>summary .stl,:root[data-theme="dark"] #pkcard.setelan.tocard>summary .stl,:root[data-theme="dark"] #kpcard.setelan.tocard>summary .stl{color:#e3e7e4!important;-webkit-text-fill-color:#e3e7e4!important;text-shadow:0 1px 0 #000!important}
+:root[data-theme="dark"] #kpcard.setelan.tocard,
+:root[data-theme="dark"] #arcard.setelan.tocard{box-shadow:0 0 0 1px #59615c,0 0 0 3px #070807,0 0 0 4px #3a413d,0 10px 24px rgb(0 0 0 / .7)!important}
+:root[data-theme="dark"] #setelan>summary,:root[data-theme="dark"] #setelan.perlu>summary{color:#e3e7e4!important;text-shadow:0 1px 0 #000!important}:root[data-theme="dark"] #tocard.setelan.tocard>summary .stl,:root[data-theme="dark"] #pkcard.setelan.tocard>summary .stl,:root[data-theme="dark"] #kpcard.setelan.tocard>summary .stl,:root[data-theme="dark"] #arcard.setelan.tocard>summary .stl{color:#e3e7e4!important;-webkit-text-fill-color:#e3e7e4!important;text-shadow:0 1px 0 #000!important}
 :root[data-theme="dark"] #setelan>summary svg{color:#aeb6b1}
-:root[data-theme="dark"] #setelan>summary::after,:root[data-theme="dark"] #tocard.setelan.tocard>summary::after,:root[data-theme="dark"] #pkcard.setelan.tocard>summary::after,:root[data-theme="dark"] #kpcard.setelan.tocard>summary::after{color:#8a948e!important}
+:root[data-theme="dark"] #setelan>summary::after,:root[data-theme="dark"] #tocard.setelan.tocard>summary::after,:root[data-theme="dark"] #pkcard.setelan.tocard>summary::after,:root[data-theme="dark"] #kpcard.setelan.tocard>summary::after,:root[data-theme="dark"] #arcard.setelan.tocard>summary::after{color:#8a948e!important}
 :root[data-theme="dark"] #setelan .controls label,:root[data-theme="dark"] #setelan .controls .lbl{color:#9aa39e}
 :root[data-theme="dark"] #setelan select,:root[data-theme="dark"] #setelan input{border-color:#353b37}
 :root[data-theme="dark"] #siapbtn{color:#e3e7e4;box-shadow:inset 0 0 0 2px #110906,inset 0 0 0 3px #59615c,0 0 0 1px #000,0 4px 10px rgb(0 0 0 / .8)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #setelan,:root:not([data-theme="light"]) #tocard.setelan.tocard,:root:not([data-theme="light"]) #pkcard.setelan.tocard,:root:not([data-theme="light"]) #kpcard.setelan.tocard{box-shadow:0 0 0 1px #3c433f,0 0 0 3px #070807,0 0 0 4px #2a302c,0 10px 24px rgb(0 0 0 / .6)!important;background:linear-gradient(180deg,#111413,#0a0b0b)!important;animation:none!important}:root:not([data-theme="light"]) #tocard.setelan.tocard,:root:not([data-theme="light"]) #pkcard.setelan.tocard,:root:not([data-theme="light"]) #kpcard.setelan.tocard{box-shadow:0 0 0 1px #59615c,0 0 0 3px #070807,0 0 0 4px #3a413d,0 10px 24px rgb(0 0 0 / .7)!important}:root:not([data-theme="light"]) #setelan>summary,:root:not([data-theme="light"]) #setelan.perlu>summary{color:#e3e7e4!important;text-shadow:0 1px 0 #000!important}:root:not([data-theme="light"]) #tocard.setelan.tocard>summary .stl,:root:not([data-theme="light"]) #pkcard.setelan.tocard>summary .stl,:root:not([data-theme="light"]) #kpcard.setelan.tocard>summary .stl{color:#e3e7e4!important;-webkit-text-fill-color:#e3e7e4!important;text-shadow:0 1px 0 #000!important}:root:not([data-theme="light"]) #setelan>summary svg{color:#aeb6b1}:root:not([data-theme="light"]) #setelan>summary::after,:root:not([data-theme="light"]) #tocard.setelan.tocard>summary::after,:root:not([data-theme="light"]) #pkcard.setelan.tocard>summary::after,:root:not([data-theme="light"]) #kpcard.setelan.tocard>summary::after{color:#8a948e!important}:root:not([data-theme="light"]) #setelan .controls label,:root:not([data-theme="light"]) #setelan .controls .lbl{color:#9aa39e}:root:not([data-theme="light"]) #setelan select,:root:not([data-theme="light"]) #setelan input{border-color:#353b37}:root:not([data-theme="light"]) #siapbtn{color:#e3e7e4;box-shadow:inset 0 0 0 2px #110906,inset 0 0 0 3px #59615c,0 0 0 1px #000,0 4px 10px rgb(0 0 0 / .8)}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #setelan,:root:not([data-theme="light"]) #tocard.setelan.tocard,:root:not([data-theme="light"]) #pkcard.setelan.tocard,:root:not([data-theme="light"]) #kpcard.setelan.tocard,:root:not([data-theme="light"]) #arcard.setelan.tocard{box-shadow:0 0 0 1px #3c433f,0 0 0 3px #070807,0 0 0 4px #2a302c,0 10px 24px rgb(0 0 0 / .6)!important;background:linear-gradient(180deg,#111413,#0a0b0b)!important;animation:none!important}:root:not([data-theme="light"]) #tocard.setelan.tocard,:root:not([data-theme="light"]) #pkcard.setelan.tocard,:root:not([data-theme="light"]) #kpcard.setelan.tocard,:root:not([data-theme="light"]) #arcard.setelan.tocard{box-shadow:0 0 0 1px #59615c,0 0 0 3px #070807,0 0 0 4px #3a413d,0 10px 24px rgb(0 0 0 / .7)!important}:root:not([data-theme="light"]) #setelan>summary,:root:not([data-theme="light"]) #setelan.perlu>summary{color:#e3e7e4!important;text-shadow:0 1px 0 #000!important}:root:not([data-theme="light"]) #tocard.setelan.tocard>summary .stl,:root:not([data-theme="light"]) #pkcard.setelan.tocard>summary .stl,:root:not([data-theme="light"]) #kpcard.setelan.tocard>summary .stl,:root:not([data-theme="light"]) #arcard.setelan.tocard>summary .stl{color:#e3e7e4!important;-webkit-text-fill-color:#e3e7e4!important;text-shadow:0 1px 0 #000!important}:root:not([data-theme="light"]) #setelan>summary svg{color:#aeb6b1}:root:not([data-theme="light"]) #setelan>summary::after,:root:not([data-theme="light"]) #tocard.setelan.tocard>summary::after,:root:not([data-theme="light"]) #pkcard.setelan.tocard>summary::after,:root:not([data-theme="light"]) #kpcard.setelan.tocard>summary::after,:root:not([data-theme="light"]) #arcard.setelan.tocard>summary::after{color:#8a948e!important}:root:not([data-theme="light"]) #setelan .controls label,:root:not([data-theme="light"]) #setelan .controls .lbl{color:#9aa39e}:root:not([data-theme="light"]) #setelan select,:root:not([data-theme="light"]) #setelan input{border-color:#353b37}:root:not([data-theme="light"]) #siapbtn{color:#e3e7e4;box-shadow:inset 0 0 0 2px #110906,inset 0 0 0 3px #59615c,0 0 0 1px #000,0 4px 10px rgb(0 0 0 / .8)}}
 @keyframes perluk2{0%,100%{box-shadow:0 0 0 1px #3c433f,0 0 0 3px #070807,0 0 0 4px #2a302c,0 10px 24px rgb(0 0 0 / .6)}50%{box-shadow:0 0 0 1px #8a948e,0 0 0 3px #070807,0 0 0 4px #4a524d,0 0 18px rgb(220 230 225 / .12)}}
 :root[data-theme="dark"] #setelan.perlu{animation:perluk2 2.8s ease-in-out infinite!important}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #setelan.perlu{animation:perluk2 2.8s ease-in-out infinite!important}}@media (prefers-reduced-motion:reduce){#setelan.perlu{animation:none!important}}
 /* HP: header dan kotak klaster lebih ringkas agar footer muat di atas bilah Safari. */
@@ -894,7 +901,8 @@ html:root[data-theme="dark"] body #siapbtn:hover{background:radial-gradient(120%
 #pklist .pkghost .pkgbtn{font-size:12px;color:var(--muted);padding:4px 0;border:1px solid rgb(255 255 255 / .08);border-radius:8px}
 #pklist .pkmore{grid-column:1/-1;margin:2px 0 0;text-align:center;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:color-mix(in srgb,var(--brass) 70%,var(--muted))}
 html.beranim #pkcard *,html.beranim #tocard *,html.beranim #setelan *,
-html.beranim #kpcard *{box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;text-shadow:none!important;transition:none!important}
+html.beranim #kpcard *,
+html.beranim #arcard *{box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;text-shadow:none!important;transition:none!important}
 html.beranim #pklist .pkghost{filter:none}
 /* Category Packages: satu kelompok per kategori, satu paket per sub-materi (judul = nama sub-materi). */
 #kplist{display:flex;flex-direction:column;gap:8px}
@@ -918,7 +926,8 @@ html.beranim #pklist .pkghost{filter:none}
 #kplist .pkghost .kpr{pointer-events:none;user-select:none}
 #kplist .pkghost .pkgbtn{font-size:12px;color:var(--muted);padding:4px 10px;border:1px solid rgb(255 255 255 / .08);border-radius:8px}
 #kplist .pkmore{margin:2px 0 0;text-align:center;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:color-mix(in srgb,var(--brass) 70%,var(--muted))}
-html.beranim #kpcard *{box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;text-shadow:none!important;transition:none!important}
+html.beranim #kpcard *,
+html.beranim #arcard *{box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;text-shadow:none!important;transition:none!important}
 html.beranim .toisi,html.beranim #setelan .controls{contain:layout paint style}
 #pklist .tr.pk .trj b{text-transform:uppercase;letter-spacing:.06em;font-size:12px}
 /* Previous/Next terkunci di dasar layar (juga di Safari iPhone dengan bilah browser terlihat). */
@@ -930,8 +939,18 @@ html.fokus body #card{padding-bottom:calc(72px + env(safe-area-inset-bottom,0px)
 .aksesub .asnama{display:flex;flex-wrap:wrap;gap:6px}.aksesub .aschip{font:600 12.5px/1.2 var(--f-body,inherit);padding:5px 10px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer}.aksesub .aspin{color:color-mix(in srgb,var(--brass) 80%,var(--ink));font-weight:700}.aksesub .aschip i{font-style:normal;font-weight:400;font-size:11px;color:var(--muted)}.aksesub .aschip:hover{border-color:color-mix(in srgb,var(--brass) 60%,var(--line))}
 .aksesub .aschip.lunas{cursor:default;color:#c9962e;border-color:color-mix(in srgb,#c9962e 40%,var(--line))}.aksesub #aspilih{flex:1 1 180px;min-width:0}.aksesub .asatur{margin:8px 0}.aksesub .asatur>summary{cursor:pointer;font-weight:600;font-size:13px}.aksesub .ascat{margin:8px 0}.aksesub .ascat>b{display:block;margin-bottom:4px;font-size:12.5px}.aksesub .ascat input{flex:none;width:16px;height:16px;margin:2px 0 0}.aksesub .ascat label{display:flex;gap:6px;align-items:flex-start;font-size:12.5px;padding:2px 0;color:var(--ink)}.aksesub #asinfo{font-size:12px;color:var(--muted)}
 .setelan.tocard>summary .vvipakses{position:absolute;right:40px;top:50%;transform:translateY(-50%);padding:1px 7px;border-radius:999px;font:600 8.5px/1.5 var(--f-body,inherit);letter-spacing:.14em;text-transform:uppercase;white-space:nowrap;color:var(--muted);-webkit-text-fill-color:var(--muted);border:1px solid color-mix(in srgb,var(--muted) 35%,transparent);background:transparent;text-shadow:none;align-self:center}
-#pkcard>summary,#kpcard>summary{position:relative}
+#pkcard>summary,#kpcard>summary,#arcard>summary{position:relative}
 html:not(.vvip) .setelan.tocard>summary .vvipakses{display:none}
+</style>
+<style>
+/* Arsip soal penting: tombol di bawah pilihan jawaban dan kartu Arsip Soal di bawah Category Packages. */
+.arsiprow{display:flex;justify-content:flex-end;align-items:center;gap:10px;margin:2px 0 0;flex-wrap:wrap}
+.arsiprow .arsipinfo{font-size:12px;color:var(--muted)}
+.btn.arsipbtn{font-size:12.5px;padding:5px 12px;min-height:0;border-radius:999px}
+.btn.arsipbtn.on{color:var(--brass);border-color:color-mix(in srgb,var(--brass) 55%,transparent);background:color-mix(in srgb,var(--brass) 10%,transparent)}
+.fokus .card .arsiprow{margin:0}
+#arcard .arjml{margin-left:auto;font-size:12px;font-weight:600;color:var(--muted);padding-right:6px;font-variant-numeric:tabular-nums}
+#arcard .arkosong{margin:4px 0 0;font-size:13.5px;color:var(--muted)}
 </style>
 </head>
 <body>
@@ -1032,6 +1051,14 @@ html:not(.vvip) .setelan.tocard>summary .vvipakses{display:none}
     <div class="toisi">
       <p class="note" id="kpket"></p>
       <div id="kplist" class="tolist"></div>
+    </div>
+  </details>
+
+  <details class="setelan tocard" id="arcard" hidden>
+    <summary><span class="stl"><svg class="piala" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 3.5h11v17l-5.5-4-5.5 4z" fill="none" stroke="url(#pialaEmas)" stroke-width="1.8" stroke-linejoin="round"/><path d="M9.5 8.5h5" stroke="url(#pialaEmas)" stroke-width="1.8" stroke-linecap="round"/></svg>Arsip Soal</span><span class="arjml" id="arjml"></span></summary>
+    <div class="toisi">
+      <p class="note" id="arket"></p>
+      <div id="arlist" class="tolist"></div>
     </div>
   </details>
 
@@ -1250,7 +1277,7 @@ addEventListener("pageshow",e=>{if(e.persisted)segarkanPaket();});
 function save(){if(window.__keluar)return;try{const disk=JSON.parse(localStorage.getItem(KEY)||"{}")||{};
   gabungStore(disk);
   localStorage.setItem(KEY,JSON.stringify(store));}catch(e){}
-  clearTimeout(window.__pkT);window.__pkT=setTimeout(()=>{try{window.__pkSegar&&window.__pkSegar();}catch(e){}},700);}
+  clearTimeout(window.__pkT);window.__pkT=setTimeout(()=>{try{window.__pkSegar&&window.__pkSegar();}catch(e){}try{window.__arSegar&&window.__arSegar();}catch(e){}},700);}
 
 // Daftar Pilih Klaster terbuka saat halaman dibuka dan bisa ditutup kembali.
 const state={klOpen:true,cat:"all",sub:"all",bag:"all",order:"seq",list:[],pos:0,perm:{},ans:{},tLeft:0,timeUp:false,qLeft:0,qId:null,expired:{}};
@@ -1296,7 +1323,7 @@ function seqKey(q){let c,s;if(state.cat==="all"){c=q.c;s=q.s;}else{c=+state.cat;
   const fl=c>1&&s!==99;return [c*100+(fl?flowSubRank(c,s):s),fl?getFlowStage(q,c,s):(c===1&&s!==99?ihStage(q):0)];}
 function sortSeq(qs){const K=new Map(qs.map(q=>[q.id,seqKey(q)]));return qs.slice().sort((a,b)=>{const ka=K.get(a.id),kb=K.get(b.id),x=getOrderKey(a),y=getOrderKey(b);return ka[0]-kb[0]||ka[1]-kb[1]||x[0]-y[0]||x[1]-y[1]||(a.id<b.id?-1:a.id>b.id?1:0);});}
 function buildSession(fresh,onlyIds,reset){
-  let ids=onlyIds||sortSeq(pool()).map(q=>q.id);
+  let ids=onlyIds||(state.ulang&&state.ulang.tetap?pool().map(q=>q.id):sortSeq(pool()).map(q=>q.id));
   if(state.order==="rand") ids=shuffle(ids);
   state.list=ids; state.pos=0; state.ans={}; state.perm={}; state.mulai=false; state.ep=Date.now(); state.rs=!!reset; state.t=0;
   resetTimer();
@@ -1325,7 +1352,7 @@ function restore(){
   const valid=s&&Array.isArray(s.list)&&s.list.length&&s.list.every(id=>BYID[id]&&s.perm&&s.perm[id]);
   const ids=new Set(pool().map(q=>q.id));
   // Ulangi yang salah (rs): daftarnya sengaja lebih kecil dari pool, tetap dipulihkan selama semua soalnya masih ada di pool.
-  if(valid&&(s.list.length===ids.size||(s.rs&&s.list.length<ids.size))&&s.list.every(id=>ids.has(id))){state.list=(s.order||"seq")==="seq"?sortSeq(s.list.map(id=>BYID[id])).map(q=>q.id):s.list;state.pos=Math.min(s.pos||0,s.list.length);state.ans=s.ans||{};state.ep=s.ep||0;state.rs=!!s.rs;state.t=s.t||0;state.perm=s.perm;state.order=s.order||"seq";state.mulai=typeof s.mulai==="boolean"?s.mulai:!!(s.pos||Object.keys(s.ans||{}).length);state.tLeft=typeof s.tLeft==="number"?s.tLeft:SEC*s.list.length;state.timeUp=!!s.timeUp;state.qLeft=typeof s.qLeft==="number"?s.qLeft:SEC;state.qId=s.qId||null;state.expired=s.expired||{};}
+  if(valid&&(s.list.length===ids.size||(s.rs&&s.list.length<ids.size))&&s.list.every(id=>ids.has(id))){state.list=(s.order||"seq")==="seq"&&!(state.ulang&&state.ulang.tetap)?sortSeq(s.list.map(id=>BYID[id])).map(q=>q.id):s.list;state.pos=Math.min(s.pos||0,s.list.length);state.ans=s.ans||{};state.ep=s.ep||0;state.rs=!!s.rs;state.t=s.t||0;state.perm=s.perm;state.order=s.order||"seq";state.mulai=typeof s.mulai==="boolean"?s.mulai:!!(s.pos||Object.keys(s.ans||{}).length);state.tLeft=typeof s.tLeft==="number"?s.tLeft:SEC*s.list.length;state.timeUp=!!s.timeUp;state.qLeft=typeof s.qLeft==="number"?s.qLeft:SEC;state.qId=s.qId||null;state.expired=s.expired||{};}
   else if(s&&s.ans&&Object.keys(s.ans).length){
     // Bank soal berubah (soal diedit/dihapus): susun ulang daftar, tapi jawaban dan posisi lama tetap dipakai.
     const lama=s;buildSession(true);const ada=new Set(state.list);
@@ -1549,7 +1576,7 @@ function renderCard(){
     else if(locked&&own&&oi===q.a){cls="correct";mark="✅";}
     html+=`<li><button type="button" class="opt ${cls}" data-o="${oi}" ${answered||locked?"disabled":""}><span class="l"><i>${L[pi]}</i></span><span class="t">${esc(q.o[oi])}</span><span class="mark">${mark}</span></button></li>`;
   });
-  html+="</ol>";
+  html+="</ol>"+arsipHTML(id);
   if(answered){
     html+=`${ketHTML(q)}`;
   }
@@ -1560,6 +1587,7 @@ function renderCard(){
     if(state.mvOpen){const fill=()=>{const c=+$("mvc").value;$("mvs").innerHTML=SUBS[c].map((n,i)=>`<option value="${i+1}"${c===here.c&&i+1===here.s?" selected":""}>${i+1}. ${esc(n)}</option>`).join("");};
       fill();$("mvc").onchange=fill;$("mvno").onclick=()=>{state.mvOpen=false;renderCard();};
       $("mvok").onclick=()=>moveQ(id,here,+$("mvc").value,+$("mvs").value);}}
+  pasangArsip(id);
   card.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{state.ans[id]=+b.dataset.o;tandaiCoba(id);if(state.ans[id]===q.a)tandaiBenar(id);persist();render();});
   $("prev").onclick=()=>{state.pos--;persist();render();};
   $("next").onclick=()=>{state.pos++;persist();render();window.scrollTo({top:Math.max(0,$("card").offsetTop-12)});};
@@ -1698,17 +1726,43 @@ document.addEventListener("visibilitychange",()=>{if(document.hidden)persist();}
 function renderUlang(){const b=$("ulangbar");if(!b)return;b.hidden=!state.ulang;if(!state.ulang)return;
   b.innerHTML=`<span>Mengulang soal <b>${esc(state.ulang.label)}</b> · ${state.list.length} soal</span><button class="btn" type="button" id="ulangx">Kembali ke latihan biasa</button>`;
   $("ulangx").onclick=()=>selectCat(state.cat,state.sub,1);}
-window.__ulang=(c,s,ids,label,k,langsung)=>{ids=ids.filter(id=>BYID[id]);if(!ids.length){alert("Soalnya tidak ada lagi di bank.");return;}
-  selectCat(c,s,s==="all"?"all":1);state.ulang={ids,label,k};restore();$("order").value=state.order;renderBag();render();
+window.__ulang=(c,s,ids,label,k,langsung,tetap)=>{ids=ids.filter(id=>BYID[id]);if(!ids.length){alert("Soalnya tidak ada lagi di bank.");return;}
+  selectCat(c,s,s==="all"?"all":1);state.ulang={ids,label,k,tetap:!!tetap};restore();$("order").value=state.order;renderBag();render();
   siapCat=state.cat;window.__gulTutup=false;state.setHilang=false;const st=$("setelan");if(st){st.hidden=false;st.open=false;}render();
   if(langsung){const mb=$("mulaibtn");if(mb)mb.click();fokus(true);return;}
   requestAnimationFrame(()=>window.scrollTo({top:Math.max(0,$("ulangbar").offsetTop-12),behavior:"smooth"}));};
+// Arsip soal penting (arsip.js): tombol 🔖 Arsipkan di setiap soal, di semua mode. Soal masuk ke kartu Arsip Soal
+// (di bawah Category Packages), dibagi per 50 soal sesuai urutan diarsipkan. Soal ke-51 menjadi nomor 1 di Bagian 2, dst.
+// Progres tiap bagian memakai kunci paket|ar-<n>, jadi ikut tersimpan di akun seperti Category Packages.
+function arsipLetak(id){const L=window.Arsip?Arsip.daftar().filter(x=>BYID[x]):[],i=L.indexOf(id);return i<0?null:{b:Math.floor(i/Arsip.BAGIAN)+1,no:i%Arsip.BAGIAN+1};}
+function arsipHTML(id){if(!window.Arsip)return "";const on=Arsip.ada(id),t=on&&arsipLetak(id);
+  return `<div class="arsiprow"><span class="arsipinfo" id="arsipinfo">${t?`Arsip Bagian ${t.b} · No. ${t.no}`:""}</span><button class="btn arsipbtn${on?" on":""}" id="arsipbtn" type="button" aria-pressed="${on}" title="${on?"Ketuk untuk mengeluarkan dari Arsip Soal":"Simpan soal ini ke Arsip Soal"}">${on?"✓ Diarsipkan":"🔖 Arsipkan"}</button></div>`;}
+function pasangArsip(id){const b=$("arsipbtn");if(!b)return;b.onclick=()=>{Arsip.ubah(id);const r=b.closest(".arsiprow");if(r)r.outerHTML=arsipHTML(id);pasangArsip(id);};}
+function renderArsip(){const box=$("arcard");if(!box||!window.Arsip)return;box.hidden=false;
+  const P=Arsip.bagian(id=>!!BYID[id]),n=P.reduce((a,p)=>a+p.length,0);
+  $("arjml").textContent=n?n+" soal":"";
+  $("arket").innerHTML=`<span class="pklead">Soal yang Anda tandai dengan 🔖 Arsipkan di mode apa pun masuk ke sini, sesuai urutan diarsipkan. Setiap bagian berisi ${Arsip.BAGIAN} soal. Setelah satu bagian penuh, soal berikutnya menjadi nomor 1 di bagian selanjutnya.</span>`;
+  if(!n){$("arlist").innerHTML=`<p class="arkosong">Belum ada soal yang diarsipkan. Ketuk 🔖 Arsipkan di bawah pilihan jawaban saat mengerjakan soal.</p>`;return;}
+  $("arlist").innerHTML=P.map((ids,i)=>{const ss=store["ulang|paket|ar-"+(i+1)],A=ss&&ss.ans||{},dj=ids.filter(id=>A[id]!==undefined).length,
+      bn=ids.filter(id=>A[id]!==undefined&&A[id]===BYID[id].a).length,pb=dj?Math.round(bn*100/dj):0,
+      lanjut=ss&&(ss.pos>0||dj>0)&&(ss.pos||0)<ids.length&&dj<ids.length,selesai=dj>=ids.length,awal=i*Arsip.BAGIAN;
+    return `<div class="tr pk"><span class="trj"><b>Bagian ${i+1}</b><small>${ids.length} soal${ids.length<Arsip.BAGIAN?` · terisi ${ids.length} dari ${Arsip.BAGIAN}`:""} · arsip ke-${awal+1}–${awal+ids.length}</small></span><span class="kpr"><span class="muted pkpct" title="${dj} dari ${ids.length} soal sudah dijawab">${Math.round(dj*100/ids.length)}%</span>${dj?`<span class="pkbs" title="${bn} benar dan ${dj-bn} salah dari ${dj} yang dijawab"><i class="ok">✓ ${pb}%</i><i class="no">✗ ${100-pb}%</i></span>`:""}<button class="btn copy" type="button" data-ar="${i}" data-ulangi="${selesai?1:""}">${selesai?"Retry":lanjut?"Continue":"Start"}</button></span></div>`;}).join("");
+  $("arlist").querySelectorAll("[data-ar]").forEach(b=>b.onclick=()=>bukaArsip(+b.dataset.ar,!!b.dataset.ulangi));}
+function bukaArsip(i,ulangi){const ids=(Arsip.bagian(id=>!!BYID[id])[i]||[]);if(!ids.length)return;const c=BYID[ids[0]].c;
+  window.__ulang(c,"all",ids,"Arsip · Bagian "+(i+1),"paket|ar-"+(i+1),!ulangi,true);
+  if(ulangi){retake();const mb=$("mulaibtn");if(mb)mb.click();fokus(true);}}
+window.__arSegar=()=>{const b=$("arcard");if(b&&!b.dataset.anim)renderArsip();};
+if(window.Arsip)Arsip.pantau(()=>{window.__arSegar();});
+renderArsip();
+document.querySelector("#arcard>summary").addEventListener("click",e=>{const d=$("arcard");e.preventDefault();if(d.dataset.anim)return;if(d.open){tutupPerlahan(d,[d.querySelector(".toisi")].filter(Boolean));return;}
+  renderArsip();const h0=d.offsetHeight;d.open=true;turunPerlahan(d,h0,[d.querySelector(".toisi")].filter(Boolean));});
 window.__segarSub=()=>{if(state.ulang){renderSub();return;}selectCat(state.cat,state.sub,state.bag);};
 window.__quiz={state,render:()=>render(),benar:()=>BENAR,sesi:k=>store["ulang|"+k]||null};window.__soalKini=()=>BYID[state.list[state.pos]];
 window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add(id);state.edOpen=false;render();};
 }
 </script>
 <script src="/editsoal.js?v=3"></script>
+<script src="/arsip.js?v=1"></script>
 
 <script src="/sb/supabase-js-2.117.3.js"></script>
 <script src="sb/supabase-config.js?v=20261102b"></script>
@@ -1794,7 +1848,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
   }
   // Soal yang pernah dijawab benar disimpan di progres/<uid> agar tetap ada setelah keluar atau ganti perangkat.
   async function progres(){const u=auth.currentUser;if(!u)return;window.__UID=u.uid;const ref=db.doc('progres/'+u.uid);
-    let imporSudah=false;try{const s=await ref.get();window.__BENAR_AWAL=(s.exists&&s.data().b)||{};window.__COBA_AWAL=(s.exists&&s.data().c)||{};window.__PK_AWAL=(s.exists&&s.data().pk)||{};imporSudah=!!(s.exists&&s.data().impor);}catch(e){window.__BENAR_AWAL={};window.__COBA_AWAL={};window.__PK_AWAL={};}
+    let imporSudah=false,arAwal;try{const s=await ref.get();arAwal=(s.exists&&s.data().ar)||'';window.__BENAR_AWAL=(s.exists&&s.data().b)||{};window.__COBA_AWAL=(s.exists&&s.data().c)||{};window.__PK_AWAL=(s.exists&&s.data().pk)||{};imporSudah=!!(s.exists&&s.data().impor);}catch(e){window.__BENAR_AWAL={};window.__COBA_AWAL={};window.__PK_AWAL={};}
     window.__simpanBenar=id=>ref.set({b:{[id]:1}},{merge:true}).catch(()=>{});
     window.__sinkronBenar=m=>ref.set({b:m},{merge:true}).catch(()=>{});
     window.__ambilSemuaPaket=async()=>{try{const s=await ref.get();return (s.exists&&s.data().pk)||{};}catch(e){return null;}};
@@ -1802,6 +1856,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
     window.__simpanPaket=(n,v)=>{try{return ref.set({pk:{[n]:JSON.stringify(v)}},{merge:true}).catch(()=>{});}catch(e){}};
     window.__simpanCoba=id=>ref.set({c:{[id]:1}},{merge:true}).catch(()=>{});
     window.__sinkronCoba=m=>ref.set({c:m},{merge:true}).catch(()=>{});
+    if(window.Arsip)Arsip.mulai(u.uid,ref,arAwal);
     if(window.__sb)tawarImpor(u,ref,imporSudah);}
   // Versi Supabase: salin riwayat progres/<uid> dari Firebase lama (sekali, atas klik pengguna; butuh masuk Google via popup).
   // Tanda "impor" disimpan di progres akun (bukan hanya di perangkat), jadi kotak ini cukup muncul sekali per akun.
@@ -2384,7 +2439,7 @@ document.addEventListener('click',e=>{if(!(e.target.closest&&e.target.closest('#
 </script>
 <script>
 // Semua kotak lipat lainnya (panel admin, Buat Mock Exam baru, Question Map, dll.) dibuka/ditutup halus tanpa patah.
-(function(){const ease='cubic-bezier(.33,0,.2,1)',LEWAT='#setelan,#tocard,#pkcard,#kpcard,details.ket';
+(function(){const ease='cubic-bezier(.33,0,.2,1)',LEWAT='#setelan,#tocard,#pkcard,#kpcard,#arcard,details.ket';
   document.addEventListener('click',e=>{const sm=e.target.closest&&e.target.closest('details>summary');if(!sm)return;const d=sm.parentElement;
     if(d.matches(LEWAT)||!d.animate||matchMedia('(prefers-reduced-motion:reduce)').matches)return;
     e.preventDefault();const h0=d.getBoundingClientRect().height;if(d._an){d._an.cancel();d._an=null;}(d._fa||[]).forEach(a=>a.cancel());d._fa=[];

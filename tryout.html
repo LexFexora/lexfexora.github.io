@@ -330,6 +330,13 @@ header .tema .knop{background:linear-gradient(180deg,#c9b98f,#a8925c)}header .te
 /* Tombol Mulai sekarang di ruang tunggu: gaya tombol START kuis (kayu cokelat, huruf emas). */
 #mulai.btn{font-family:"Alegreya SC",Georgia,serif;font-weight:700;letter-spacing:.04em;color:#f0d9a6!important;text-shadow:0 1px 0 #000;border:1px solid #000!important;border-radius:3px;background:linear-gradient(180deg,#5a3424,#3a2016 55%,#2a160e)!important;box-shadow:inset 0 0 0 2px #2a160e,inset 0 0 0 3px #a07a4a,inset 0 1px 6px rgb(255 200 150 / .2),0 0 0 1px #6e5232,0 6px 14px rgb(0 0 0 / .35)!important}#mulai.btn:hover{filter:brightness(1.12)}#mulai.btn:disabled{filter:grayscale(.4) brightness(.8)}
 </style>
+<style>
+/* Arsip soal penting: tombol di bawah pilihan jawaban; soal masuk ke kartu Arsip Soal di halaman utama. */
+.arsiprow{display:flex;justify-content:flex-end;align-items:center;gap:10px;margin:10px 0 2px;flex-wrap:wrap}
+.arsiprow .arsipinfo{font-size:12px;color:var(--muted)}
+#main .btn.arsipbtn,.btn.arsipbtn{font-size:12.5px;padding:5px 12px;min-width:0!important;width:auto;border-radius:999px}
+.btn.arsipbtn.on{color:var(--brass);border-color:color-mix(in srgb,var(--brass) 55%,transparent);background:color-mix(in srgb,var(--brass) 10%,transparent)}
+</style>
 </head>
 <body>
 <div class="wrap">
@@ -363,6 +370,7 @@ header .tema .knop{background:linear-gradient(180deg,#c9b98f,#a8925c)}header .te
 </div>
 
 <script src="/editsoal.js?v=3"></script>
+<script src="/arsip.js?v=1"></script>
 <script src="/sb/supabase-js-2.117.3.js"></script>
 <script src="sb/supabase-config.js?v=20261102b"></script>
 <script src="sb/fb-shim.js?v=20261102b"></script>
@@ -431,6 +439,7 @@ if(!TID){gate("Tautan mock exam tidak lengkap","Buka tautan mock exam yang dibag
 
 auth.onAuthStateChanged(u=>{U=u;pMuat=false;aku=null;P={};if(unsubT){unsubT();unsubT=null;}if(unsubP){unsubP();unsubP=null;}if(unsubC){unsubC();unsubC=null;}
   if(!u){gate("Mock Exam","Masuk dengan akun Google untuk ikut mock exam. Nama akun Anda akan tampil di papan peringkat.",true);return;}
+  if(window.Arsip)Arsip.mulai(u.uid,db.doc("progres/"+u.uid));
   isOwner=!!OWNER&&(u.email||"").toLowerCase()===OWNER&&u.emailVerified;$("edsoal").hidden=!isOwner;if(isOwner){siapkanEdit();pantauLoginMulai();}$("akun").hidden=false;$("akunav").innerHTML=av({foto:u.photoURL,nama:u.displayName||u.email});$("akunnm").textContent=u.displayName||(u.email||"").split("@")[0];document.body.classList.toggle("bebas",isOwner||BEBAS_SALIN.includes((u.email||"").toLowerCase())&&u.emailVerified);
   unsubT=db.doc("tryout/"+TID).onSnapshot(s=>{if(!s.exists){gate("Mock exam tidak ditemukan","Periksa kembali tautannya.");return;}
       T=s.data({serverTimestamps:"estimate"});T.id=s.id;if(!T.judul||T.judul==="Mock Exam Seleksi Kemampuan Bidang")T.judul="Mock Exam";if(T.subJudul)T.judul+=" - "+T.subJudul.replace(/^Package (\d)/,"Prediction Package $1");gabung();render();},
@@ -576,7 +585,7 @@ function ujian(){papan.hidden=false;if(!aku){main.innerHTML='<p class="muted">Me
   const n=T.soal.length,sk=SINK();if(sk)pos=T.idx||0;pos=Math.min(Math.max(0,pos),n-1);try{localStorage.setItem("to-pos-"+TID,pos);}catch(e){}const q=T.soal[pos],perm=acak(q.o.length,(sk?"":U.uid)+q.id),pil=(aku.jawab||{})[q.id],habis=sk&&soalSisaMs()<=0;
   main.innerHTML=`<div class="ujian-h"><span class="qno">Soal ${pos+1} / ${n}</span>${sk?jamHTML("sisaq",soalSisaMs(),(T.detikSoal||54)*1000,10000):jamHTML("sisa",sisaMs(),T.durasi*1000,60000)}</div>
   <p class="qtext">${esc(q.q)}</p><ol class="opts">${perm.map((oi,pi)=>{const jw=pil!==undefined||habis,cls=jw?(oi===q.a?" benar":oi===pil?" salah":" redup"):"";
-    return `<li><button type="button" class="opt${cls}" data-o="${oi}"${jw?" disabled":""}><span class="l">${L[pi]}</span><span class="t">${esc(q.o[oi])}${jw&&oi===q.a?' <b class="mk">✓</b>':jw&&oi===pil?' <b class="mk x">✕</b>':""}</span></button></li>`;}).join("")}</ol>
+    return `<li><button type="button" class="opt${cls}" data-o="${oi}"${jw?" disabled":""}><span class="l">${L[pi]}</span><span class="t">${esc(q.o[oi])}${jw&&oi===q.a?' <b class="mk">✓</b>':jw&&oi===pil?' <b class="mk x">✕</b>':""}</span></button></li>`;}).join("")}</ol>${arsipHTML(q.id)}
   ${sk?`<div class="nav sk">${isMaster()?`<button class="btn primary" id="next" type="button"${habis||semuaJawab(q)?"":" disabled"}>${pos<n-1?"Next":"Selesai"}</button>${habis||semuaJawab(q)?"":`<p class="muted tunggun">Menunggu ${belumJawab(q)} peserta menjawab atau waktu habis</p>`}${miniMaster()}`:`<p class="muted tunggum">${habis?"Waktu habis. ":""}Menunggu room master <b id="mnama">${esc(namaP(T.master))}</b> menekan Next.</p>`}</div>`:`<div class="nav"><button class="btn" id="prev" type="button"${pos===0?" disabled":""}>← Previous</button>${pos<n-1?'<button class="btn primary" id="next" type="button">Next →</button>':'<button class="btn primary" id="kumpul" type="button">Selesai &amp; kumpulkan</button>'}</div>`}
 `;
   // Peta soal dan tombol kumpul di kartu terpisah di bawah peringkat & pembahasan.
@@ -586,6 +595,7 @@ function ujian(){papan.hidden=false;if(!aku){main.innerHTML='<p class="muted">Me
   ${sk?statHTML():""}${isOwner?(sk?"":statHTML())+'<div class="row"><button class="btn" data-eds type="button" title="Edit soal (hanya pemilik)">✎ Edit</button><button class="btn bahaya" id="akhiri" type="button">Akhiri mock exam untuk semua</button></div>':""}
   <p class="muted kunci" style="margin:0;font-size:12px">Pintasan: <kbd>A</kbd>–<kbd>${L[q.o.length-1]}</kbd> memilih jawaban${sk?(isMaster()?", <kbd>→</kbd> Next untuk semua":""):", <kbd>←</kbd> <kbd>→</kbd> pindah soal"}.</p>`;pasangMaster();
   // Jawaban terkunci setelah dipilih; pembahasan dan sumber langsung tampil di kolom kanan.
+  pasangArsip(q.id);
   main.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{if((aku.jawab||{})[q.id]!==undefined||(sk&&soalSisaMs()<=0))return;aku.jawab=Object.assign({},aku.jawab,{[q.id]:+b.dataset.o});catatRiwayat({[q.id]:+b.dataset.o});hitung();simpan(true);render();});
   bahas.hidden=false;isiBahas(pil===undefined&&habis?`<div class="bahas-h"><svg class="hik" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5v-15z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/><path d="M9 8h7M9 11.5h5"/></svg><b>Explanation</b><span class="vonis no">Waktu habis</span></div>`+
     `<div class="blok"><h3>Pembahasan</h3><p>${q.p?esc(q.p):'<span class="muted">Belum ada pembahasan untuk soal ini.</span>'}</p></div><div class="blok"><h3>Sumber</h3><p>${q.d?esc(q.d):'<span class="muted">—</span>'}</p></div>`:
@@ -603,6 +613,10 @@ document.addEventListener("keydown",e=>{if(e.ctrlKey||e.metaKey||e.altKey||/INPU
   if(k.length===1&&i>=0&&i<opts.length){e.preventDefault();opts[i].click();}
   else if(e.key==="ArrowRight"&&$("next")){e.preventDefault();$("next").click();}
   else if(e.key==="ArrowLeft"&&$("prev")&&!$("prev").disabled){e.preventDefault();$("prev").click();}});
+// Arsip soal penting: soal yang diarsipkan di Mock Exam masuk ke kartu Arsip Soal di halaman utama (arsip.js).
+function arsipHTML(id){if(!window.Arsip)return "";const on=Arsip.ada(id),L=on?Arsip.daftar():[],i=L.indexOf(id),t=i<0?"":`Arsip Bagian ${Math.floor(i/Arsip.BAGIAN)+1} · No. ${i%Arsip.BAGIAN+1}`;
+  return `<div class="arsiprow"><span class="arsipinfo">${t}</span><button class="btn arsipbtn${on?" on":""}" id="arsipbtn" type="button" aria-pressed="${on}" title="${on?"Ketuk untuk mengeluarkan dari Arsip Soal":"Simpan soal ini ke Arsip Soal"}">${on?"✓ Diarsipkan":"🔖 Arsipkan"}</button></div>`;}
+function pasangArsip(id){const b=$("arsipbtn");if(!b)return;b.onclick=()=>{Arsip.ubah(id);const r=b.closest(".arsiprow");if(r)r.outerHTML=arsipHTML(id);pasangArsip(id);};}
 function akhiri(){if(!confirm("Akhiri mock exam sekarang? Semua peserta langsung melihat hasil akhir."))return;db.doc("tryout/"+TID).update({status:"selesai"});}
 
 function tunggu(){papan.hidden=false;main.innerHTML=`<div class="hasilku"><p class="eyebrow" style="margin:0 0 6px">Jawaban terkumpul</p><div><span class="angka">${aku.skor}</span> <span class="poin">POIN</span></div>
