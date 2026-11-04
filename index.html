@@ -1737,7 +1737,7 @@ window.__ulang=(c,s,ids,label,k,langsung,tetap)=>{ids=ids.filter(id=>BYID[id]);i
 // Progres tiap bagian memakai kunci paket|ar-<n>, jadi ikut tersimpan di akun seperti Category Packages.
 function arsipLetak(id){const L=window.Arsip?Arsip.daftar().filter(x=>BYID[x]):[],i=L.indexOf(id);return i<0?null:{b:Math.floor(i/Arsip.BAGIAN)+1,no:i%Arsip.BAGIAN+1};}
 function arsipHTML(id){if(!window.Arsip||!Arsip.boleh)return "";const on=Arsip.ada(id),t=on&&arsipLetak(id);
-  return `<div class="arsiprow"><span class="arsipinfo" id="arsipinfo">${t?`Record PART ${t.b} · No. ${t.no}`:""}</span><button class="btn arsipbtn${on?" on":""}" id="arsipbtn" type="button" aria-pressed="${on}" title="${on?(Arsip.bolehHapus(id)?"Tap to remove from Vital Test Record":"Recorded by another user. Only they or the owner can remove it."):"Save this question to the shared Vital Test Record"}">${on?"✓ Recorded":"🔖 Record"}</button></div>`;}
+  return `<div class="arsiprow"><span class="arsipinfo" id="arsipinfo">${t?`Record PART ${t.b} · No. ${t.no}`+(Arsip.nama(id)?` · by ${esc(Arsip.nama(id))}`:""):""}</span><button class="btn arsipbtn${on?" on":""}" id="arsipbtn" type="button" aria-pressed="${on}" title="${on?(Arsip.bolehHapus(id)?"Tap to remove from Vital Test Record":"Recorded by another user. Only they or the owner can remove it."):"Save this question to the shared Vital Test Record"}">${on?"✓ Recorded":"🔖 Record"}</button></div>`;}
 function pasangArsip(id){const b=$("arsipbtn");if(!b)return;const gambar=()=>{const r=$("arsipbtn")&&$("arsipbtn").closest(".arsiprow");if(r){r.outerHTML=arsipHTML(id);pasangArsip(id);}};
   b.onclick=async()=>{const on=Arsip.ada(id);if(on&&!Arsip.bolehHapus(id)){const i=$("arsipinfo");if(i)i.textContent="Recorded by another user";return;}
     b.disabled=true;const p=Arsip.ubah(id,!on);gambar();await p;gambar();
@@ -1771,7 +1771,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
 }
 </script>
 <script src="/editsoal.js?v=3"></script>
-<script src="/arsip.js?v=5"></script>
+<script src="/arsip.js?v=6"></script>
 
 <script src="/sb/supabase-js-2.117.3.js"></script>
 <script src="sb/supabase-config.js?v=20261102b"></script>
@@ -1865,7 +1865,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
     window.__simpanPaket=(n,v)=>{try{return ref.set({pk:{[n]:JSON.stringify(v)}},{merge:true}).catch(()=>{});}catch(e){}};
     window.__simpanCoba=id=>ref.set({c:{[id]:1}},{merge:true}).catch(()=>{});
     window.__sinkronCoba=m=>ref.set({c:m},{merge:true}).catch(()=>{});
-    if(window.Arsip)Arsip.mulai(window.__sb,u.uid,isOwner,arAwal,()=>ref.set({ar:"{}"},{merge:true}));
+    if(window.Arsip){Arsip._namaku=u.displayName||(u.email||'').split('@')[0];}if(window.Arsip)Arsip.mulai(window.__sb,u.uid,isOwner,arAwal,()=>ref.set({ar:"{}"},{merge:true}));
     if(window.__sb)tawarImpor(u,ref,imporSudah);}
   // Versi Supabase: salin riwayat progres/<uid> dari Firebase lama (sekali, atas klik pengguna; butuh masuk Google via popup).
   // Tanda "impor" disimpan di progres akun (bukan hanya di perangkat), jadi kotak ini cukup muncul sekali per akun.

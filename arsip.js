@@ -10,9 +10,12 @@
   const kabari=()=>pend.forEach(f=>{try{f();}catch(e){}});
   const urai=s=>{try{const o=typeof s==='string'?JSON.parse(s):s;return o&&typeof o==='object'&&!Array.isArray(o)?o:{};}catch(e){return {};}};
   async function muat(){if(!sb||!boleh)return;if(muatP)return muatP;
-    muatP=(async()=>{try{const {data:d,error}=await sb.from('cat_arsip').select('id,t,oleh').eq('aktif',true).order('t',{ascending:true}).order('id',{ascending:true});
+    // Kolom nama (pembaruan 13) dipakai bila sudah ada; bila belum, tetap jalan tanpa nama.
+    const ambil=k=>sb.from('cat_arsip').select(k).eq('aktif',true).order('t',{ascending:true}).order('id',{ascending:true});
+    muatP=(async()=>{try{let {data:d,error}=await ambil('id,t,oleh,nama');
+        if(error&&/nama/i.test(error.message||''))({data:d,error}=await ambil('id,t,oleh'));
         if(error){galat=/does not exist|schema cache|relation/i.test(error.message||'')?'belum':'gagal';}
-        else{galat='';data=(d||[]).map(r=>({id:r.id,t:Date.parse(r.t)||0,oleh:r.oleh}));}}
+        else{galat='';data=(d||[]).map(r=>({id:r.id,t:Date.parse(r.t)||0,oleh:r.oleh,nama:r.nama||''}));}}
       catch(e){galat='gagal';}
       siap=true;muatP=null;kabari();})();
     return muatP;}
@@ -36,6 +39,8 @@
       if(!boleh){siap=true;kabari();return;}await muat();await pindahLama(lama,hapusLama);},
     segarkan:()=>muat(),
     ada:id=>boleh&&data.some(r=>r.id===id),
+    // Nama pengguna yang merekam soal ini (kosong bila belum tercatat).
+    nama:id=>{const r=data.find(x=>x.id===id);return r?(r.nama||(r.oleh===uid?A._namaku||'':'')):'';},
     // Boleh dikeluarkan dari arsip: perekamnya sendiri atau pemilik.
     bolehHapus:id=>{const r=data.find(x=>x.id===id);return !!r&&(owner||r.oleh===uid);},
     daftar:()=>boleh?data.map(r=>r.id):[],
