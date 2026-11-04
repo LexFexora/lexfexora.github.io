@@ -6,10 +6,10 @@
 (function(){
   'use strict';
   const BAGIAN=50;
-  let sb=null,uid='',owner=false,data=[],siap=false,galat='',muatP=null;const pend=new Set();
+  let sb=null,uid='',owner=false,boleh=false,data=[],siap=false,galat='',muatP=null;const pend=new Set();
   const kabari=()=>pend.forEach(f=>{try{f();}catch(e){}});
   const urai=s=>{try{const o=typeof s==='string'?JSON.parse(s):s;return o&&typeof o==='object'&&!Array.isArray(o)?o:{};}catch(e){return {};}};
-  async function muat(){if(!sb)return;if(muatP)return muatP;
+  async function muat(){if(!sb||!boleh)return;if(muatP)return muatP;
     muatP=(async()=>{try{const {data:d,error}=await sb.from('cat_arsip').select('id,t,oleh').eq('aktif',true).order('t',{ascending:true}).order('id',{ascending:true});
         if(error){galat=/does not exist|schema cache|relation/i.test(error.message||'')?'belum':'gagal';}
         else{galat='';data=(d||[]).map(r=>({id:r.id,t:Date.parse(r.t)||0,oleh:r.oleh}));}}
@@ -26,17 +26,22 @@
   const A={
     BAGIAN,
     get siap(){return siap;},get galat(){return galat;},
+    // Hanya akun yang bisa membuka Prediction & Category Packages (pemilik dan pembeli aktif).
+    get boleh(){return boleh;},
+    async buka(){if(boleh||!sb)return;boleh=true;await muat();await pindahLama(A._lama,A._hapusLama);},
     // Dipanggil setelah login: client Supabase, uid akun, dan apakah akun ini pemilik.
     // lama: isi kolom "ar" progres akun (versi arsip pribadi), hapusLama: mengosongkannya setelah dipindahkan.
-    async mulai(client,u,isOwner,lama,hapusLama){sb=client||window.__sb||null;uid=u||'';owner=!!isOwner;if(!sb)return;await muat();await pindahLama(lama,hapusLama);},
+    async mulai(client,u,isOwner,lama,hapusLama){sb=client||window.__sb||null;uid=u||'';owner=!!isOwner;A._lama=lama;A._hapusLama=hapusLama;if(!sb)return;
+      if(!owner){try{const {data,error}=await sb.rpc('cat_sudah_beli');boleh=!error&&data===true;}catch(e){boleh=false;}}else boleh=true;
+      if(!boleh){siap=true;kabari();return;}await muat();await pindahLama(lama,hapusLama);},
     segarkan:()=>muat(),
-    ada:id=>data.some(r=>r.id===id),
+    ada:id=>boleh&&data.some(r=>r.id===id),
     // Boleh dikeluarkan dari arsip: perekamnya sendiri atau pemilik.
     bolehHapus:id=>{const r=data.find(x=>x.id===id);return !!r&&(owner||r.oleh===uid);},
-    daftar:()=>data.map(r=>r.id),
+    daftar:()=>boleh?data.map(r=>r.id):[],
     // Bagian berisi 50 soal: soal ke-51 menjadi nomor 1 di Part 2, dan seterusnya.
     bagian(saring){const L=A.daftar().filter(saring||(()=>true)),P=[];for(let i=0;i<L.length;i+=BAGIAN)P.push(L.slice(i,i+BAGIAN));return P;},
-    async ubah(id,rekam){if(!sb||!id)return false;if(rekam===undefined)rekam=!A.ada(id);
+    async ubah(id,rekam){if(!sb||!id||!boleh)return false;if(rekam===undefined)rekam=!A.ada(id);
       if(rekam){if(A.ada(id))return true;data.push({id,t:Date.now(),oleh:uid});kabari();
         const {error}=await sb.rpc('cat_arsip_rekam',{p_id:id});if(error){data=data.filter(r=>r.id!==id||r.oleh!==uid);galat=/does not exist|schema cache|function/i.test(error.message||'')?'belum':'gagal';kabari();return false;}}
       else{if(!A.bolehHapus(id))return true;const lama=data;data=data.filter(r=>r.id!==id);kabari();

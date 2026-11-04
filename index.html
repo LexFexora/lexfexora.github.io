@@ -951,6 +951,7 @@ html:not(.vvip) .setelan.tocard>summary .vvipakses{display:none}
 .fokus .card .arsiprow{margin:0}
 #arcard .arjml{margin-left:auto;font-size:12px;font-weight:600;color:var(--muted);padding-right:6px;font-variant-numeric:tabular-nums}
 #arcard .arkosong{margin:4px 0 0;font-size:13.5px;color:var(--muted)}
+html.vvip #arcard .arjml{padding-right:92px}
 </style>
 </head>
 <body>
@@ -1055,7 +1056,7 @@ html:not(.vvip) .setelan.tocard>summary .vvipakses{display:none}
   </details>
 
   <details class="setelan tocard" id="arcard" hidden>
-    <summary><span class="stl"><svg class="piala" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 3.5h11v17l-5.5-4-5.5 4z" fill="none" stroke="url(#pialaEmas)" stroke-width="1.8" stroke-linejoin="round"/><path d="M9.5 8.5h5" stroke="url(#pialaEmas)" stroke-width="1.8" stroke-linecap="round"/></svg>Vital Test Record</span><span class="arjml" id="arjml"></span></summary>
+    <summary><span class="stl"><svg class="piala" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 3.5h11v17l-5.5-4-5.5 4z" fill="none" stroke="url(#pialaEmas)" stroke-width="1.8" stroke-linejoin="round"/><path d="M9.5 8.5h5" stroke="url(#pialaEmas)" stroke-width="1.8" stroke-linecap="round"/></svg>Vital Test Record</span><span class="arjml" id="arjml"></span><span class="vvipakses" title="VVIP Access">VVIP Access</span></summary>
     <div class="toisi">
       <p class="note" id="arket"></p>
       <div id="arlist" class="tolist"></div>
@@ -1735,7 +1736,7 @@ window.__ulang=(c,s,ids,label,k,langsung,tetap)=>{ids=ids.filter(id=>BYID[id]);i
 // (di bawah Category Packages), dibagi per 50 soal sesuai urutan diarsipkan. Soal ke-51 menjadi nomor 1 di Bagian 2, dst.
 // Progres tiap bagian memakai kunci paket|ar-<n>, jadi ikut tersimpan di akun seperti Category Packages.
 function arsipLetak(id){const L=window.Arsip?Arsip.daftar().filter(x=>BYID[x]):[],i=L.indexOf(id);return i<0?null:{b:Math.floor(i/Arsip.BAGIAN)+1,no:i%Arsip.BAGIAN+1};}
-function arsipHTML(id){if(!window.Arsip)return "";const on=Arsip.ada(id),t=on&&arsipLetak(id);
+function arsipHTML(id){if(!window.Arsip||!Arsip.boleh)return "";const on=Arsip.ada(id),t=on&&arsipLetak(id);
   return `<div class="arsiprow"><span class="arsipinfo" id="arsipinfo">${t?`Record Part ${t.b} · No. ${t.no}`:""}</span><button class="btn arsipbtn${on?" on":""}" id="arsipbtn" type="button" aria-pressed="${on}" title="${on?(Arsip.bolehHapus(id)?"Tap to remove from Vital Test Record":"Recorded by another user. Only they or the owner can remove it."):"Save this question to the shared Vital Test Record"}">${on?"✓ Recorded":"🔖 Record"}</button></div>`;}
 function pasangArsip(id){const b=$("arsipbtn");if(!b)return;const gambar=()=>{const r=$("arsipbtn")&&$("arsipbtn").closest(".arsiprow");if(r){r.outerHTML=arsipHTML(id);pasangArsip(id);}};
   b.onclick=async()=>{const on=Arsip.ada(id);if(on&&!Arsip.bolehHapus(id)){const i=$("arsipinfo");if(i)i.textContent="Recorded by another user";return;}
@@ -1746,6 +1747,8 @@ function renderArsip(){const box=$("arcard");if(!box||!window.Arsip)return;box.h
   $("arjml").textContent=n?n+(n===1?" question":" questions"):"";
   $("arket").innerHTML=`<span class="pklead">A shared record for all users. Every question anyone marks with 🔖 Record, in any mode, is collected here in the order it was recorded, so you can work through questions others saved and they can work through yours. Each part holds ${Arsip.BAGIAN} questions. Once a part is full, the next recorded question becomes No. 1 of the next part. Your answers and progress stay your own.</span>`;
   if(!Arsip.siap){$("arlist").innerHTML=`<p class="arkosong">Loading…</p>`;return;}
+  if(!Arsip.boleh){$("arlist").innerHTML=`<div class="pkkunci"><b>🔒 Restricted Access</b><span>Available to buyers only. The same purchase unlocks Prediction Packages, Category Packages, and Vital Test Record.</span><button class="btn copy pkbeli" type="button" id="arbeli">Buy access</button></div>`;
+    $("arbeli").onclick=()=>window.__beliAkses&&window.__beliAkses($("arbeli"));return;}
   if(Arsip.galat==="belum"){$("arlist").innerHTML=`<p class="arkosong">${window.__isOwner?"Run sb/supabase-update-11.sql in the Supabase SQL Editor to turn on the shared Vital Test Record.":"Vital Test Record is not available yet."}</p>`;return;}
   if(!n&&Arsip.galat){$("arlist").innerHTML=`<p class="arkosong">Could not load Vital Test Record. Check your connection, then reopen this card.</p>`;return;}
   if(!n){$("arlist").innerHTML=`<p class="arkosong">No recorded questions yet. Tap 🔖 Record below the answer options while working on a question.</p>`;return;}
@@ -1768,7 +1771,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
 }
 </script>
 <script src="/editsoal.js?v=3"></script>
-<script src="/arsip.js?v=4"></script>
+<script src="/arsip.js?v=5"></script>
 
 <script src="/sb/supabase-js-2.117.3.js"></script>
 <script src="sb/supabase-config.js?v=20261102b"></script>
@@ -1817,7 +1820,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
     try{const {data,error}=await sb.functions.invoke('beli-akses',{body:{}});if(error)throw error;
       if(data&&data.lunas){location.href=location.pathname;return;}if(data&&data.url){location.href=data.url;return;}throw new Error('no url');}
     catch(e){alert('Online payment is not available right now. Please try again later.');if(btn){btn.disabled=false;btn.textContent=t;}}}
-  $('g-beli').onclick=()=>beliAkses($('g-beli'));
+  $('g-beli').onclick=()=>beliAkses($('g-beli'));window.__beliAkses=beliAkses;
   const open=()=>{$('gate').hidden=true;H.classList.remove('gate-wait');};
   const cfg=window.FIREBASE_CONFIG||{};
   if(!window.firebase||!cfg.apiKey||/^ISI_/.test(cfg.apiKey)){show('Site not configured','The owner needs to complete the site configuration first.');return;}
@@ -2048,7 +2051,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
     if(kpBox)kpBox.addEventListener('toggle',()=>{if(!kpBox.open)return;const t=()=>{if(kpBox.dataset.anim)return setTimeout(t,120);kpRender();};setTimeout(t,120);});
     // Dipakai form Buat Mock Exam (khusus pemilik) untuk mengambil isi Prediction Packages dan Category Packages.
     window.__pkSusun=susunPaket;window.__kpSusun=susunKat;
-    window.__pkBuka=()=>{buka=true;pkRender();document.documentElement.classList.add('vvip');if(!window.__penuh){window.__penuh=true;window.__segarSub&&window.__segarSub();}};
+    window.__pkBuka=()=>{buka=true;pkRender();if(window.Arsip)Arsip.buka();document.documentElement.classList.add('vvip');if(!window.__penuh){window.__penuh=true;window.__segarSub&&window.__segarSub();}};
     tampil();window.__pkSegar=()=>{if(!buka)return;if(box.open&&!box.dataset.anim)pkRender();if(kpBox&&kpBox.open&&!kpBox.dataset.anim)kpRender();};
     box.addEventListener('toggle',()=>{if(!box.open)return;const t=()=>{if(box.dataset.anim)return setTimeout(t,120);if(buka)pkRender();};setTimeout(t,120);});
   }
