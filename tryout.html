@@ -614,8 +614,8 @@ document.addEventListener("keydown",e=>{if(e.ctrlKey||e.metaKey||e.altKey||/INPU
   else if(e.key==="ArrowRight"&&$("next")){e.preventDefault();$("next").click();}
   else if(e.key==="ArrowLeft"&&$("prev")&&!$("prev").disabled){e.preventDefault();$("prev").click();}});
 // Arsip soal penting: soal yang diarsipkan di Mock Exam masuk ke kartu Arsip Soal di halaman utama (arsip.js).
-function arsipHTML(id){if(!window.Arsip)return "";const on=Arsip.ada(id),L=on?Arsip.daftar():[],i=L.indexOf(id),t=i<0?"":`Arsip Bagian ${Math.floor(i/Arsip.BAGIAN)+1} · No. ${i%Arsip.BAGIAN+1}`;
-  return `<div class="arsiprow"><span class="arsipinfo">${t}</span><button class="btn arsipbtn${on?" on":""}" id="arsipbtn" type="button" aria-pressed="${on}" title="${on?"Ketuk untuk mengeluarkan dari Arsip Soal":"Simpan soal ini ke Arsip Soal"}">${on?"✓ Diarsipkan":"🔖 Arsipkan"}</button></div>`;}
+function arsipHTML(id){if(!window.Arsip)return "";const on=Arsip.ada(id),L=on?Arsip.daftar():[],i=L.indexOf(id),t=i<0?"":`Bookmarks Part ${Math.floor(i/Arsip.BAGIAN)+1} · No. ${i%Arsip.BAGIAN+1}`;
+  return `<div class="arsiprow"><span class="arsipinfo">${t}</span><button class="btn arsipbtn${on?" on":""}" id="arsipbtn" type="button" aria-pressed="${on}" title="${on?"Tap to remove from Bookmarked Questions":"Save this question to Bookmarked Questions"}">${on?"✓ Bookmarked":"🔖 Bookmark"}</button></div>`;}
 function pasangArsip(id){const b=$("arsipbtn");if(!b)return;b.onclick=()=>{Arsip.ubah(id);const r=b.closest(".arsiprow");if(r)r.outerHTML=arsipHTML(id);pasangArsip(id);};}
 function akhiri(){if(!confirm("Akhiri mock exam sekarang? Semua peserta langsung melihat hasil akhir."))return;db.doc("tryout/"+TID).update({status:"selesai"});}
 
