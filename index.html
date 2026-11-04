@@ -1744,7 +1744,7 @@ function pasangArsip(id){const b=$("arsipbtn");if(!b)return;const gambar=()=>{co
     if(Arsip.galat){const i=$("arsipinfo");if(i)i.textContent=Arsip.galat==="belum"?"Vital Test Record is not set up yet":"Could not save. Check your connection.";}};}
 function renderArsip(){const box=$("arcard");if(!box||!window.Arsip)return;box.hidden=false;
   const P=Arsip.bagian(id=>!!BYID[id]),n=P.reduce((a,p)=>a+p.length,0);
-  $("arjml").textContent=n?n+(n===1?" question":" questions"):"";
+  $("arjml").textContent="";
   $("arket").innerHTML=`<span class="pklead">A shared record for all users. Every question anyone marks with 🔖 Record, in any mode, is collected here in the order it was recorded, so you can work through questions others saved and they can work through yours. Each part holds ${Arsip.BAGIAN} questions. Once a part is full, the next recorded question becomes No. 1 of the next part. Your answers and progress stay your own.</span>`;
   if(!Arsip.siap){$("arlist").innerHTML=`<p class="arkosong">Loading…</p>`;return;}
   if(!Arsip.boleh){$("arlist").innerHTML=`<div class="pkkunci"><b>🔒 Restricted Access</b><span>Available to buyers only. The same purchase unlocks Prediction Packages, Category Packages, and Vital Test Record.</span><button class="btn copy pkbeli" type="button" id="arbeli">Buy access</button></div>`;
