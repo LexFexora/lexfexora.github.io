@@ -2,7 +2,7 @@
 <html lang="id" class="gate-wait">
 <head>
 <meta charset="utf-8">
-<meta name="versi-situs" content="20261105q">
+<meta name="versi-situs" content="20261105r">
 <script>try{var t=localStorage.getItem("cat-tema");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;}catch(e){}</script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Computer Assisted Test - LEX FEXORA.</title>
@@ -1926,7 +1926,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
   let started=false,unsub=null,beat=null;let isOwner=false;
   // Mode perbaikan: baris cat_bayar id='perbaikan' (info.aktif, bisa dibaca siapa saja). Tanpa baris atau gagal dibaca = perbaikan AKTIF.
   // Selama aktif hanya pemilik dan akun VVIP Akses (cat_sudah_beli: pembeli lunas + paket gratis) yang bisa memakai situs; akun lain melihat layar perbaikan.
-  const PB_H='Website sedang perbaikan',PB_P='Mohon maaf, website sedang dalam perbaikan untuk peningkatan layanan. Silakan kembali lagi nanti.';
+  const PB_H='Under Maintenance',PB_P='We are currently performing scheduled maintenance to improve our service. We apologize for the inconvenience and appreciate your patience. Please check back later.';
   const perbaikan=async()=>{try{const {data,error}=await window.__sb.from('cat_bayar').select('info').eq('id','perbaikan').maybeSingle();if(error)return true;return !(data&&data.info&&data.info.aktif===false);}catch(e){return true;}};
   const vvipKah=async()=>{try{const {data,error}=await window.__sb.rpc('cat_sudah_beli');return !error&&data===true;}catch(e){return false;}};
   window.__perbaikan=perbaikan;let pbT=null;
@@ -2232,12 +2232,12 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
     $('pindahinfo').textContent=`Soal yang Anda ubah lewat pojok kanan atas setiap soal: ${n} dipindahkan (⇄ Pindahkan), ${ne} diedit (✎ Edit). Tombolnya hanya terlihat oleh Anda, sedangkan perubahannya berlaku untuk semua pengguna dan tetap berlaku setelah bank diunggah ulang.`;}).catch(()=>{});}
   function admin(){
     pinfo();
-    // Mode perbaikan: pemilik menyalakan/mematikan layar "Website sedang perbaikan" untuk akun non-VVIP (situs utama dan Mock Exam).
+    // Mode perbaikan: pemilik menyalakan/mematikan layar "Under Maintenance" untuk akun non-VVIP (situs utama dan Mock Exam).
     {const tog=$('pbtog'),inf=$('pbinfo');let on=true;
-      const tulis=()=>{inf.innerHTML=on?'<b>AKTIF.</b> Akun selain VVIP Akses melihat layar "Website sedang perbaikan" (situs utama dan Mock Exam). Anda dan akun VVIP tetap bisa memakai situs seperti biasa.':'<b>Nonaktif.</b> Situs terbuka untuk semua akun seperti biasa.';
+      const tulis=()=>{inf.innerHTML=on?'<b>AKTIF.</b> Akun selain VVIP Akses melihat layar "Under Maintenance" (situs utama dan Mock Exam). Anda dan akun VVIP tetap bisa memakai situs seperti biasa.':'<b>Nonaktif.</b> Situs terbuka untuk semua akun seperti biasa.';
         tog.textContent=on?'Matikan mode perbaikan':'Aktifkan mode perbaikan';tog.disabled=false;};
       perbaikan().then(v=>{on=v;tulis();});
-      tog.onclick=async()=>{const ke=!on;if(!confirm(ke?'Aktifkan mode perbaikan? Akun selain VVIP Akses akan melihat layar "Website sedang perbaikan".':'Matikan mode perbaikan? Situs kembali terbuka untuk semua akun.'))return;
+      tog.onclick=async()=>{const ke=!on;if(!confirm(ke?'Aktifkan mode perbaikan? Akun selain VVIP Akses akan melihat layar "Under Maintenance".':'Matikan mode perbaikan? Situs kembali terbuka untuk semua akun.'))return;
         tog.disabled=true;const {error}=await window.__sb.from('cat_bayar').upsert({id:'perbaikan',info:{aktif:ke},diubah:new Date().toISOString()});
         if(error){alert('Gagal menyimpan: '+(error.message||error.code));tog.disabled=false;return;}on=await perbaikan();tulis();};}
 
