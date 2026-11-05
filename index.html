@@ -2,7 +2,7 @@
 <html lang="id" class="gate-wait">
 <head>
 <meta charset="utf-8">
-<meta name="versi-situs" content="20261105l">
+<meta name="versi-situs" content="20261105m">
 <script>try{var t=localStorage.getItem("cat-tema");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;}catch(e){}</script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Computer Assisted Test - LEX FEXORA.</title>
@@ -148,6 +148,8 @@ html.fokus .wrap>*:not(#timerbox):not(#card):not(#fsexit):not(#fbar){display:non
 /* iPhone: elemen fixed di dalam kartu yang digulir ikut terpotong/hilang di Safari iOS. Di mode fokus,
    nomor soal, lilin/gulungan, dan timer dipindah ke #fbar (di luar kartu) agar selalu terlihat. */
 html.fokus #fbar .qno,html.fokus #fbar .qkoin.melayang,html.fokus #fbar .timer{z-index:20}
+/* HP mode fokus: keterangan "N sec per question" di timer disembunyikan agar bar atas tetap satu baris. */
+@media(max-width:719px){html.fokus .timer small{display:none!important}}
 html.fokus .card .qhead{display:contents}html.fokus .card .qlbl,html.fokus .card .qfs,html.fokus .card .owntools,html.fokus .card .verdict,html.fokus .card .edbox,html.fokus .card .mvbox,html.fokus .card>p.note,html.fokus #fbar .qlbl{display:none!important}
 html.fokus .card .qno,
 html.fokus #fbar .qno{position:fixed;top:max(10px,env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);margin:0;height:38px;display:flex;align-items:center;padding:0 14px;border:1px solid var(--line);border-radius:999px;background:var(--bg);color:var(--ink);font-size:14px;font-variant-numeric:tabular-nums;z-index:2}
