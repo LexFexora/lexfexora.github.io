@@ -2,7 +2,7 @@
 <html lang="id" class="gate-wait">
 <head>
 <meta charset="utf-8">
-<meta name="versi-situs" content="20261105m">
+<meta name="versi-situs" content="20261105n">
 <script>try{var t=localStorage.getItem("cat-tema");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;}catch(e){}</script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Computer Assisted Test - LEX FEXORA.</title>
@@ -1688,6 +1688,8 @@ function bagNext(){if(state.ulang||state.sub==="all"||state.bag==="all"||state.b
 let siapCat=null;
 // Soal baru tampil setelah klaster dipilih dan Keep it ditekan (juga untuk pengguna baru tanpa pilihan tersimpan).
 function siapOK(){return siapCat===state.cat;}
+// Layar yang sedang dilihat peserta (untuk aktivitas langsung di panel pemilik): menu, layar Mulai, soal, atau skor akhir.
+window.__layar=()=>{if(!state.list.length||!siapOK()&&!(window.__gulTutup&&state.cat!=="all"))return "menu";if(state.pos>=state.list.length)return "skor";if(state.cat!=="all"&&!state.mulai)return "mulai";return "soal";};
 function timerActive(){return siapOK()&&state.mulai&&tmode()!=="off"&&state.cat!=="all"&&state.list.length&&!state.timeUp&&state.pos<state.list.length;}
 function syncQ(){const id=state.list[state.pos];if(id!==state.qId){state.qId=id;state.qLeft=sec();}}
 const TB=document.getElementById("timerbox");
@@ -2145,6 +2147,9 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
   // dan jawaban di sesi ini (nomor, id, huruf yang dipilih, benar/salah). Dikirim tiap 60 detik dan setiap kali ada perubahan (paling cepat tiap 4 detik).
   let QBY=null,QBn=0;const qby=id=>{if(!QBY||QBn!==QB.length){QBY={};QB.forEach(q=>{QBY[q.id]=q;});QBn=QB.length;}return QBY[id];};
   const polos=t=>String(t||'').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
+  // Waktu (jam perangkat peserta): sejak kapan di layar/soal ini (wq) dan kapan terakhir menjawab (wl). tn = jam saat dikirim, agar pemilik
+  // bisa menghitung durasi tanpa terpengaruh selisih jam perangkat.
+  let AKQ='',AKtq=0,AKn=-1,AKtl=0;
   function posisi(){try{const s=window.__quiz&&window.__quiz.state;if(!s||!s.list)return '';const c=s.cat;
     const cat=c==='all'?'Semua Kategori':(CATS[c]&&CATS[c].short)||'';const sub=c==='all'||s.sub==='all'?'Semua sub-materi':(SUBS[c]&&SUBS[c][s.sub-1])||'';
     const u=s.ulang,k=u?String(u.k||''):'';
@@ -2157,12 +2162,14 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
     // Paling banyak 100 jawaban terdekat dengan soal yang sedang tampil (sesi Latihan "Semua sub-materi" bisa ribuan soal).
     const no=Math.min(s.pos+1,N);if(j.length>100)j=j.slice().sort((a,z)=>Math.abs(a[0]-no)-Math.abs(z[0]-no)).slice(0,100).sort((a,z)=>a[0]-z[0]);
     const id=sl?'':s.list[s.pos]||'',q=id?qby(id):null,v=id?s.ans[id]:undefined;
-    return JSON.stringify({v:2,m,pk:u?String(u.label||''):'',c:cat,s:sub,bg,n:no,N,sl:sl?1:0,id,tq:q?polos(q.q).slice(0,220):'',
+    const ly=window.__layar?window.__layar():'soal',kq=k+'|'+c+'|'+s.sub+'|'+s.bag+'|'+ly+'|'+id,now=Date.now();if(kq!==AKQ){AKQ=kq;AKtq=now;}
+    const nj=b+x+h;if(AKn>=0&&nj>AKn)AKtl=now;AKn=nj;
+    return JSON.stringify({v:2,m,pk:u?String(u.label||''):'',c:cat,s:sub,bg,n:no,N,sl:sl?1:0,id,ly,wq:AKtq,wl:AKtl||null,tq:q?polos(q.q).slice(0,220):'',
       ja:v!==undefined?hf(id,v):(id&&s.expired&&s.expired[id]?'-':''),jo:v!==undefined&&q?(v===q.a?1:0):-1,jk:q&&(v!==undefined||(s.expired&&s.expired[id]))?hf(id,q.a):'',pm:id&&s.perm&&Array.isArray(s.perm[id])?s.perm[id]:null,vo:v===undefined?null:v,b,x,h,j,
-      fk:document.documentElement.classList.contains('fokus')?1:0});}catch(e){return '';}}
+      fk:document.documentElement.classList.contains('fokus')?1:0,tn:now});}catch(e){return '';}}
   function heartbeat(ref){let akhir=null,tAkhir=0;
     const kirim=paksa=>{if(document.hidden||!auth.currentUser||auth.currentUser.uid!==ref.id)return;const p=posisi(),now=Date.now();
-      if(!paksa&&(p===akhir?now-tAkhir<58000:now-tAkhir<4000))return;akhir=p;tAkhir=now;
+      const kp=p.replace(/,"tn":\d+\}$/,'}');if(!paksa&&(kp===akhir?now-tAkhir<58000:now-tAkhir<4000))return;akhir=kp;tAkhir=now;
       ref.update({terakhir:FV.serverTimestamp(),posisi:p}).catch(()=>{});};
     beat=setInterval(()=>kirim(false),5000);kirim(true);document.addEventListener('visibilitychange',()=>kirim(true));}
 
@@ -2392,29 +2399,36 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       const p=r.split(' · '),m=/^soal (\d+)\/(\d+)$/.exec(p[2]||'');return {lama:1,c:p[0]||'',s:p[1]||'',n:m?+m[1]:0,N:m?+m[2]:0};};
     // Mode sesi. Halaman versi lama tidak mengirim mode, jadi ditebak dari bentuk sesinya: Latihan memakai satu sub-materi atau seluruh soal
     // kategori (ratusan soal); Prediction Packages selalu Hukum Formil 100 soal; Category Packages paling banyak 100 soal; Vital Test Record 50 soal per PART.
-    const aktMode=a=>{if(!a)return '';if(!a.lama)return a.m||'';
+    // Durasi dari jam perangkat peserta: (sekarang − waktu tulis server) + (jam kirim − jam peristiwa) → tidak terpengaruh selisih jam perangkat.
+    const aktDur=(x,a,t)=>!t||!a||!a.tn||!x.terakhir||!x.terakhir.toDate?null:Math.max(0,(Date.now()-x.terakhir.toDate())+(a.tn-t));
+    const aktLama=ms=>{const m=Math.floor(ms/60000);return m<1?'<1 menit':m<60?m+' menit':Math.floor(m/60)+' jam'+(m%60?' '+m%60+' menit':'');};
+    const LAYAR={menu:'Di menu, belum membuka soal',mulai:'Di layar Start, belum menekan Start',soal:'Sedang membuka soal',skor:'Di layar skor akhir'};
+    const aktMode=a=>{if(!a)return '';if(a.ly==='menu')return 'Di menu';if(!a.lama)return a.m||'';
       if(a.c==='Semua Kategori'||a.s!=='Semua sub-materi'||!a.N||a.N>100)return 'Latihan per kategori';
       return (a.c==='Hukum Formil'&&a.N===100?'Prediction atau Category Packages':a.N<=50?'Category Packages atau Vital Test Record':'Category Packages')+' (perkiraan)';};
     const aktRingkas=x=>{const a=aktBaca(x);if(!a)return '';const m=aktMode(a);
-      return ` · <b class="akmode">${esc(m)}</b>${a.pk?' · '+esc(a.pk):a.c?' · '+esc(a.c):''}${a.sl?' · skor akhir':a.n&&a.N?` · soal ${a.n}/${a.N}`:''}`;};
+      return ` · <b class="akmode">${esc(m)}</b>${a.ly==='menu'?'':(a.pk?' · '+esc(a.pk):a.c?' · '+esc(a.c):'')+(a.sl?' · skor akhir':a.n&&a.N?` · soal ${a.n}/${a.N}`:'')}`;};
     const aktHtml=(id,x)=>{const a=aktBaca(x);if(!a)return '';const on=!!(x.terakhir&&x.terakhir.toDate&&Date.now()-x.terakhir.toDate()<180000);
-      const lbl=[aktMode(a).replace(' (perkiraan)','?'),a.c].filter(Boolean).join(' · ')||'Aktivitas';
+      const lbl=[aktMode(a).replace(' (perkiraan)','?'),a.ly==='menu'?'':a.c].filter(Boolean).join(' · ')||'Aktivitas';
       const q=a.id?(QB.find(z=>z.id===a.id)||null):null,tq=q?String(q.q||'').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim():(a.tq||'');
       const baris=[];
       if(a.m||a.lama)baris.push(`<div class="akr"><span>Mode</span><b>${esc(aktMode(a))}</b></div>`);
       if(a.pk)baris.push(`<div class="akr"><span>Paket</span><b>${esc(a.pk)}</b></div>`);
-      if(a.c)baris.push(`<div class="akr"><span>Materi</span><b>${esc(a.c)}${a.s?' · '+esc(a.s):''}${a.bg?' · '+esc(a.bg):''}</b></div>`);
-      if(a.N&&(a.n||a.sl))baris.push(`<div class="akr"><span>${on?'Sedang di':'Terakhir di'}</span><b>${a.sl?`Layar skor akhir (${a.N} soal)`:`Soal ke-${a.n} dari ${a.N}`}${a.id?` · <code>${esc(a.id)}</code>`:''}</b></div>`);
-      if(tq)baris.push(`<div class="aksoal">${esc(tq.length>220?tq.slice(0,220)+'…':tq)}`+(a.ja===undefined?'':a.ja==='-'?' <i class="akj no">waktu habis</i>':a.ja?` <i class="akj ${a.jo===1?'ok':'no'}">dijawab ${esc(a.ja)} ${a.jo===1?'✓ benar':'✕ salah'}${a.jo!==1&&a.jk?` · kunci ${esc(a.jk)}`:''}</i>`:' <i class="akj">belum dijawab</i>')+`</div>`);
+      if(a.c)baris.push(`<div class="akr"><span>${a.ly==='menu'?'Pilihan terakhir':'Materi'}</span><b>${esc(a.c)}${a.s?' · '+esc(a.s):''}${a.bg?' · '+esc(a.bg):''}</b></div>`);
+      if(a.ly){const dq=aktDur(x,a,a.wq),dl=aktDur(x,a,a.wl);
+        baris.push(`<div class="akr"><span>Status</span><b>${esc(LAYAR[a.ly]||a.ly)}${dq!=null?` · sudah ${aktLama(dq)}`:''}</b></div>`);
+        baris.push(`<div class="akr"><span>Jawab terakhir</span><b>${dl!=null?aktLama(dl)+' lalu':'belum ada jawaban sejak halaman dibuka'}</b></div>`);}
+      if(a.ly!=='menu'&&a.N&&(a.n||a.sl))baris.push(`<div class="akr"><span>${on?'Sedang di':'Terakhir di'}</span><b>${a.sl?`Layar skor akhir (${a.N} soal)`:`Soal ke-${a.n} dari ${a.N}`}${a.id?` · <code>${esc(a.id)}</code>`:''}</b></div>`);
+      if(tq&&a.ly!=='menu'&&a.ly!=='mulai')baris.push(`<div class="aksoal">${esc(tq.length>220?tq.slice(0,220)+'…':tq)}`+(a.ja===undefined?'':a.ja==='-'?' <i class="akj no">waktu habis</i>':a.ja?` <i class="akj ${a.jo===1?'ok':'no'}">dijawab ${esc(a.ja)} ${a.jo===1?'✓ benar':'✕ salah'}${a.jo!==1&&a.jk?` · kunci ${esc(a.jk)}`:''}</i>`:' <i class="akj">belum dijawab</i>')+`</div>`);
       // Opsi sesuai urutan yang dilihat peserta (pm), dengan tanda pilihan peserta dan kunci (kunci hanya ditandai setelah ia menjawab).
-      if(q&&Array.isArray(q.o)&&q.o.length&&!a.lama){const pm=Array.isArray(a.pm)&&a.pm.length===q.o.length?a.pm:q.o.map((_,i)=>i),sdh=a.ja!==undefined&&a.ja!=='';
+      if(q&&Array.isArray(q.o)&&q.o.length&&!a.lama&&a.ly!=='menu'&&a.ly!=='mulai'){const pm=Array.isArray(a.pm)&&a.pm.length===q.o.length?a.pm:q.o.map((_,i)=>i),sdh=a.ja!==undefined&&a.ja!=='';
         baris.push(`<ol class="akops">${pm.map((oi,pi)=>{const pil=a.vo===oi||(a.vo==null&&a.ja&&a.ja!=='-'&&'ABCDEF'[pi]===a.ja),kc=oi===q.a;
           return `<li class="${pil?(kc?'pil ok':'pil no'):''}${kc&&sdh?' akkey':''}"><b>${'ABCDEF'[pi]}</b><span>${esc(String(q.o[oi]||'').replace(/<[^>]*>/g,' '))}</span>${pil?`<i>${kc?'✓ dipilih':'✕ dipilih'}</i>`:kc&&sdh?'<i>kunci</i>':''}</li>`;}).join('')}</ol>`);}
       if(a.lama)baris.push('<div class="akn">Peserta masih memakai halaman versi lama yang belum mengirim mode, nama paket, dan jawaban. Mode di atas hanya perkiraan dari jumlah soal sesinya. Rincian pasti muncul setelah halamannya dimuat ulang.</div>');
-      else{const dj=(a.b||0)+(a.x||0);
+      else if(a.ly!=='menu'){const dj=(a.b||0)+(a.x||0);
         baris.push(`<div class="akr"><span>Sesi ini</span><b>${dj} dijawab dari ${a.N} · <em class="ok">${a.b||0} benar</em> · <em class="no">${a.x||0} salah</em>${a.h?` · ${a.h} waktu habis`:''}${dj?` · ${Math.round((a.b||0)*100/dj)}%`:''}</b></div>`);
         if(a.j&&a.j.length)baris.push(`<div class="akpeta">${a.j.map(([n,qid,h,ok,v])=>`<span class="${ok===1?'ok':ok===2?'hb':'no'}${n===a.n&&!a.sl?' ini':''}" title="Soal ${n} · ${esc(qid)} · ${ok===2?'waktu habis':'jawab '+esc(h)+(ok?' (benar)':' (salah)')}${(()=>{const z=QB.find(y=>y.id===qid);return z&&z.o&&v!=null&&z.o[v]!=null?' · '+esc(String(z.o[v]).replace(/<[^>]*>/g,' ')):'';})()}">${n}<small>${ok===2?'⏱':esc(h)}</small></span>`).join('')}</div>`);}
-      return `<button class="kat" type="button" data-kat="${esc(id)}" aria-expanded="${katBuka.has(id)}">${esc(lbl)}${a.n&&a.N&&!a.sl?` · ${a.n}/${a.N}`:''}</button><span class="katd akt"${katBuka.has(id)?'':' hidden'}>${baris.join('')}</span>`;};
+      return `<button class="kat" type="button" data-kat="${esc(id)}" aria-expanded="${katBuka.has(id)}">${esc(lbl)}${a.n&&a.N&&!a.sl&&a.ly!=='menu'?` · ${a.n}/${a.N}`:''}</button><span class="katd akt"${katBuka.has(id)?'':' hidden'}>${baris.join('')}</span>`;};
     // Pojok kanan bawah (khusus pemilik, tampil juga saat mengerjakan soal): pengguna yang sedang online beserta mode, materi, dan progresnya.
     // Ketuk "N aktif" untuk melipat/membuka; ketuk nama untuk membuka rinciannya di panel persetujuan.
     let pojokTutup=false;try{pojokTutup=localStorage.getItem('pojok-tutup')==='1';}catch(e){}
@@ -2425,9 +2439,10 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       if(!w){w=document.createElement('div');w.id='pojokaktif';w.setAttribute('aria-live','polite');document.body.appendChild(w);}
       document.body.classList.add('adapojok');w.classList.toggle('tutup',pojokTutup);
       const baris=A.map(([id,x])=>{const a=aktBaca(x),nm=x.nama||String(x.email||'').split('@')[0],m=aktMode(a).replace(' (perkiraan)','?');
-        const mat=a?[a.pk||'',a.pk?'':a.c,a.pk||a.s==='Semua sub-materi'?'':a.s,a.pk?'':a.bg].filter(Boolean).join(' · '):'';
+        const mat=a&&a.ly!=='menu'?[a.pk||'',a.pk?'':a.c,a.pk||a.s==='Semua sub-materi'?'':a.s,a.pk?'':a.bg].filter(Boolean).join(' · '):'';
         const dj=a&&!a.lama?(a.b||0)+(a.x||0):0;
-        const pr=!a?'Belum memilih soal':a.sl?`Skor akhir · ${a.b||0} benar dari ${a.N}`:`Soal ${a.n||0}/${a.N||0}`+(dj?` · <em class="ok">✓${a.b||0}</em> <em class="no">✕${a.x||0}</em>`:'');
+        const dl=a?aktDur(x,a,a.wl):null;
+        const pr=!a||a.ly==='menu'?'Belum membuka soal':a.ly==='mulai'?'Di layar Start':a.sl?`Skor akhir · ${a.b||0} benar dari ${a.N}`:`Soal ${a.n||0}/${a.N||0}`+(dj?` · <em class="ok">✓${a.b||0}</em> <em class="no">✕${a.x||0}</em>`:'')+(dl!=null?` · jawab ${aktLama(dl)} lalu`:'');
         return `<button type="button" class="pjr" data-pj="${esc(id)}"><span class="pjav">${x.foto?`<img src="${esc(x.foto)}" alt="" referrerpolicy="no-referrer">`:esc((nm[0]||'?').toUpperCase())}</span>`+
           `<span class="pjtx"><b>${esc(nm)}</b>${m?`<span class="pjm">${esc(m)}</span>`:''}${mat?`<small>${esc(mat)}</small>`:''}<small>${pr}</small></span></button>`;}).join('');
       if(!w.dataset.pos)requestAnimationFrame(()=>pojokGeser(true));w.innerHTML=`<button type="button" class="pjh" aria-expanded="${!pojokTutup}"><i></i>${A.length}<em class="pjw"> aktif</em><span>${pojokTutup?'▴':'▾'}</span></button><div class="pjl"${pojokTutup?' hidden':''}>${baris}</div>`;
