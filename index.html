@@ -308,6 +308,27 @@ html.gate-wait .wrap{display:none}
 .adm .katd{flex-basis:100%;display:flex;flex-direction:column;gap:2px;padding:6px 10px;border-left:2px solid color-mix(in srgb,var(--brass) 55%,var(--line));font:12.5px/1.4 var(--f-sans,inherit);color:var(--ink);word-break:normal}
 .adm .katd span+span{color:var(--muted)}
 .adm .katd[hidden]{display:none}
+/* Pengguna aktif di pojok kanan bawah (khusus pemilik). */
+#pojokaktif{position:fixed;right:16px;bottom:16px;z-index:9400;width:min(300px,calc(100vw - 32px));display:flex;flex-direction:column;align-items:flex-end;gap:6px;font:13px/1.35 "Public Sans",system-ui,sans-serif;color:var(--ink,#111)}
+#pojokaktif .pjh,#pojokaktif .pjl{background:color-mix(in srgb,var(--surface,#fff) 88%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid color-mix(in srgb,var(--brass,#9a6b12) 45%,var(--line,#ccc));box-shadow:0 8px 26px rgb(0 0 0 / .22)}
+#pojokaktif .pjh{font:inherit;font-weight:700;color:inherit;cursor:pointer;display:inline-flex;align-items:center;gap:7px;padding:6px 12px;border-radius:999px}
+#pojokaktif .pjh i{width:8px;height:8px;border-radius:50%;background:#16a34a;box-shadow:0 0 0 3px rgb(22 163 74 / .2)}
+#pojokaktif .pjh span{font-size:11px;opacity:.7}
+#pojokaktif .pjl{width:100%;box-sizing:border-box;max-height:min(46vh,340px);overflow-y:auto;overscroll-behavior:contain;border-radius:14px;padding:4px}
+#pojokaktif .pjl[hidden]{display:none}
+#pojokaktif .pjr{all:unset;box-sizing:border-box;width:100%;display:flex;gap:9px;align-items:flex-start;padding:7px 8px;border-radius:10px;cursor:pointer}
+#pojokaktif .pjr+.pjr{border-top:1px solid var(--line,#ddd)}
+#pojokaktif .pjr:hover,#pojokaktif .pjr:focus-visible{background:color-mix(in srgb,var(--brass,#9a6b12) 12%,transparent)}
+#pojokaktif .pjav{flex:none;width:30px;height:30px;border-radius:50%;overflow:hidden;display:grid;place-items:center;background:var(--accent,#0f5a3a);color:#fff;font-weight:700;font-size:13px}
+#pojokaktif .pjav img{width:100%;height:100%;object-fit:cover}
+#pojokaktif .pjtx{min-width:0;flex:1;display:flex;flex-direction:column}
+#pojokaktif .pjtx b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#pojokaktif .pjm{color:var(--brass,#9a6b12);font-weight:700;font-size:12px}
+#pojokaktif small{color:var(--muted,#666);font-size:11.5px;overflow-wrap:anywhere}
+#pojokaktif em{font-style:normal;font-weight:700}#pojokaktif em.ok{color:var(--ok,#17733f)}#pojokaktif em.no{color:var(--bad,#b3261e)}
+@media(min-width:601px){body.adapojok #lgtoast{right:332px}}
+@media(max-width:600px){#pojokaktif{right:12px;width:min(270px,calc(100vw - 24px))}#pojokaktif .pjl{max-height:34vh}}
+@media print{#pojokaktif{display:none!important}}
 .adm li .dur .akmode{color:var(--brass);font-weight:700}
 .adm button.kat[data-kat]{white-space:normal;text-align:left;max-width:100%}
 .adm .katd.akt{min-width:0;max-width:100%;box-sizing:border-box}.adm .katd.akt .akr>b,.adm .katd.akt .aksoal{min-width:0;overflow-wrap:anywhere}
@@ -2347,11 +2368,35 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
         baris.push(`<div class="akr"><span>Sesi ini</span><b>${dj} dijawab dari ${a.N} · <em class="ok">${a.b||0} benar</em> · <em class="no">${a.x||0} salah</em>${a.h?` · ${a.h} waktu habis`:''}${dj?` · ${Math.round((a.b||0)*100/dj)}%`:''}</b></div>`);
         if(a.j&&a.j.length)baris.push(`<div class="akpeta">${a.j.map(([n,qid,h,ok])=>`<span class="${ok===1?'ok':ok===2?'hb':'no'}${n===a.n&&!a.sl?' ini':''}" title="Soal ${n} · ${esc(qid)} · ${ok===2?'waktu habis':'jawab '+esc(h)+(ok?' (benar)':' (salah)')}">${n}<small>${ok===2?'⏱':esc(h)}</small></span>`).join('')}</div>`);}
       return `<button class="kat" type="button" data-kat="${esc(id)}" aria-expanded="${katBuka.has(id)}">${esc(lbl)}${a.n&&a.N&&!a.sl?` · ${a.n}/${a.N}`:''}</button><span class="katd akt"${katBuka.has(id)?'':' hidden'}>${baris.join('')}</span>`;};
+    // Pojok kanan bawah (khusus pemilik, tampil juga saat mengerjakan soal): pengguna yang sedang online beserta mode, materi, dan progresnya.
+    // Ketuk "N aktif" untuk melipat/membuka; ketuk nama untuk membuka rinciannya di panel persetujuan.
+    let pojokTutup=false;try{pojokTutup=localStorage.getItem('pojok-tutup')==='1';}catch(e){}
+    const pojokRender=list=>{const me=auth.currentUser&&auth.currentUser.uid,
+        A=list.filter(([id,x])=>id!==me&&x.terakhir&&x.terakhir.toDate&&Date.now()-x.terakhir.toDate()<180000);
+      let w=document.getElementById('pojokaktif');
+      if(!A.length){if(w)w.remove();document.body.classList.remove('adapojok');return;}
+      if(!w){w=document.createElement('div');w.id='pojokaktif';w.setAttribute('aria-live','polite');document.body.appendChild(w);}
+      document.body.classList.add('adapojok');w.classList.toggle('tutup',pojokTutup);
+      const baris=A.map(([id,x])=>{const a=aktBaca(x),nm=x.nama||String(x.email||'').split('@')[0],m=aktMode(a).replace(' (perkiraan)','?');
+        const mat=a?[a.pk||'',a.pk?'':a.c,a.pk||a.s==='Semua sub-materi'?'':a.s,a.pk?'':a.bg].filter(Boolean).join(' · '):'';
+        const dj=a&&!a.lama?(a.b||0)+(a.x||0):0;
+        const pr=!a?'Belum memilih soal':a.sl?`Skor akhir · ${a.b||0} benar dari ${a.N}`:`Soal ${a.n||0}/${a.N||0}`+(dj?` · <em class="ok">✓${a.b||0}</em> <em class="no">✕${a.x||0}</em>`:'');
+        return `<button type="button" class="pjr" data-pj="${esc(id)}"><span class="pjav">${x.foto?`<img src="${esc(x.foto)}" alt="" referrerpolicy="no-referrer">`:esc((nm[0]||'?').toUpperCase())}</span>`+
+          `<span class="pjtx"><b>${esc(nm)}</b>${m?`<span class="pjm">${esc(m)}</span>`:''}${mat?`<small>${esc(mat)}</small>`:''}<small>${pr}</small></span></button>`;}).join('');
+      w.innerHTML=`<button type="button" class="pjh" aria-expanded="${!pojokTutup}"><i></i>${A.length} aktif<span>${pojokTutup?'▴':'▾'}</span></button><div class="pjl"${pojokTutup?' hidden':''}>${baris}</div>`;
+      w.querySelector('.pjh').onclick=()=>{pojokTutup=!pojokTutup;try{localStorage.setItem('pojok-tutup',pojokTutup?'1':'0');}catch(e){}pojokRender(list);};
+      w.querySelectorAll('[data-pj]').forEach(b=>b.onclick=()=>{const id=b.dataset.pj;emBuka.add(id);katBuka.add(id);if(document.documentElement.classList.contains('fokus')&&typeof fokus==='function')fokus(false);
+        const adm=$('adm');adm.open=true;if(izinQs)izinRender(izinQs);requestAnimationFrame(()=>{const el=adm.querySelector(`.kat[data-kat="${CSS.escape(id)}"]`)||adm;el.scrollIntoView({behavior:'smooth',block:'center'});});});
+      pojokGeser();};
+    // Saat mode fokus, tombol navigasi soal menempel di bawah layar: panel pojok naik di atasnya agar tidak menutupi Next.
+    const pojokGeser=()=>{const w=document.getElementById('pojokaktif');if(!w)return;const nav=document.documentElement.classList.contains('fokus')&&document.querySelector('#card .nav');
+      const h=nav?Math.max(0,innerHeight-nav.getBoundingClientRect().top):0;w.style.bottom=(h?h+10:16)+'px';};
+    addEventListener('resize',pojokGeser);new MutationObserver(pojokGeser).observe(document.documentElement,{attributes:true,attributeFilter:['class']});
     const izinRender=qs=>{izinQs=qs;const g={menunggu:[],disetujui:[],ditolak:[]};let on=0;
       qs.forEach(d=>{const x=d.data();(g[x.status]||g.menunggu).push([d.id,x]);if(x.status==='disetujui'&&x.terakhir&&x.terakhir.toDate&&Date.now()-x.terakhir.toDate()<180000)on++;});
       for(const k in g)g[k].sort((a,b)=>((b[1].terakhir&&b[1].terakhir.seconds)||0)-((a[1].terakhir&&a[1].terakhir.seconds)||0));
       izinOK=g.disetujui.map(([,x])=>String(x.email||'').trim().toLowerCase()).filter(e=>/^[^@\s']+@[^@\s']+$/.test(e));
-      $('admcount').textContent=g.menunggu.length;$('admon').textContent=on;aksNama(g.disetujui);
+      $('admcount').textContent=g.menunggu.length;$('admon').textContent=on;aksNama(g.disetujui);pojokRender(g.disetujui);
       body.innerHTML=Object.keys(g).filter(k=>g[k].length).map(k=>`<h4>${TTL[k]} (${g[k].length})</h4><ul>`+g[k].map(([id,x])=>
         `<li><button class="siapa" type="button" data-u="${esc(id)}" aria-expanded="${emBuka.has(id)}" title="Ketuk untuk melihat email"><span class="av">${x.foto?`<img src="${esc(x.foto)}" alt="" referrerpolicy="no-referrer" onerror="this.replaceWith(document.createTextNode('${esc((x.nama||x.email||'?')[0].toUpperCase()).replace(/'/g,'')}'))">`:esc((x.nama||x.email||'?')[0].toUpperCase())}</span><span class="nm${BAYAR.has(id)?' lunas':''}"${BAYAR.has(id)?' title="Sudah bayar"':''}>${esc(x.nama||(x.email||'').split('@')[0])}</span>${BAYAR.has(id)?'<span class="lunaschip">VVIP · Lunas</span>':GRATIS.has(id)?'<span class="lunaschip gratis">VVIP</span>':x.jalur==='gratis'?'<span class="lunaschip gratis">Tautan</span>':''}${k==='disetujui'?(on=>`<span class="stt ${on?'on':'off'}">${on?'Online':'Offline'}</span>`)(!!(x.terakhir&&x.terakhir.toDate&&Date.now()-x.terakhir.toDate()<180000)):''}</button><span class="acts">${ACT[k].map(([v,l,c])=>`<button class="btn ${c}" data-id="${id}" data-v="${v}" type="button">${l}</button>`).join('')}${k==='disetujui'&&!BAYAR.has(id)?`<button class="btn" data-gratis="${esc(id)}" data-on="${GRATIS.has(id)?1:0}" type="button">${GRATIS.has(id)?'Cabut paket':'Paket gratis'}</button>`:''}</span>`+
         `<span class="em"${k==='disetujui'&&!emBuka.has(id)?' hidden':''}><span class="mail">${esc(x.email)}</span>${k==='disetujui'?`<button class="kat" type="button" data-skor="${esc(id)}" aria-expanded="${skorBuka.has(id)}">Skor</button>`:''}${k==='disetujui'?aktHtml(id,x):''}</span>${k==='disetujui'?`<div class="skord" data-skord="${esc(id)}"${skorBuka.has(id)?'':' hidden'}>${skorHtml(id,x)}</div>`:''}<span class="dur">${k==='menunggu'?'Meminta '+fmt(x.diminta):'Terakhir '+(fmt(x.terakhir)||'-')+(k==='disetujui'?aktRingkas(x):'')}</span></li>`).join('')+'</ul>').join('')||'<p class="note">Belum ada yang meminta akses.</p>';
