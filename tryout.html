@@ -465,11 +465,11 @@ auth.onAuthStateChanged(u=>{U=u;pMuat=false;aku=null;P={};if(unsubT){unsubT();un
 function posisiMock(){try{if(!T||!U||!Array.isArray(T.soal)||!T.soal.length)return "";const n=T.soal.length,sk=SINK(),J=(aku&&aku.jawab)||{},HL="ABCDEF";
   const hf=(q,v)=>{const p=acak(q.o.length,(sk?"":U.uid)+q.id),i=p.indexOf(v);return HL[i<0?v:i]||"?";};
   const sl=T.status==="selesai"||!!(aku&&aku.selesai)||(T.status==="mulai"&&selesaiSemua()),no=Math.min((sk?(T.idx||0):pos)+1,n);
-  let j=[],b=0,x=0;T.soal.forEach((q,i)=>{const v=J[q.id];if(v===undefined)return;const ok=v===q.a?1:0;ok?b++:x++;j.push([i+1,q.id,hf(q,v),ok]);});
+  let j=[],b=0,x=0;T.soal.forEach((q,i)=>{const v=J[q.id];if(v===undefined)return;const ok=v===q.a?1:0;ok?b++:x++;j.push([i+1,q.id,hf(q,v),ok,v]);});
   const q=T.status==="mulai"&&!sl?T.soal[no-1]:null,v=q?J[q.id]:undefined;
   const st={menunggu:"ruang tunggu",siap:"ruang tunggu",mulai:"sedang berjalan",selesai:"selesai"}[T.status]||"";
   return JSON.stringify({v:2,m:"Mock Exam",pk:(T.judul||"Mock Exam")+(st?" ("+st+")":""),c:"",s:"",bg:"",n:T.status==="mulai"?no:0,N:n,sl:sl?1:0,id:q?q.id:"",
-    tq:q?String(q.q||"").replace(/<[^>]*>/g," ").replace(/\s+/g," ").trim().slice(0,220):"",ja:v!==undefined?hf(q,v):"",jo:v!==undefined?(v===q.a?1:0):-1,jk:q&&v!==undefined?hf(q,q.a):"",
+    tq:q?String(q.q||"").replace(/<[^>]*>/g," ").replace(/\s+/g," ").trim().slice(0,220):"",ja:v!==undefined?hf(q,v):"",jo:v!==undefined?(v===q.a?1:0):-1,jk:q&&v!==undefined?hf(q,q.a):"",pm:q?acak(q.o.length,(sk?"":U.uid)+q.id):null,vo:v===undefined?null:v,
     b,x,h:0,j:j.slice(-100),fk:0});}catch(e){return "";}}
 let detakIzin=null;
 function detakIzinMulai(){if(detakIzin)return;let akhir=null,tA=0;

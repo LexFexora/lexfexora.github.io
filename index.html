@@ -2,7 +2,7 @@
 <html lang="id" class="gate-wait">
 <head>
 <meta charset="utf-8">
-<meta name="versi-situs" content="20261105k">
+<meta name="versi-situs" content="20261105l">
 <script>try{var t=localStorage.getItem("cat-tema");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;}catch(e){}</script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Computer Assisted Test - LEX FEXORA.</title>
@@ -353,6 +353,12 @@ html.gate-wait .wrap{display:none}
 .adm .katd.akt .aksoal{padding:6px 9px;border:1px solid var(--line);border-radius:6px;color:var(--ink);line-height:1.45}
 .adm .katd.akt .akj{display:inline-block;font-style:normal;font-size:11.5px;font-weight:600;padding:0 7px;border-radius:999px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
 .adm .katd.akt .akj.ok{color:var(--ok);background:var(--ok-soft);border-color:transparent}.adm .katd.akt .akj.no{color:var(--bad);background:var(--bad-soft);border-color:transparent}
+.adm .katd.akt .akops{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
+.adm .katd.akt .akops li{display:grid;grid-template-columns:22px 1fr auto;gap:8px;align-items:baseline;padding:5px 8px;border:1px solid var(--line);border-radius:6px;color:var(--ink);line-height:1.4}
+.adm .katd.akt .akops li b{color:var(--muted);font-weight:700}
+.adm .katd.akt .akops li i{font-style:normal;font-size:11px;font-weight:700;white-space:nowrap}
+.adm .katd.akt .akops li.pil.ok,.adm .katd.akt .akops li.akkey{border-color:var(--ok);background:var(--ok-soft)}.adm .katd.akt .akops li.pil.ok i,.adm .katd.akt .akops li.akkey i{color:var(--ok)}
+.adm .katd.akt .akops li.pil.no{border-color:var(--bad);background:var(--bad-soft)}.adm .katd.akt .akops li.pil.no i{color:var(--bad)}
 .adm .katd.akt .akn{color:var(--muted);font-size:12px}
 .adm .katd.akt .akpeta{display:flex;flex-wrap:wrap;gap:4px;margin-top:2px}
 .adm .katd.akt .akpeta span{min-width:34px;padding:2px 4px;border-radius:5px;text-align:center;font-size:11.5px;line-height:1.2;font-weight:600;display:flex;flex-direction:column;align-items:center}
@@ -2145,12 +2151,12 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
     const N=s.list.length,sl=N>0&&s.pos>=N,L='ABCDEF',hf=(id,v)=>{const p=s.perm&&s.perm[id],i=p?p.indexOf(v):v;return L[i<0?v:i]||'?';};
     let j=[],b=0,x=0,h=0;s.list.forEach((id,i)=>{const v=s.ans[id];
       if(v===undefined){if(s.expired&&s.expired[id]){h++;j.push([i+1,id,'',2]);}return;}
-      const q=qby(id),ok=q&&v===q.a?1:0;ok?b++:x++;j.push([i+1,id,hf(id,v),ok]);});
+      const q=qby(id),ok=q&&v===q.a?1:0;ok?b++:x++;j.push([i+1,id,hf(id,v),ok,v]);});
     // Paling banyak 100 jawaban terdekat dengan soal yang sedang tampil (sesi Latihan "Semua sub-materi" bisa ribuan soal).
     const no=Math.min(s.pos+1,N);if(j.length>100)j=j.slice().sort((a,z)=>Math.abs(a[0]-no)-Math.abs(z[0]-no)).slice(0,100).sort((a,z)=>a[0]-z[0]);
     const id=sl?'':s.list[s.pos]||'',q=id?qby(id):null,v=id?s.ans[id]:undefined;
     return JSON.stringify({v:2,m,pk:u?String(u.label||''):'',c:cat,s:sub,bg,n:no,N,sl:sl?1:0,id,tq:q?polos(q.q).slice(0,220):'',
-      ja:v!==undefined?hf(id,v):(id&&s.expired&&s.expired[id]?'-':''),jo:v!==undefined&&q?(v===q.a?1:0):-1,jk:q&&(v!==undefined||(s.expired&&s.expired[id]))?hf(id,q.a):'',b,x,h,j,
+      ja:v!==undefined?hf(id,v):(id&&s.expired&&s.expired[id]?'-':''),jo:v!==undefined&&q?(v===q.a?1:0):-1,jk:q&&(v!==undefined||(s.expired&&s.expired[id]))?hf(id,q.a):'',pm:id&&s.perm&&Array.isArray(s.perm[id])?s.perm[id]:null,vo:v===undefined?null:v,b,x,h,j,
       fk:document.documentElement.classList.contains('fokus')?1:0});}catch(e){return '';}}
   function heartbeat(ref){let akhir=null,tAkhir=0;
     const kirim=paksa=>{if(document.hidden||!auth.currentUser||auth.currentUser.uid!==ref.id)return;const p=posisi(),now=Date.now();
@@ -2398,10 +2404,14 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       if(a.c)baris.push(`<div class="akr"><span>Materi</span><b>${esc(a.c)}${a.s?' · '+esc(a.s):''}${a.bg?' · '+esc(a.bg):''}</b></div>`);
       if(a.N&&(a.n||a.sl))baris.push(`<div class="akr"><span>${on?'Sedang di':'Terakhir di'}</span><b>${a.sl?`Layar skor akhir (${a.N} soal)`:`Soal ke-${a.n} dari ${a.N}`}${a.id?` · <code>${esc(a.id)}</code>`:''}</b></div>`);
       if(tq)baris.push(`<div class="aksoal">${esc(tq.length>220?tq.slice(0,220)+'…':tq)}`+(a.ja===undefined?'':a.ja==='-'?' <i class="akj no">waktu habis</i>':a.ja?` <i class="akj ${a.jo===1?'ok':'no'}">dijawab ${esc(a.ja)} ${a.jo===1?'✓ benar':'✕ salah'}${a.jo!==1&&a.jk?` · kunci ${esc(a.jk)}`:''}</i>`:' <i class="akj">belum dijawab</i>')+`</div>`);
+      // Opsi sesuai urutan yang dilihat peserta (pm), dengan tanda pilihan peserta dan kunci (kunci hanya ditandai setelah ia menjawab).
+      if(q&&Array.isArray(q.o)&&q.o.length&&!a.lama){const pm=Array.isArray(a.pm)&&a.pm.length===q.o.length?a.pm:q.o.map((_,i)=>i),sdh=a.ja!==undefined&&a.ja!=='';
+        baris.push(`<ol class="akops">${pm.map((oi,pi)=>{const pil=a.vo===oi||(a.vo==null&&a.ja&&a.ja!=='-'&&'ABCDEF'[pi]===a.ja),kc=oi===q.a;
+          return `<li class="${pil?(kc?'pil ok':'pil no'):''}${kc&&sdh?' akkey':''}"><b>${'ABCDEF'[pi]}</b><span>${esc(String(q.o[oi]||'').replace(/<[^>]*>/g,' '))}</span>${pil?`<i>${kc?'✓ dipilih':'✕ dipilih'}</i>`:kc&&sdh?'<i>kunci</i>':''}</li>`;}).join('')}</ol>`);}
       if(a.lama)baris.push('<div class="akn">Peserta masih memakai halaman versi lama yang belum mengirim mode, nama paket, dan jawaban. Mode di atas hanya perkiraan dari jumlah soal sesinya. Rincian pasti muncul setelah halamannya dimuat ulang.</div>');
       else{const dj=(a.b||0)+(a.x||0);
         baris.push(`<div class="akr"><span>Sesi ini</span><b>${dj} dijawab dari ${a.N} · <em class="ok">${a.b||0} benar</em> · <em class="no">${a.x||0} salah</em>${a.h?` · ${a.h} waktu habis`:''}${dj?` · ${Math.round((a.b||0)*100/dj)}%`:''}</b></div>`);
-        if(a.j&&a.j.length)baris.push(`<div class="akpeta">${a.j.map(([n,qid,h,ok])=>`<span class="${ok===1?'ok':ok===2?'hb':'no'}${n===a.n&&!a.sl?' ini':''}" title="Soal ${n} · ${esc(qid)} · ${ok===2?'waktu habis':'jawab '+esc(h)+(ok?' (benar)':' (salah)')}">${n}<small>${ok===2?'⏱':esc(h)}</small></span>`).join('')}</div>`);}
+        if(a.j&&a.j.length)baris.push(`<div class="akpeta">${a.j.map(([n,qid,h,ok,v])=>`<span class="${ok===1?'ok':ok===2?'hb':'no'}${n===a.n&&!a.sl?' ini':''}" title="Soal ${n} · ${esc(qid)} · ${ok===2?'waktu habis':'jawab '+esc(h)+(ok?' (benar)':' (salah)')}${(()=>{const z=QB.find(y=>y.id===qid);return z&&z.o&&v!=null&&z.o[v]!=null?' · '+esc(String(z.o[v]).replace(/<[^>]*>/g,' ')):'';})()}">${n}<small>${ok===2?'⏱':esc(h)}</small></span>`).join('')}</div>`);}
       return `<button class="kat" type="button" data-kat="${esc(id)}" aria-expanded="${katBuka.has(id)}">${esc(lbl)}${a.n&&a.N&&!a.sl?` · ${a.n}/${a.N}`:''}</button><span class="katd akt"${katBuka.has(id)?'':' hidden'}>${baris.join('')}</span>`;};
     // Pojok kanan bawah (khusus pemilik, tampil juga saat mengerjakan soal): pengguna yang sedang online beserta mode, materi, dan progresnya.
     // Ketuk "N aktif" untuk melipat/membuka; ketuk nama untuk membuka rinciannya di panel persetujuan.
