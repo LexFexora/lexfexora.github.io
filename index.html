@@ -2,7 +2,7 @@
 <html lang="id" class="gate-wait">
 <head>
 <meta charset="utf-8">
-<meta name="versi-situs" content="20261105i">
+<meta name="versi-situs" content="20261105j">
 <script>try{var t=localStorage.getItem("cat-tema");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;}catch(e){}</script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Computer Assisted Test - LEX FEXORA.</title>
@@ -330,9 +330,9 @@ html.gate-wait .wrap{display:none}
 @media(max-width:600px){#pojokaktif{right:12px;width:min(270px,calc(100vw - 24px))}#pojokaktif .pjl{max-height:34vh}}
 @media print{#pojokaktif{display:none!important}}
 #pojokaktif.hp{left:12px;right:auto;width:min(270px,calc(100vw - 24px));align-items:flex-start;flex-direction:column-reverse}
-#pojokaktif.hp.sejajar{transform:translateY(-50%)}
-#pojokaktif.hp .pjh{padding:5px 9px;font-size:12.5px;gap:5px}#pojokaktif.hp .pjw{display:none}#pojokaktif .pjh em.pjw{font-style:normal;font-weight:inherit;color:inherit}
-#pojokaktif.hp.sejajar .pjl{position:absolute;left:0;bottom:calc(100% + 6px)}
+
+#pojokaktif.hp .pjh{padding:0 8px;height:28px;font-size:12.5px;gap:6px;opacity:.9}#pojokaktif.hp .pjw,#pojokaktif.hp .pjh span{display:none}#pojokaktif .pjh em.pjw{font-style:normal;font-weight:inherit;color:inherit}
+#pojokaktif.hp.sejajar .pjl{position:absolute;left:0;bottom:calc(100% + 10px)}
 #pojokaktif.hp.bawah .pjl{bottom:auto!important;top:calc(100% + 6px)}
 
 .adm li .dur .akmode{color:var(--brass);font-weight:700}
@@ -2423,10 +2423,11 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
     const pojokGeser=(paksa)=>{const w=document.getElementById('pojokaktif');if(!w)return;
       const kunci=innerWidth+'x'+innerHeight+'|'+document.documentElement.classList.contains('fokus');if(paksa!==true&&kunci===pojokKunci&&w.dataset.pos)return;if(paksa!==true&&pojokKunci&&kunci!==pojokKunci)setTimeout(()=>pojokGeser(true),450);pojokKunci=kunci;w.dataset.pos='1';const nav=document.documentElement.classList.contains('fokus')&&document.querySelector('#card .nav');
       const h=nav?Math.max(0,innerHeight-nav.getBoundingClientRect().top):0,batas=innerHeight-h,hp=innerWidth<=600;w.classList.toggle('hp',hp);
-      const sejajar=false,rr=null;
-      document.body.classList.toggle('pojokrow',sejajar);w.classList.toggle('sejajar',sejajar);
-      if(sejajar){w.style.top=Math.round(rr.top+rr.height/2)+'px';w.style.bottom='auto';w.classList.toggle('bawah',rr.top<innerHeight*.4);}
-      else{w.style.top='auto';w.style.bottom=(h?h+10:16)+'px';w.classList.remove('bawah');}};
+      // Mode fokus di HP: penanda kecil di celah kiri tombol Previous, sejajar tengah tombol itu. Bila celahnya terlalu sempit, di atas tombol.
+      const pv=hp&&nav&&document.getElementById('prev'),pr=pv&&pv.getBoundingClientRect(),pjh=w.querySelector('.pjh'),pw=pjh?pjh.offsetWidth:44,ph=pjh?pjh.offsetHeight:28;
+      w.style.top='auto';w.classList.remove('bawah','sejajar');w.style.left='';
+      if(pr&&pr.width&&pr.left>=pw+6){w.classList.add('sejajar');w.style.left=Math.round((pr.left-pw)/2)+'px';w.style.bottom=Math.round(innerHeight-pr.bottom+(pr.height-ph)/2)+'px';}
+      else w.style.bottom=(h?h+10:16)+'px';};
     addEventListener('resize',pojokGeser);new MutationObserver(pojokGeser).observe(document.documentElement,{attributes:true,attributeFilter:['class']});
     const izinRender=qs=>{izinQs=qs;const g={menunggu:[],disetujui:[],ditolak:[]};let on=0;
       qs.forEach(d=>{const x=d.data();(g[x.status]||g.menunggu).push([d.id,x]);if(x.status==='disetujui'&&x.terakhir&&x.terakhir.toDate&&Date.now()-x.terakhir.toDate()<180000)on++;});
