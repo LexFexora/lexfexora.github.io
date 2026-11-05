@@ -307,6 +307,21 @@ html.gate-wait .wrap{display:none}
 .adm .katd{flex-basis:100%;display:flex;flex-direction:column;gap:2px;padding:6px 10px;border-left:2px solid color-mix(in srgb,var(--brass) 55%,var(--line));font:12.5px/1.4 var(--f-sans,inherit);color:var(--ink);word-break:normal}
 .adm .katd span+span{color:var(--muted)}
 .adm .katd[hidden]{display:none}
+.adm .katd.akt{gap:5px;padding:8px 12px;font-family:"Public Sans",system-ui,sans-serif}
+.adm .katd.akt .akr{display:grid;grid-template-columns:84px 1fr;gap:8px;align-items:baseline}
+.adm .katd.akt .akr>span{color:var(--muted);font-size:11.5px;text-transform:uppercase;letter-spacing:.04em}
+.adm .katd.akt .akr>b{font-weight:600;color:var(--ink)}
+.adm .katd.akt code{font-size:11.5px;padding:1px 5px;border:1px solid var(--line);border-radius:4px}
+.adm .katd.akt em{font-style:normal}.adm .katd.akt em.ok{color:var(--ok)}.adm .katd.akt em.no{color:var(--bad)}
+.adm .katd.akt .aksoal{padding:6px 9px;border:1px solid var(--line);border-radius:6px;color:var(--ink);line-height:1.45}
+.adm .katd.akt .akj{display:inline-block;font-style:normal;font-size:11.5px;font-weight:600;padding:0 7px;border-radius:999px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.adm .katd.akt .akj.ok{color:var(--ok);background:var(--ok-soft);border-color:transparent}.adm .katd.akt .akj.no{color:var(--bad);background:var(--bad-soft);border-color:transparent}
+.adm .katd.akt .akn{color:var(--muted);font-size:12px}
+.adm .katd.akt .akpeta{display:flex;flex-wrap:wrap;gap:4px;margin-top:2px}
+.adm .katd.akt .akpeta span{min-width:34px;padding:2px 4px;border-radius:5px;text-align:center;font-size:11.5px;line-height:1.2;font-weight:600;display:flex;flex-direction:column;align-items:center}
+.adm .katd.akt .akpeta span small{font-size:10px;font-weight:500;opacity:.85}
+.adm .katd.akt .akpeta .ok{background:var(--ok-soft);color:var(--ok)}.adm .katd.akt .akpeta .no{background:var(--bad-soft);color:var(--bad)}.adm .katd.akt .akpeta .hb{background:transparent;border:1px dashed var(--line);color:var(--muted)}
+.adm .katd.akt .akpeta .ini{outline:2px solid var(--brass);outline-offset:1px}
 .adm .skord{flex-basis:100%;padding:6px 0 4px 38px;font:12.5px/1.4 var(--f-sans,inherit);color:var(--ink)}
 .adm .skord[hidden]{display:none}
 .adm .skord h5{margin:8px 0 4px;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
@@ -2061,11 +2076,30 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
     try{const arr=await loadBank();QB.push(...arr);await progres();startQuiz();open();tryoutKartu();paketKartu();try{window.__serapMock&&window.__serapMock();}catch(e){}}
     catch(e){started=false;if(isOwner){open();$('adm').open=true;$('adm').scrollIntoView();return;}show(e.message==='kosong'?'The question bank has not been uploaded yet':'Could not load the question bank',e.message==='kosong'?'The owner needs to upload the question bank from the approval panel.':'Check your connection, then reload the page. ('+(e.code||e.message)+')',null,false,true);}
   }
-  function posisi(){try{const s=window.__quiz&&window.__quiz.state;if(!s)return '';const c=s.cat;
+  // Aktivitas langsung untuk panel pemilik (izin/<uid>.posisi, teks JSON): mode, paket/bagian, sub-materi, soal yang sedang tampil,
+  // dan jawaban di sesi ini (nomor, id, huruf yang dipilih, benar/salah). Dikirim tiap 60 detik dan setiap kali ada perubahan (paling cepat tiap 4 detik).
+  let QBY=null,QBn=0;const qby=id=>{if(!QBY||QBn!==QB.length){QBY={};QB.forEach(q=>{QBY[q.id]=q;});QBn=QB.length;}return QBY[id];};
+  const polos=t=>String(t||'').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
+  function posisi(){try{const s=window.__quiz&&window.__quiz.state;if(!s||!s.list)return '';const c=s.cat;
     const cat=c==='all'?'Semua Kategori':(CATS[c]&&CATS[c].short)||'';const sub=c==='all'||s.sub==='all'?'Semua sub-materi':(SUBS[c]&&SUBS[c][s.sub-1])||'';
-    return cat+' · '+sub+' · soal '+(s.list.length?s.pos+1:0)+'/'+s.list.length;}catch(e){return '';}}
-  function heartbeat(ref){const tick=()=>{if(document.hidden)return;ref.update({terakhir:FV.serverTimestamp(),posisi:posisi()}).catch(()=>{});};
-    beat=setInterval(tick,60000);tick();document.addEventListener('visibilitychange',tick);}
+    const u=s.ulang,k=u?String(u.k||''):'';
+    const m=!u?'Latihan per kategori':/^paket\|ar-/.test(k)?'Vital Test Record':/^paket\|\d+$/.test(k)?'Prediction Packages':/^paket\|k/.test(k)?'Category Packages':'Ulangi soal';
+    const bg=!u&&s.sub!=='all'&&s.bag!=='all'?(s.bag==='bonus'?'Soal Bonus':'Part '+s.bag):'';
+    const N=s.list.length,sl=N>0&&s.pos>=N,L='ABCDEF',hf=(id,v)=>{const p=s.perm&&s.perm[id],i=p?p.indexOf(v):v;return L[i<0?v:i]||'?';};
+    let j=[],b=0,x=0,h=0;s.list.forEach((id,i)=>{const v=s.ans[id];
+      if(v===undefined){if(s.expired&&s.expired[id]){h++;j.push([i+1,id,'',2]);}return;}
+      const q=qby(id),ok=q&&v===q.a?1:0;ok?b++:x++;j.push([i+1,id,hf(id,v),ok]);});
+    // Paling banyak 100 jawaban terdekat dengan soal yang sedang tampil (sesi Latihan "Semua sub-materi" bisa ribuan soal).
+    const no=Math.min(s.pos+1,N);if(j.length>100)j=j.slice().sort((a,z)=>Math.abs(a[0]-no)-Math.abs(z[0]-no)).slice(0,100).sort((a,z)=>a[0]-z[0]);
+    const id=sl?'':s.list[s.pos]||'',q=id?qby(id):null,v=id?s.ans[id]:undefined;
+    return JSON.stringify({v:2,m,pk:u?String(u.label||''):'',c:cat,s:sub,bg,n:no,N,sl:sl?1:0,id,tq:q?polos(q.q).slice(0,220):'',
+      ja:v!==undefined?hf(id,v):(id&&s.expired&&s.expired[id]?'-':''),jo:v!==undefined&&q?(v===q.a?1:0):-1,jk:q&&(v!==undefined||(s.expired&&s.expired[id]))?hf(id,q.a):'',b,x,h,j,
+      fk:document.documentElement.classList.contains('fokus')?1:0});}catch(e){return '';}}
+  function heartbeat(ref){let akhir=null,tAkhir=0;
+    const kirim=paksa=>{if(document.hidden||!auth.currentUser||auth.currentUser.uid!==ref.id)return;const p=posisi(),now=Date.now();
+      if(!paksa&&(p===akhir?now-tAkhir<58000:now-tAkhir<4000))return;akhir=p;tAkhir=now;
+      ref.update({terakhir:FV.serverTimestamp(),posisi:p}).catch(()=>{});};
+    beat=setInterval(()=>kirim(false),5000);kirim(true);document.addEventListener('visibilitychange',()=>kirim(true));}
 
   function akunku(u){const k=$('akunku');if(!k)return;k.hidden=!u;if($('exitbawah'))$('exitbawah').hidden=!u;if(!u)return;const nama=u.displayName||(u.email||'').split('@')[0],av=$('akunav');
     av.textContent='';if(u.photoURL){const im=new Image();im.alt='';im.referrerPolicy='no-referrer';im.src=u.photoURL;im.onerror=()=>{av.textContent=(nama[0]||'?').toUpperCase();};av.appendChild(im);}else av.textContent=(nama[0]||'?').toUpperCase();
@@ -2252,7 +2286,9 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       return [...S.values()].sort((a,b)=>a.c-b.c||a.s-b.s);};
     const skorHtml=(uid,x)=>{if(!skorBuka.has(uid))return '';if(PROG.__err)return `<p class="skt">Gagal membaca riwayat (${esc(PROG.__err)}). Jalankan dulu SQL izin baca progres di Supabase.</p>`;
       if(!PROG.__ok)return '<p class="skt">Memuat riwayat…</p>';const L=skorData(uid);
-      if(!L.length)return '<p class="skt">Belum ada soal yang dikerjakan.</p>';let cat=0;
+      if(!L.length){const lain=Object.keys(PROG).filter(k=>!/^__/.test(k)&&k!==(auth.currentUser&&auth.currentUser.uid)).length,a=aktBaca(x),dj=a&&!a.lama?(a.b||0)+(a.x||0):0;
+        return `<p class="skt">${!(uid in PROG)&&!lain?'Riwayat pengguna lain tidak terbaca: izin baca untuk pemilik belum aktif. Jalankan <b>sb/supabase-update-14.sql</b> di Supabase, lalu buka Skor lagi.':!(uid in PROG)?'Akun ini belum punya riwayat tersimpan di server.':'Belum ada soal yang tersimpan di riwayat akun ini.'}`+
+          (dj?` Sesi yang sedang dibuka sudah berisi ${dj} jawaban; rinciannya ada di tombol aktivitas di sebelah Skor.`:'')+'</p>';}let cat=0;
       return '<p class="skt">Benar = pernah dijawab benar dari soal yang pernah dikerjakan.</p>'+L.map(r=>{const tot=QB.filter(q=>q.mappings.some(m=>m.c===r.c&&m.s===r.s)).length,pc=Math.round(r.ok*100/r.all.length),
         h=r.c!==cat?`<h5>${esc(CATS[r.c].short)}</h5>`:'';cat=r.c;
         return h+`<div class="skr"><span class="snm">${r.s}. ${esc(SUBS[r.c][r.s-1])}</span><span class="snl"><b>${r.ok}</b>/${r.all.length} benar · ${pc}% · dikerjakan ${r.all.length} dari ${tot}</span>`+
@@ -2285,6 +2321,24 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       $('asnpenuh').textContent='('+G.penuh.length+')';$('asnbatas').textContent='('+G.terbatas.length+')';
       document.querySelectorAll('#aksesub .aschip').forEach(b=>b.onclick=()=>{const ke=b.dataset.ke;if(!confirm('Pindahkan '+b.textContent.replace(/ otomatis| [↑↓]/g,'').trim()+' ke Akses '+ke+'?'))return;b.disabled=true;
         db.doc('izin/'+b.dataset.asu).update({sub:ke}).catch(e=>{alert('Gagal: '+(e.code||e.message));b.disabled=false;});});};
+    // Aktivitas langsung (posisi dari halaman peserta). Format baru = teks JSON berisi mode, paket, soal kini, dan jawaban sesi ini;
+    // format lama "Kategori · Sub · soal n/N" (peserta yang belum memuat ulang halaman) tetap ditampilkan seadanya.
+    const aktBaca=x=>{const r=String(x.posisi||'');if(!r)return null;if(r[0]==='{'){try{return JSON.parse(r);}catch(e){return null;}}
+      const p=r.split(' · '),m=/^soal (\d+)\/(\d+)$/.exec(p[2]||'');return {lama:1,c:p[0]||'',s:p[1]||'',n:m?+m[1]:0,N:m?+m[2]:0};};
+    const aktHtml=(id,x)=>{const a=aktBaca(x);if(!a)return '';const on=!!(x.terakhir&&x.terakhir.toDate&&Date.now()-x.terakhir.toDate()<180000);
+      const lbl=[a.m&&a.m!=='Latihan per kategori'?a.m:'',a.c].filter(Boolean).join(' · ')||'Aktivitas';
+      const q=a.id?(QB.find(z=>z.id===a.id)||null):null,tq=q?String(q.q||'').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim():(a.tq||'');
+      const baris=[];
+      if(a.m)baris.push(`<div class="akr"><span>Mode</span><b>${esc(a.m)}</b></div>`);
+      if(a.pk)baris.push(`<div class="akr"><span>Paket</span><b>${esc(a.pk)}</b></div>`);
+      if(a.c)baris.push(`<div class="akr"><span>Materi</span><b>${esc(a.c)}${a.s?' · '+esc(a.s):''}${a.bg?' · '+esc(a.bg):''}</b></div>`);
+      if(a.N&&(a.n||a.sl))baris.push(`<div class="akr"><span>${on?'Sedang di':'Terakhir di'}</span><b>${a.sl?`Layar skor akhir (${a.N} soal)`:`Soal ke-${a.n} dari ${a.N}`}${a.id?` · <code>${esc(a.id)}</code>`:''}</b></div>`);
+      if(tq)baris.push(`<div class="aksoal">${esc(tq.length>220?tq.slice(0,220)+'…':tq)}`+(a.ja===undefined?'':a.ja==='-'?' <i class="akj no">waktu habis</i>':a.ja?` <i class="akj ${a.jo===1?'ok':'no'}">dijawab ${esc(a.ja)} ${a.jo===1?'✓ benar':'✕ salah'}${a.jo!==1&&a.jk?` · kunci ${esc(a.jk)}`:''}</i>`:' <i class="akj">belum dijawab</i>')+`</div>`);
+      if(a.lama)baris.push('<div class="akn">Peserta masih memakai halaman versi lama, jadi detail jawaban belum terkirim. Detail muncul setelah halamannya dimuat ulang.</div>');
+      else{const dj=(a.b||0)+(a.x||0);
+        baris.push(`<div class="akr"><span>Sesi ini</span><b>${dj} dijawab dari ${a.N} · <em class="ok">${a.b||0} benar</em> · <em class="no">${a.x||0} salah</em>${a.h?` · ${a.h} waktu habis`:''}${dj?` · ${Math.round((a.b||0)*100/dj)}%`:''}</b></div>`);
+        if(a.j&&a.j.length)baris.push(`<div class="akpeta">${a.j.map(([n,qid,h,ok])=>`<span class="${ok===1?'ok':ok===2?'hb':'no'}${n===a.n&&!a.sl?' ini':''}" title="Soal ${n} · ${esc(qid)} · ${ok===2?'waktu habis':'jawab '+esc(h)+(ok?' (benar)':' (salah)')}">${n}<small>${ok===2?'⏱':esc(h)}</small></span>`).join('')}</div>`);}
+      return `<button class="kat" type="button" data-kat="${esc(id)}" aria-expanded="${katBuka.has(id)}">${esc(lbl)}${a.n&&a.N&&!a.sl?` · ${a.n}/${a.N}`:''}</button><span class="katd akt"${katBuka.has(id)?'':' hidden'}>${baris.join('')}</span>`;};
     const izinRender=qs=>{izinQs=qs;const g={menunggu:[],disetujui:[],ditolak:[]};let on=0;
       qs.forEach(d=>{const x=d.data();(g[x.status]||g.menunggu).push([d.id,x]);if(x.status==='disetujui'&&x.terakhir&&x.terakhir.toDate&&Date.now()-x.terakhir.toDate()<180000)on++;});
       for(const k in g)g[k].sort((a,b)=>((b[1].terakhir&&b[1].terakhir.seconds)||0)-((a[1].terakhir&&a[1].terakhir.seconds)||0));
@@ -2292,7 +2346,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       $('admcount').textContent=g.menunggu.length;$('admon').textContent=on;aksNama(g.disetujui);
       body.innerHTML=Object.keys(g).filter(k=>g[k].length).map(k=>`<h4>${TTL[k]} (${g[k].length})</h4><ul>`+g[k].map(([id,x])=>
         `<li><button class="siapa" type="button" data-u="${esc(id)}" aria-expanded="${emBuka.has(id)}" title="Ketuk untuk melihat email"><span class="av">${x.foto?`<img src="${esc(x.foto)}" alt="" referrerpolicy="no-referrer" onerror="this.replaceWith(document.createTextNode('${esc((x.nama||x.email||'?')[0].toUpperCase()).replace(/'/g,'')}'))">`:esc((x.nama||x.email||'?')[0].toUpperCase())}</span><span class="nm${BAYAR.has(id)?' lunas':''}"${BAYAR.has(id)?' title="Sudah bayar"':''}>${esc(x.nama||(x.email||'').split('@')[0])}</span>${BAYAR.has(id)?'<span class="lunaschip">VVIP · Lunas</span>':GRATIS.has(id)?'<span class="lunaschip gratis">VVIP</span>':x.jalur==='gratis'?'<span class="lunaschip gratis">Tautan</span>':''}${k==='disetujui'?(on=>`<span class="stt ${on?'on':'off'}">${on?'Online':'Offline'}</span>`)(!!(x.terakhir&&x.terakhir.toDate&&Date.now()-x.terakhir.toDate()<180000)):''}</button><span class="acts">${ACT[k].map(([v,l,c])=>`<button class="btn ${c}" data-id="${id}" data-v="${v}" type="button">${l}</button>`).join('')}${k==='disetujui'&&!BAYAR.has(id)?`<button class="btn" data-gratis="${esc(id)}" data-on="${GRATIS.has(id)?1:0}" type="button">${GRATIS.has(id)?'Cabut paket':'Paket gratis'}</button>`:''}</span>`+
-        `<span class="em"${k==='disetujui'&&!emBuka.has(id)?' hidden':''}><span class="mail">${esc(x.email)}</span>${k==='disetujui'?`<button class="kat" type="button" data-skor="${esc(id)}" aria-expanded="${skorBuka.has(id)}">Skor</button>`:''}${k==='disetujui'&&x.posisi?(p=>`<button class="kat" type="button" data-kat="${esc(id)}" aria-expanded="${katBuka.has(id)}">${esc(p[0])}</button><span class="katd"${katBuka.has(id)?'':' hidden'}>${p[1]?`<span>${esc(p[1])}</span>`:''}${p[2]?`<span>${esc(p[2].replace(/^soal (\d+)\/(\d+)$/,'Soal ke-$1 dari $2'))}</span>`:''}</span>`)(String(x.posisi).split(' · ')):''}</span>${k==='disetujui'?`<div class="skord" data-skord="${esc(id)}"${skorBuka.has(id)?'':' hidden'}>${skorHtml(id,x)}</div>`:''}<span class="dur">${k==='menunggu'?'Meminta '+fmt(x.diminta):'Terakhir '+(fmt(x.terakhir)||'-')}</span></li>`).join('')+'</ul>').join('')||'<p class="note">Belum ada yang meminta akses.</p>';
+        `<span class="em"${k==='disetujui'&&!emBuka.has(id)?' hidden':''}><span class="mail">${esc(x.email)}</span>${k==='disetujui'?`<button class="kat" type="button" data-skor="${esc(id)}" aria-expanded="${skorBuka.has(id)}">Skor</button>`:''}${k==='disetujui'?aktHtml(id,x):''}</span>${k==='disetujui'?`<div class="skord" data-skord="${esc(id)}"${skorBuka.has(id)?'':' hidden'}>${skorHtml(id,x)}</div>`:''}<span class="dur">${k==='menunggu'?'Meminta '+fmt(x.diminta):'Terakhir '+(fmt(x.terakhir)||'-')}</span></li>`).join('')+'</ul>').join('')||'<p class="note">Belum ada yang meminta akses.</p>';
       // Akun disetujui: foto dan nama saja, email muncul saat nama diketuk.
       // Chip kategori: ketuk untuk melihat sub-materi dan posisi soal yang sedang dikerjakan.
       body.querySelectorAll('.kat[data-kat]').forEach(b=>b.onclick=()=>{const d=b.nextElementSibling,id=b.dataset.kat;d.hidden=!d.hidden;d.hidden?katBuka.delete(id):katBuka.add(id);b.setAttribute('aria-expanded',String(!d.hidden));});

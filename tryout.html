@@ -440,7 +440,7 @@ if(!TID){gate("Tautan mock exam tidak lengkap","Buka tautan mock exam yang dibag
 auth.onAuthStateChanged(u=>{U=u;pMuat=false;aku=null;P={};if(unsubT){unsubT();unsubT=null;}if(unsubP){unsubP();unsubP=null;}if(unsubC){unsubC();unsubC=null;}
   if(!u){gate("Mock Exam","Masuk dengan akun Google untuk ikut mock exam. Nama akun Anda akan tampil di papan peringkat.",true);return;}
   if(window.Arsip)Arsip.mulai(window.__sb,u.uid,!!OWNER&&(u.email||"").toLowerCase()===OWNER&&u.emailVerified).then(()=>{if($("arsipbtn")&&T&&T.status==="mulai")render();});
-  isOwner=!!OWNER&&(u.email||"").toLowerCase()===OWNER&&u.emailVerified;$("edsoal").hidden=!isOwner;if(isOwner){siapkanEdit();pantauLoginMulai();}$("akun").hidden=false;$("akunav").innerHTML=av({foto:u.photoURL,nama:u.displayName||u.email});$("akunnm").textContent=u.displayName||(u.email||"").split("@")[0];document.body.classList.toggle("bebas",isOwner||BEBAS_SALIN.includes((u.email||"").toLowerCase())&&u.emailVerified);
+  isOwner=!!OWNER&&(u.email||"").toLowerCase()===OWNER&&u.emailVerified;$("edsoal").hidden=!isOwner;if(!isOwner)detakIzinMulai();if(isOwner){siapkanEdit();pantauLoginMulai();}$("akun").hidden=false;$("akunav").innerHTML=av({foto:u.photoURL,nama:u.displayName||u.email});$("akunnm").textContent=u.displayName||(u.email||"").split("@")[0];document.body.classList.toggle("bebas",isOwner||BEBAS_SALIN.includes((u.email||"").toLowerCase())&&u.emailVerified);
   unsubT=db.doc("tryout/"+TID).onSnapshot(s=>{if(!s.exists){gate("Mock exam tidak ditemukan","Periksa kembali tautannya.");return;}
       T=s.data({serverTimestamps:"estimate"});T.id=s.id;if(!T.judul||T.judul==="Mock Exam Seleksi Kemampuan Bidang")T.judul="Mock Exam";if(T.subJudul)T.judul+=" - "+T.subJudul.replace(/^Package (\d)/,"Prediction Package $1");gabung();render();},
     e=>gate("Mock exam belum dapat dibuka","Muat ulang halaman. ("+(e.code||e.message)+")"));
@@ -460,6 +460,23 @@ auth.onAuthStateChanged(u=>{U=u;pMuat=false;aku=null;P={};if(unsubT){unsubT();un
     if(SINK()&&Date.now()-cekT>5000){cekT=Date.now();cekMaster();}},250);
   if(!detak)detak=setInterval(()=>{if(SINK()&&aku&&!aku.selesai&&T&&T.status==="mulai"&&!dikick(U.uid))db.doc("tryout/"+TID+"/peserta/"+U.uid).update({t:FV.serverTimestamp()}).catch(()=>{});},10000);
 });
+// Aktivitas langsung untuk panel pemilik (izin/<uid>.posisi): Mock Exam yang diikuti, nomor soal, dan jawaban peserta.
+// Formatnya sama dengan halaman latihan. Dikirim tiap 60 detik dan setiap ada perubahan (paling cepat tiap 4 detik).
+function posisiMock(){try{if(!T||!U||!Array.isArray(T.soal)||!T.soal.length)return "";const n=T.soal.length,sk=SINK(),J=(aku&&aku.jawab)||{},HL="ABCDEF";
+  const hf=(q,v)=>{const p=acak(q.o.length,(sk?"":U.uid)+q.id),i=p.indexOf(v);return HL[i<0?v:i]||"?";};
+  const sl=T.status==="selesai"||!!(aku&&aku.selesai)||(T.status==="mulai"&&selesaiSemua()),no=Math.min((sk?(T.idx||0):pos)+1,n);
+  let j=[],b=0,x=0;T.soal.forEach((q,i)=>{const v=J[q.id];if(v===undefined)return;const ok=v===q.a?1:0;ok?b++:x++;j.push([i+1,q.id,hf(q,v),ok]);});
+  const q=T.status==="mulai"&&!sl?T.soal[no-1]:null,v=q?J[q.id]:undefined;
+  const st={menunggu:"ruang tunggu",siap:"ruang tunggu",mulai:"sedang berjalan",selesai:"selesai"}[T.status]||"";
+  return JSON.stringify({v:2,m:"Mock Exam",pk:(T.judul||"Mock Exam")+(st?" ("+st+")":""),c:"",s:"",bg:"",n:T.status==="mulai"?no:0,N:n,sl:sl?1:0,id:q?q.id:"",
+    tq:q?String(q.q||"").replace(/<[^>]*>/g," ").replace(/\s+/g," ").trim().slice(0,220):"",ja:v!==undefined?hf(q,v):"",jo:v!==undefined?(v===q.a?1:0):-1,jk:q&&v!==undefined?hf(q,q.a):"",
+    b,x,h:0,j:j.slice(-100),fk:0});}catch(e){return "";}}
+let detakIzin=null;
+function detakIzinMulai(){if(detakIzin)return;let akhir=null,tA=0;
+  const kirim=paksa=>{if(document.hidden||!U||isOwner)return;const p=posisiMock();if(!p)return;const now=Date.now();
+    if(!paksa&&(p===akhir?now-tA<58000:now-tA<4000))return;akhir=p;tA=now;
+    db.doc("izin/"+U.uid).update({terakhir:FV.serverTimestamp(),posisi:p}).catch(()=>{});};
+  detakIzin=setInterval(()=>kirim(false),5000);document.addEventListener("visibilitychange",()=>kirim(true));}
 let unsubC=null,sigP="",habisDitangani=false,habisIdx=-1,cekT=0,detak=null;
 try{pos=+(localStorage.getItem("to-pos-"+TID)||sessionStorage.getItem("to-pos-"+TID))||0;}catch(e){}
 
