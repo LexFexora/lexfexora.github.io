@@ -2,7 +2,7 @@
 <html lang="id" class="gate-wait">
 <head>
 <meta charset="utf-8">
-<meta name="versi-situs" content="20261105n">
+<meta name="versi-situs" content="20261105p">
 <script>try{var t=localStorage.getItem("cat-tema");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;}catch(e){}</script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Computer Assisted Test - LEX FEXORA.</title>
@@ -998,6 +998,7 @@ html.fokus body #card .nav{position:fixed!important;left:0;right:0;bottom:0;top:
 html.fokus body #card{padding-bottom:calc(72px + env(safe-area-inset-bottom,0px))!important}
 #gate [hidden]{display:none!important}.gkode{display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:14px;font-size:13px;color:var(--muted)}.gkode .linkrow{margin:0;justify-content:center}.gkode input{max-width:200px}.gkode small{font-size:12px;min-height:1em}.gkodeada{color:color-mix(in srgb,var(--brass) 80%,var(--ink))}
 .akslink{margin:10px 0 4px}.akslink .aksrow{display:flex;flex-direction:column;gap:4px;padding:10px 0;border-top:1px solid var(--line)}.akslink .aksrow>small{font-size:12px;color:var(--muted)}.akslink .aksrow .linkrow{margin:2px 0;flex-wrap:wrap}.akslink .aksrow input{flex:1 1 220px;min-width:0;font-size:12px}.akslink .aksinfo:empty{display:none}.akslink code{font-size:.95em}
+.pbadm{margin:6px 0 10px;padding-bottom:8px;border-bottom:1px solid var(--line)}.pbadm b{color:#c0392b}
 .aksesub{margin:6px 0 10px;padding-top:8px;border-top:1px solid var(--line)}.aksesub .asgrup{display:flex;flex-direction:column;gap:4px;margin:8px 0}.aksesub .asgrup>small{font-size:12px;color:var(--muted)}.aksesub .asn{color:var(--muted);font-weight:500}
 .aksesub .asnama{display:flex;flex-wrap:wrap;gap:6px}.aksesub .aschip{font:600 12.5px/1.2 var(--f-body,inherit);padding:5px 10px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer}.aksesub .aspin{color:color-mix(in srgb,var(--brass) 80%,var(--ink));font-weight:700}.aksesub .aschip i{font-style:normal;font-weight:400;font-size:11px;color:var(--muted)}.aksesub .aschip:hover{border-color:color-mix(in srgb,var(--brass) 60%,var(--line))}
 .aksesub .aschip.lunas{cursor:default;color:#c9962e;border-color:color-mix(in srgb,#c9962e 40%,var(--line))}.aksesub #aspilih{flex:1 1 180px;min-width:0}.aksesub .asatur{margin:8px 0}.aksesub .asatur>summary{cursor:pointer;font-weight:600;font-size:13px}.aksesub .ascat{margin:8px 0}.aksesub .ascat>b{display:block;margin-bottom:4px;font-size:12.5px}.aksesub .ascat input{flex:none;width:16px;height:16px;margin:2px 0 0}.aksesub .ascat label{display:flex;gap:6px;align-items:flex-start;font-size:12.5px;padding:2px 0;color:var(--ink)}.aksesub #asinfo{font-size:12px;color:var(--muted)}
@@ -1042,6 +1043,7 @@ html.vvip #arcard .arjml{padding-right:92px}
 
   <details class="online adm" id="adm" hidden>
     <summary><span class="dot" aria-hidden="true"></span><span>Access approvals: <strong id="admcount">0</strong> pending · <strong id="admon">0</strong> active</span><button class="btn keluar admout" type="button" id="adm-logout">EXIT</button></summary>
+    <div class="pbadm" id="pbadm"><h4>Mode perbaikan</h4><p class="note" id="pbinfo">Memeriksa…</p><div class="linkrow"><button class="btn copy" type="button" id="pbtog" disabled>…</button></div></div>
     <div class="akslink" id="akslink"><h4>Tautan akses gratis</h4>
       <div class="aksrow" data-aks="gratis"><b>Latihan 4 klaster</b><small>Ilmu Hukum, Hukum Formil, Hukum Materil, TIK</small><div class="linkrow"><input class="akskode" autocomplete="off" placeholder="Ketik kode, min. 6 karakter" aria-label="Kode latihan 4 klaster"><button class="btn copy" type="button" data-a="simpan">Simpan kode</button></div><div class="linkrow"><input class="aksurl" readonly placeholder="Tautan muncul setelah kode disimpan" aria-label="Tautan latihan 4 klaster"><button class="btn copy" type="button" data-a="salin">⧉ Salin tautan</button><button class="btn copy" type="button" data-a="mati">Nonaktifkan</button></div><small class="aksinfo"></small></div>
       <div class="aksrow" data-aks="penuh"><b>Akses seluruhnya</b><small>4 klaster + Prediction Packages + Category Packages (kecuali Mock Exam)</small><div class="linkrow"><input class="akskode" autocomplete="off" placeholder="Ketik kode, min. 6 karakter" aria-label="Kode akses seluruhnya"><button class="btn copy" type="button" data-a="simpan">Simpan kode</button></div><div class="linkrow"><input class="aksurl" readonly placeholder="Tautan muncul setelah kode disimpan" aria-label="Tautan akses seluruhnya"><button class="btn copy" type="button" data-a="salin">⧉ Salin tautan</button><button class="btn copy" type="button" data-a="mati">Nonaktifkan</button></div><small class="aksinfo"></small></div>
@@ -1922,6 +1924,12 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
   $('adm-logout').onclick=e=>{e.preventDefault();e.stopPropagation();bOut.onclick();};
 
   let started=false,unsub=null,beat=null;let isOwner=false;
+  // Mode perbaikan: baris cat_bayar id='perbaikan' (info.aktif, bisa dibaca siapa saja). Tanpa baris atau gagal dibaca = perbaikan AKTIF.
+  // Selama aktif hanya pemilik dan akun VVIP Akses (cat_sudah_beli: pembeli lunas + paket gratis) yang bisa memakai situs; akun lain melihat layar perbaikan.
+  const PB_H='Website sedang perbaikan',PB_P='Mohon maaf, website sedang dalam perbaikan. Untuk sementara situs hanya dapat dibuka oleh akun VVIP Akses. Silakan kembali lagi nanti.';
+  const perbaikan=async()=>{try{const {data,error}=await window.__sb.from('cat_bayar').select('info').eq('id','perbaikan').maybeSingle();if(error)return true;return !(data&&data.info&&data.info.aktif===false);}catch(e){return true;}};
+  const vvipKah=async()=>{try{const {data,error}=await window.__sb.rpc('cat_sudah_beli');return !error&&data===true;}catch(e){return false;}};
+  window.__perbaikan=perbaikan;let pbT=null;
   async function loadBank(){
     const m=await db.doc('bank/meta').get();
     if(!m.exists)throw new Error('kosong');
@@ -2177,10 +2185,11 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
     av.textContent='';if(u.photoURL){const im=new Image();im.alt='';im.referrerPolicy='no-referrer';im.src=u.photoURL;im.onerror=()=>{av.textContent=(nama[0]||'?').toUpperCase();};av.appendChild(im);}else av.textContent=(nama[0]||'?').toUpperCase();
     $('akunnm').textContent=nama;$('akunem').textContent=u.email||'';k.title=u.email||'';}
   auth.onAuthStateChanged(async u=>{
-    if(unsub){unsub();unsub=null;}if(beat){clearInterval(beat);beat=null;}
+    if(unsub){unsub();unsub=null;}if(beat){clearInterval(beat);beat=null;}if(pbT){clearInterval(pbT);pbT=null;}
     akunku(u);
     if(!u){$('g-kode').hidden=true;show('Access required','Sign in with your Google account. Your access request will be sent to the owner for approval.',null,true,false);
       setTimeout(()=>{if(window.__sbAuthErr&&!auth.currentUser)gp.textContent='Sign-in failed: '+window.__sbAuthErr;},800);
+      perbaikan().then(on=>{if(on&&!auth.currentUser){gh.textContent=PB_H;gp.textContent='Mohon maaf, website sedang dalam perbaikan. Untuk sementara situs hanya dapat dibuka oleh akun VVIP Akses. Pemilik akun VVIP silakan masuk dengan Google.';}});
       return;}
     const who='Signed in as '+(u.displayName?u.displayName+' · ':'')+u.email;
     if(OWNER&&(u.email||'').toLowerCase()===OWNER&&u.emailVerified){isOwner=true;window.__isOwner=true;document.body.classList.add('bebas');
@@ -2190,6 +2199,10 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       if($('edsoal'))$('edsoal').onclick=()=>window.EditSoal&&EditSoal.cari({ambil:()=>QB,kini:()=>{try{return (window.__soalKini&&window.__soalKini())||null;}catch(e){return null;}},terkunci:id=>DIKUNCI.has(id),
         simpan:(rec,q)=>window.__edit(q.id,rec).then(()=>{if(window.__terapkanEdit)window.__terapkanEdit(q.id,rec);else{applyEdit(q,rec);DIKUNCI.add(q.id);}})});
       admin();start();return;}
+    {const [on,vv]=await Promise.all([perbaikan(),vvipKah()]);if(!auth.currentUser||auth.currentUser.uid!==u.uid)return;
+      if(on&&!vv){show(PB_H,PB_P,who,false,true);pbT=setInterval(async()=>{if(!(await perbaikan()))location.reload();},60000);return;}
+      // Bukan VVIP dan perbaikan sedang nonaktif: periksa tiap 2 menit, tutup situs bila pemilik mengaktifkannya lagi.
+      if(!vv)pbT=setInterval(async()=>{if(!window.__penuh&&await perbaikan()&&!(await vvipKah())){clearInterval(pbT);location.reload();}},120000);}
     const ref=db.doc('izin/'+u.uid);
     try{const s=await ref.get();
       if(!s.exists)await ref.set({email:u.email||'',nama:u.displayName||'',foto:u.photoURL||'',status:'menunggu',diminta:FV.serverTimestamp(),terakhir:FV.serverTimestamp(),posisi:''});
@@ -2220,6 +2233,14 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
     $('pindahinfo').textContent=`Soal yang Anda ubah lewat pojok kanan atas setiap soal: ${n} dipindahkan (⇄ Pindahkan), ${ne} diedit (✎ Edit). Tombolnya hanya terlihat oleh Anda, sedangkan perubahannya berlaku untuk semua pengguna dan tetap berlaku setelah bank diunggah ulang.`;}).catch(()=>{});}
   function admin(){
     pinfo();
+    // Mode perbaikan: pemilik menyalakan/mematikan layar "Website sedang perbaikan" untuk akun non-VVIP (situs utama dan Mock Exam).
+    {const tog=$('pbtog'),inf=$('pbinfo');let on=true;
+      const tulis=()=>{inf.innerHTML=on?'<b>AKTIF.</b> Akun selain VVIP Akses melihat layar "Website sedang perbaikan" (situs utama dan Mock Exam). Anda dan akun VVIP tetap bisa memakai situs seperti biasa.':'<b>Nonaktif.</b> Situs terbuka untuk semua akun seperti biasa.';
+        tog.textContent=on?'Matikan mode perbaikan':'Aktifkan mode perbaikan';tog.disabled=false;};
+      perbaikan().then(v=>{on=v;tulis();});
+      tog.onclick=async()=>{const ke=!on;if(!confirm(ke?'Aktifkan mode perbaikan? Akun selain VVIP Akses akan melihat layar "Website sedang perbaikan".':'Matikan mode perbaikan? Situs kembali terbuka untuk semua akun.'))return;
+        tog.disabled=true;const {error}=await window.__sb.from('cat_bayar').upsert({id:'perbaikan',info:{aktif:ke},diubah:new Date().toISOString()});
+        if(error){alert('Gagal menyimpan: '+(error.message||error.code));tog.disabled=false;return;}on=await perbaikan();tulis();};}
 
     // Mock Exam bersama: pemilik memilih sub-materi dan jumlah soal; peserta ikut lewat tryout.html?t=<id>.
     const toPool=()=>{const sel=new Set([...document.querySelectorAll('#tosub input[data-cs]:checked')].map(i=>i.dataset.cs));
