@@ -2,7 +2,7 @@
 <html lang="id" class="gate-wait">
 <head>
 <meta charset="utf-8">
-<meta name="versi-situs" content="20261105p">
+<meta name="versi-situs" content="20261105q">
 <script>try{var t=localStorage.getItem("cat-tema");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;}catch(e){}</script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Computer Assisted Test - LEX FEXORA.</title>
@@ -1926,7 +1926,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
   let started=false,unsub=null,beat=null;let isOwner=false;
   // Mode perbaikan: baris cat_bayar id='perbaikan' (info.aktif, bisa dibaca siapa saja). Tanpa baris atau gagal dibaca = perbaikan AKTIF.
   // Selama aktif hanya pemilik dan akun VVIP Akses (cat_sudah_beli: pembeli lunas + paket gratis) yang bisa memakai situs; akun lain melihat layar perbaikan.
-  const PB_H='Website sedang perbaikan',PB_P='Mohon maaf, website sedang dalam perbaikan. Untuk sementara situs hanya dapat dibuka oleh akun VVIP Akses. Silakan kembali lagi nanti.';
+  const PB_H='Website sedang perbaikan',PB_P='Mohon maaf, website sedang dalam perbaikan untuk peningkatan layanan. Silakan kembali lagi nanti.';
   const perbaikan=async()=>{try{const {data,error}=await window.__sb.from('cat_bayar').select('info').eq('id','perbaikan').maybeSingle();if(error)return true;return !(data&&data.info&&data.info.aktif===false);}catch(e){return true;}};
   const vvipKah=async()=>{try{const {data,error}=await window.__sb.rpc('cat_sudah_beli');return !error&&data===true;}catch(e){return false;}};
   window.__perbaikan=perbaikan;let pbT=null;
@@ -2189,7 +2189,6 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
     akunku(u);
     if(!u){$('g-kode').hidden=true;show('Access required','Sign in with your Google account. Your access request will be sent to the owner for approval.',null,true,false);
       setTimeout(()=>{if(window.__sbAuthErr&&!auth.currentUser)gp.textContent='Sign-in failed: '+window.__sbAuthErr;},800);
-      perbaikan().then(on=>{if(on&&!auth.currentUser){gh.textContent=PB_H;gp.textContent='Mohon maaf, website sedang dalam perbaikan. Untuk sementara situs hanya dapat dibuka oleh akun VVIP Akses. Pemilik akun VVIP silakan masuk dengan Google.';}});
       return;}
     const who='Signed in as '+(u.displayName?u.displayName+' · ':'')+u.email;
     if(OWNER&&(u.email||'').toLowerCase()===OWNER&&u.emailVerified){isOwner=true;window.__isOwner=true;document.body.classList.add('bebas');
