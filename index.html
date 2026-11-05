@@ -2,7 +2,7 @@
 <html lang="id" class="gate-wait">
 <head>
 <meta charset="utf-8">
-<meta name="versi-situs" content="20261105e">
+<meta name="versi-situs" content="20261105f">
 <script>try{var t=localStorage.getItem("cat-tema");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;}catch(e){}</script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Computer Assisted Test - LEX FEXORA.</title>
@@ -1266,6 +1266,10 @@ function fmtPct(c,n){const v=n?c*100/n:0;return (v>0&&v<10?v.toFixed(1).replace(
 const TIERNAME={1:"Dasar hukum",2:"Istilah, jenis & prosedur",3:"Pendapat ahli & doktrin"};
 let store={};
 try{store=JSON.parse(localStorage.getItem(KEY)||"{}")||{};}catch(e){store={};}
+// Sesi paket tanpa daftar soal tidak pernah dibuka di paket itu: isinya hanya salinan jawaban Mock Exam (fitur lama), bukan jawaban
+// yang dikerjakan di paket. Dibuang agar persentase paket yang belum dikerjakan tidak ikut bertambah.
+const sesiPalsu=(k,v)=>/^ulang\|paket\|/.test(k)&&!!v&&typeof v==="object"&&!(Array.isArray(v.list)&&v.list.length);
+Object.keys(store).forEach(k=>{if(sesiPalsu(k,store[k]))delete store[k];});
 // Progres Paket Prediksi juga disimpan di akun (progres/<uid>.pk, satu teks JSON per paket), jadi tidak hilang walau
 // ganti HP, browser dibersihkan, atau login ulang. Saat dimuat, versi dengan jawaban terbanyak (akun atau perangkat) yang dipakai.
 const PKJ=o=>o&&o.ans?Object.keys(o.ans).length:0,PKT={};
@@ -1285,9 +1289,9 @@ function gabung(a,b){if(!b||typeof b!=="object"||!b.ans)return a;if(!a||typeof a
   const base=bb?b:a,lain=bb?a:b;
   return {...base,ans:{...lain.ans,...base.ans},expired:{...(lain.expired||{}),...(base.expired||{})},t:Math.max(ta,tb),ep:Math.max(ea,eb),rs:ea>=eb?a.rs:b.rs};}
 function lebihBaru(a,b){return !!a&&gabung(b,a)!==b;}
-function gabungStore(src){let ubah=false;Object.keys(src||{}).forEach(k=>{const d=src[k];if(!(k in store)){store[k]=d;ubah=true;return;}
+function gabungStore(src){let ubah=false;Object.keys(src||{}).forEach(k=>{const d=src[k];if(sesiPalsu(k,d))return;if(!(k in store)){store[k]=d;ubah=true;return;}
   if(d&&typeof d==="object"&&d.ans){const g=gabung(store[k],d);if(g!==store[k]){store[k]=g;ubah=true;}}});return ubah;}
-function pkCloud(raw){const o={};Object.keys(raw||{}).forEach(n=>{try{const v=JSON.parse(raw[n]);if(v)o["ulang|paket|"+n]=v;}catch(e){}});return o;}
+function pkCloud(raw){const o={};Object.keys(raw||{}).forEach(n=>{try{const v=JSON.parse(raw[n]);if(v&&!sesiPalsu("ulang|paket|"+n,v))o["ulang|paket|"+n]=v;}catch(e){}});return o;}
 (()=>{const C=pkCloud(window.__PK_AWAL);if(gabungStore(C))try{localStorage.setItem(KEY,JSON.stringify(store));}catch(e){}
   if(window.__simpanPaket)Object.keys(store).forEach(k=>{const m=/^ulang\|paket\|([\w-]+)$/.exec(k);if(!m)return;
     if(gabung(C[k],store[k])!==C[k])kirimPaket(m[1],true);});})();
