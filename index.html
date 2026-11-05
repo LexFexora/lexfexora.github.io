@@ -2,7 +2,7 @@
 <html lang="id" class="gate-wait">
 <head>
 <meta charset="utf-8">
-<meta name="versi-situs" content="20261105j">
+<meta name="versi-situs" content="20261105k">
 <script>try{var t=localStorage.getItem("cat-tema");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;}catch(e){}</script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Computer Assisted Test - LEX FEXORA.</title>
@@ -143,11 +143,17 @@ body .card .nav>#prev.btn:hover:not(:disabled),body .card .nav>#next.btn:hover{b
 .scorebar{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;align-items:center}
 .scorebar strong{color:var(--ink)}
 .fsexit{display:none}
-html.fokus .wrap>*:not(#timerbox):not(#card):not(#fsexit){display:none!important}
-html.fokus .card .qhead{display:contents}html.fokus .card .qlbl,html.fokus .card .qfs,html.fokus .card .owntools,html.fokus .card .verdict,html.fokus .card .edbox,html.fokus .card .mvbox,html.fokus .card>p.note{display:none!important}
-html.fokus .card .qno{position:fixed;top:max(10px,env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);margin:0;height:38px;display:flex;align-items:center;padding:0 14px;border:1px solid var(--line);border-radius:999px;background:var(--bg);color:var(--ink);font-size:14px;font-variant-numeric:tabular-nums;z-index:2}
-html.fokus .card .qno .of{color:var(--muted);margin-left:4px}
-@media(max-width:719px){html.fokus .card .qno{left:calc(max(16px,env(safe-area-inset-left,0px)) + 46px);transform:none;padding:0 12px;font-size:13px}}
+html.fokus .wrap>*:not(#timerbox):not(#card):not(#fsexit):not(#fbar){display:none!important}
+#fbar{display:none!important}html.fokus #fbar{display:contents!important}
+/* iPhone: elemen fixed di dalam kartu yang digulir ikut terpotong/hilang di Safari iOS. Di mode fokus,
+   nomor soal, lilin/gulungan, dan timer dipindah ke #fbar (di luar kartu) agar selalu terlihat. */
+html.fokus #fbar .qno,html.fokus #fbar .qkoin.melayang,html.fokus #fbar .timer{z-index:20}
+html.fokus .card .qhead{display:contents}html.fokus .card .qlbl,html.fokus .card .qfs,html.fokus .card .owntools,html.fokus .card .verdict,html.fokus .card .edbox,html.fokus .card .mvbox,html.fokus .card>p.note,html.fokus #fbar .qlbl{display:none!important}
+html.fokus .card .qno,
+html.fokus #fbar .qno{position:fixed;top:max(10px,env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);margin:0;height:38px;display:flex;align-items:center;padding:0 14px;border:1px solid var(--line);border-radius:999px;background:var(--bg);color:var(--ink);font-size:14px;font-variant-numeric:tabular-nums;z-index:2}
+html.fokus .card .qno .of,
+html.fokus #fbar .qno .of{color:var(--muted);margin-left:4px}
+@media(max-width:719px){html.fokus .card .qno,html.fokus #fbar .qno{left:calc(max(16px,env(safe-area-inset-left,0px)) + 46px);transform:none;padding:0 12px;font-size:13px}}
 html.fokus .fsexit{display:grid;place-items:center;align-self:flex-start;width:38px;height:38px;padding:0;border-radius:50%}
 html.fokus .timer{position:fixed;top:max(10px,env(safe-area-inset-top,0px));right:max(12px,env(safe-area-inset-right,0px));box-shadow:0 2px 12px rgb(0 0 0 / .25)}
 html.fokus,html.fokus body{height:100%;overflow:hidden;overscroll-behavior:none}
@@ -711,9 +717,11 @@ html:root[data-theme="dark"] #siapbtn{color:#d6b170;font-size:15px;letter-spacin
 .qhead .qkoin .kn b{font:600 13px/1 var(--f-mono);color:var(--ink);font-variant-numeric:tabular-nums}
 .qhead .qkoin .kn+.kn{border-color:var(--line);background:color-mix(in srgb,var(--surface) 70%,transparent)}
 .qhead:has(.qkoin) .qno{margin-right:0}
-html.fokus .card .qhead .qkoin{grid-area:auto}
+html.fokus .card .qhead .qkoin,
+html.fokus #fbar .qkoin{grid-area:auto}
 @media(max-width:430px){.qhead:has(.qkoin) .qlbl{display:none}.qhead .qkoin{gap:4px}.qhead .qkoin .kn{height:26px;padding:0 7px;gap:3px;font-size:13px}.qhead:has(.qkoin){flex-wrap:wrap}.qhead:has(.qkoin) .qno,.qhead:has(.qkoin) .qkoin,.qhead:has(.qkoin) .qtools{order:0}.qhead:has(.qkoin) .owntools{order:1;flex-basis:100%;justify-content:flex-end}}
-html.fokus .card .qkoin.melayang{position:fixed;top:max(10px,env(safe-area-inset-top,0px));height:38px;margin:0;z-index:2}
+html.fokus .card .qkoin.melayang,
+html.fokus #fbar .qkoin.melayang{position:fixed;top:max(10px,env(safe-area-inset-top,0px));height:38px;margin:0;z-index:2}
 /* HP: halaman awal dirapatkan supaya footer hak cipta terlihat utuh tanpa menggulir. */
 @media (max-width:560px){html:not(.fokus) .wrap{padding-top:max(14px,env(safe-area-inset-top,0px));gap:12px;padding-bottom:max(10px,env(safe-area-inset-bottom,0px))}
 html:not(.fokus) .tabs .tab.kl{padding-top:9px;padding-bottom:9px;gap:6px}
@@ -851,9 +859,10 @@ html body #card .putusan .row>.btn:hover{filter:none;border-color:rgb(255 255 25
 html.fokus[data-theme="dark"] body{background:#040505}
 html.fokus[data-theme="dark"] body .card{background:transparent;border:0;box-shadow:none;padding:2px 0}
 html.fokus[data-theme="dark"] body .card .nav{background:linear-gradient(0deg,#040505 72%,rgb(4 5 5 / 0));padding-bottom:2px}
-html.fokus[data-theme="dark"] body .card .qno,html.fokus[data-theme="dark"] body .fsexit{background:linear-gradient(160deg,rgb(255 255 255 / .06),rgb(255 255 255 / .015) 60%,rgb(255 255 255 / .03))!important;border:1px solid rgb(255 255 255 / .13)!important;box-shadow:inset 0 1px 0 rgb(255 255 255 / .07),0 6px 16px rgb(0 0 0 / .5)!important;color:#e9ecea}
+html.fokus[data-theme="dark"] body .card .qno,html.fokus[data-theme="dark"] body .fsexit,
+html.fokus[data-theme="dark"] body #fbar .qno{background:linear-gradient(160deg,rgb(255 255 255 / .06),rgb(255 255 255 / .015) 60%,rgb(255 255 255 / .03))!important;border:1px solid rgb(255 255 255 / .13)!important;box-shadow:inset 0 1px 0 rgb(255 255 255 / .07),0 6px 16px rgb(0 0 0 / .5)!important;color:#e9ecea}
 html.fokus[data-theme="dark"] body .timer:not([hidden]):not(:empty){right:max(16px,env(safe-area-inset-right,0px));height:38px;box-sizing:border-box;display:flex!important;align-items:center;gap:6px;padding:0 12px!important;border-radius:999px;background:linear-gradient(160deg,rgb(255 255 255 / .06),rgb(255 255 255 / .015) 60%,rgb(255 255 255 / .03))!important;border:1px solid rgb(255 255 255 / .13)!important;box-shadow:inset 0 1px 0 rgb(255 255 255 / .07),0 6px 16px rgb(0 0 0 / .5)!important}
-@media (prefers-color-scheme:dark){html.fokus:not([data-theme="light"]) body{background:#040505}html.fokus:not([data-theme="light"]) body .card{background:transparent;border:0;box-shadow:none;padding:2px 0}html.fokus:not([data-theme="light"]) body .card .nav{background:linear-gradient(0deg,#040505 72%,rgb(4 5 5 / 0));padding-bottom:2px}html.fokus:not([data-theme="light"]) body .card .qno,html.fokus:not([data-theme="light"]) body .fsexit{background:linear-gradient(160deg,rgb(255 255 255 / .06),rgb(255 255 255 / .015) 60%,rgb(255 255 255 / .03))!important;border:1px solid rgb(255 255 255 / .13)!important;box-shadow:inset 0 1px 0 rgb(255 255 255 / .07),0 6px 16px rgb(0 0 0 / .5)!important;color:#e9ecea}html.fokus:not([data-theme="light"]) body .timer:not([hidden]):not(:empty){right:max(16px,env(safe-area-inset-right,0px));height:38px;box-sizing:border-box;display:flex!important;align-items:center;gap:6px;padding:0 12px!important;border-radius:999px;background:linear-gradient(160deg,rgb(255 255 255 / .06),rgb(255 255 255 / .015) 60%,rgb(255 255 255 / .03))!important;border:1px solid rgb(255 255 255 / .13)!important;box-shadow:inset 0 1px 0 rgb(255 255 255 / .07),0 6px 16px rgb(0 0 0 / .5)!important}}
+@media (prefers-color-scheme:dark){html.fokus:not([data-theme="light"]) body{background:#040505}html.fokus:not([data-theme="light"]) body .card{background:transparent;border:0;box-shadow:none;padding:2px 0}html.fokus:not([data-theme="light"]) body .card .nav{background:linear-gradient(0deg,#040505 72%,rgb(4 5 5 / 0));padding-bottom:2px}html.fokus:not([data-theme="light"]) body .card .qno,html.fokus:not([data-theme="light"]) body .fsexit,html.fokus:not([data-theme="light"]) body #fbar .qno{background:linear-gradient(160deg,rgb(255 255 255 / .06),rgb(255 255 255 / .015) 60%,rgb(255 255 255 / .03))!important;border:1px solid rgb(255 255 255 / .13)!important;box-shadow:inset 0 1px 0 rgb(255 255 255 / .07),0 6px 16px rgb(0 0 0 / .5)!important;color:#e9ecea}html.fokus:not([data-theme="light"]) body .timer:not([hidden]):not(:empty){right:max(16px,env(safe-area-inset-right,0px));height:38px;box-sizing:border-box;display:flex!important;align-items:center;gap:6px;padding:0 12px!important;border-radius:999px;background:linear-gradient(160deg,rgb(255 255 255 / .06),rgb(255 255 255 / .015) 60%,rgb(255 255 255 / .03))!important;border:1px solid rgb(255 255 255 / .13)!important;box-shadow:inset 0 1px 0 rgb(255 255 255 / .07),0 6px 16px rgb(0 0 0 / .5)!important}}
 
 /* Kotak Tautan join peserta: kaca gelap netral, bukan cokelat. */
 html[data-theme="dark"] body .tojoin{border:1px solid rgb(255 255 255 / .12);background:radial-gradient(120% 80% at 0 0,rgb(255 255 255 / .06),transparent 60%),linear-gradient(160deg,rgb(255 255 255 / .04),rgb(255 255 255 / .01) 60%,rgb(255 255 255 / .02));box-shadow:inset 0 1px 0 rgb(255 255 255 / .07),0 8px 20px rgb(0 0 0 / .45);border-radius:12px}
@@ -979,16 +988,6 @@ html.beranim .toisi,html.beranim #setelan .controls{contain:layout paint style}
 /* Previous/Next terkunci di dasar layar (juga di Safari iPhone dengan bilah browser terlihat). */
 html.fokus body #card .nav{position:fixed!important;left:0;right:0;bottom:0;top:auto;z-index:30;margin:0!important;max-width:720px;margin-inline:auto!important;box-sizing:border-box;padding:12px max(16px,env(safe-area-inset-right,0px)) max(12px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))!important;justify-content:center}
 html.fokus body #card{padding-bottom:calc(72px + env(safe-area-inset-bottom,0px))!important}
-/* iPhone: bar atas mode fokus (nomor soal, lilin/gulungan, timer) adalah elemen fixed di dalam kartu yang digulir.
-   Safari iOS memotong elemen itu ke kotak kartu saat digulir, jadi kartu ditarik naik sampai baris tombol X
-   dan bar atas berada di dalam kotaknya. Pita latar di belakang bar menutupi isi soal yang lewat di bawahnya. */
-html.fokus{--fbar:calc(38px + min(14px,1.6vh));--ftop:max(10px,env(safe-area-inset-top,0px))}
-html.fokus body #card{margin-top:calc(-1 * (var(--ftop) + var(--fbar)))!important;padding-top:calc(var(--ftop) + var(--fbar) + 2px)!important;scroll-padding-top:calc(var(--ftop) + var(--fbar) + 8px)}
-html.fokus body .wrap::before{content:"";position:fixed;top:0;left:0;right:0;height:calc(var(--ftop) + var(--fbar));background:linear-gradient(180deg,var(--bg) 82%,color-mix(in srgb,var(--bg) 0%,transparent));z-index:3;pointer-events:none}
-html.fokus[data-theme="dark"] body .wrap::before{background:linear-gradient(180deg,#040505 82%,rgb(4 5 5 / 0))}
-@media (prefers-color-scheme:dark){html.fokus:not([data-theme="light"]) body .wrap::before{background:linear-gradient(180deg,#040505 82%,rgb(4 5 5 / 0))}}
-html.fokus body #fsexit{position:relative;z-index:4}
-html.fokus body #card .qno,html.fokus body #card .qkoin.melayang,html.fokus body #card .timer{z-index:4}
 #gate [hidden]{display:none!important}.gkode{display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:14px;font-size:13px;color:var(--muted)}.gkode .linkrow{margin:0;justify-content:center}.gkode input{max-width:200px}.gkode small{font-size:12px;min-height:1em}.gkodeada{color:color-mix(in srgb,var(--brass) 80%,var(--ink))}
 .akslink{margin:10px 0 4px}.akslink .aksrow{display:flex;flex-direction:column;gap:4px;padding:10px 0;border-top:1px solid var(--line)}.akslink .aksrow>small{font-size:12px;color:var(--muted)}.akslink .aksrow .linkrow{margin:2px 0;flex-wrap:wrap}.akslink .aksrow input{flex:1 1 220px;min-width:0;font-size:12px}.akslink .aksinfo:empty{display:none}.akslink code{font-size:.95em}
 .aksesub{margin:6px 0 10px;padding-top:8px;border-top:1px solid var(--line)}.aksesub .asgrup{display:flex;flex-direction:column;gap:4px;margin:8px 0}.aksesub .asgrup>small{font-size:12px;color:var(--muted)}.aksesub .asn{color:var(--muted);font-weight:500}
@@ -1126,6 +1125,7 @@ html.vvip #arcard .arjml{padding-right:92px}
 
   <div class="ulangbar" id="ulangbar" hidden></div>
   <section class="card" id="card" aria-live="polite"></section>
+  <div class="qhead" id="fbar"></div>
 
   <details class="mapbox" id="mapbox"><summary id="mapsum">Question Map</summary><div class="map" id="map"></div><p class="mapket"><span><i class="tk lil" id="ketlil"></i>answered correctly</span><span><i class="tk gul" id="ketgul"></i>answered incorrectly or timed out</span></p></details>
 
@@ -1538,19 +1538,26 @@ function fokus(on){document.documentElement.classList.toggle("fokus",on);
       if(!on&&document.fullscreenElement)document.exitFullscreen().catch(()=>{});}catch(e){}
   window.scrollTo({top:0});pasFokus();}
 document.addEventListener("fullscreenchange",()=>{if(!document.fullscreenElement)document.documentElement.classList.remove("fokus");pasFokus();});
-function pasFokus(){requestAnimationFrame(()=>{const c=$("card");if(!c)return;c.style.setProperty("--fs",1);
+// Mode fokus: bar atas dipindah keluar dari kartu (lihat #fbar); saat keluar mode fokus dikembalikan ke tempatnya.
+function barAtas(on){const c=$("card"),fb=$("fbar");if(!c||!fb)return;
+  const balik=()=>{fb.querySelectorAll(":scope>[data-fb]").forEach(e=>{const m=c.querySelector('i.fbmark[data-k="'+e.dataset.fb+'"]');if(m)m.replaceWith(e);else if(e!==TB)e.remove();delete e.dataset.fb;});
+    if(TB.parentNode===fb){const m=c.querySelector('i.fbmark[data-k="tb"]');if(m)m.replaceWith(TB);else fb.before(TB);}c.querySelectorAll("i.fbmark").forEach(m=>m.remove());};
+  balik();if(!on)return;
+  [[".qno","qno"],[".qkoin","qkoin"],[TB,"tb"]].forEach(([q,k])=>{const e=typeof q==="string"?c.querySelector(q):q;if(!e||(k==="tb"&&!c.contains(e)))return;
+    const m=document.createElement("i");m.className="fbmark";m.hidden=true;m.dataset.k=k;e.before(m);e.dataset.fb=k;fb.appendChild(e);});}
+function pasFokus(){requestAnimationFrame(()=>{const c=$("card");if(!c)return;barAtas(document.documentElement.classList.contains("fokus"));c.style.setProperty("--fs",1);
   // Layar penuh: penghitung lilin/gulungan di bar atas, tepat di antara nomor soal dan timer.
-  const kn=c.querySelector(".qkoin");if(kn){kn.classList.remove("melayang");kn.style.left="";
-    if(document.documentElement.classList.contains("fokus")){const qn=c.querySelector(".qno"),tm=document.querySelector("#timerbox .timer:not([hidden])")||document.querySelector(".timer");
+  const kn=c.querySelector(".qkoin")||$("fbar").querySelector(".qkoin");if(kn){kn.classList.remove("melayang");kn.style.left="";
+    if(document.documentElement.classList.contains("fokus")){const qn=c.querySelector(".qno")||$("fbar").querySelector(".qno"),tm=document.querySelector("#timerbox .timer:not([hidden])")||document.querySelector(".timer");
       kn.classList.add("melayang");const a=qn?qn.getBoundingClientRect().right:0,tr=tm?tm.getBoundingClientRect():null,b=tr&&tr.width?tr.left:innerWidth-12,w=kn.getBoundingClientRect().width;
-      if(b-a>=w+12)kn.style.left=Math.round((a+b-w)/2)+"px";else{kn.classList.remove("melayang");}}}
+      if(b-a>=w+12)kn.style.left=Math.round((a+b-w)/2)+"px";else{kn.classList.remove("melayang");const m=c.querySelector('i.fbmark[data-k="qkoin"]');if(m){m.replaceWith(kn);delete kn.dataset.fb;}}}}
   if(!document.documentElement.classList.contains("fokus"))return;
   const x=c.querySelector(".ket .explain");if(x)x.style.display="none";
   let f=1;while(c.scrollHeight>c.clientHeight+1&&f>.5){f-=.04;c.style.setProperty("--fs",f.toFixed(2));}
   if(x)x.style.display="";});}
 addEventListener("resize",pasFokus);
 document.addEventListener("toggle",e=>{const k=e.target,c=$("card");if(!k.classList||!k.classList.contains("ket")||!k.open||!c||!document.documentElement.classList.contains("fokus"))return;
-  requestAnimationFrame(()=>c.scrollBy({top:k.getBoundingClientRect().top-c.getBoundingClientRect().top-(parseFloat(getComputedStyle(c).paddingTop)||0)-8,behavior:"smooth"}));},true);
+  requestAnimationFrame(()=>c.scrollBy({top:k.getBoundingClientRect().top-c.getBoundingClientRect().top-8,behavior:"smooth"}));},true);
 function renderCard(){
   const card=$("card");
   if(!state.list.length){card.innerHTML="<p>Tidak ada soal untuk pilihan ini.</p>";return;}
