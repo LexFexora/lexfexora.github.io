@@ -2389,9 +2389,9 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       const paket=async(uid,on,b)=>{b.disabled=true;const {error}=await window.__sb.rpc(on?'cat_beri_gratis':'cat_cabut_gratis',{p_uid:uid});b.disabled=false;
         if(error){alert(/function|schema cache/i.test(error.message||'')?'Jalankan dulu SQL "paket gratis" di Supabase.':'Gagal: '+(error.message||error.code));return;}muatBayar.sidik='';muatBayar();};
       $('asberi').onclick=()=>{const u=sel.value;if(!u){alert('Pilih akun dulu.');return;}if(!confirm('Beri VVIP Akses (Prediction & Category Packages + semua sub materi) gratis ke '+sel.selectedOptions[0].textContent+'?'))return;paket(u,true,$('asberi'));};
-      document.querySelectorAll('#aspaket [data-cabut]').forEach(b=>b.onclick=()=>{if(!confirm('Cabut akses paket gratis untuk '+b.textContent.replace('✕','').trim()+'?'))return;paket(b.dataset.cabut,false,b);});
+      document.querySelectorAll('#aspaket [data-cabut]').forEach(b=>b.onclick=()=>{if(!confirm('Cabut VVIP Akses (paket gratis) dari '+b.textContent.replace(/\s*VVIP\s*✕\s*$/,'').trim()+'?'))return;paket(b.dataset.cabut,false,b);});
       $('asnpenuh').textContent='('+G.penuh.length+')';$('asnbatas').textContent='('+G.terbatas.length+')';
-      document.querySelectorAll('#aksesub .aschip').forEach(b=>b.onclick=()=>{const ke=b.dataset.ke;if(!confirm('Pindahkan '+b.textContent.replace(/ otomatis| [↑↓]/g,'').trim()+' ke Akses '+ke+'?'))return;b.disabled=true;
+      document.querySelectorAll('#aksesub .aschip[data-asu]').forEach(b=>b.onclick=()=>{const ke=b.dataset.ke;if(!confirm('Pindahkan '+b.textContent.replace(/ otomatis| [↑↓]/g,'').trim()+' ke Akses '+ke+'?'))return;b.disabled=true;
         db.doc('izin/'+b.dataset.asu).update({sub:ke}).catch(e=>{alert('Gagal: '+(e.code||e.message));b.disabled=false;});});};
     // Aktivitas langsung (posisi dari halaman peserta). Format baru = teks JSON berisi mode, paket, soal kini, dan jawaban sesi ini;
     // format lama "Kategori · Sub · soal n/N" (peserta yang belum memuat ulang halaman) tetap ditampilkan seadanya.

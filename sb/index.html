@@ -2189,7 +2189,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       const chip=([id,x,oto],lv)=>`<button type="button" class="aschip" data-asu="${esc(id)}" data-ke="${lv==='penuh'?'terbatas':'penuh'}" title="Pindahkan ke Akses ${lv==='penuh'?'terbatas':'penuh'}">${esc(x.nama||(x.email||'').split('@')[0])}${oto?' <i>otomatis</i>':''} <span class="aspin">${lv==='penuh'?'↓':'↑'}</span></button>`;
       $('aspenuh').innerHTML=G.penuh.map(r=>chip(r,'penuh')).join('')||'<small>Belum ada.</small>';$('asbatas').innerHTML=G.terbatas.map(r=>chip(r,'terbatas')).join('')||'<small>Belum ada.</small>';
       $('asnpenuh').textContent='('+G.penuh.length+')';$('asnbatas').textContent='('+G.terbatas.length+')';
-      document.querySelectorAll('#aksesub .aschip').forEach(b=>b.onclick=()=>{const ke=b.dataset.ke;if(!confirm('Pindahkan '+b.textContent.replace(/ otomatis| [↑↓]/g,'').trim()+' ke Akses '+ke+'?'))return;b.disabled=true;
+      document.querySelectorAll('#aksesub .aschip[data-asu]').forEach(b=>b.onclick=()=>{const ke=b.dataset.ke;if(!confirm('Pindahkan '+b.textContent.replace(/ otomatis| [↑↓]/g,'').trim()+' ke Akses '+ke+'?'))return;b.disabled=true;
         db.doc('izin/'+b.dataset.asu).update({sub:ke}).catch(e=>{alert('Gagal: '+(e.code||e.message));b.disabled=false;});});};
     const izinRender=qs=>{izinQs=qs;const g={menunggu:[],disetujui:[],ditolak:[]};let on=0;
       qs.forEach(d=>{const x=d.data();(g[x.status]||g.menunggu).push([d.id,x]);if(x.status==='disetujui'&&x.terakhir&&x.terakhir.toDate&&Date.now()-x.terakhir.toDate()<180000)on++;});
