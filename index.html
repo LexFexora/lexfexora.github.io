@@ -2,7 +2,7 @@
 <html lang="id" class="gate-wait">
 <head>
 <meta charset="utf-8">
-<meta name="versi-situs" content="20261105g">
+<meta name="versi-situs" content="20261105h">
 <script>try{var t=localStorage.getItem("cat-tema");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;}catch(e){}</script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Computer Assisted Test - LEX FEXORA.</title>
@@ -2401,20 +2401,23 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
         const pr=!a?'Belum memilih soal':a.sl?`Skor akhir · ${a.b||0} benar dari ${a.N}`:`Soal ${a.n||0}/${a.N||0}`+(dj?` · <em class="ok">✓${a.b||0}</em> <em class="no">✕${a.x||0}</em>`:'');
         return `<button type="button" class="pjr" data-pj="${esc(id)}"><span class="pjav">${x.foto?`<img src="${esc(x.foto)}" alt="" referrerpolicy="no-referrer">`:esc((nm[0]||'?').toUpperCase())}</span>`+
           `<span class="pjtx"><b>${esc(nm)}</b>${m?`<span class="pjm">${esc(m)}</span>`:''}${mat?`<small>${esc(mat)}</small>`:''}<small>${pr}</small></span></button>`;}).join('');
-      w.innerHTML=`<button type="button" class="pjh" aria-expanded="${!pojokTutup}"><i></i>${A.length}<em class="pjw"> aktif</em><span>${pojokTutup?'▴':'▾'}</span></button><div class="pjl"${pojokTutup?' hidden':''}>${baris}</div>`;
+      if(!w.dataset.pos)requestAnimationFrame(()=>pojokGeser(true));w.innerHTML=`<button type="button" class="pjh" aria-expanded="${!pojokTutup}"><i></i>${A.length}<em class="pjw"> aktif</em><span>${pojokTutup?'▴':'▾'}</span></button><div class="pjl"${pojokTutup?' hidden':''}>${baris}</div>`;
       w.querySelector('.pjh').onclick=()=>{pojokTutup=!pojokTutup;try{localStorage.setItem('pojok-tutup',pojokTutup?'1':'0');}catch(e){}pojokRender(list);};
       w.querySelectorAll('[data-pj]').forEach(b=>b.onclick=()=>{const id=b.dataset.pj;emBuka.add(id);katBuka.add(id);if(document.documentElement.classList.contains('fokus')&&typeof fokus==='function')fokus(false);
         const adm=$('adm');adm.open=true;if(izinQs)izinRender(izinQs);requestAnimationFrame(()=>{const el=adm.querySelector(`.kat[data-kat="${CSS.escape(id)}"]`)||adm;el.scrollIntoView({behavior:'smooth',block:'center'});});});
       pojokGeser();};
     // Saat mode fokus, tombol navigasi soal menempel di bawah layar: panel pojok naik di atasnya agar tidak menutupi Next.
     // HP: tombol "N aktif" pindah ke kiri, sejajar dengan baris Record di bawah soal (daftar membuka ke atas/bawah sesuai ruang).
-    const pojokGeser=()=>{const w=document.getElementById('pojokaktif');if(!w)return;const nav=document.documentElement.classList.contains('fokus')&&document.querySelector('#card .nav');
+    // Posisi di HP dikunci sekali (saat muncul, ganti mode fokus, atau ukuran layar berubah), lalu TIDAK ikut bergeser saat soal digulir.
+    let pojokKunci='';
+    const pojokGeser=(paksa)=>{const w=document.getElementById('pojokaktif');if(!w)return;
+      const kunci=innerWidth+'x'+innerHeight+'|'+document.documentElement.classList.contains('fokus');if(paksa!==true&&kunci===pojokKunci&&w.dataset.pos)return;if(paksa!==true&&pojokKunci&&kunci!==pojokKunci)setTimeout(()=>pojokGeser(true),450);pojokKunci=kunci;w.dataset.pos='1';const nav=document.documentElement.classList.contains('fokus')&&document.querySelector('#card .nav');
       const h=nav?Math.max(0,innerHeight-nav.getBoundingClientRect().top):0,batas=innerHeight-h,hp=innerWidth<=600;w.classList.toggle('hp',hp);
       const r=hp&&(document.querySelector('#card .arsiprow .arsipbtn')||document.querySelector('#card .arsiprow')),rr=r&&r.getBoundingClientRect(),sejajar=!!(rr&&rr.height&&rr.top>8&&rr.bottom<batas-4);
       document.body.classList.toggle('pojokrow',sejajar);w.classList.toggle('sejajar',sejajar);
       if(sejajar){w.style.top=Math.round(rr.top+rr.height/2)+'px';w.style.bottom='auto';w.classList.toggle('bawah',rr.top<innerHeight*.4);}
       else{w.style.top='auto';w.style.bottom=(h?h+10:16)+'px';w.classList.remove('bawah');}};
-    addEventListener('resize',pojokGeser);addEventListener('scroll',pojokGeser,{passive:true});setInterval(pojokGeser,400);new MutationObserver(pojokGeser).observe(document.documentElement,{attributes:true,attributeFilter:['class']});
+    addEventListener('resize',pojokGeser);new MutationObserver(pojokGeser).observe(document.documentElement,{attributes:true,attributeFilter:['class']});
     const izinRender=qs=>{izinQs=qs;const g={menunggu:[],disetujui:[],ditolak:[]};let on=0;
       qs.forEach(d=>{const x=d.data();(g[x.status]||g.menunggu).push([d.id,x]);if(x.status==='disetujui'&&x.terakhir&&x.terakhir.toDate&&Date.now()-x.terakhir.toDate()<180000)on++;});
       for(const k in g)g[k].sort((a,b)=>((b[1].terakhir&&b[1].terakhir.seconds)||0)-((a[1].terakhir&&a[1].terakhir.seconds)||0));
