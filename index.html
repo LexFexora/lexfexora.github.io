@@ -2,7 +2,7 @@
 <html lang="id" class="gate-wait">
 <head>
 <meta charset="utf-8">
-<meta name="versi-situs" content="20261105h">
+<meta name="versi-situs" content="20261105i">
 <script>try{var t=localStorage.getItem("cat-tema");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;}catch(e){}</script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Computer Assisted Test - LEX FEXORA.</title>
@@ -331,7 +331,7 @@ html.gate-wait .wrap{display:none}
 @media print{#pojokaktif{display:none!important}}
 #pojokaktif.hp{left:12px;right:auto;width:min(270px,calc(100vw - 24px));align-items:flex-start;flex-direction:column-reverse}
 #pojokaktif.hp.sejajar{transform:translateY(-50%)}
-#pojokaktif.hp .pjh{padding:5px 9px;font-size:12.5px;gap:5px}#pojokaktif.hp.sejajar .pjw{display:none}#pojokaktif .pjh em.pjw{font-style:normal;font-weight:inherit;color:inherit}
+#pojokaktif.hp .pjh{padding:5px 9px;font-size:12.5px;gap:5px}#pojokaktif.hp .pjw{display:none}#pojokaktif .pjh em.pjw{font-style:normal;font-weight:inherit;color:inherit}
 #pojokaktif.hp.sejajar .pjl{position:absolute;left:0;bottom:calc(100% + 6px)}
 #pojokaktif.hp.bawah .pjl{bottom:auto!important;top:calc(100% + 6px)}
 
@@ -2417,13 +2417,13 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
         const adm=$('adm');adm.open=true;if(izinQs)izinRender(izinQs);requestAnimationFrame(()=>{const el=adm.querySelector(`.kat[data-kat="${CSS.escape(id)}"]`)||adm;el.scrollIntoView({behavior:'smooth',block:'center'});});});
       pojokGeser();};
     // Saat mode fokus, tombol navigasi soal menempel di bawah layar: panel pojok naik di atasnya agar tidak menutupi Next.
-    // HP: tombol "N aktif" pindah ke kiri, sejajar dengan baris Record di bawah soal (daftar membuka ke atas/bawah sesuai ruang).
+    // HP: tombol "N aktif" selalu di titik tetap: pojok kiri, tepat di atas tombol Previous/Next (daftar membuka ke atas).
     // Posisi di HP dikunci sekali (saat muncul, ganti mode fokus, atau ukuran layar berubah), lalu TIDAK ikut bergeser saat soal digulir.
     let pojokKunci='';
     const pojokGeser=(paksa)=>{const w=document.getElementById('pojokaktif');if(!w)return;
       const kunci=innerWidth+'x'+innerHeight+'|'+document.documentElement.classList.contains('fokus');if(paksa!==true&&kunci===pojokKunci&&w.dataset.pos)return;if(paksa!==true&&pojokKunci&&kunci!==pojokKunci)setTimeout(()=>pojokGeser(true),450);pojokKunci=kunci;w.dataset.pos='1';const nav=document.documentElement.classList.contains('fokus')&&document.querySelector('#card .nav');
       const h=nav?Math.max(0,innerHeight-nav.getBoundingClientRect().top):0,batas=innerHeight-h,hp=innerWidth<=600;w.classList.toggle('hp',hp);
-      const r=hp&&(document.querySelector('#card .arsiprow .arsipbtn')||document.querySelector('#card .arsiprow')),rr=r&&r.getBoundingClientRect(),sejajar=!!(rr&&rr.height&&rr.top>8&&rr.bottom<batas-4);
+      const sejajar=false,rr=null;
       document.body.classList.toggle('pojokrow',sejajar);w.classList.toggle('sejajar',sejajar);
       if(sejajar){w.style.top=Math.round(rr.top+rr.height/2)+'px';w.style.bottom='auto';w.classList.toggle('bawah',rr.top<innerHeight*.4);}
       else{w.style.top='auto';w.style.bottom=(h?h+10:16)+'px';w.classList.remove('bawah');}};
