@@ -2,7 +2,7 @@
 <html lang="id" class="gate-wait">
 <head>
 <meta charset="utf-8">
-<meta name="versi-situs" content="20261105b">
+<meta name="versi-situs" content="20261105c">
 <script>try{var t=localStorage.getItem("cat-tema");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;}catch(e){}</script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Computer Assisted Test - LEX FEXORA.</title>
@@ -1252,7 +1252,11 @@ const PKJ=o=>o&&o.ans?Object.keys(o.ans).length:0,PKT={};
 // posisi soal diambil dari versi yang terakhir benar-benar dikerjakan (t). Satu-satunya pengecualian: "Retry All"/ganti urutan (rs)
 // yang memang sengaja mengosongkan jawaban. Mengembalikan objek a apa adanya bila b tidak menambah apa pun.
 function gabung(a,b){if(!b||typeof b!=="object"||!b.ans)return a;if(!a||typeof a!=="object"||!a.ans)return b;
-  const ea=a.ep||0,eb=b.ep||0;if(ea!==eb){const nw=ea>eb?a:b;if(nw.rs)return nw;}
+  // Sesi berbeda (ep beda: Start baru, Retry, susun ulang): jawabannya TIDAK dicampur, agar soal yang belum dijawab di sesi ini tidak
+  // tampil sudah terjawab. Sesi yang lebih baru dipakai bila sudah dikerjakan; sesi baru yang masih kosong (mis. dibuat sebelum progres
+  // akun/perangkat lain terbaca) mengalah ke sesi lama agar progres tetap bisa dilanjutkan.
+  const ea=a.ep||0,eb=b.ep||0;if(ea!==eb){const nw=ea>eb?a:b,ol=nw===a?b:a,isi=s=>!!s.rs||PKJ(s)>0||Object.keys(s.expired||{}).length>0||(s.pos||0)>0;
+    return isi(nw)||!isi(ol)?nw:ol;}
   const ta=a.t||0,tb=b.t||0,bb=tb>ta;let tambah=bb||(eb>ea);
   if(!tambah){for(const k in b.ans)if(!(k in a.ans)){tambah=true;break;}}
   if(!tambah&&b.expired){for(const k in b.expired)if(!(a.expired&&k in a.expired)){tambah=true;break;}}
@@ -1278,16 +1282,9 @@ function terapkan(k){if(typeof sessionKey!=="function"||!state.list||sessionKey(
 async function segarkanPaket(){window.__segar=1;setTimeout(()=>{window.__segar=0;},8000);try{const disk=JSON.parse(localStorage.getItem(KEY)||"{}")||{};const pk=sessionKey(),lama=store[pk];gabungStore(disk);
     if(window.__ambilSemuaPaket){const raw=await window.__ambilSemuaPaket();if(raw)gabungStore(pkCloud(raw));}
     if(store[pk]!==lama){save();terapkan(pk);}try{window.__pkSegar&&window.__pkSegar();}catch(e){}}catch(e){}finally{window.__segar=0;lastTick=Date.now();}}
-// Jawaban Mock Exam (dicatat tryout.html di "to-riwayat") ikut masuk ke riwayat Prediction Packages dan Category Packages yang memuat soal itu.
-function serapMock(){let R;try{R=JSON.parse(localStorage.getItem("to-riwayat")||"{}")||{};}catch(e){return;}const ids=Object.keys(R);if(!ids.length||!window.__pkSusun)return;
-  const P=[];(window.__pkSusun()||[]).forEach((L,i)=>P.push({k:"paket|"+(i+1),ids:L}));(window.__kpSusun?window.__kpSusun():[]).forEach(p=>P.push({k:p.key,ids:p.ids}));
-  const ubah=new Set(),aktif=state.list&&typeof sessionKey==="function"?sessionKey():"";
-  P.forEach(p=>{const set=new Set(p.ids);ids.forEach(id=>{if(!set.has(id)||!BYID[id])return;const k="ulang|"+p.k;let v=store[k];
-    if(v&&(v.ans&&v.ans[id]!==undefined||v.expired&&v.expired[id]||Array.isArray(v.list)&&v.list.length&&!v.list.includes(id)))return;
-    if(k===aktif&&state.ans&&state.ans[id]!==undefined)return;
-    v=store[k]=Object.assign({pos:0,ep:0},v||{});v.ans=Object.assign({},v.ans,{[id]:+R[id]});v.t=Math.max(Date.now(),(v.t||0)+1);ubah.add(k);});});
-  try{localStorage.removeItem("to-riwayat");}catch(e){}
-  if(!ubah.size)return;save();ubah.forEach(k=>{kirimPaket(k.replace(/^ulang\|paket\|/,""),true);terapkan(k);});try{window.__pkSegar&&window.__pkSegar();}catch(e){}}
+// Jawaban Mock Exam (dicatat tryout.html di "to-riwayat") TIDAK lagi dimasukkan ke sesi Prediction/Category Packages: soal paket harus
+// mulai kosong sampai benar-benar dijawab di paket itu. Catatannya cukup dibuang.
+function serapMock(){try{localStorage.removeItem("to-riwayat");}catch(e){}}
 window.__serapMock=serapMock;
 document.addEventListener("visibilitychange",()=>{if(document.hidden)Object.keys(PKT).forEach(n=>kirimPaket(n,true));else{segarkanPaket();serapMock();}});
 addEventListener("storage",e=>{if(e.key==="to-riwayat"&&e.newValue)serapMock();});
