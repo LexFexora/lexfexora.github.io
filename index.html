@@ -979,6 +979,16 @@ html.beranim .toisi,html.beranim #setelan .controls{contain:layout paint style}
 /* Previous/Next terkunci di dasar layar (juga di Safari iPhone dengan bilah browser terlihat). */
 html.fokus body #card .nav{position:fixed!important;left:0;right:0;bottom:0;top:auto;z-index:30;margin:0!important;max-width:720px;margin-inline:auto!important;box-sizing:border-box;padding:12px max(16px,env(safe-area-inset-right,0px)) max(12px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))!important;justify-content:center}
 html.fokus body #card{padding-bottom:calc(72px + env(safe-area-inset-bottom,0px))!important}
+/* iPhone: bar atas mode fokus (nomor soal, lilin/gulungan, timer) adalah elemen fixed di dalam kartu yang digulir.
+   Safari iOS memotong elemen itu ke kotak kartu saat digulir, jadi kartu ditarik naik sampai baris tombol X
+   dan bar atas berada di dalam kotaknya. Pita latar di belakang bar menutupi isi soal yang lewat di bawahnya. */
+html.fokus{--fbar:calc(38px + min(14px,1.6vh));--ftop:max(10px,env(safe-area-inset-top,0px))}
+html.fokus body #card{margin-top:calc(-1 * (var(--ftop) + var(--fbar)))!important;padding-top:calc(var(--ftop) + var(--fbar) + 2px)!important;scroll-padding-top:calc(var(--ftop) + var(--fbar) + 8px)}
+html.fokus body .wrap::before{content:"";position:fixed;top:0;left:0;right:0;height:calc(var(--ftop) + var(--fbar));background:linear-gradient(180deg,var(--bg) 82%,color-mix(in srgb,var(--bg) 0%,transparent));z-index:3;pointer-events:none}
+html.fokus[data-theme="dark"] body .wrap::before{background:linear-gradient(180deg,#040505 82%,rgb(4 5 5 / 0))}
+@media (prefers-color-scheme:dark){html.fokus:not([data-theme="light"]) body .wrap::before{background:linear-gradient(180deg,#040505 82%,rgb(4 5 5 / 0))}}
+html.fokus body #fsexit{position:relative;z-index:4}
+html.fokus body #card .qno,html.fokus body #card .qkoin.melayang,html.fokus body #card .timer{z-index:4}
 #gate [hidden]{display:none!important}.gkode{display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:14px;font-size:13px;color:var(--muted)}.gkode .linkrow{margin:0;justify-content:center}.gkode input{max-width:200px}.gkode small{font-size:12px;min-height:1em}.gkodeada{color:color-mix(in srgb,var(--brass) 80%,var(--ink))}
 .akslink{margin:10px 0 4px}.akslink .aksrow{display:flex;flex-direction:column;gap:4px;padding:10px 0;border-top:1px solid var(--line)}.akslink .aksrow>small{font-size:12px;color:var(--muted)}.akslink .aksrow .linkrow{margin:2px 0;flex-wrap:wrap}.akslink .aksrow input{flex:1 1 220px;min-width:0;font-size:12px}.akslink .aksinfo:empty{display:none}.akslink code{font-size:.95em}
 .aksesub{margin:6px 0 10px;padding-top:8px;border-top:1px solid var(--line)}.aksesub .asgrup{display:flex;flex-direction:column;gap:4px;margin:8px 0}.aksesub .asgrup>small{font-size:12px;color:var(--muted)}.aksesub .asn{color:var(--muted);font-weight:500}
@@ -1540,7 +1550,7 @@ function pasFokus(){requestAnimationFrame(()=>{const c=$("card");if(!c)return;c.
   if(x)x.style.display="";});}
 addEventListener("resize",pasFokus);
 document.addEventListener("toggle",e=>{const k=e.target,c=$("card");if(!k.classList||!k.classList.contains("ket")||!k.open||!c||!document.documentElement.classList.contains("fokus"))return;
-  requestAnimationFrame(()=>c.scrollBy({top:k.getBoundingClientRect().top-c.getBoundingClientRect().top-8,behavior:"smooth"}));},true);
+  requestAnimationFrame(()=>c.scrollBy({top:k.getBoundingClientRect().top-c.getBoundingClientRect().top-(parseFloat(getComputedStyle(c).paddingTop)||0)-8,behavior:"smooth"}));},true);
 function renderCard(){
   const card=$("card");
   if(!state.list.length){card.innerHTML="<p>Tidak ada soal untuk pilihan ini.</p>";return;}
