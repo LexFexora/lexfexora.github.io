@@ -2,6 +2,7 @@
 <html lang="id" class="gate-wait">
 <head>
 <meta charset="utf-8">
+<meta name="versi-situs" content="20261105b">
 <script>try{var t=localStorage.getItem("cat-tema");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;}catch(e){}</script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Computer Assisted Test - LEX FEXORA.</title>
@@ -307,6 +308,9 @@ html.gate-wait .wrap{display:none}
 .adm .katd{flex-basis:100%;display:flex;flex-direction:column;gap:2px;padding:6px 10px;border-left:2px solid color-mix(in srgb,var(--brass) 55%,var(--line));font:12.5px/1.4 var(--f-sans,inherit);color:var(--ink);word-break:normal}
 .adm .katd span+span{color:var(--muted)}
 .adm .katd[hidden]{display:none}
+.adm li .dur .akmode{color:var(--brass);font-weight:700}
+.adm button.kat[data-kat]{white-space:normal;text-align:left;max-width:100%}
+.adm .katd.akt{min-width:0;max-width:100%;box-sizing:border-box}.adm .katd.akt .akr>b,.adm .katd.akt .aksoal{min-width:0;overflow-wrap:anywhere}
 .adm .katd.akt{gap:5px;padding:8px 12px;font-family:"Public Sans",system-ui,sans-serif}
 .adm .katd.akt .akr{display:grid;grid-template-columns:84px 1fr;gap:8px;align-items:baseline}
 .adm .katd.akt .akr>span{color:var(--muted);font-size:11.5px;text-transform:uppercase;letter-spacing:.04em}
@@ -2325,16 +2329,23 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
     // format lama "Kategori · Sub · soal n/N" (peserta yang belum memuat ulang halaman) tetap ditampilkan seadanya.
     const aktBaca=x=>{const r=String(x.posisi||'');if(!r)return null;if(r[0]==='{'){try{return JSON.parse(r);}catch(e){return null;}}
       const p=r.split(' · '),m=/^soal (\d+)\/(\d+)$/.exec(p[2]||'');return {lama:1,c:p[0]||'',s:p[1]||'',n:m?+m[1]:0,N:m?+m[2]:0};};
+    // Mode sesi. Halaman versi lama tidak mengirim mode, jadi ditebak dari bentuk sesinya: Latihan memakai satu sub-materi atau seluruh soal
+    // kategori (ratusan soal); Prediction Packages selalu Hukum Formil 100 soal; Category Packages paling banyak 100 soal; Vital Test Record 50 soal per PART.
+    const aktMode=a=>{if(!a)return '';if(!a.lama)return a.m||'';
+      if(a.c==='Semua Kategori'||a.s!=='Semua sub-materi'||!a.N||a.N>100)return 'Latihan per kategori';
+      return (a.c==='Hukum Formil'&&a.N===100?'Prediction atau Category Packages':a.N<=50?'Category Packages atau Vital Test Record':'Category Packages')+' (perkiraan)';};
+    const aktRingkas=x=>{const a=aktBaca(x);if(!a)return '';const m=aktMode(a);
+      return ` · <b class="akmode">${esc(m)}</b>${a.pk?' · '+esc(a.pk):a.c?' · '+esc(a.c):''}${a.sl?' · skor akhir':a.n&&a.N?` · soal ${a.n}/${a.N}`:''}`;};
     const aktHtml=(id,x)=>{const a=aktBaca(x);if(!a)return '';const on=!!(x.terakhir&&x.terakhir.toDate&&Date.now()-x.terakhir.toDate()<180000);
-      const lbl=[a.m&&a.m!=='Latihan per kategori'?a.m:'',a.c].filter(Boolean).join(' · ')||'Aktivitas';
+      const lbl=[aktMode(a).replace(' (perkiraan)','?'),a.c].filter(Boolean).join(' · ')||'Aktivitas';
       const q=a.id?(QB.find(z=>z.id===a.id)||null):null,tq=q?String(q.q||'').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim():(a.tq||'');
       const baris=[];
-      if(a.m)baris.push(`<div class="akr"><span>Mode</span><b>${esc(a.m)}</b></div>`);
+      if(a.m||a.lama)baris.push(`<div class="akr"><span>Mode</span><b>${esc(aktMode(a))}</b></div>`);
       if(a.pk)baris.push(`<div class="akr"><span>Paket</span><b>${esc(a.pk)}</b></div>`);
       if(a.c)baris.push(`<div class="akr"><span>Materi</span><b>${esc(a.c)}${a.s?' · '+esc(a.s):''}${a.bg?' · '+esc(a.bg):''}</b></div>`);
       if(a.N&&(a.n||a.sl))baris.push(`<div class="akr"><span>${on?'Sedang di':'Terakhir di'}</span><b>${a.sl?`Layar skor akhir (${a.N} soal)`:`Soal ke-${a.n} dari ${a.N}`}${a.id?` · <code>${esc(a.id)}</code>`:''}</b></div>`);
       if(tq)baris.push(`<div class="aksoal">${esc(tq.length>220?tq.slice(0,220)+'…':tq)}`+(a.ja===undefined?'':a.ja==='-'?' <i class="akj no">waktu habis</i>':a.ja?` <i class="akj ${a.jo===1?'ok':'no'}">dijawab ${esc(a.ja)} ${a.jo===1?'✓ benar':'✕ salah'}${a.jo!==1&&a.jk?` · kunci ${esc(a.jk)}`:''}</i>`:' <i class="akj">belum dijawab</i>')+`</div>`);
-      if(a.lama)baris.push('<div class="akn">Peserta masih memakai halaman versi lama, jadi detail jawaban belum terkirim. Detail muncul setelah halamannya dimuat ulang.</div>');
+      if(a.lama)baris.push('<div class="akn">Peserta masih memakai halaman versi lama yang belum mengirim mode, nama paket, dan jawaban. Mode di atas hanya perkiraan dari jumlah soal sesinya. Rincian pasti muncul setelah halamannya dimuat ulang.</div>');
       else{const dj=(a.b||0)+(a.x||0);
         baris.push(`<div class="akr"><span>Sesi ini</span><b>${dj} dijawab dari ${a.N} · <em class="ok">${a.b||0} benar</em> · <em class="no">${a.x||0} salah</em>${a.h?` · ${a.h} waktu habis`:''}${dj?` · ${Math.round((a.b||0)*100/dj)}%`:''}</b></div>`);
         if(a.j&&a.j.length)baris.push(`<div class="akpeta">${a.j.map(([n,qid,h,ok])=>`<span class="${ok===1?'ok':ok===2?'hb':'no'}${n===a.n&&!a.sl?' ini':''}" title="Soal ${n} · ${esc(qid)} · ${ok===2?'waktu habis':'jawab '+esc(h)+(ok?' (benar)':' (salah)')}">${n}<small>${ok===2?'⏱':esc(h)}</small></span>`).join('')}</div>`);}
@@ -2346,7 +2357,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       $('admcount').textContent=g.menunggu.length;$('admon').textContent=on;aksNama(g.disetujui);
       body.innerHTML=Object.keys(g).filter(k=>g[k].length).map(k=>`<h4>${TTL[k]} (${g[k].length})</h4><ul>`+g[k].map(([id,x])=>
         `<li><button class="siapa" type="button" data-u="${esc(id)}" aria-expanded="${emBuka.has(id)}" title="Ketuk untuk melihat email"><span class="av">${x.foto?`<img src="${esc(x.foto)}" alt="" referrerpolicy="no-referrer" onerror="this.replaceWith(document.createTextNode('${esc((x.nama||x.email||'?')[0].toUpperCase()).replace(/'/g,'')}'))">`:esc((x.nama||x.email||'?')[0].toUpperCase())}</span><span class="nm${BAYAR.has(id)?' lunas':''}"${BAYAR.has(id)?' title="Sudah bayar"':''}>${esc(x.nama||(x.email||'').split('@')[0])}</span>${BAYAR.has(id)?'<span class="lunaschip">VVIP · Lunas</span>':GRATIS.has(id)?'<span class="lunaschip gratis">VVIP</span>':x.jalur==='gratis'?'<span class="lunaschip gratis">Tautan</span>':''}${k==='disetujui'?(on=>`<span class="stt ${on?'on':'off'}">${on?'Online':'Offline'}</span>`)(!!(x.terakhir&&x.terakhir.toDate&&Date.now()-x.terakhir.toDate()<180000)):''}</button><span class="acts">${ACT[k].map(([v,l,c])=>`<button class="btn ${c}" data-id="${id}" data-v="${v}" type="button">${l}</button>`).join('')}${k==='disetujui'&&!BAYAR.has(id)?`<button class="btn" data-gratis="${esc(id)}" data-on="${GRATIS.has(id)?1:0}" type="button">${GRATIS.has(id)?'Cabut paket':'Paket gratis'}</button>`:''}</span>`+
-        `<span class="em"${k==='disetujui'&&!emBuka.has(id)?' hidden':''}><span class="mail">${esc(x.email)}</span>${k==='disetujui'?`<button class="kat" type="button" data-skor="${esc(id)}" aria-expanded="${skorBuka.has(id)}">Skor</button>`:''}${k==='disetujui'?aktHtml(id,x):''}</span>${k==='disetujui'?`<div class="skord" data-skord="${esc(id)}"${skorBuka.has(id)?'':' hidden'}>${skorHtml(id,x)}</div>`:''}<span class="dur">${k==='menunggu'?'Meminta '+fmt(x.diminta):'Terakhir '+(fmt(x.terakhir)||'-')}</span></li>`).join('')+'</ul>').join('')||'<p class="note">Belum ada yang meminta akses.</p>';
+        `<span class="em"${k==='disetujui'&&!emBuka.has(id)?' hidden':''}><span class="mail">${esc(x.email)}</span>${k==='disetujui'?`<button class="kat" type="button" data-skor="${esc(id)}" aria-expanded="${skorBuka.has(id)}">Skor</button>`:''}${k==='disetujui'?aktHtml(id,x):''}</span>${k==='disetujui'?`<div class="skord" data-skord="${esc(id)}"${skorBuka.has(id)?'':' hidden'}>${skorHtml(id,x)}</div>`:''}<span class="dur">${k==='menunggu'?'Meminta '+fmt(x.diminta):'Terakhir '+(fmt(x.terakhir)||'-')+(k==='disetujui'?aktRingkas(x):'')}</span></li>`).join('')+'</ul>').join('')||'<p class="note">Belum ada yang meminta akses.</p>';
       // Akun disetujui: foto dan nama saja, email muncul saat nama diketuk.
       // Chip kategori: ketuk untuk melihat sub-materi dan posisi soal yang sedang dikerjakan.
       body.querySelectorAll('.kat[data-kat]').forEach(b=>b.onclick=()=>{const d=b.nextElementSibling,id=b.dataset.kat;d.hidden=!d.hidden;d.hidden?katBuka.delete(id):katBuka.add(id);b.setAttribute('aria-expanded',String(!d.hidden));});
@@ -2514,6 +2525,17 @@ document.addEventListener('click',e=>{if(!(e.target.closest&&e.target.closest('#
     d._fa=[...d.children].filter(x=>x!==sm).map(x=>x.animate({opacity:buka?[0,1]:[1,0],transform:buka?['translateY(-8px)','none']:['none','translateY(-8px)']},{duration:dur*(buka?1:.75),easing:ease,fill:'both'}));
     d._an.onfinish=()=>{d._an=null;d.style.overflow='';if(d._tutup){d.open=false;d._tutup=false;}d._fa.forEach(a=>a.cancel());d._fa=[];};
   });})();
+</script>
+<script>
+// Versi situs: tab yang dibuka sebelum pembaruan mendapat tawaran muat ulang, agar fitur baru (mis. aktivitas langsung untuk pemilik) ikut aktif.
+(()=>{const kini=(document.querySelector('meta[name="versi-situs"]')||{}).content;if(!kini)return;let tampil=false,cekT=0;
+  const cek=async()=>{if(tampil||document.hidden||Date.now()-cekT<240000)return;cekT=Date.now();
+    try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text(),m=/<meta name="versi-situs" content="([^"]+)"/.exec(t);
+      if(!m||m[1]===kini)return;tampil=true;const b=document.createElement('div');b.id='versibaru';b.setAttribute('role','status');
+      b.style.cssText='position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:2147483600;display:flex;gap:10px;align-items:center;padding:9px 12px;border-radius:10px;background:var(--surface,#fff);color:var(--ink,#111);border:1px solid var(--brass,#9a6b12);box-shadow:0 6px 24px rgb(0 0 0 / .25);font:14px/1.3 "Public Sans",system-ui,sans-serif;max-width:calc(100vw - 32px)';
+      b.innerHTML='<span>A new version of the site is available.</span><button type="button" class="btn primary" style="white-space:nowrap">Reload</button>';
+      b.querySelector('button').onclick=()=>location.reload();document.body.appendChild(b);}catch(e){}};
+  setInterval(cek,60000);document.addEventListener('visibilitychange',cek);setTimeout(cek,20000);})();
 </script>
 </body>
 </html>
