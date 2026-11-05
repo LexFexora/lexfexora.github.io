@@ -2,7 +2,7 @@
 <html lang="id" class="gate-wait">
 <head>
 <meta charset="utf-8">
-<meta name="versi-situs" content="20261105d">
+<meta name="versi-situs" content="20261105e">
 <script>try{var t=localStorage.getItem("cat-tema");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;}catch(e){}</script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Computer Assisted Test - LEX FEXORA.</title>
@@ -1385,17 +1385,25 @@ function persist(){const pk=sessionKey(),mine={list:state.list,pos:state.pos,mul
 window.addEventListener("storage",e=>{if(e.key!==KEY||!e.newValue)return;let disk={};try{disk=JSON.parse(e.newValue)||{};}catch(x){return;}
   const pk=sessionKey(),lama=store[pk];gabungStore(disk);
   if(store[pk]!==lama){restore();render();}});
+// Sesi yang sudah mulai dikerjakan: urutannya tidak disusun ulang lagi (perubahan bank soal tidak boleh memindahkan soal yang sudah dijawab).
+function dikerjakan(s){return !!s&&(PKJ(s)>0||Object.keys(s.expired||{}).length>0||(s.pos||0)>0);}
 function restore(){
   const s=store[sessionKey()];
   const valid=s&&Array.isArray(s.list)&&s.list.length&&s.list.every(id=>BYID[id]&&s.perm&&s.perm[id]);
   const ids=new Set(pool().map(q=>q.id));
   // Ulangi yang salah (rs): daftarnya sengaja lebih kecil dari pool, tetap dipulihkan selama semua soalnya masih ada di pool.
-  if(valid&&(s.list.length===ids.size||(s.rs&&s.list.length<ids.size))&&s.list.every(id=>ids.has(id))){state.list=(s.order||"seq")==="seq"&&!(state.ulang&&state.ulang.tetap)?sortSeq(s.list.map(id=>BYID[id])).map(q=>q.id):s.list;state.pos=Math.min(s.pos||0,s.list.length);state.ans=s.ans||{};state.ep=s.ep||0;state.rs=!!s.rs;state.t=s.t||0;state.perm=s.perm;state.order=s.order||"seq";state.mulai=typeof s.mulai==="boolean"?s.mulai:!!(s.pos||Object.keys(s.ans||{}).length);state.tLeft=typeof s.tLeft==="number"?s.tLeft:SEC*s.list.length;state.timeUp=!!s.timeUp;state.qLeft=typeof s.qLeft==="number"?s.qLeft:SEC;state.qId=s.qId||null;state.expired=s.expired||{};}
+  if(valid&&(s.list.length===ids.size||(s.rs&&s.list.length<ids.size))&&s.list.every(id=>ids.has(id))){state.list=(s.order||"seq")==="seq"&&!(state.ulang&&state.ulang.tetap)&&!dikerjakan(s)?sortSeq(s.list.map(id=>BYID[id])).map(q=>q.id):s.list;state.pos=Math.min(s.pos||0,s.list.length);state.ans=s.ans||{};state.ep=s.ep||0;state.rs=!!s.rs;state.t=s.t||0;state.perm=s.perm;state.order=s.order||"seq";state.mulai=typeof s.mulai==="boolean"?s.mulai:!!(s.pos||Object.keys(s.ans||{}).length);state.tLeft=typeof s.tLeft==="number"?s.tLeft:SEC*s.list.length;state.timeUp=!!s.timeUp;state.qLeft=typeof s.qLeft==="number"?s.qLeft:SEC;state.qId=s.qId||null;state.expired=s.expired||{};}
   else if(s&&s.ans&&Object.keys(s.ans).length){
     // Bank soal berubah (soal diedit/dihapus): susun ulang daftar, tapi jawaban dan posisi lama tetap dipakai.
-    const lama=s;buildSession(true);const ada=new Set(state.list);
+    // Urutan lama dipertahankan: soal yang masih ada tetap di urutan semula (jadi soal yang sudah dijawab tidak pindah ke depan
+    // posisi yang sedang dikerjakan dan terlihat "sudah terjawab"), soal baru ditambahkan di belakang.
+    const lama=s;buildSession(true);const ada=new Set(state.list),L0=Array.isArray(lama.list)?lama.list:[];
+    const tetap=L0.filter(id=>ada.has(id)),setL=new Set(tetap),baru=lama.rs&&L0.length<ada.size?[]:state.list.filter(id=>!setL.has(id));
+    if(tetap.length){state.list=tetap.concat(baru);tetap.forEach(id=>{const p=lama.perm&&lama.perm[id];if(Array.isArray(p)&&p.length===BYID[id].o.length)state.perm[id]=p;});
+      Object.keys(state.perm).forEach(id=>{if(!state.list.includes(id))delete state.perm[id];});}
     Object.keys(lama.ans).forEach(id=>{if(ada.has(id))state.ans[id]=lama.ans[id];});Object.keys(lama.expired||{}).forEach(id=>{if(ada.has(id))state.expired[id]=true;});
-    state.ep=lama.ep||0;state.rs=!!lama.rs;state.mulai=!!lama.mulai;state.pos=Math.min(lama.pos||0,state.list.length);persist();}
+    const p0=Math.min(lama.pos||0,L0.length),pos=tetap.length?L0.slice(0,p0).filter(id=>setL.has(id)).length:p0;
+    state.ep=lama.ep||0;state.rs=!!lama.rs;state.mulai=!!lama.mulai;state.pos=Math.min(pos,state.list.length);persist();}
   else buildSession(true);
 }
 
