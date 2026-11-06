@@ -2,7 +2,7 @@
 <html lang="id" class="gate-wait">
 <head>
 <meta charset="utf-8">
-<meta name="versi-situs" content="20261106m">
+<meta name="versi-situs" content="20261106n">
 <script>try{var t=localStorage.getItem("cat-tema");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;}catch(e){}</script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Computer Assisted Test - LEX FEXORA.</title>
@@ -1023,6 +1023,10 @@ html:not(.vvip) .setelan.tocard>summary .vvipakses{display:none}
 #apbar #apspd{width:auto;min-width:58px;padding:0 8px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
 @media(max-width:480px){#apbar .apst{font-size:12px}#apbar button{width:34px}}
 html.fokus .card.apjalan,.card.apjalan{padding-bottom:84px}
+/* Layar tunggu/memuat: tanpa kotak, latar hitam polos. */
+html.gate-wait,html.gate-wait body{background:#000!important}
+html.gate-wait body::before,html.gate-wait body::after{display:none!important}
+.gate{border:0!important;background:none!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
 .ket>summary .ketv{margin-left:auto;font-size:13px;font-weight:700;padding:3px 10px;border-radius:999px;white-space:nowrap}
 .ket>summary .ketv.ok{color:var(--ok);background:var(--ok-soft)}
 .ket>summary .ketv.bad{color:var(--bad);background:var(--bad-soft)}
