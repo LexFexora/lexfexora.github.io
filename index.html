@@ -2,7 +2,7 @@
 <html lang="id" class="gate-wait">
 <head>
 <meta charset="utf-8">
-<meta name="versi-situs" content="20261106b">
+<meta name="versi-situs" content="20261106c">
 <script>try{var t=localStorage.getItem("cat-tema");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;}catch(e){}</script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Computer Assisted Test - LEX FEXORA.</title>
@@ -1008,9 +1008,7 @@ html.fokus body #card{padding-bottom:calc(72px + env(safe-area-inset-bottom,0px)
 html:not(.vvip) .setelan.tocard>summary .vvipakses{display:none}
 
 /* Autopilot (khusus pemilik): soal dan pembahasan diputar otomatis untuk menghafal. */
-.qap{min-height:0;height:30px;padding:0 10px;display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:600;border-radius:999px;background:none;border:1px solid var(--line);color:var(--ink)}
-.qap svg{width:13px;height:13px;fill:currentColor}
-.qap.on{background:var(--accent);border-color:var(--accent);color:var(--bg)}
+.owntools .qap{margin-right:auto}
 #apbar{position:fixed;left:50%;transform:translateX(-50%);bottom:max(14px,env(safe-area-inset-bottom,0px));z-index:60;width:min(560px,calc(100vw - 24px));background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:16px;box-shadow:0 10px 30px rgb(0 0 0 / .28);overflow:hidden}
 #apbar[hidden]{display:none}
 #apbar .approg{height:4px;background:var(--line)}
@@ -1693,7 +1691,7 @@ function renderCard(){
   const here=state.cat==="all"?q.mappings[0]:(q.mappings.find(m=>m.c===state.cat&&(state.sub==="all"||m.s===+state.sub))||q.mappings[0]);
   const also=q.mappings.filter(m=>m!==here).map(m=>`${CATS[m.c].short} ${m.s}`).join(", ");
   const own=!!window.__isOwner;
-  let html=`<div class="qhead"><span class="qno"><span class="qlbl">Soal No. </span>${state.pos+1}${own&&DIKUNCI.has(id)?' <span title="Diedit pemilik: dikunci dari perubahan otomatis">🔒</span>':""} <span class="of">/ ${state.list.length}</span></span>`+(own?`<div class="owntools"><button class="btn mvbtn" id="ed" type="button" aria-expanded="${!!state.edOpen}">✎ Edit</button><button class="btn mvbtn" id="mv" type="button" aria-expanded="${!!state.mvOpen}">⇄ Pindahkan</button></div>`:"")+(t=>`<span class="qkoin" title="Lilin: jawaban benar · Gulungan naskah: jawaban salah"><span class="kn" aria-label="${t.ok} lilin">🕯️<b>${t.ok}</b></span><span class="kn" aria-label="${t.bad} gulungan naskah">📜<b>${t.bad}</b></span></span>`)(tally())+`<div class="qtools">${own?`<button class="btn qap${AP.on?" on":""}" id="apbtn" type="button" aria-pressed="${AP.on}" title="Autopilot: soal, kunci jawaban, dan pembahasan berjalan sendiri"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9-5.5z"/></svg>Auto</button>`:""}<span id="tslot"></span><button class="btn qfs" id="cfs" type="button" title="Layar penuh" aria-label="Layar penuh">⛶</button></div></div>`;
+  let html=`<div class="qhead"><span class="qno"><span class="qlbl">Soal No. </span>${state.pos+1}${own&&DIKUNCI.has(id)?' <span title="Diedit pemilik: dikunci dari perubahan otomatis">🔒</span>':""} <span class="of">/ ${state.list.length}</span></span>`+(own?`<div class="owntools"><button class="btn mvbtn qap" id="apbtn" type="button" aria-pressed="${AP.on}" title="Autopilot: soal, kunci jawaban, dan pembahasan berjalan sendiri">${AP.on?"■ Stop":"▶ Auto"}</button><button class="btn mvbtn" id="ed" type="button" aria-expanded="${!!state.edOpen}">✎ Edit</button><button class="btn mvbtn" id="mv" type="button" aria-expanded="${!!state.mvOpen}">⇄ Pindahkan</button></div>`:"")+(t=>`<span class="qkoin" title="Lilin: jawaban benar · Gulungan naskah: jawaban salah"><span class="kn" aria-label="${t.ok} lilin">🕯️<b>${t.ok}</b></span><span class="kn" aria-label="${t.bad} gulungan naskah">📜<b>${t.bad}</b></span></span>`)(tally())+`<div class="qtools"><span id="tslot"></span><button class="btn qfs" id="cfs" type="button" title="Layar penuh" aria-label="Layar penuh">⛶</button></div></div>`;
   if(own&&state.mvOpen){const cs=Object.keys(CATS).map(Number);
     html+=`<div class="mvbox" id="mvbox"><span>Pindahkan dari <b>${esc(here.kategori_utama)} ${here.s}</b> ke:</span><select id="mvc" aria-label="Kategori tujuan">${cs.map(c=>`<option value="${c}"${c===here.c?" selected":""}>${esc(CATS[c].short)}</option>`).join("")}</select><select id="mvs" aria-label="Sub-materi tujuan"></select><button class="btn primary" id="mvok" type="button">Simpan</button><button class="btn" id="mvno" type="button">Batal</button><p class="note" id="mvmsg">Perpindahan disimpan di server dan berlaku untuk semua pengguna setelah mereka memuat ulang halaman.</p></div>`;}
   if(own&&state.edOpen){
