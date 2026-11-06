@@ -2,7 +2,7 @@
 <html lang="id" class="gate-wait">
 <head>
 <meta charset="utf-8">
-<meta name="versi-situs" content="20261106h">
+<meta name="versi-situs" content="20261106i">
 <script>try{var t=localStorage.getItem("cat-tema");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;}catch(e){}</script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Computer Assisted Test - LEX FEXORA.</title>
@@ -1743,7 +1743,7 @@ function renderCard(){
 // Autopilot sendiri tidak mengisi jawaban dan tidak memengaruhi skor; pengguna tetap boleh menjawab sebelum kunci dibuka (lilin/gulungan); timer kuis tetap berjalan selama autopilot (berjalan maupun dijeda).
 // Pemilik selalu boleh; pengguna lain bila pemilik memberi izin Autopilot (izin/<uid>.autopilot = true).
 function apIzin(){return !!(window.__isOwner||window.__apBoleh);}
-window.__apSegar=()=>{if(!apIzin()){if(AP.on)apStop();else if(window.__layar()==="soal")renderCard();}else if(window.__layar()==="soal"&&!AP.on)renderCard();};
+window.__apSegar=()=>{if(!apIzin()){if(AP.on)apStop(true);else if(window.__layar()==="soal")renderCard();}else if(window.__layar()==="soal"&&!AP.on)renderCard();};
 var AP={on:false,run:false,id:null,fase:0,sisa:0,dur:0,spd:1,akhir:false,wl:null};
 try{const v=+localStorage.getItem("ap-spd");if(v)AP.spd=v;}catch(e){}
 function apDur(q,f){const n=f?String(q.p||"").length+String(q.d||"").length:String(q.q||"").length+q.o.join(" ").length;
@@ -1779,11 +1779,18 @@ function apMaju(manual){if(!AP.on)return;
   if(manual)return;AP.akhir=true;AP.run=false;apKunci();apUI();}
 async function apKunci(){try{if(AP.on&&AP.run){if(!AP.wl&&navigator.wakeLock)AP.wl=await navigator.wakeLock.request("screen");}
   else if(AP.wl){const w=AP.wl;AP.wl=null;await w.release();}}catch(e){AP.wl=null;}}
-function apMulai(){if(!apIzin()||window.__layar()!=="soal")return;AP.on=true;AP.run=true;AP.akhir=false;AP.id=null;apKunci();renderCard();renderTimer();}
-function apStop(){if(!AP.on)return;AP.on=false;AP.run=false;AP.id=null;apKunci();apUI();render();}
+// Bunyi "ding-dong" seperti tanda kabin pesawat, dibuat langsung dengan Web Audio (tanpa file suara).
+let apAC=null;
+function apBunyi(nyala){try{const C=window.AudioContext||window.webkitAudioContext;if(!C)return;apAC=apAC||new C();if(apAC.state==="suspended")apAC.resume();
+  const t0=apAC.currentTime+.02,out=apAC.createGain();out.gain.value=.22;out.connect(apAC.destination);
+  const nada=(f,t,d)=>[[1,1],[2,.28],[3,.08]].forEach(([k,a])=>{const o=apAC.createOscillator(),g=apAC.createGain();o.type="sine";o.frequency.value=f*k;
+    g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(a,t+.012);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(out);o.start(t);o.stop(t+d+.05);});
+  if(nyala){nada(988,t0,1.4);nada(784,t0+.55,1.8);}else nada(784,t0,1.2);}catch(e){}}
+function apMulai(){if(!apIzin()||window.__layar()!=="soal")return;apBunyi(true);AP.on=true;AP.run=true;AP.akhir=false;AP.id=null;apKunci();renderCard();renderTimer();}
+function apStop(diam){if(!AP.on)return;if(diam!==true)apBunyi(false);AP.on=false;AP.run=false;AP.id=null;apKunci();apUI();render();}
 let apT=Date.now();
 setInterval(()=>{const now=Date.now(),dt=now-apT;apT=now;if(!AP.on)return;
-  if(!apIzin()||window.__layar()!=="soal"){apStop();return;}
+  if(!apIzin()||window.__layar()!=="soal"){apStop(true);return;}
   if(!AP.run||AP.akhir)return;
   if(state.edOpen||state.mvOpen)return;
   AP.sisa-=dt;if(AP.sisa<=0)apMaju(false);else apUI();},150);
