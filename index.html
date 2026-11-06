@@ -2,7 +2,7 @@
 <html lang="id" class="gate-wait">
 <head>
 <meta charset="utf-8">
-<meta name="versi-situs" content="20261106d">
+<meta name="versi-situs" content="20261106e">
 <script>try{var t=localStorage.getItem("cat-tema");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;}catch(e){}</script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Computer Assisted Test - LEX FEXORA.</title>
@@ -1014,17 +1014,17 @@ html:not(.vvip) .setelan.tocard>summary .vvipakses{display:none}
 #apbar .approg{height:4px;background:var(--line)}
 #apbar .approg i{display:block;height:100%;width:0;background:var(--accent);transition:width .15s linear}
 #apbar .aprow{display:flex;align-items:center;gap:8px;padding:8px 10px}
-#apbar .apst{flex:1;min-width:0;font-size:13px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#apbar .apst{flex:1;min-width:0;font-size:13.5px;font-variant-numeric:tabular-nums;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #apbar .apst b{color:var(--accent)}
 #apbar button,#apbar select{min-height:0;height:34px;border-radius:10px;border:1px solid var(--line);background:none;color:var(--ink);font:inherit;font-size:14px;cursor:pointer}
 #apbar button{width:38px;padding:0;display:grid;place-items:center}
 #apbar button svg{width:16px;height:16px;fill:currentColor}
 #apbar #applay{background:var(--accent);border-color:var(--accent);color:var(--bg)}
-#apbar select{padding:0 6px;font-size:13px}
+#apbar #apspd{width:auto;min-width:58px;padding:0 8px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
 @media(max-width:480px){#apbar .apst{font-size:12px}#apbar button{width:34px}}
 .card.apjalan .opt{cursor:default}
 html.fokus .card.apjalan,.card.apjalan{padding-bottom:84px}
-@media(max-width:480px){#apbar select{width:56px}#apbar .aprow{gap:6px}}
+@media(max-width:480px){#apbar .aprow{gap:5px;padding:8px}#apbar #apspd{min-width:54px;padding:0 6px}}
 </style>
 <style>
 /* Arsip soal penting: tombol di bawah pilihan jawaban dan kartu Arsip Soal di bawah Category Packages. */
@@ -1748,16 +1748,16 @@ function apBar(){let b=$("apbar");if(b)return b;b=document.createElement("div");
 <button type="button" id="apprev" title="Soal sebelumnya" aria-label="Soal sebelumnya"><svg viewBox="0 0 16 16"><path d="M3 3h2v10H3zM14 3v10L6 8z"/></svg></button>
 <button type="button" id="applay" title="Jeda" aria-label="Jeda"></button>
 <button type="button" id="apnext" title="Lewati" aria-label="Lewati"><svg viewBox="0 0 16 16"><path d="M11 3h2v10h-2zM2 3v10l8-5z"/></svg></button>
-<select id="apspd" aria-label="Kecepatan" title="Kecepatan">${[0.5,0.75,1,1.25,1.5,2,3].map(v=>`<option value="${v}"${v===AP.spd?" selected":""}>${v}×</option>`).join("")}</select>
+<button type="button" id="apspd" title="Kecepatan (ketuk untuk mengganti)" aria-label="Kecepatan"></button>
 <button type="button" id="apx" title="Hentikan autopilot" aria-label="Hentikan autopilot"><svg viewBox="0 0 16 16"><path d="M3.5 2.4 8 6.9l4.5-4.5 1.1 1.1L9.1 8l4.5 4.5-1.1 1.1L8 9.1l-4.5 4.5-1.1-1.1L6.9 8 2.4 3.5z"/></svg></button></div>`;
   document.body.appendChild(b);
   $("applay").onclick=()=>{if(AP.akhir){AP.akhir=false;apKe(0);return;}AP.run=!AP.run;apKunci();apUI();};
   $("apnext").onclick=()=>apMaju(true);
   $("apprev").onclick=()=>{if(AP.fase===1&&AP.sisa<AP.dur-1500){AP.fase=0;apAtur();renderCard();return;}if(state.pos>0)apKe(state.pos-1);};
-  $("apspd").onchange=e=>{const v=+e.target.value||1,r=AP.sisa/AP.dur||1;AP.spd=v;try{localStorage.setItem("ap-spd",String(v));}catch(x){}const q=BYID[AP.id];if(q){AP.dur=apDur(q,AP.fase);AP.sisa=AP.dur*r;}apUI();};
+  $("apspd").onclick=()=>{const L=[0.5,0.75,1,1.25,1.5,2,3],v=L[(L.indexOf(AP.spd)+1)%L.length],r=AP.sisa/AP.dur||1;AP.spd=v;try{localStorage.setItem("ap-spd",String(v));}catch(x){}const q=BYID[AP.id];if(q){AP.dur=apDur(q,AP.fase);AP.sisa=AP.dur*r;}apUI();};
   $("apx").onclick=apStop;return b;}
-function apUI(){const b=apBar();b.hidden=!AP.on;if(!AP.on)return;const n=state.list.length;
-  $("apst").innerHTML=AP.akhir?"<b>Selesai.</b> Semua soal sudah diputar.":`<b>${AP.fase?"Pembahasan":"Soal"}</b> · ${state.pos+1}/${n}${AP.run?"":" · dijeda"}`;
+function apUI(){const b=apBar();b.hidden=!AP.on;if(!AP.on)return;const n=state.list.length;$("apspd").textContent=String(AP.spd).replace(".",",")+"×";
+  $("apst").innerHTML=AP.akhir?"<b>Selesai.</b> Semua soal sudah diputar.":`<b>${AP.fase?"Bahas":"Soal"}</b> ${state.pos+1}/${n}${AP.run?"":" · jeda"}`;
   $("applay").innerHTML=AP.akhir?'<svg viewBox="0 0 16 16"><path d="M8 2.5a5.5 5.5 0 1 1-5.2 3.7l1.4.5A4 4 0 1 0 8 4v2L4.8 3.3 8 .5z"/></svg>':AP.run?'<svg viewBox="0 0 16 16"><path d="M4 3h3v10H4zM9 3h3v10H9z"/></svg>':'<svg viewBox="0 0 16 16"><path d="M4 2.5v11l9-5.5z"/></svg>';
   const pl=AP.akhir?"Ulangi dari soal pertama":AP.run?"Jeda":"Lanjutkan";$("applay").title=pl;$("applay").setAttribute("aria-label",pl);
   $("apfill").style.width=(AP.akhir?100:AP.dur?Math.min(100,100*(1-AP.sisa/AP.dur)):0)+"%";}
