@@ -2,7 +2,7 @@
 <html lang="id" class="gate-wait">
 <head>
 <meta charset="utf-8">
-<meta name="versi-situs" content="20261106a">
+<meta name="versi-situs" content="20261106b">
 <script>try{var t=localStorage.getItem("cat-tema");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;}catch(e){}</script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Computer Assisted Test - LEX FEXORA.</title>
@@ -1006,6 +1006,27 @@ html.fokus body #card{padding-bottom:calc(72px + env(safe-area-inset-bottom,0px)
 .setelan.tocard>summary .vvipakses{position:absolute;right:40px;top:50%;transform:translateY(-50%);padding:1px 7px;border-radius:999px;font:600 8.5px/1.5 var(--f-body,inherit);letter-spacing:.14em;text-transform:uppercase;white-space:nowrap;color:var(--muted);-webkit-text-fill-color:var(--muted);border:1px solid color-mix(in srgb,var(--muted) 35%,transparent);background:transparent;text-shadow:none;align-self:center}
 #pkcard>summary,#kpcard>summary,#arcard>summary{position:relative}
 html:not(.vvip) .setelan.tocard>summary .vvipakses{display:none}
+
+/* Autopilot (khusus pemilik): soal dan pembahasan diputar otomatis untuk menghafal. */
+.qap{min-height:0;height:30px;padding:0 10px;display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:600;border-radius:999px;background:none;border:1px solid var(--line);color:var(--ink)}
+.qap svg{width:13px;height:13px;fill:currentColor}
+.qap.on{background:var(--accent);border-color:var(--accent);color:var(--bg)}
+#apbar{position:fixed;left:50%;transform:translateX(-50%);bottom:max(14px,env(safe-area-inset-bottom,0px));z-index:60;width:min(560px,calc(100vw - 24px));background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:16px;box-shadow:0 10px 30px rgb(0 0 0 / .28);overflow:hidden}
+#apbar[hidden]{display:none}
+#apbar .approg{height:4px;background:var(--line)}
+#apbar .approg i{display:block;height:100%;width:0;background:var(--accent);transition:width .15s linear}
+#apbar .aprow{display:flex;align-items:center;gap:8px;padding:8px 10px}
+#apbar .apst{flex:1;min-width:0;font-size:13px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#apbar .apst b{color:var(--accent)}
+#apbar button,#apbar select{min-height:0;height:34px;border-radius:10px;border:1px solid var(--line);background:none;color:var(--ink);font:inherit;font-size:14px;cursor:pointer}
+#apbar button{width:38px;padding:0;display:grid;place-items:center}
+#apbar button svg{width:16px;height:16px;fill:currentColor}
+#apbar #applay{background:var(--accent);border-color:var(--accent);color:var(--bg)}
+#apbar select{padding:0 6px;font-size:13px}
+@media(max-width:480px){#apbar .apst{font-size:12px}#apbar button{width:34px}}
+.card.apjalan .opt{cursor:default}
+html.fokus .card.apjalan,.card.apjalan{padding-bottom:84px}
+@media(max-width:480px){#apbar select{width:56px}#apbar .aprow{gap:6px}}
 </style>
 <style>
 /* Arsip soal penting: tombol di bawah pilihan jawaban dan kartu Arsip Soal di bawah Category Packages. */
@@ -1672,7 +1693,7 @@ function renderCard(){
   const here=state.cat==="all"?q.mappings[0]:(q.mappings.find(m=>m.c===state.cat&&(state.sub==="all"||m.s===+state.sub))||q.mappings[0]);
   const also=q.mappings.filter(m=>m!==here).map(m=>`${CATS[m.c].short} ${m.s}`).join(", ");
   const own=!!window.__isOwner;
-  let html=`<div class="qhead"><span class="qno"><span class="qlbl">Soal No. </span>${state.pos+1}${own&&DIKUNCI.has(id)?' <span title="Diedit pemilik: dikunci dari perubahan otomatis">🔒</span>':""} <span class="of">/ ${state.list.length}</span></span>`+(own?`<div class="owntools"><button class="btn mvbtn" id="ed" type="button" aria-expanded="${!!state.edOpen}">✎ Edit</button><button class="btn mvbtn" id="mv" type="button" aria-expanded="${!!state.mvOpen}">⇄ Pindahkan</button></div>`:"")+(t=>`<span class="qkoin" title="Lilin: jawaban benar · Gulungan naskah: jawaban salah"><span class="kn" aria-label="${t.ok} lilin">🕯️<b>${t.ok}</b></span><span class="kn" aria-label="${t.bad} gulungan naskah">📜<b>${t.bad}</b></span></span>`)(tally())+`<div class="qtools"><span id="tslot"></span><button class="btn qfs" id="cfs" type="button" title="Layar penuh" aria-label="Layar penuh">⛶</button></div></div>`;
+  let html=`<div class="qhead"><span class="qno"><span class="qlbl">Soal No. </span>${state.pos+1}${own&&DIKUNCI.has(id)?' <span title="Diedit pemilik: dikunci dari perubahan otomatis">🔒</span>':""} <span class="of">/ ${state.list.length}</span></span>`+(own?`<div class="owntools"><button class="btn mvbtn" id="ed" type="button" aria-expanded="${!!state.edOpen}">✎ Edit</button><button class="btn mvbtn" id="mv" type="button" aria-expanded="${!!state.mvOpen}">⇄ Pindahkan</button></div>`:"")+(t=>`<span class="qkoin" title="Lilin: jawaban benar · Gulungan naskah: jawaban salah"><span class="kn" aria-label="${t.ok} lilin">🕯️<b>${t.ok}</b></span><span class="kn" aria-label="${t.bad} gulungan naskah">📜<b>${t.bad}</b></span></span>`)(tally())+`<div class="qtools">${own?`<button class="btn qap${AP.on?" on":""}" id="apbtn" type="button" aria-pressed="${AP.on}" title="Autopilot: soal, kunci jawaban, dan pembahasan berjalan sendiri"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9-5.5z"/></svg>Auto</button>`:""}<span id="tslot"></span><button class="btn qfs" id="cfs" type="button" title="Layar penuh" aria-label="Layar penuh">⛶</button></div></div>`;
   if(own&&state.mvOpen){const cs=Object.keys(CATS).map(Number);
     html+=`<div class="mvbox" id="mvbox"><span>Pindahkan dari <b>${esc(here.kategori_utama)} ${here.s}</b> ke:</span><select id="mvc" aria-label="Kategori tujuan">${cs.map(c=>`<option value="${c}"${c===here.c?" selected":""}>${esc(CATS[c].short)}</option>`).join("")}</select><select id="mvs" aria-label="Sub-materi tujuan"></select><button class="btn primary" id="mvok" type="button">Simpan</button><button class="btn" id="mvno" type="button">Batal</button><p class="note" id="mvmsg">Perpindahan disimpan di server dan berlaku untuk semua pengguna setelah mereka memuat ulang halaman.</p></div>`;}
   if(own&&state.edOpen){
@@ -1684,19 +1705,21 @@ function renderCard(){
     $("mv").onclick=()=>{state.edOpen=false;state.mvOpen=true;renderCard();};
     $("edok").onclick=()=>editQ(id);
     return;}
+  const apKey=AP.on&&AP.fase===1&&AP.id===id;
   html+=`<div class="qjudul" title="${esc(judulKerja())}">${esc(judulKerja())}</div><p class="qtext">${esc(q.q)}</p><ol class="opts">`;
   perm.forEach((oi,pi)=>{
     let cls="",mark="";
     if(answered){ if(oi===q.a){cls="correct";mark="✅";} else if(oi===chosen){cls="wrong";mark="❌";} }
     // Khusus pemilik: saat waktu habis, jawaban benar langsung ditandai tanpa perlu diketuk.
-    else if(locked&&own&&oi===q.a){cls="correct";mark="✅";}
-    html+=`<li><button type="button" class="opt ${cls}" data-o="${oi}" ${answered||locked?"disabled":""}><span class="l"><i>${L[pi]}</i></span><span class="t">${esc(q.o[oi])}</span><span class="mark">${mark}</span></button></li>`;
+    else if((locked&&own||apKey)&&oi===q.a){cls="correct";mark="✅";}
+    html+=`<li><button type="button" class="opt ${cls}" data-o="${oi}" ${answered||locked||AP.on?"disabled":""}><span class="l"><i>${L[pi]}</i></span><span class="t">${esc(q.o[oi])}</span><span class="mark">${mark}</span></button></li>`;
   });
   html+="</ol>"+arsipHTML(id);
   if(answered){
     html+=`${ketHTML(q)}`;
   }
   if(locked) html+=ketHTML(q);
+  else if(apKey&&!answered) html+=ketHTML(q);
   html+=`<div class="nav"><button class="btn" id="prev" type="button" ${state.pos===0?"disabled":""}><svg class="nvp" viewBox="0 0 16 16" aria-hidden="true"><path d="M13 8H3.5M7.5 4 3.5 8l4 4"/></svg><span>Previous</span></button><button class="btn primary" id="next" type="button">${state.pos===state.list.length-1?"<span>Lihat hasil</span>":'<span>Next</span><svg class="nvp" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4"/></svg>'}</button></div>`;
   card.innerHTML=html;pasangAlat();
   if(own){$("mv").onclick=()=>{state.mvOpen=!state.mvOpen;renderCard();};$("ed").onclick=()=>{state.edOpen=true;state.mvOpen=false;renderCard();};
@@ -1707,8 +1730,58 @@ function renderCard(){
   card.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{state.ans[id]=+b.dataset.o;tandaiCoba(id);if(state.ans[id]===q.a)tandaiBenar(id);persist();render();});
   $("prev").onclick=()=>{state.pos--;persist();render();};
   $("next").onclick=()=>{state.pos++;persist();render();window.scrollTo({top:Math.max(0,$("card").offsetTop-12)});};
+  card.classList.toggle("apjalan",AP.on);
+  if(AP.on)apSoal(id);
   pasFokus();
 }
+// Autopilot (khusus pemilik, untuk menghafal): soal tampil, jeda, kunci jawaban dan pembahasan terbuka, jeda, lalu pindah ke soal berikutnya.
+// Tidak mengisi jawaban dan tidak memengaruhi skor (lilin/gulungan); timer kuis dibekukan selama autopilot berjalan.
+var AP={on:false,run:false,id:null,fase:0,sisa:0,dur:0,spd:1,akhir:false,wl:null};
+try{const v=+localStorage.getItem("ap-spd");if(v)AP.spd=v;}catch(e){}
+function apDur(q,f){const n=f?String(q.p||"").length+String(q.d||"").length:String(q.q||"").length+q.o.join(" ").length;
+  const ms=f?Math.min(60000,Math.max(7000,3000+n*32)):Math.min(30000,Math.max(5000,2500+n*30));return ms/AP.spd;}
+function apBar(){let b=$("apbar");if(b)return b;b=document.createElement("div");b.id="apbar";b.hidden=true;b.setAttribute("role","region");b.setAttribute("aria-label","Autopilot");
+  b.innerHTML=`<div class="approg"><i id="apfill"></i></div><div class="aprow"><span class="apst" id="apst"></span>
+<button type="button" id="apprev" title="Soal sebelumnya" aria-label="Soal sebelumnya"><svg viewBox="0 0 16 16"><path d="M3 3h2v10H3zM14 3v10L6 8z"/></svg></button>
+<button type="button" id="applay" title="Jeda" aria-label="Jeda"></button>
+<button type="button" id="apnext" title="Lewati" aria-label="Lewati"><svg viewBox="0 0 16 16"><path d="M11 3h2v10h-2zM2 3v10l8-5z"/></svg></button>
+<select id="apspd" aria-label="Kecepatan" title="Kecepatan">${[0.5,0.75,1,1.25,1.5,2,3].map(v=>`<option value="${v}"${v===AP.spd?" selected":""}>${v}×</option>`).join("")}</select>
+<button type="button" id="apx" title="Hentikan autopilot" aria-label="Hentikan autopilot"><svg viewBox="0 0 16 16"><path d="M3.5 2.4 8 6.9l4.5-4.5 1.1 1.1L9.1 8l4.5 4.5-1.1 1.1L8 9.1l-4.5 4.5-1.1-1.1L6.9 8 2.4 3.5z"/></svg></button></div>`;
+  document.body.appendChild(b);
+  $("applay").onclick=()=>{if(AP.akhir){AP.akhir=false;apKe(0);return;}AP.run=!AP.run;apKunci();apUI();};
+  $("apnext").onclick=()=>apMaju(true);
+  $("apprev").onclick=()=>{if(AP.fase===1&&AP.sisa<AP.dur-1500){AP.fase=0;apAtur();renderCard();return;}if(state.pos>0)apKe(state.pos-1);};
+  $("apspd").onchange=e=>{const v=+e.target.value||1,r=AP.sisa/AP.dur||1;AP.spd=v;try{localStorage.setItem("ap-spd",String(v));}catch(x){}const q=BYID[AP.id];if(q){AP.dur=apDur(q,AP.fase);AP.sisa=AP.dur*r;}apUI();};
+  $("apx").onclick=apStop;return b;}
+function apUI(){const b=apBar();b.hidden=!AP.on;if(!AP.on)return;const n=state.list.length;
+  $("apst").innerHTML=AP.akhir?"<b>Selesai.</b> Semua soal sudah diputar.":`<b>${AP.fase?"Pembahasan":"Soal"}</b> · ${state.pos+1}/${n}${AP.run?"":" · dijeda"}`;
+  $("applay").innerHTML=AP.akhir?'<svg viewBox="0 0 16 16"><path d="M8 2.5a5.5 5.5 0 1 1-5.2 3.7l1.4.5A4 4 0 1 0 8 4v2L4.8 3.3 8 .5z"/></svg>':AP.run?'<svg viewBox="0 0 16 16"><path d="M4 3h3v10H4zM9 3h3v10H9z"/></svg>':'<svg viewBox="0 0 16 16"><path d="M4 2.5v11l9-5.5z"/></svg>';
+  const pl=AP.akhir?"Ulangi dari soal pertama":AP.run?"Jeda":"Lanjutkan";$("applay").title=pl;$("applay").setAttribute("aria-label",pl);
+  $("apfill").style.width=(AP.akhir?100:AP.dur?Math.min(100,100*(1-AP.sisa/AP.dur)):0)+"%";}
+function apAtur(){const q=BYID[AP.id];AP.dur=q?apDur(q,AP.fase):5000;AP.sisa=AP.dur;}
+// Dipanggil setiap kali kartu soal digambar ulang selama autopilot: soal yang berbeda (mis. diklik lewat peta soal) mulai dari fase soal.
+function apSoal(id){if(id!==AP.id){AP.id=id;AP.fase=0;AP.akhir=false;apAtur();}apUI();}
+function apKe(i){state.pos=i;AP.id=null;persist();render();apGulir(false);}
+function apGulir(ket){const c=$("card");if(!c)return;
+  if(ket){const k=c.querySelector("details.ket");if(k){k.open=true;k.scrollIntoView({behavior:"smooth",block:"start"});}}
+  else{c.scrollTop=0;if(!document.documentElement.classList.contains("fokus"))window.scrollTo({top:Math.max(0,c.offsetTop-12),behavior:"smooth"});}}
+function apMaju(manual){if(!AP.on)return;
+  if(AP.fase===0){AP.fase=1;apAtur();renderCard();apGulir(true);return;}
+  if(state.pos<state.list.length-1){apKe(state.pos+1);return;}
+  if(manual)return;AP.akhir=true;AP.run=false;apKunci();apUI();}
+async function apKunci(){try{if(AP.on&&AP.run){if(!AP.wl&&navigator.wakeLock)AP.wl=await navigator.wakeLock.request("screen");}
+  else if(AP.wl){const w=AP.wl;AP.wl=null;await w.release();}}catch(e){AP.wl=null;}}
+function apMulai(){if(!window.__isOwner||window.__layar()!=="soal")return;AP.on=true;AP.run=true;AP.akhir=false;AP.id=null;lastTick=Date.now();apKunci();renderCard();renderTimer();}
+function apStop(){if(!AP.on)return;AP.on=false;AP.run=false;AP.id=null;apKunci();apUI();lastTick=Date.now();render();}
+let apT=Date.now();
+setInterval(()=>{const now=Date.now(),dt=now-apT;apT=now;if(!AP.on)return;
+  if(!window.__isOwner||window.__layar()!=="soal"){apStop();return;}
+  if(!AP.run||AP.akhir)return;
+  if(state.edOpen||state.mvOpen)return;
+  AP.sisa-=dt;if(AP.sisa<=0)apMaju(false);else apUI();},150);
+document.addEventListener("keydown",e=>{if(!AP.on||e.target.closest&&e.target.closest("input,textarea,select,button,[contenteditable]"))return;
+  if(e.key===" "){e.preventDefault();$("applay").click();}else if(e.key==="ArrowRight"){apMaju(true);}else if(e.key==="ArrowLeft"){$("apprev").click();}else if(e.key==="Escape"){apStop();}});
+document.addEventListener("visibilitychange",()=>{if(!document.hidden&&AP.on&&AP.run)apKunci();});
 function fmt(t){t=Math.max(0,Math.ceil(t));const h=Math.floor(t/3600),m=Math.floor(t%3600/60),x=t%60;return (h?h+":"+String(m).padStart(2,"0"):String(m).padStart(2,"0"))+":"+String(x).padStart(2,"0");}
 // Penilaian akhir: nilai 0-100 poin dan predikat menurut persentase jawaban benar.
 const STANDAR=[[100,"Perfect Standard"],[90,"Distinguished Standard"],[80,"Very High Standard"],[70,"High Standard"],[60,"Moderate Standard"],[50,"Adequate Standard"]];
@@ -1728,10 +1801,10 @@ let siapCat=null;
 function siapOK(){return siapCat===state.cat;}
 // Layar yang sedang dilihat peserta (untuk aktivitas langsung di panel pemilik): menu, layar Mulai, soal, atau skor akhir.
 window.__layar=()=>{if(!state.list.length||!siapOK()&&!(window.__gulTutup&&state.cat!=="all"))return "menu";if(state.pos>=state.list.length)return "skor";if(state.cat!=="all"&&!state.mulai)return "mulai";return "soal";};
-function timerActive(){return siapOK()&&state.mulai&&tmode()!=="off"&&state.cat!=="all"&&state.list.length&&!state.timeUp&&state.pos<state.list.length;}
+function timerActive(){if(AP&&AP.on)return false;return siapOK()&&state.mulai&&tmode()!=="off"&&state.cat!=="all"&&state.list.length&&!state.timeUp&&state.pos<state.list.length;}
 function syncQ(){const id=state.list[state.pos];if(id!==state.qId){state.qId=id;state.qLeft=sec();}}
 const TB=document.getElementById("timerbox");
-function pasangAlat(){const s=$("tslot");if(s)s.replaceWith(TB);const f=$("cfs");if(f)f.onclick=()=>fokus(true);}
+function pasangAlat(){const s=$("tslot");if(s)s.replaceWith(TB);const f=$("cfs");if(f)f.onclick=()=>fokus(true);const a=$("apbtn");if(a)a.onclick=()=>AP.on?apStop():apMulai();}
 function renderTimer(){
   const b=TB;
   if(tmode()==="off"||!state.list.length||state.cat==="all"||!siapOK()||!state.mulai&&state.pos<state.list.length){b.hidden=true;return;}
