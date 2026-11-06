@@ -1263,6 +1263,15 @@ function startQuiz(){
 
 
 // Validasi ketat: setiap soal wajib punya id unik dan mappings[] yang cocok dengan meta (mapping pertama = kamar utama).
+const V58A={"Jenis Putusan Akhir & Sela, Amar Kabul, NO, Tolak, Coret & Gugur, Sumpah & Upaya Hukum":"Amar Kabul, NO, Tolak, Coret & Gugur","Jenis Putusan Akhir, Amar Kabul, NO, Tolak, Coret, Gugur & Batal Demi Hukum":"Amar Kabul, NO, Tolak, Coret & Gugur","Jenis Sumpah, Sita, Upaya Hukum, Putusan Sela & Kewenangan Mengadili":"Jenis Upaya Hukum","Jenis Putusan & Penetapan":"Jenis Putusan Akhir","Batal Demi Hukum, Dapat Dibatalkan & Tidak Mempunyai Kekuatan Hukum":"Jenis Putusan Akhir"};
+// V58: bank di server yang masih memakai nomor sub lama (sebelum kategori Hakim) disesuaikan menurut nama sub, jadi tidak ada soal yang terbuang dan sub Hakim tetap terisi.
+(function(){const KU=c=>CATS[c]&&CATS[c].short;QB.forEach(q=>{if(!Array.isArray(q.mappings))return;let ubah=false;const out=[];
+  q.mappings.forEach(m0=>{const m=Object.assign({},m0);const al=SUB_ALIAS[m.sub_materi]||V58A[m.sub_materi];if(al){m.sub_materi=al;ubah=true;}
+    if(!(SUBS[m.c]&&SUBS[m.c][m.s-1]===m.sub_materi)){const h=SUBS[5]?SUBS[5].indexOf(m.sub_materi):-1;
+      if(h>=0&&(m.c===1||m.c===2)){m.c=5;m.s=h+1;}else{const i=SUBS[m.c]?SUBS[m.c].indexOf(m.sub_materi):-1;if(i>=0)m.s=i+1;}
+      m.kategori_utama=KU(m.c);ubah=true;}
+    if(out.some(x=>x.c===m.c&&(m.c===5||x.s===m.s))){ubah=true;return;}out.push(m);});
+  if(ubah&&out.length){if(q.c0===undefined)q.c0=q.c;q.mappings=out;Object.assign(q,{c:out[0].c,s:out[0].s,kategori_utama:out[0].kategori_utama,sub_materi:out[0].sub_materi});}});})();
 const INVALID=[];const okMap=m=>!!(m&&CATS[m.c]&&Number.isInteger(m.s)&&m.s>=1&&m.s<=SUBS[m.c].length&&m.kategori_utama===CATS[m.c].short&&m.sub_materi===SUBS[m.c][m.s-1]);
 const BYID={};
 for(let i=QB.length-1;i>=0;i--){const q=QB[i];
