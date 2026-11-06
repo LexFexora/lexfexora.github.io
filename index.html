@@ -2,7 +2,7 @@
 <html lang="id" class="gate-wait">
 <head>
 <meta charset="utf-8">
-<meta name="versi-situs" content="20261106e">
+<meta name="versi-situs" content="20261106f">
 <script>try{var t=localStorage.getItem("cat-tema");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;}catch(e){}</script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Computer Assisted Test - LEX FEXORA.</title>
@@ -1022,7 +1022,6 @@ html:not(.vvip) .setelan.tocard>summary .vvipakses{display:none}
 #apbar #applay{background:var(--accent);border-color:var(--accent);color:var(--bg)}
 #apbar #apspd{width:auto;min-width:58px;padding:0 8px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
 @media(max-width:480px){#apbar .apst{font-size:12px}#apbar button{width:34px}}
-.card.apjalan .opt{cursor:default}
 html.fokus .card.apjalan,.card.apjalan{padding-bottom:84px}
 @media(max-width:480px){#apbar .aprow{gap:5px;padding:8px}#apbar #apspd{min-width:54px;padding:0 6px}}
 </style>
@@ -1712,7 +1711,7 @@ function renderCard(){
     if(answered){ if(oi===q.a){cls="correct";mark="✅";} else if(oi===chosen){cls="wrong";mark="❌";} }
     // Khusus pemilik: saat waktu habis, jawaban benar langsung ditandai tanpa perlu diketuk.
     else if((locked&&own||apKey)&&oi===q.a){cls="correct";mark="✅";}
-    html+=`<li><button type="button" class="opt ${cls}" data-o="${oi}" ${answered||locked||AP.on?"disabled":""}><span class="l"><i>${L[pi]}</i></span><span class="t">${esc(q.o[oi])}</span><span class="mark">${mark}</span></button></li>`;
+    html+=`<li><button type="button" class="opt ${cls}" data-o="${oi}" ${answered||locked||apKey?"disabled":""}><span class="l"><i>${L[pi]}</i></span><span class="t">${esc(q.o[oi])}</span><span class="mark">${mark}</span></button></li>`;
   });
   html+="</ol>"+arsipHTML(id);
   if(answered){
@@ -1727,7 +1726,9 @@ function renderCard(){
       fill();$("mvc").onchange=fill;$("mvno").onclick=()=>{state.mvOpen=false;renderCard();};
       $("mvok").onclick=()=>moveQ(id,here,+$("mvc").value,+$("mvs").value);}}
   pasangArsip(id);
-  card.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{state.ans[id]=+b.dataset.o;tandaiCoba(id);if(state.ans[id]===q.a)tandaiBenar(id);persist();render();});
+  card.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{state.ans[id]=+b.dataset.o;tandaiCoba(id);if(state.ans[id]===q.a)tandaiBenar(id);persist();
+    // Autopilot: pengguna tetap boleh menjawab; setelah menjawab, langsung ke fase pembahasan.
+    const ap=AP.on&&AP.id===id&&AP.fase===0;if(ap){AP.fase=1;apAtur();}render();if(ap)apGulir(true);});
   $("prev").onclick=()=>{state.pos--;persist();render();};
   $("next").onclick=()=>{state.pos++;persist();render();window.scrollTo({top:Math.max(0,$("card").offsetTop-12)});};
   card.classList.toggle("apjalan",AP.on);
@@ -1735,7 +1736,7 @@ function renderCard(){
   pasFokus();
 }
 // Autopilot (pemilik dan pengguna yang diberi izin, untuk menghafal): soal tampil, jeda, kunci jawaban dan pembahasan terbuka, jeda, lalu pindah ke soal berikutnya.
-// Tidak mengisi jawaban dan tidak memengaruhi skor (lilin/gulungan); timer kuis dibekukan selama autopilot berjalan.
+// Autopilot sendiri tidak mengisi jawaban dan tidak memengaruhi skor; pengguna tetap boleh menjawab sebelum kunci dibuka (lilin/gulungan); timer kuis dibekukan selama autopilot berjalan.
 // Pemilik selalu boleh; pengguna lain bila pemilik memberi izin Autopilot (izin/<uid>.autopilot = true).
 function apIzin(){return !!(window.__isOwner||window.__apBoleh);}
 window.__apSegar=()=>{if(!apIzin()){if(AP.on)apStop();else if(window.__layar()==="soal")renderCard();}else if(window.__layar()==="soal"&&!AP.on)renderCard();};
