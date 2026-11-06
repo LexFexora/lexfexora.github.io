@@ -1793,7 +1793,7 @@ function apUcap(){apDiam();if(!TTS||!apSuaraOn||!AP.on)return;const q=BYID[AP.id
   const bag=apTeks(q).match(/[^.?!;:]+[.?!;:]*/g)||[],pot=[];bag.forEach(k=>{k=k.trim();if(!k)return;if(pot.length&&(pot[pot.length-1]+" "+k).length<170)pot[pot.length-1]+=" "+k;else pot.push(k);});
   if(!pot.length)return;const n=++apUcapN;AP.bicara=true;
   pot.forEach((t,i)=>{const u=new SpeechSynthesisUtterance(t);u.lang=apVoice?apVoice.lang:"id-ID";if(apVoice)u.voice=apVoice;u.rate=Math.min(1.6,Math.max(.55,AP.spd*.9));u.pitch=.95;u.volume=.85;
-    if(i===pot.length-1){const sel=()=>{if(n!==apUcapN)return;AP.bicara=false;AP.sisa=Math.min(AP.sisa,1200);};u.onend=sel;u.onerror=sel;}TTS.speak(u);});
+    if(i===pot.length-1){const sel=ok=>{if(n!==apUcapN)return;AP.bicara=false;if(ok)AP.sisa=Math.min(AP.sisa,1200);};u.onend=()=>sel(true);u.onerror=()=>sel(false);}TTS.speak(u);});
   if(!AP.run)try{TTS.pause();}catch(e){}}
 // Dipanggil setiap kali kartu soal digambar ulang selama autopilot: soal yang berbeda (mis. diklik lewat peta soal) mulai dari fase soal.
 function apSoal(id){if(id!==AP.id){AP.id=id;AP.fase=0;AP.akhir=false;apAtur();}apUI();}
