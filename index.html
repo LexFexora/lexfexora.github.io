@@ -2,7 +2,7 @@
 <html lang="id" class="gate-wait">
 <head>
 <meta charset="utf-8">
-<meta name="versi-situs" content="20261106p">
+<meta name="versi-situs" content="20261106q">
 <script>try{var t=localStorage.getItem("cat-tema");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;}catch(e){}</script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Computer Assisted Test - LEX FEXORA.</title>
@@ -1788,7 +1788,7 @@ function apDiam(){apUcapN++;AP.bicara=false;try{TTS&&TTS.cancel();}catch(e){}}
 function apTeks(q){const id=q.id,perm=state.perm[id]||q.o.map((_,i)=>i),bersih=t=>String(t||"").replace(/\s+/g," ").trim();
   if(AP.fase===0)return `Soal nomor ${state.pos+1}. ${bersih(q.q)} `+perm.map((oi,pi)=>`Pilihan ${L[pi]}. ${bersih(q.o[oi])}`).join(" ");
   const pi=perm.indexOf(q.a),ch=state.ans[id],hasil=ch===undefined?"":ch===q.a?"Jawaban Anda benar. ":"Jawaban Anda salah. ";
-  return `${hasil}Jawaban yang benar adalah ${L[pi]}. ${bersih(q.o[q.a])} Pembahasan. ${bersih(q.p)}`;}
+  return `${hasil}Jawaban yang benar adalah ${L[pi]}. ${bersih(q.o[q.a])} Pembahasan. ${bersih(q.p)}${bersih(q.d)?` Dasar hukum. ${bersih(q.d).replace(/\bjo\.\s*/gi,"juncto ").replace(/\bhlm\.\s*/gi,"halaman ").replace(/\bNo\.\s*/g,"Nomor ")}`:""}`;}
 function apUcap(){apDiam();if(!TTS||!apSuaraOn||!AP.on)return;const q=BYID[AP.id];if(!q)return;
   // Kalimat panjang dipecah agar tidak terpotong di sebagian browser (Chrome memotong ucapan yang terlalu panjang).
   const bag=apTeks(q).match(/[^.?!;:]+[.?!;:]*/g)||[],pot=[];bag.forEach(k=>{k=k.trim();if(!k)return;if(pot.length&&(pot[pot.length-1]+" "+k).length<170)pot[pot.length-1]+=" "+k;else pot.push(k);});
