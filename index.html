@@ -2,7 +2,7 @@
 <html lang="id" class="gate-wait">
 <head>
 <meta charset="utf-8">
-<meta name="versi-situs" content="20261106c">
+<meta name="versi-situs" content="20261106d">
 <script>try{var t=localStorage.getItem("cat-tema");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;}catch(e){}</script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Computer Assisted Test - LEX FEXORA.</title>
@@ -1073,6 +1073,8 @@ html.vvip #arcard .arjml{padding-right:92px}
       <div class="asgrup"><b>Akses terbatas <span class="asn" id="asnbatas"></span></b><small>Hanya sub materi yang terbuka di bawah. All Sections terkunci.</small><div class="asnama" id="asbatas"></div></div>
       <div class="asgrup"><b>VVIP Akses <span class="asn" id="asnpaket"></span></b><small>Prediction &amp; Category Packages + semua sub materi (kecuali Mock Exam).</small><small>Ketuk nama bertanda ✕ untuk mencabut akses paket gratis. Akun Lunas (membeli) tidak bisa dicabut dari sini.</small><div class="asnama" id="aspaket"></div>
         <div class="linkrow"><select id="aspilih" aria-label="Pilih akun"></select><button class="btn copy" type="button" id="asberi">＋ Beri VVIP Akses</button></div></div>
+      <div class="asgrup"><b>Autopilot <span class="asn" id="asnap"></span></b><small>Akun yang boleh memakai tombol ▶ Auto (soal, kunci jawaban, dan pembahasan berjalan sendiri). Ketuk nama bertanda ✕ untuk mencabut.</small><div class="asnama" id="asap"></div>
+        <div class="linkrow"><select id="apilih" aria-label="Pilih akun untuk Autopilot"></select><button class="btn copy" type="button" id="apberi">＋ Beri Autopilot</button></div></div>
       <details class="asatur"><summary>Sub materi yang terbuka untuk akses terbatas</summary><div id="asatur"></div><div class="linkrow"><button class="btn copy" type="button" id="assimpan">Simpan pengaturan</button><small id="asinfo"></small></div></details>
       <p class="note">Ketuk nama untuk memindahkan akun antara Akses penuh dan Akses terbatas. Tanda <i>otomatis</i> = mengikuti aturan bawaan (pembeli, kode Akses seluruhnya, dan pengguna lama mendapat akses penuh). Akses Prediction/Category Packages tetap diatur lewat tombol Paket gratis.</p></div>
     <div class="linkrow"><input id="admlink" readonly aria-label="Tautan latihan"><button class="btn copy" type="button" id="admcopy">⧉ Salin tautan</button></div>
@@ -1691,7 +1693,7 @@ function renderCard(){
   const here=state.cat==="all"?q.mappings[0]:(q.mappings.find(m=>m.c===state.cat&&(state.sub==="all"||m.s===+state.sub))||q.mappings[0]);
   const also=q.mappings.filter(m=>m!==here).map(m=>`${CATS[m.c].short} ${m.s}`).join(", ");
   const own=!!window.__isOwner;
-  let html=`<div class="qhead"><span class="qno"><span class="qlbl">Soal No. </span>${state.pos+1}${own&&DIKUNCI.has(id)?' <span title="Diedit pemilik: dikunci dari perubahan otomatis">🔒</span>':""} <span class="of">/ ${state.list.length}</span></span>`+(own?`<div class="owntools"><button class="btn mvbtn qap" id="apbtn" type="button" aria-pressed="${AP.on}" title="Autopilot: soal, kunci jawaban, dan pembahasan berjalan sendiri">${AP.on?"■ Stop":"▶ Auto"}</button><button class="btn mvbtn" id="ed" type="button" aria-expanded="${!!state.edOpen}">✎ Edit</button><button class="btn mvbtn" id="mv" type="button" aria-expanded="${!!state.mvOpen}">⇄ Pindahkan</button></div>`:"")+(t=>`<span class="qkoin" title="Lilin: jawaban benar · Gulungan naskah: jawaban salah"><span class="kn" aria-label="${t.ok} lilin">🕯️<b>${t.ok}</b></span><span class="kn" aria-label="${t.bad} gulungan naskah">📜<b>${t.bad}</b></span></span>`)(tally())+`<div class="qtools"><span id="tslot"></span><button class="btn qfs" id="cfs" type="button" title="Layar penuh" aria-label="Layar penuh">⛶</button></div></div>`;
+  let html=`<div class="qhead"><span class="qno"><span class="qlbl">Soal No. </span>${state.pos+1}${own&&DIKUNCI.has(id)?' <span title="Diedit pemilik: dikunci dari perubahan otomatis">🔒</span>':""} <span class="of">/ ${state.list.length}</span></span>`+(own||apIzin()?`<div class="owntools"><button class="btn mvbtn qap" id="apbtn" type="button" aria-pressed="${AP.on}" title="Autopilot: soal, kunci jawaban, dan pembahasan berjalan sendiri">${AP.on?"■ Stop":"▶ Auto"}</button>${own?`<button class="btn mvbtn" id="ed" type="button" aria-expanded="${!!state.edOpen}">✎ Edit</button><button class="btn mvbtn" id="mv" type="button" aria-expanded="${!!state.mvOpen}">⇄ Pindahkan</button>`:""}</div>`:"")+(t=>`<span class="qkoin" title="Lilin: jawaban benar · Gulungan naskah: jawaban salah"><span class="kn" aria-label="${t.ok} lilin">🕯️<b>${t.ok}</b></span><span class="kn" aria-label="${t.bad} gulungan naskah">📜<b>${t.bad}</b></span></span>`)(tally())+`<div class="qtools"><span id="tslot"></span><button class="btn qfs" id="cfs" type="button" title="Layar penuh" aria-label="Layar penuh">⛶</button></div></div>`;
   if(own&&state.mvOpen){const cs=Object.keys(CATS).map(Number);
     html+=`<div class="mvbox" id="mvbox"><span>Pindahkan dari <b>${esc(here.kategori_utama)} ${here.s}</b> ke:</span><select id="mvc" aria-label="Kategori tujuan">${cs.map(c=>`<option value="${c}"${c===here.c?" selected":""}>${esc(CATS[c].short)}</option>`).join("")}</select><select id="mvs" aria-label="Sub-materi tujuan"></select><button class="btn primary" id="mvok" type="button">Simpan</button><button class="btn" id="mvno" type="button">Batal</button><p class="note" id="mvmsg">Perpindahan disimpan di server dan berlaku untuk semua pengguna setelah mereka memuat ulang halaman.</p></div>`;}
   if(own&&state.edOpen){
@@ -1732,8 +1734,11 @@ function renderCard(){
   if(AP.on)apSoal(id);
   pasFokus();
 }
-// Autopilot (khusus pemilik, untuk menghafal): soal tampil, jeda, kunci jawaban dan pembahasan terbuka, jeda, lalu pindah ke soal berikutnya.
+// Autopilot (pemilik dan pengguna yang diberi izin, untuk menghafal): soal tampil, jeda, kunci jawaban dan pembahasan terbuka, jeda, lalu pindah ke soal berikutnya.
 // Tidak mengisi jawaban dan tidak memengaruhi skor (lilin/gulungan); timer kuis dibekukan selama autopilot berjalan.
+// Pemilik selalu boleh; pengguna lain bila pemilik memberi izin Autopilot (izin/<uid>.autopilot = true).
+function apIzin(){return !!(window.__isOwner||window.__apBoleh);}
+window.__apSegar=()=>{if(!apIzin()){if(AP.on)apStop();else if(window.__layar()==="soal")renderCard();}else if(window.__layar()==="soal"&&!AP.on)renderCard();};
 var AP={on:false,run:false,id:null,fase:0,sisa:0,dur:0,spd:1,akhir:false,wl:null};
 try{const v=+localStorage.getItem("ap-spd");if(v)AP.spd=v;}catch(e){}
 function apDur(q,f){const n=f?String(q.p||"").length+String(q.d||"").length:String(q.q||"").length+q.o.join(" ").length;
@@ -1769,11 +1774,11 @@ function apMaju(manual){if(!AP.on)return;
   if(manual)return;AP.akhir=true;AP.run=false;apKunci();apUI();}
 async function apKunci(){try{if(AP.on&&AP.run){if(!AP.wl&&navigator.wakeLock)AP.wl=await navigator.wakeLock.request("screen");}
   else if(AP.wl){const w=AP.wl;AP.wl=null;await w.release();}}catch(e){AP.wl=null;}}
-function apMulai(){if(!window.__isOwner||window.__layar()!=="soal")return;AP.on=true;AP.run=true;AP.akhir=false;AP.id=null;lastTick=Date.now();apKunci();renderCard();renderTimer();}
+function apMulai(){if(!apIzin()||window.__layar()!=="soal")return;AP.on=true;AP.run=true;AP.akhir=false;AP.id=null;lastTick=Date.now();apKunci();renderCard();renderTimer();}
 function apStop(){if(!AP.on)return;AP.on=false;AP.run=false;AP.id=null;apKunci();apUI();lastTick=Date.now();render();}
 let apT=Date.now();
 setInterval(()=>{const now=Date.now(),dt=now-apT;apT=now;if(!AP.on)return;
-  if(!window.__isOwner||window.__layar()!=="soal"){apStop();return;}
+  if(!apIzin()||window.__layar()!=="soal"){apStop();return;}
   if(!AP.run||AP.akhir)return;
   if(state.edOpen||state.mvOpen)return;
   AP.sisa-=dt;if(AP.sisa<=0)apMaju(false);else apUI();},150);
@@ -2340,7 +2345,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
     unsub=ref.onSnapshot(s=>{if(!auth.currentUser||auth.currentUser.uid!==u.uid)return;const st=s.exists?s.data().status:'menunggu';
       if(st==='disetujui'){
         // Pengguna yang bergabung sebelum batas 3 sub-materi diaktifkan (2 Nov 2026 21.50 WIB) tetap bebas membuka semua sub-materi.
-        {const x=s.data()||{},dm=x.diminta&&x.diminta.toDate?x.diminta.toDate():null,lama=dm?dm<new Date('2026-11-02T14:50:00Z'):!x.jalur,md=x.sub||'';if(lama!==!!window.__lama||md!==(window.__subMode||'')){window.__lama=lama;window.__subMode=md;window.__segarSub&&window.__segarSub();}}
+        {const x=s.data()||{},dm=x.diminta&&x.diminta.toDate?x.diminta.toDate():null,lama=dm?dm<new Date('2026-11-02T14:50:00Z'):!x.jalur,md=x.sub||'';{const ap=x.autopilot===true;if(ap!==!!window.__apBoleh){window.__apBoleh=ap;window.__apSegar&&window.__apSegar();}}if(lama!==!!window.__lama||md!==(window.__subMode||'')){window.__lama=lama;window.__subMode=md;window.__segarSub&&window.__segarSub();}}
         if(!window.__aksesPantau){window.__aksesPantau=1;db.doc('bank/akses').onSnapshot(d=>{window.__aksesBuka=d.exists?(d.data().buka||null):null;window.__segarSub&&window.__segarSub();},()=>{});}
         if(!beat)heartbeat(ref);start();if(!window.__penuh)window.__sb.rpc('cat_sudah_beli').then(({data})=>{if(data===true&&!window.__penuh){window.__penuh=true;document.documentElement.classList.add('vvip');window.__segarSub&&window.__segarSub();}}).catch(()=>{});}
       else if(st==='ditolak'){show('Access denied','The owner has not granted access to this account.',who,false,true);}
@@ -2532,6 +2537,12 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
         if(error){alert(/function|schema cache/i.test(error.message||'')?'Jalankan dulu SQL "paket gratis" di Supabase.':'Gagal: '+(error.message||error.code));return;}muatBayar.sidik='';muatBayar();};
       $('asberi').onclick=()=>{const u=sel.value;if(!u){alert('Pilih akun dulu.');return;}if(!confirm('Beri VVIP Akses (Prediction & Category Packages + semua sub materi) gratis ke '+sel.selectedOptions[0].textContent+'?'))return;paket(u,true,$('asberi'));};
       document.querySelectorAll('#aspaket [data-cabut]').forEach(b=>b.onclick=()=>{if(!confirm('Cabut VVIP Akses (paket gratis) dari '+b.textContent.replace(/\s*VVIP\s*✕\s*$/,'').trim()+'?'))return;paket(b.dataset.cabut,false,b);});
+      {const ya=list.filter(([,x])=>x.autopilot===true),blm=list.filter(([,x])=>x.autopilot!==true),as=$('apilih'),av=as.value;
+        $('asap').innerHTML=ya.map(([id,x])=>`<button type="button" class="aschip" data-apcabut="${esc(id)}" title="Cabut Autopilot">${nm(x)} <span class="aspin">✕</span></button>`).join('')||'<small>Belum ada.</small>';
+        $('asnap').textContent='('+ya.length+')';as.innerHTML='<option value="">Pilih akun…</option>'+blm.map(([id,x])=>`<option value="${esc(id)}">${nm(x)}</option>`).join('');if(blm.some(([id])=>id===av))as.value=av;
+        const apSet=(uid,on,b)=>{b.disabled=true;db.doc('izin/'+uid).update({autopilot:on}).catch(e=>{alert('Gagal: '+(e.code||e.message));b.disabled=false;});};
+        $('apberi').onclick=()=>{const u=as.value;if(!u){alert('Pilih akun dulu.');return;}if(!confirm('Beri akses Autopilot ke '+as.selectedOptions[0].textContent+'?'))return;apSet(u,true,$('apberi'));setTimeout(()=>{$('apberi').disabled=false;},1500);};
+        document.querySelectorAll('#asap [data-apcabut]').forEach(b=>b.onclick=()=>{if(!confirm('Cabut Autopilot dari '+b.textContent.replace(/\s*✕\s*$/,'').trim()+'?'))return;apSet(b.dataset.apcabut,false,b);});}
       $('asnpenuh').textContent='('+G.penuh.length+')';$('asnbatas').textContent='('+G.terbatas.length+')';
       document.querySelectorAll('#aksesub .aschip[data-asu]').forEach(b=>b.onclick=()=>{const ke=b.dataset.ke;if(!confirm('Pindahkan '+b.textContent.replace(/ otomatis| [↑↓]/g,'').trim()+' ke Akses '+ke+'?'))return;b.disabled=true;
         db.doc('izin/'+b.dataset.asu).update({sub:ke}).catch(e=>{alert('Gagal: '+(e.code||e.message));b.disabled=false;});});};
