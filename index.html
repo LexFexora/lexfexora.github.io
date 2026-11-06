@@ -2,7 +2,7 @@
 <html lang="id" class="gate-wait">
 <head>
 <meta charset="utf-8">
-<meta name="versi-situs" content="20261106o">
+<meta name="versi-situs" content="20261106p">
 <script>try{var t=localStorage.getItem("cat-tema");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;}catch(e){}</script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Computer Assisted Test - LEX FEXORA.</title>
@@ -1762,7 +1762,7 @@ function apBar(){let b=$("apbar");if(b)return b;b=document.createElement("div");
 <button type="button" id="apx" title="Hentikan autopilot" aria-label="Hentikan autopilot"><svg viewBox="0 0 16 16"><path d="M3.5 2.4 8 6.9l4.5-4.5 1.1 1.1L9.1 8l4.5 4.5-1.1 1.1L8 9.1l-4.5 4.5-1.1-1.1L6.9 8 2.4 3.5z"/></svg></button></div>`;
   document.body.appendChild(b);
   $("applay").onclick=()=>{if(AP.akhir){AP.akhir=false;apKe(0);return;}AP.run=!AP.run;try{if(TTS&&AP.bicara){if(AP.run)TTS.resume();else TTS.pause();}}catch(e){}apKunci();apUI();};
-  $("apsuara").onclick=()=>{apSuaraOn=!apSuaraOn;try{localStorage.setItem("ap-suara",apSuaraOn?"1":"0");}catch(e){}if(apSuaraOn)apUcap();else apDiam();apUI();};
+  $("apsuara").onclick=()=>{apSuaraOn=!apSuaraOn;if(apSuaraOn)apUcap();else apDiam();apUI();};
   $("apnext").onclick=()=>apMaju(true);
   $("apprev").onclick=()=>{if(AP.fase===1&&AP.sisa<AP.dur-1500){AP.fase=0;apAtur();renderCard();return;}if(state.pos>0)apKe(state.pos-1);};
   $("apspd").onclick=()=>{const L=[0.5,0.75,1,1.25,1.5,2,3],v=L[(L.indexOf(AP.spd)+1)%L.length],r=AP.sisa/AP.dur||1;AP.spd=v;try{localStorage.setItem("ap-spd",String(v));}catch(x){}const q=BYID[AP.id];if(q){AP.dur=apDur(q,AP.fase);AP.sisa=AP.dur*r;}apUI();};
@@ -1775,7 +1775,8 @@ function apUI(){const b=apBar();b.hidden=!AP.on;if(!AP.on)return;const n=state.l
   $("apfill").style.width=(AP.akhir?100:AP.dur?Math.min(100,100*(1-AP.sisa/AP.dur)):0)+"%";}
 function apAtur(){const q=BYID[AP.id];AP.dur=q?apDur(q,AP.fase):5000;AP.sisa=AP.dur;apUcap();}
 // Suara pembaca (Web Speech API, suara bahasa Indonesia bawaan perangkat). Selama dibacakan, autopilot menunggu sampai selesai.
-let apSuaraOn=true;try{apSuaraOn=localStorage.getItem("ap-suara")!=="0";}catch(e){}
+// Mati secara bawaan: suara baru berbunyi bila pengguna menekan tombol 🔊 di bar autopilot.
+let apSuaraOn=false;
 const TTS=window.speechSynthesis||null;let apVoice=null;
 function apPilihSuara(){if(!TTS)return;const vs=TTS.getVoices().filter(v=>/^id([-_]|$)/i.test(v.lang)||/indones/i.test(v.name));
   // Utamakan suara yang paling alami (Premium/Enhanced/Natural/Online), lalu suara perempuan yang lembut.
