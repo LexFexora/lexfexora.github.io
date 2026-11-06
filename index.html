@@ -2,7 +2,7 @@
 <html lang="id" class="gate-wait">
 <head>
 <meta charset="utf-8">
-<meta name="versi-situs" content="20261106k">
+<meta name="versi-situs" content="20261106l">
 <script>try{var t=localStorage.getItem("cat-tema");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;}catch(e){}</script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Computer Assisted Test - LEX FEXORA.</title>
@@ -1782,15 +1782,15 @@ async function apKunci(){try{if(AP.on&&AP.run){if(!AP.wl&&navigator.wakeLock)AP.
 // Bunyi "ding-dong" seperti tanda kabin pesawat, dibuat langsung dengan Web Audio (tanpa file suara).
 let apAC=null;
 function apBunyi(nyala){try{const C=window.AudioContext||window.webkitAudioContext;if(!C)return;apAC=apAC||new C();if(apAC.state==="suspended")apAC.resume();
-  const t0=apAC.currentTime+.03,out=apAC.createGain(),lp=apAC.createBiquadFilter();lp.type="lowpass";lp.frequency.value=1800;lp.Q.value=.3;
-  out.gain.value=.18;out.connect(lp);lp.connect(apAC.destination);
+  const t0=apAC.currentTime+.03,out=apAC.createGain(),lp=apAC.createBiquadFilter();lp.type="lowpass";lp.frequency.value=1100;lp.Q.value=.2;
+  out.gain.value=.16;out.connect(lp);lp.connect(apAC.destination);
   // Gema ruang kabin: impuls derau yang meluruh ~1,4 detik, dicampur tipis agar terasa di dalam kabin pesawat.
-  if(!apAC.__gema){const sr=apAC.sampleRate,n=Math.floor(sr*1.4),ib=apAC.createBuffer(2,n,sr);for(let c=0;c<2;c++){const d=ib.getChannelData(c);for(let i=0;i<n;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/n,3);}
-    const cv=apAC.createConvolver();cv.buffer=ib;const wet=apAC.createGain();wet.gain.value=.35;cv.connect(wet);wet.connect(apAC.destination);apAC.__gema=cv;}
+  if(!apAC.__gema){const sr=apAC.sampleRate,n=Math.floor(sr*1.4),ib=apAC.createBuffer(2,n,sr);for(let c=0;c<2;c++){const d=ib.getChannelData(c);for(let i=0;i<n;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/n,4);}
+    const cv=apAC.createConvolver();cv.buffer=ib;const wf=apAC.createBiquadFilter();wf.type="lowpass";wf.frequency.value=900;const wet=apAC.createGain();wet.gain.value=.3;cv.connect(wf);wf.connect(wet);wet.connect(apAC.destination);apAC.__gema=cv;}
   lp.connect(apAC.__gema);
   // Nada lembut: sinus murni + sedikit nada kedua yang agak berbeda (gema halus), serangan pelan, ekor panjang.
-  const nada=(f,t,d)=>[[1,1],[1.003,.35],[2,.05]].forEach(([k,a])=>{const o=apAC.createOscillator(),g=apAC.createGain();o.type="sine";o.frequency.value=f*k;
-    g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(a,t+.045);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(out);o.start(t);o.stop(t+d+.05);});
+  const nada=(f,t,d)=>[[1,1],[1.002,.3]].forEach(([k,a])=>{const o=apAC.createOscillator(),g=apAC.createGain();o.type="sine";o.frequency.value=f*k;
+    g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(a,t+.09);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(out);o.start(t);o.stop(t+d+.05);});
   (nyala?APNADA:[[523,0,1.8]]).forEach(([f,t,d])=>nada(f,t0+t,d));}catch(e){}}
 // Bunyi saat Auto dinyalakan (seperti tanda sebelum pengumuman pilot): [frekuensi Hz, mulai detik, lama detik].
 const APNADA=[[659,0,2.6],[523,.75,3.2]];
