@@ -1492,7 +1492,9 @@ function renderBag(){
   const semua=k>1||bonus>0;
   if((state.bag==="bonus"&&!bonus)||(state.bag==="all"&&!semua))state.bag=1;
   // Opsi "All Parts": kerjakan seluruh soal sub-materi ini sekaligus.
-  s.innerHTML=Array.from({length:k},(_,i)=>`<option value="${i+1}">Part ${i+1} · Questions ${i*sz+1}–${Math.min(n,(i+1)*sz)}</option>`).join("")+(bonus?`<option value="bonus">Bonus · Questions ${k*sz+1}–${n}</option>`:"")+(semua?`<option value="all">All Parts · Questions 1–${n}</option>`:"");
+  // Tanda ✓ pada Part yang sedang atau terakhir dikerjakan.
+  const ck=v=>String(state.bag)===String(v)?"✓ ":"";
+  s.innerHTML=Array.from({length:k},(_,i)=>`<option value="${i+1}">${ck(i+1)}Part ${i+1} · Questions ${i*sz+1}–${Math.min(n,(i+1)*sz)}</option>`).join("")+(bonus?`<option value="bonus">${ck("bonus")}Bonus · Questions ${k*sz+1}–${n}</option>`:"")+(semua?`<option value="all">${ck("all")}All Parts · Questions 1–${n}</option>`:"");
   s.value=String(state.bag);
 }
 function selectCat(k,sub,bag){
@@ -1782,7 +1784,7 @@ function retake(){buildSession(true,null,true);render();}
 function retryWrong(){const w=state.list.filter(isBad);if(!w.length)return;buildSession(true,w,true);render();}
 
 // Memilih Part langsung menyimpan pilihan (seperti Keep it) dan membuka layar soal tanpa klik tambahan.
-$("bag").onchange=e=>{state.ulang=null;state.bag=bagNum(e.target.value);restore();$("order").value=state.order;render();const b=$("siapbtn");if(b)b.click();};
+$("bag").onchange=e=>{state.ulang=null;state.bag=bagNum(e.target.value);renderBag();restore();$("order").value=state.order;render();const b=$("siapbtn");if(b)b.click();};
 $("sub").onchange=e=>{state.ulang=null;state.sub=e.target.value==="all"?"all":+e.target.value;state.bag=state.sub==="all"?"all":1;renderBag();restore();$("order").value=state.order;
   // Khusus pemilik: ganti sub-materi saat mengerjakan, gulungan menutup dan baru terbuka lagi setelah Keep it.
   if(window.__isOwner&&siapOK()){siapCat=null;state.mulai=false;window.__gulTutup=true;}render();};
