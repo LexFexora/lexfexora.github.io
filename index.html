@@ -2,7 +2,7 @@
 <html lang="id" class="gate-wait">
 <head>
 <meta charset="utf-8">
-<meta name="versi-situs" content="20261106f">
+<meta name="versi-situs" content="20261106g">
 <script>try{var t=localStorage.getItem("cat-tema");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;}catch(e){}</script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Computer Assisted Test - LEX FEXORA.</title>
@@ -1736,7 +1736,7 @@ function renderCard(){
   pasFokus();
 }
 // Autopilot (pemilik dan pengguna yang diberi izin, untuk menghafal): soal tampil, jeda, kunci jawaban dan pembahasan terbuka, jeda, lalu pindah ke soal berikutnya.
-// Autopilot sendiri tidak mengisi jawaban dan tidak memengaruhi skor; pengguna tetap boleh menjawab sebelum kunci dibuka (lilin/gulungan); timer kuis dibekukan selama autopilot berjalan.
+// Autopilot sendiri tidak mengisi jawaban dan tidak memengaruhi skor; pengguna tetap boleh menjawab sebelum kunci dibuka (lilin/gulungan); timer kuis tetap berjalan selama autopilot (berjalan maupun dijeda).
 // Pemilik selalu boleh; pengguna lain bila pemilik memberi izin Autopilot (izin/<uid>.autopilot = true).
 function apIzin(){return !!(window.__isOwner||window.__apBoleh);}
 window.__apSegar=()=>{if(!apIzin()){if(AP.on)apStop();else if(window.__layar()==="soal")renderCard();}else if(window.__layar()==="soal"&&!AP.on)renderCard();};
@@ -1775,8 +1775,8 @@ function apMaju(manual){if(!AP.on)return;
   if(manual)return;AP.akhir=true;AP.run=false;apKunci();apUI();}
 async function apKunci(){try{if(AP.on&&AP.run){if(!AP.wl&&navigator.wakeLock)AP.wl=await navigator.wakeLock.request("screen");}
   else if(AP.wl){const w=AP.wl;AP.wl=null;await w.release();}}catch(e){AP.wl=null;}}
-function apMulai(){if(!apIzin()||window.__layar()!=="soal")return;AP.on=true;AP.run=true;AP.akhir=false;AP.id=null;lastTick=Date.now();apKunci();renderCard();renderTimer();}
-function apStop(){if(!AP.on)return;AP.on=false;AP.run=false;AP.id=null;apKunci();apUI();lastTick=Date.now();render();}
+function apMulai(){if(!apIzin()||window.__layar()!=="soal")return;AP.on=true;AP.run=true;AP.akhir=false;AP.id=null;apKunci();renderCard();renderTimer();}
+function apStop(){if(!AP.on)return;AP.on=false;AP.run=false;AP.id=null;apKunci();apUI();render();}
 let apT=Date.now();
 setInterval(()=>{const now=Date.now(),dt=now-apT;apT=now;if(!AP.on)return;
   if(!apIzin()||window.__layar()!=="soal"){apStop();return;}
@@ -1805,7 +1805,7 @@ let siapCat=null;
 function siapOK(){return siapCat===state.cat;}
 // Layar yang sedang dilihat peserta (untuk aktivitas langsung di panel pemilik): menu, layar Mulai, soal, atau skor akhir.
 window.__layar=()=>{if(!state.list.length||!siapOK()&&!(window.__gulTutup&&state.cat!=="all"))return "menu";if(state.pos>=state.list.length)return "skor";if(state.cat!=="all"&&!state.mulai)return "mulai";return "soal";};
-function timerActive(){if(AP&&AP.on)return false;return siapOK()&&state.mulai&&tmode()!=="off"&&state.cat!=="all"&&state.list.length&&!state.timeUp&&state.pos<state.list.length;}
+function timerActive(){return siapOK()&&state.mulai&&tmode()!=="off"&&state.cat!=="all"&&state.list.length&&!state.timeUp&&state.pos<state.list.length;}
 function syncQ(){const id=state.list[state.pos];if(id!==state.qId){state.qId=id;state.qLeft=sec();}}
 const TB=document.getElementById("timerbox");
 function pasangAlat(){const s=$("tslot");if(s)s.replaceWith(TB);const f=$("cfs");if(f)f.onclick=()=>fokus(true);const a=$("apbtn");if(a)a.onclick=()=>AP.on?apStop():apMulai();}
