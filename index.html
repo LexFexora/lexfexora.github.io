@@ -2,7 +2,7 @@
 <html lang="id" class="gate-wait">
 <head>
 <meta charset="utf-8">
-<meta name="versi-situs" content="20261106l">
+<meta name="versi-situs" content="20261106m">
 <script>try{var t=localStorage.getItem("cat-tema");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;}catch(e){}</script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Computer Assisted Test - LEX FEXORA.</title>
@@ -1791,7 +1791,16 @@ function apBunyi(nyala){try{const C=window.AudioContext||window.webkitAudioConte
   // Nada lembut: sinus murni + sedikit nada kedua yang agak berbeda (gema halus), serangan pelan, ekor panjang.
   const nada=(f,t,d)=>[[1,1],[1.002,.3]].forEach(([k,a])=>{const o=apAC.createOscillator(),g=apAC.createGain();o.type="sine";o.frequency.value=f*k;
     g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(a,t+.09);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(out);o.start(t);o.stop(t+d+.05);});
-  (nyala?APNADA:[[523,0,1.8]]).forEach(([f,t,d])=>nada(f,t0+t,d));}catch(e){}}
+  if(nyala)apKabin(t0,5.6);
+  (nyala?APNADA:[[523,0,1.8]]).forEach(([f,t,d])=>nada(f,t0+(nyala?.5:0)+t,d));}catch(e){}}
+// Suasana kabin saat Auto dinyalakan: gemuruh mesin rendah yang halus (tanpa desis) dan nada mesin samar, muncul dan hilang perlahan.
+function apKabin(t0,L){const sr=apAC.sampleRate,env=apAC.createGain();env.connect(apAC.destination);
+  env.gain.setValueAtTime(0,t0);env.gain.linearRampToValueAtTime(1,t0+.8);env.gain.setValueAtTime(1,t0+L-1.4);env.gain.linearRampToValueAtTime(0,t0+L);
+  if(!apAC.__gemuruh){const nb=apAC.createBuffer(2,Math.floor(sr*L),sr);for(let c=0;c<2;c++){const d=nb.getChannelData(c);let l=0;for(let i=0;i<d.length;i++){l=(l+.02*(Math.random()*2-1))/1.02;d[i]=l*3.5;}}apAC.__gemuruh=nb;}
+  const src=apAC.createBufferSource();src.buffer=apAC.__gemuruh;const f1=apAC.createBiquadFilter(),f2=apAC.createBiquadFilter();f1.type=f2.type="lowpass";f1.frequency.value=f2.frequency.value=180;
+  const g=apAC.createGain();g.gain.value=.16;src.connect(f1);f1.connect(f2);f2.connect(g);g.connect(env);src.start(t0);src.stop(t0+L+.05);
+  [[118,.006],[236,.002]].forEach(([f,a])=>{const o=apAC.createOscillator(),og=apAC.createGain(),lfo=apAC.createOscillator(),lg=apAC.createGain();o.frequency.value=f;og.gain.value=a;lfo.frequency.value=.23;lg.gain.value=1.2;
+    lfo.connect(lg);lg.connect(o.frequency);o.connect(og);og.connect(env);o.start(t0);lfo.start(t0);o.stop(t0+L+.05);lfo.stop(t0+L+.05);});}
 // Bunyi saat Auto dinyalakan (seperti tanda sebelum pengumuman pilot): [frekuensi Hz, mulai detik, lama detik].
 const APNADA=[[659,0,2.6],[523,.75,3.2]];
 function apMulai(){if(!apIzin()||window.__layar()!=="soal")return;apBunyi(true);AP.on=true;AP.run=true;AP.akhir=false;AP.id=null;apKunci();renderCard();renderTimer();}
