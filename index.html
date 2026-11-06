@@ -2,7 +2,7 @@
 <html lang="id" class="gate-wait">
 <head>
 <meta charset="utf-8">
-<meta name="versi-situs" content="20261106g">
+<meta name="versi-situs" content="20261106h">
 <script>try{var t=localStorage.getItem("cat-tema");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;}catch(e){}</script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Computer Assisted Test - LEX FEXORA.</title>
@@ -1023,6 +1023,10 @@ html:not(.vvip) .setelan.tocard>summary .vvipakses{display:none}
 #apbar #apspd{width:auto;min-width:58px;padding:0 8px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
 @media(max-width:480px){#apbar .apst{font-size:12px}#apbar button{width:34px}}
 html.fokus .card.apjalan,.card.apjalan{padding-bottom:84px}
+.ket>summary .ketv{margin-left:auto;font-size:13px;font-weight:700;padding:3px 10px;border-radius:999px;white-space:nowrap}
+.ket>summary .ketv.ok{color:var(--ok);background:var(--ok-soft)}
+.ket>summary .ketv.bad{color:var(--bad);background:var(--bad-soft)}
+.ket>summary:has(.ketv)::after{margin-left:8px}
 @media(max-width:480px){#apbar .aprow{gap:5px;padding:8px}#apbar #apspd{min-width:54px;padding:0 6px}}
 </style>
 <style>
@@ -1594,7 +1598,7 @@ function moveQ(id,from,c,s){
 }
 // Pembahasan dan sumber dibungkus "🕯️ Keterangan": di HP tertutup sampai diketuk, di layar lebar langsung terbuka.
 // Ikon Explanation: 📜 bila jawaban pengguna salah, 🕯️ selain itu.
-function ketHTML(q){const ch=state.ans[q.id],ik=ch!==undefined&&ch!==q.a?"📜":"🕯️";return `<details class="ket"${matchMedia("(min-width:720px)").matches?" open":""}><summary>${ik} Explanation</summary><div class="explain"><div><h3>Pembahasan:</h3><p>${esc(q.p)}</p></div><div class="dasar"><h3>Sumber:</h3><p>${esc(q.d)}</p></div></div></details>`;}
+function ketHTML(q){const ch=state.ans[q.id],ik=ch!==undefined&&ch!==q.a?"📜":"🕯️";return `<details class="ket"${matchMedia("(min-width:720px)").matches?" open":""}><summary>${ik} Explanation${AP&&AP.on&&ch!==undefined?(ch===q.a?'<span class="ketv ok">✓ Benar</span>':'<span class="ketv bad">✗ Salah</span>'):""}</summary><div class="explain"><div><h3>Pembahasan:</h3><p>${esc(q.p)}</p></div><div class="dasar"><h3>Sumber:</h3><p>${esc(q.d)}</p></div></div></details>`;}
 // Mode layar penuh: hanya soal, pilihan, timer, dan tombol navigasi.
 function fokus(on){document.documentElement.classList.toggle("fokus",on);
   try{if(on&&document.documentElement.requestFullscreen&&!document.fullscreenElement)document.documentElement.requestFullscreen().catch(()=>{});
