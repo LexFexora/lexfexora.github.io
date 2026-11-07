@@ -466,7 +466,7 @@ auth.onAuthStateChanged(async u=>{U=u;pMuat=false;aku=null;P={};if(unsubT){unsub
         if(sq<=0&&habisIdx!==(T.idx||0)){habisIdx=T.idx||0;render();}}}
     if(SINK()&&Date.now()-cekT>5000){cekT=Date.now();cekMaster();}},250);
   // Heartbeat juga berjalan di ruang tunggu, agar saat Play ditekan kolom t semua peserta (termasuk room master) sudah segar.
-  if(!detak)detak=setInterval(()=>detakKirim(),10000);
+  if(!detak){detak=setInterval(()=>detakKirim(),10000);document.addEventListener("visibilitychange",()=>{if(!document.hidden)detakKirim();});}
 });
 // Aktivitas langsung untuk panel pemilik (izin/<uid>.posisi): Mock Exam yang diikuti, nomor soal, dan jawaban peserta.
 // Formatnya sama dengan halaman latihan. Dikirim tiap 60 detik dan setiap ada perubahan (paling cepat tiap 4 detik).
@@ -526,8 +526,16 @@ function detakKirim(){if(SINK()&&U&&aku&&!aku.selesai&&T&&["menunggu","siap","mu
 // supaya semua peserta sempat mengirim heartbeat dan room master tidak berpindah sendiri saat Play ditekan.
 let mulaiLokal=0,statusLalu="";
 function catatStatus(){if(!T)return;if(T.status==="mulai"&&statusLalu!=="mulai"){mulaiLokal=Date.now();detakKirim();}statusLalu=T.status;}
-function pilihMaster(uid){if(!uid||uid===T.master)return;db.doc("tryout/"+TID).update({master:uid}).catch(e=>alert("Gagal memindahkan: "+(e.code||e.message)));}
-function cekMaster(){if(!SINK()||!U||!aku||T.status!=="mulai"||selesaiSemua()||Date.now()-mulaiLokal<35000)return;const sg=segar();if(!sg.length||sg.includes(T.master))return;
+// Room master terkunci di pemilik (T.pembuat) selama pemilik ada di ruangan. Pemilik hanya melepas kunci bila ia sendiri memindahkan 🎩 (kunci:false).
+function pilihMaster(uid){if(!uid||uid===T.master)return;db.doc("tryout/"+TID).update(isOwner?{master:uid,kunci:uid===U.uid}:{master:uid}).catch(e=>alert("Gagal memindahkan: "+(e.code||e.message)));}
+function cekMaster(){if(!SINK()||!U||!aku||T.status!=="mulai"||selesaiSemua())return;
+  const own=T.pembuat,po=own&&P[own],ownAda=!!po&&!po.selesai&&!dikick(own)&&T.kunci!==false;
+  // Pemilik di ruangan: perangkat pemilik selalu mengambil kembali 🎩 bila berpindah.
+  if(ownAda&&U.uid===own){if(T.master!==own&&!dikick(own))db.doc("tryout/"+TID).update({master:own,kunci:true}).catch(()=>{});return;}
+  if(Date.now()-mulaiLokal<35000)return;
+  // Peserta lain baru boleh mengambil alih bila pemilik tidak terlihat >3 menit (tab di latar belakang bisa telat mengirim sinyal).
+  if(ownAda&&T.master===own){const mx=Math.max(...Object.values(P).map(p=>tms(p.t)));if(mx-tms(po.t)<180000)return;}
+  const sg=segar();if(!sg.length||sg.includes(T.master))return;
   const calon=sg.includes(T.pembuat)?T.pembuat:sg.sort()[0];if(calon===U.uid)db.doc("tryout/"+TID).update({master:U.uid}).catch(()=>{});}
 function lanjutSemua(){if(!isMaster())return;const i=(T.idx||0)+1;
   if(i>=T.soal.length&&!confirm("Ini soal terakhir. Selesaikan mock exam untuk semua peserta?"))return;
@@ -535,11 +543,11 @@ function lanjutSemua(){if(!isMaster())return;const i=(T.idx||0)+1;
 function masterHTML(){const ps=Object.entries(P).filter(([u,p])=>!p.selesai&&!dikick(u)),sg=segar(),boleh=isMaster()||isOwner;
   return `<div class="master"><div class="master-h"><span class="mk">${TOPI}</span><span>Room master: ${P[T.master]?`<i class="cav">${av(P[T.master])}</i>`:""}<b>${esc(namaP(T.master))}</b>${T.master===(U&&U.uid)?" (Anda)":""}</span></div>
   ${boleh&&ps.length>1?`<div class="linkrow"><select id="mpilih" aria-label="Pindahkan room master">${ps.map(([u,p])=>`<option value="${esc(u)}"${u===T.master?" selected":""}>${esc(p.nama)}${sg.includes(u)?"":" (offline)"}</option>`).join("")}</select><button class="btn" id="mpindah" type="button">Jadikan room master</button></div>`:""}
-  <p class="muted" style="margin:0;font-size:12.5px">Room master menekan Next untuk semua peserta. ${boleh?"Kewenangan bisa dipindahkan kapan saja; ":""}bila room master keluar atau terputus, kewenangan pindah otomatis.</p></div>`;}
+  <p class="muted" style="margin:0;font-size:12.5px">Room master menekan Next untuk semua peserta. ${T.pembuat&&P[T.pembuat]&&T.kunci!==false?"Room master terkunci di pemilik selama pemilik ada di ruangan; bila pemilik terputus lebih dari 3 menit, kewenangan sementara pindah dan kembali otomatis saat pemilik tersambung lagi.":(boleh?"Kewenangan bisa dipindahkan kapan saja; ":"")+"bila room master keluar atau terputus, kewenangan pindah otomatis."}</p></div>`;}
 // Kendali ringkas room master di bawah tombol Next: pindahkan 🎩 dan (khusus pemilik) akhiri mock exam.
 function miniMaster(){const ps=Object.entries(P).filter(([u,p])=>!p.selesai&&!dikick(u)&&u!==T.master),sg=segar();
   return `<div class="mini">${ps.length?`<select id="mpilih" aria-label="Pindahkan room master"><option value="">Pindahkan room master ke…</option>${ps.map(([u,p])=>`<option value="${esc(u)}">${esc(p.nama)}${sg.includes(u)?"":" (offline)"}</option>`).join("")}</select><button class="btn kecil" id="mpindah" type="button">Pindahkan</button>`:""}${isOwner?'<button class="btn kecil" data-eds type="button" title="Edit soal (hanya pemilik)">✎ Edit</button><button class="btn kecil bahaya" id="akhiri" type="button">Akhiri</button>':""}</div>`;}
-function pasangMaster(){if($("mpindah"))$("mpindah").onclick=()=>pilihMaster($("mpilih").value);}
+function pasangMaster(){if($("mpindah"))$("mpindah").onclick=()=>pilihMaster($("mpilih").value);if($("ambilm"))$("ambilm").onclick=()=>db.doc("tryout/"+TID).update({master:U.uid,kunci:true}).catch(e=>alert("Gagal: "+(e.code||e.message)));}
 
 // Bergabung otomatis: dokumen peserta dibuat sekali saat mock exam belum selesai.
 // Pemilik juga ikut mengerjakan sebagai peserta (otomatis siap), sambil tetap memegang kendali mulai/akhiri.
@@ -616,7 +624,7 @@ function ujian(){papan.hidden=false;if(!aku){main.innerHTML='<p class="muted">Me
   main.innerHTML=`<div class="ujian-h"><span class="qno">Soal ${pos+1} / ${n}</span>${sk?jamHTML("sisaq",soalSisaMs(),(T.detikSoal||54)*1000,10000):jamHTML("sisa",sisaMs(),T.durasi*1000,60000)}</div>
   <p class="qtext">${esc(q.q)}</p><ol class="opts">${perm.map((oi,pi)=>{const jw=pil!==undefined||habis,cls=jw?(oi===q.a?" benar":oi===pil?" salah":" redup"):"";
     return `<li><button type="button" class="opt${cls}" data-o="${oi}"${jw?" disabled":""}><span class="l">${L[pi]}</span><span class="t">${esc(q.o[oi])}${jw&&oi===q.a?' <b class="mk">✓</b>':jw&&oi===pil?' <b class="mk x">✕</b>':""}</span></button></li>`;}).join("")}</ol>${arsipHTML(q.id)}
-  ${sk?`<div class="nav sk">${isMaster()?`<button class="btn primary" id="next" type="button"${habis||semuaJawab(q)?"":" disabled"}>${pos<n-1?"Next":"Selesai"}</button>${habis||semuaJawab(q)?"":`<p class="muted tunggun">Menunggu ${belumJawab(q)} peserta menjawab atau waktu habis</p>`}${miniMaster()}`:`<p class="muted tunggum">${habis?"Waktu habis. ":""}Menunggu room master <b id="mnama">${esc(namaP(T.master))}</b> menekan Next.</p>`}</div>`:`<div class="nav"><button class="btn" id="prev" type="button"${pos===0?" disabled":""}>← Previous</button>${pos<n-1?'<button class="btn primary" id="next" type="button">Next →</button>':'<button class="btn primary" id="kumpul" type="button">Selesai &amp; kumpulkan</button>'}</div>`}
+  ${sk?`<div class="nav sk">${isMaster()?`<button class="btn primary" id="next" type="button"${habis||semuaJawab(q)?"":" disabled"}>${pos<n-1?"Next":"Selesai"}</button>${habis||semuaJawab(q)?"":`<p class="muted tunggun">Menunggu ${belumJawab(q)} peserta menjawab atau waktu habis</p>`}${miniMaster()}`:`<p class="muted tunggum">${habis?"Waktu habis. ":""}Menunggu room master <b id="mnama">${esc(namaP(T.master))}</b> menekan Next.</p>${isOwner?'<button class="btn kecil" id="ambilm" type="button">Ambil kembali room master</button>':""}`}</div>`:`<div class="nav"><button class="btn" id="prev" type="button"${pos===0?" disabled":""}>← Previous</button>${pos<n-1?'<button class="btn primary" id="next" type="button">Next →</button>':'<button class="btn primary" id="kumpul" type="button">Selesai &amp; kumpulkan</button>'}</div>`}
 `;
   // Peta soal dan tombol kumpul di kartu terpisah di bawah peringkat & pembahasan.
   // Serentak: kartu kendali (room master, peta, statistik, Akhiri) hanya untuk room master yang sedang aktif.
