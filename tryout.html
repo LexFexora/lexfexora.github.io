@@ -454,7 +454,7 @@ auth.onAuthStateChanged(async u=>{U=u;pMuat=false;aku=null;P={};if(unsubT){unsub
   unsubP=db.collection("tryout/"+TID+"/peserta").onSnapshot(qs=>{const m={};qs.forEach(d=>{m[d.id]=d.data();});catatJawab(m);P=m;pMuat=true;if(T)gabung();
       // Heartbeat (kolom t) saja tidak perlu menggambar ulang layar, agar tombol tidak "lari" saat diklik.
       const sig=JSON.stringify(Object.keys(m).sort().map(k=>[k,m[k].nama,m[k].siap,m[k].selesai,m[k].dijawab,m[k].jawab])),sama=sig===sigP;sigP=sig;
-      const baru=P[U.uid]&&!aku;if(baru){aku=Object.assign({jawab:{}},P[U.uid]);catatRiwayat(aku.jawab);if(U.displayName)aku.nama=U.displayName;if(aku.selesai)selesaiKirim=true;}renderPapan();if(baru&&T&&T.status==='mulai'){render();return;}if(sama&&!baru)return;if(T&&(T.status==="menunggu"||T.status==="siap"||selesaiSemua())){if((document.activeElement||{}).id!=="mpilih")render();}else if(SINK()&&T.status==="mulai"&&praMs()<=0&&(document.activeElement||{}).id!=="mpilih")render();else if($("stat"))$("stat").outerHTML=statHTML();},()=>{});
+      const baru=P[U.uid]&&!aku;if(baru){aku=Object.assign({jawab:{}},P[U.uid]);catatRiwayat(aku.jawab);if(U.displayName)aku.nama=U.displayName;if(aku.selesai)selesaiKirim=true;}renderPapan();if(T&&T.status==="mulai"&&!isOwner&&!aku&&!P[U.uid]){render();return;}if(baru&&T&&T.status==='mulai'){render();return;}if(sama&&!baru)return;if(T&&(T.status==="menunggu"||T.status==="siap"||selesaiSemua())){if((document.activeElement||{}).id!=="mpilih")render();}else if(SINK()&&T.status==="mulai"&&praMs()<=0&&(document.activeElement||{}).id!=="mpilih")render();else if($("stat"))$("stat").outerHTML=statHTML();},()=>{});
   // Chat room: 80 pesan terakhir, nama dan foto dari akun Google pengirim.
   unsubC=db.collection("tryout/"+TID+"/chat").orderBy("t","desc").limit(80).onSnapshot(qs=>{const m=[];qs.forEach(d=>m.push(d.data({serverTimestamps:"estimate"})));renderChat(m.reverse());},()=>{});
   if(!tick)tick=setInterval(()=>{if(!T)return;if(T.status==="mulai"){const pra=praMs(),cd=$("cdn");
@@ -551,7 +551,8 @@ function pasangMaster(){if($("mpindah"))$("mpindah").onclick=()=>pilihMaster($("
 
 // Bergabung otomatis: dokumen peserta dibuat sekali saat mock exam belum selesai.
 // Pemilik juga ikut mengerjakan sebagai peserta (otomatis siap), sambil tetap memegang kendali mulai/akhiri.
-function gabung(){if(!U||!pMuat||P[U.uid]||aku||T.status==="selesai"||T.status==="jeda")return;
+// Akses dikunci setelah Play ditekan: hanya peserta yang sudah terdaftar di ruang tunggu (dan pemilik) yang bisa masuk/menyambung lagi.
+function gabung(){if(!U||!pMuat||P[U.uid]||aku||T.status==="selesai"||T.status==="jeda"||(T.status==="mulai"&&!isOwner))return;
   aku={nama:U.displayName||(U.email||"Peserta").split("@")[0],foto:U.photoURL||"",jawab:{},benar:0,dijawab:0,skor:0,dur:0,selesai:false,siap:isOwner};
   db.doc("tryout/"+TID+"/peserta/"+U.uid).set(Object.assign({},aku,{t:FV.serverTimestamp()})).catch(()=>{});}
 
@@ -573,6 +574,8 @@ function render(){if(!T||!U)return;main.className="card";$("toptimer").hidden=tr
   if(T.status==="menunggu"||T.status==="siap")return lobi();
   if(T.status==="jeda")return jedaView();
   if(U&&dikick(U.uid)&&!isOwner&&T.status==="mulai"){main.innerHTML='<div class="hasilku"><p class="eyebrow" style="margin:0 0 6px">Dikeluarkan</p><p>Anda dikeluarkan dari mock exam ini oleh penyelenggara.</p><p class="muted">Peringkat akhir tetap bisa dilihat setelah mock exam selesai.</p></div>';papan.hidden=false;renderPapan();return;}
+  if(T.status==="mulai"&&!isOwner&&!aku&&!pMuat){main.innerHTML='<p class="muted">Memuat…</p>';return;}
+  if(T.status==="mulai"&&!isOwner&&pMuat&&!aku&&!P[U.uid]){main.innerHTML='<div class="hasilku"><p class="eyebrow" style="margin:0 0 6px">Akses dikunci</p><p>Mock exam ini sudah dimulai, sehingga peserta baru tidak bisa bergabung.</p><p class="muted">Hubungi penyelenggara untuk mengikuti mock exam berikutnya. Peringkat akhir bisa dilihat setelah mock exam selesai.</p></div>';papan.hidden=false;renderPapan();return;}
   if(praMs()>0)return hitungMundur();
   if(isOwner&&!aku)return pantau();
   if(aku&&aku.selesai)tunggu();else ujian();renderPapan();}
