@@ -1077,12 +1077,12 @@ html.vvip #arcard .arjml{padding-right:92px}
       <p class="note">Bagikan tautannya. Siapa pun yang membukanya lalu masuk dengan Gmail langsung mendapat akses itu, tanpa menunggu persetujuan. Kodenya juga bisa diketik langsung di layar tunggu. Ganti kode atau Nonaktifkan untuk menutup kode/tautan lama; akun yang sudah aktif tetap aktif sampai Anda Cabut.</p></div>
     <div class="aksesub" id="aksesub"><h4>Akses sub materi</h4>
       <div class="asgrup"><b>Akses penuh <span class="asn" id="asnpenuh"></span></b><small>Bisa membuka semua sub materi dan All Sections.</small><div class="asnama" id="aspenuh"></div></div>
-      <div class="asgrup"><b>Akses terbatas <span class="asn" id="asnbatas"></span></b><small>Hanya sub materi yang terbuka di bawah. All Sections terkunci.</small><div class="asnama" id="asbatas"></div></div>
+      <div class="asgrup"><b>Akses terbatas <span class="asn" id="asnbatas"></span></b><small>Hanya 1 sub materi per kategori (pilih di bawah). Sub materi lain dan All Sections terkunci.</small><div class="asnama" id="asbatas"></div></div>
       <div class="asgrup"><b>VVIP Akses <span class="asn" id="asnpaket"></span></b><small>Prediction &amp; Category Packages + semua sub materi (kecuali Mock Exam).</small><small>Ketuk nama bertanda ✕ untuk mencabut akses paket gratis. Akun Lunas (membeli) tidak bisa dicabut dari sini.</small><div class="asnama" id="aspaket"></div>
         <div class="linkrow"><select id="aspilih" aria-label="Pilih akun"></select><button class="btn copy" type="button" id="asberi">＋ Beri VVIP Akses</button></div></div>
       <div class="asgrup"><b>Autopilot <span class="asn" id="asnap"></span></b><small>Akun yang boleh memakai tombol ▶ Auto (soal, kunci jawaban, dan pembahasan berjalan sendiri). Ketuk nama bertanda ✕ untuk mencabut.</small><div class="asnama" id="asap"></div>
         <div class="linkrow"><select id="apilih" aria-label="Pilih akun untuk Autopilot"></select><button class="btn copy" type="button" id="apberi">＋ Beri Autopilot</button></div></div>
-      <details class="asatur"><summary>Sub materi yang terbuka untuk akses terbatas</summary><div id="asatur"></div><div class="linkrow"><button class="btn copy" type="button" id="assimpan">Simpan pengaturan</button><small id="asinfo"></small></div></details>
+      <details class="asatur"><summary>Sub materi yang terbuka untuk akses terbatas (1 per kategori)</summary><div id="asatur"></div><div class="linkrow"><button class="btn copy" type="button" id="assimpan">Simpan pengaturan</button><small id="asinfo"></small></div></details>
       <p class="note">Ketuk nama untuk memindahkan akun antara Akses penuh dan Akses terbatas. Tanda <i>otomatis</i> = mengikuti aturan bawaan (pembeli, kode Akses seluruhnya, dan pengguna lama mendapat akses penuh). Akses Prediction/Category Packages tetap diatur lewat tombol Paket gratis.</p></div>
     <div class="linkrow"><input id="admlink" readonly aria-label="Tautan latihan"><button class="btn copy" type="button" id="admcopy">⧉ Salin tautan</button></div>
     <div id="admbody"></div>
@@ -1422,11 +1422,12 @@ function sessionKey(){if(state.ulang)return "ulang|"+state.ulang.k;return state.
 function bagInfo(n){const k=Math.min(n,3),sz=Math.min(50,Math.ceil(n/(k||1)));return {k,sz,bonus:Math.max(0,n-k*sz)};}
 function bagNum(b){return b==="bonus"?"bonus":b==="all"?"all":+b;}
 
-// Tanpa akses penuh (bukan pemilik, belum membeli/kode Akses seluruhnya): tiap kategori hanya 3 sub-materi teratas.
-// Sub-materi yang terbuka untuk akun terbatas diatur pemilik (bank/akses), bawaan: 3 teratas tiap kategori.
+// Tanpa akses penuh (bukan pemilik, belum membeli/kode Akses seluruhnya): tiap kategori hanya 1 sub-materi, sisanya terkunci.
+// Sub-materi yang terbuka untuk akun terbatas dipilih pemilik (bank/akses), satu per kategori; bawaan: sub-materi nomor 1.
+// Bila pengaturan lama memuat beberapa sub-materi, hanya nomor terkecil yang terbuka.
 // Status per akun (izin.sub): 'penuh' = semua sub-materi, 'terbatas' = hanya yang terbuka; kosong = otomatis
 // (pembeli/kode Akses seluruhnya dan pengguna yang bergabung sebelum 2 Nov 2026 21.50 WIB = penuh).
-const SUB_GRATIS=3,bukaSub=(c,s)=>{const m=window.__aksesBuka;return m&&Array.isArray(m[c])?m[c].includes(+s):+s<=SUB_GRATIS;};
+const SUB_GRATIS=1,subSatu=(m,c)=>m&&Array.isArray(m[c])?(m[c].length?Math.min(...m[c].map(Number)):0):SUB_GRATIS,bukaSub=(c,s)=>+s===subSatu(window.__aksesBuka,c);
 const terbatas=()=>{if(window.__isOwner||window.__penuh)return false;const md=window.__subMode;if(md==='penuh')return false;if(md==='terbatas')return true;return !window.__penuh&&!window.__lama;};
 const subBuka=(c,s)=>!terbatas()||(s!=="all"&&bukaSub(c,s));
 const inBuka=q=>!terbatas()||q.mappings.some(m=>bukaSub(m.c,m.s));
@@ -2612,8 +2613,8 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       data.forEach(r=>(r.metode==='gratis'?GRATIS:BAYAR).add(r.uid));if(izinQs)izinRender(izinQs);},()=>{});
     muatBayar();setInterval(()=>{if(!document.hidden)muatBayar();},60000);window.__muatBayar=muatBayar;
     // Akses sub materi: kelompokkan akun disetujui menurut akses efektif, dan atur sub materi yang terbuka untuk akses terbatas.
-    let AKS=null;const aksAwal=()=>{const m={};Object.keys(SUBS).forEach(c=>m[c]=[1,2,3].filter(i=>i<=SUBS[c].length));return m;};
-    const aksAtur=()=>{const m=AKS||aksAwal();$('asatur').innerHTML=Object.keys(SUBS).map(c=>`<div class="ascat"><b>${esc(CATS[c].short)}</b>`+SUBS[c].map((n,i)=>`<label><input type="checkbox" data-c="${c}" data-s="${i+1}"${(m[c]||[]).includes(i+1)?' checked':''}> ${i+1}. ${esc(n)}</label>`).join('')+'</div>').join('');};
+    let AKS=null;const aksAwal=()=>{const m={};Object.keys(SUBS).forEach(c=>m[c]=[1]);return m;};
+    const aksAtur=()=>{const m=AKS||aksAwal();$('asatur').innerHTML=Object.keys(SUBS).map(c=>`<div class="ascat"><b>${esc(CATS[c].short)}</b>`+SUBS[c].map((n,i)=>`<label><input type="radio" name="asr-${c}" data-c="${c}" data-s="${i+1}"${subSatu(m,c)===i+1?' checked':''}> ${i+1}. ${esc(n)}</label>`).join('')+'</div>').join('');};
     db.doc('bank/akses').get().then(d=>{AKS=d.exists?(d.data().buka||null):null;aksAtur();}).catch(()=>aksAtur());
     $('assimpan').onclick=()=>{const m={};Object.keys(SUBS).forEach(c=>m[c]=[]);document.querySelectorAll('#asatur input:checked').forEach(i=>m[i.dataset.c].push(+i.dataset.s));
       $('assimpan').disabled=true;db.doc('bank/akses').set({buka:m}).then(()=>{AKS=m;$('asinfo').textContent='✓ Tersimpan. Berlaku langsung untuk akun terbatas.';}).catch(e=>{$('asinfo').textContent='Gagal: '+(e.code||e.message);}).finally(()=>{$('assimpan').disabled=false;});};
