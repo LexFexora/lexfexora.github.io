@@ -1207,6 +1207,13 @@ function getQuestionTier(q){const s=q.q,a=q.o[q.a];
   if(TIER_REG_ASK.test(s)||TIER_REG_ANS.test(a))return 1;
   if(PINRE.test(s+" "+a)||TIER_EXP.test(s))return 3;
   return 2;}
+// V65: soal aturan = tier 1 ditambah soal yang jawabannya nama/nomor aturan lain (Staatsblad, TAP MPR, Perpres, Surat Panitera MA, nota kesepahaman, dll.).
+// Hanya dipakai untuk urutan tampil (soal aturan di akhir sub-materi), tidak mengubah tier sehingga isi Prediction/Category Packages tetap sama.
+const ATR_ANS=/^(Perpres\b|Perppu\b|Permen|TAP MPR|Ketetapan MPR|Staatsblad|Stbl\b|Surat Panitera|Nota Kesepahaman|Perjanjian Kerja Sama|Angka [IVXL]+ (Keputusan|SK)|Indische Staatsregeling|Regeringsreglement)/i;
+const ATR_ASK=/(merujuk pada|mengacu pada)\?$|menjadi dasar berlakunya|[Kk]eputusan [^?]*\bnomor\?$/;
+const ATR_C=new WeakMap();function isAturan(q){let v=ATR_C.get(q);if(v===undefined){v=getQuestionTier(q)===1||ATR_ANS.test(q.o[q.a])||ATR_ASK.test(q.q);ATR_C.set(q,v);}return v;}
+// Soal aturan dipindah ke belakang tanpa mengubah urutan relatif soal lainnya.
+function aturanAkhir(ids,get){const a=[],b=[];ids.forEach(id=>{const q=get(id);(q&&isAturan(q)?b:a).push(id);});return a.concat(b);}
 // getOrderKey (V22, pedoman G4): urutan mode Berurutan di tiap sub-materi. V26: field ord pada soal mengunci grup urutan (blok adagium 1.2 berurutan per klaster menurut id).
 // Grup 1 dasar hukum menurut hierarki (UU, PP, KHI/KHES, PERMA, SEMA, Buku II), 2 istilah dan jenis per rumpun konsep, 3 syarat dan prosedur, 4 klaster jangka waktu menurut alur perkara, 5 pendapat ahli.
 const ORD_HIER=[[/\bQS\b|^Surat (An|Al)-/,0],[/UUD/,1],[/Putusan (MK|Mahkamah Konstitusi)/,3],[/\bUU\b|Undang-[Uu]ndang|\bHIR\b|\bRBg\b|\bRv\b|KUH ?Perdata|Stbl|Staatsblad|Indische/,2],[/\bPP\b|Peraturan Pemerintah/,4],[/Perpres|Peraturan Presiden|Inpres|Instruksi Presiden/,5],[/\bKHI\b|\bKHES\b|Kompilasi Hukum/,6],[/Qanun/,7],[/PERMA|Peraturan Mahkamah Agung/,8],[/SEMA|Surat Edaran Mahkamah|Rumusan/,9],[/SK KMA|KMA|Keputusan Ketua|Dirjen|SEKMA|SKB/,10],[/Buku II/,11]];
@@ -1439,11 +1446,14 @@ function subIdx(q){if(state.cat==="all")return q.c*100+q.s;const m=q.mappings.fi
 // V41: Hukum Formil, Hukum Materil, dan TIK mengikuti alur perkara: sub-materi menurut FLOW_SUB, lalu tahap perkara getFlowStage, lalu grup getOrderKey.
 function seqKey(q){let c,s;if(state.cat==="all"){c=q.c;s=q.s;}else{c=+state.cat;const m=q.mappings.find(m=>m.c===c&&(state.sub==="all"||m.s===+state.sub));s=m?m.s:99;}
   const fl=c>1&&c!==5&&s!==99;return [c*100+(fl?flowSubRank(c,s):s),fl?getFlowStage(q,c,s):((c===1||c===5)&&s!==99?ihStage(q):0)];}
-// V58: soal dasar hukum (tier 1) ditaruh di akhir setiap sub-materi pada mode Berurutan.
-function sortSeq(qs){const K=new Map(qs.map(q=>[q.id,seqKey(q)])),D=new Map(qs.map(q=>[q.id,getQuestionTier(q)===1?1:0]));return qs.slice().sort((a,b)=>{const ka=K.get(a.id),kb=K.get(b.id),x=getOrderKey(a),y=getOrderKey(b);return ka[0]-kb[0]||D.get(a.id)-D.get(b.id)||ka[1]-kb[1]||x[0]-y[0]||x[1]-y[1]||(a.id<b.id?-1:a.id>b.id?1:0);});}
+// V58: soal dasar hukum (tier 1) ditaruh di akhir setiap sub-materi pada mode Berurutan. V65: memakai isAturan (cakupan lebih luas).
+// V65b: latihan biasa 5 kategori/sub-materi tetap memakai aturan lama (tier 1 di akhir sub-materi pada Sequential, Shuffle acak penuh); aturan baru hanya untuk paket dan sesi ulang (state.ulang).
+function atrBaru(){return !!(state.ulang&&!state.ulang.tetap);}
+function sortSeq(qs){const nb=atrBaru(),K=new Map(qs.map(q=>[q.id,seqKey(q)])),D=new Map(qs.map(q=>[q.id,(nb?isAturan(q):getQuestionTier(q)===1)?1:0]));return qs.slice().sort((a,b)=>{const ka=K.get(a.id),kb=K.get(b.id),x=getOrderKey(a),y=getOrderKey(b);return ka[0]-kb[0]||D.get(a.id)-D.get(b.id)||ka[1]-kb[1]||x[0]-y[0]||x[1]-y[1]||(a.id<b.id?-1:a.id>b.id?1:0);});}
 function buildSession(fresh,onlyIds,reset){
   let ids=onlyIds||(state.ulang&&state.ulang.tetap?pool().map(q=>q.id):sortSeq(pool()).map(q=>q.id));
-  if(state.order==="rand") ids=shuffle(ids);
+  // V65: pada paket/sesi ulang, mode Shuffle tetap menaruh soal aturan di belakang (keduanya diacak); latihan biasa dan Vital Test Record tidak diubah.
+  if(state.order==="rand"){ids=shuffle(ids);if(atrBaru())ids=aturanAkhir(ids,id=>BYID[id]);}
   state.list=ids; state.pos=0; state.ans={}; state.perm={}; state.mulai=false; state.ep=Date.now(); state.rs=!!reset; state.t=0;
   resetTimer();
   ids.forEach(id=>{state.perm[id]=shuffle(BYID[id].o.map((_,i)=>i));});
@@ -1477,7 +1487,7 @@ function restore(){
   const valid=s&&Array.isArray(s.list)&&s.list.length&&s.list.every(id=>BYID[id]&&s.perm&&s.perm[id]);
   const ids=new Set(pool().map(q=>q.id));
   // Ulangi yang salah (rs): daftarnya sengaja lebih kecil dari pool, tetap dipulihkan selama semua soalnya masih ada di pool.
-  if(valid&&(s.list.length===ids.size||(s.rs&&s.list.length<ids.size))&&s.list.every(id=>ids.has(id))){state.list=(s.order||"seq")==="seq"&&!(state.ulang&&state.ulang.tetap)&&!dikerjakan(s)?sortSeq(s.list.map(id=>BYID[id])).map(q=>q.id):s.list;state.pos=Math.min(s.pos||0,s.list.length);state.ans=s.ans||{};state.ep=s.ep||0;state.rs=!!s.rs;state.t=s.t||0;state.perm=s.perm;state.order=s.order||"seq";state.mulai=typeof s.mulai==="boolean"?s.mulai:!!(s.pos||Object.keys(s.ans||{}).length);state.tLeft=typeof s.tLeft==="number"?s.tLeft:SEC*s.list.length;state.timeUp=!!s.timeUp;state.qLeft=typeof s.qLeft==="number"?s.qLeft:SEC;state.qId=s.qId||null;state.expired=s.expired||{};}
+  if(valid&&(s.list.length===ids.size||(s.rs&&s.list.length<ids.size))&&s.list.every(id=>ids.has(id))){state.list=!(state.ulang&&state.ulang.tetap)&&!dikerjakan(s)?((s.order||"seq")==="seq"?sortSeq(s.list.map(id=>BYID[id])).map(q=>q.id):atrBaru()?aturanAkhir(s.list,id=>BYID[id]):s.list):s.list;state.pos=Math.min(s.pos||0,s.list.length);state.ans=s.ans||{};state.ep=s.ep||0;state.rs=!!s.rs;state.t=s.t||0;state.perm=s.perm;state.order=s.order||"seq";state.mulai=typeof s.mulai==="boolean"?s.mulai:!!(s.pos||Object.keys(s.ans||{}).length);state.tLeft=typeof s.tLeft==="number"?s.tLeft:SEC*s.list.length;state.timeUp=!!s.timeUp;state.qLeft=typeof s.qLeft==="number"?s.qLeft:SEC;state.qId=s.qId||null;state.expired=s.expired||{};}
   else if(s&&s.ans&&Object.keys(s.ans).length){
     // Bank soal berubah (soal diedit/dihapus): susun ulang daftar, tapi jawaban dan posisi lama tetap dipakai.
     // Urutan lama dipertahankan: soal yang masih ada tetap di urutan semula (jadi soal yang sudah dijawab tidak pindah ke depan
@@ -2513,7 +2523,8 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       // Soal paket didahulukan (urutan paket apa adanya), sisa jatah diisi racikan sub-materi tanpa mengulang soal paket.
       const dariPk=ambilPaket(P,j).map(id=>BY.get(id)).filter(Boolean),ada=new Set(dariPk.map(q=>q.id)),
         dariSub=j>dariPk.length&&pool.length?racik(pool.filter(q=>!ada.has(q.id)),j-dariPk.length):[];
-      const soal=dariPk.concat(dariSub).map(q=>({id:q.id,q:q.q,o:q.o.slice(),a:q.a,p:q.p||'',d:q.d||''}));
+      // V65: soal aturan diletakkan di bagian belakang mock exam, urutan soal lain tidak berubah.
+      const soal=aturanAkhir(dariPk.concat(dariSub).map(q=>q.id),id=>BY.get(id)).map(id=>BY.get(id)).map(q=>({id:q.id,q:q.q,o:q.o.slice(),a:q.a,p:q.p||'',d:q.d||''}));
       const nmPk=P.filter(p=>p.ids.some(id=>ada.has(id))).map(p=>p.nm),sjSub=dariSub.length?subMock({soal:dariSub}):'',
         lbl=nmPk.concat(sjSub?[sjSub]:[]),subJudul=!nmPk.length?subMock({soal}):lbl.length===1?lbl[0]:lbl[0]+' +'+(lbl.length-1)+' lainnya';
       $('tobuat').disabled=true;
