@@ -57,10 +57,12 @@
     forEach(f,t){this.docs.forEach(f,t);}}
 
   // ---------- Cache lokal (IndexedDB) untuk get({source:'cache'}), dipakai bank soal ----------
-  let idbP=null;const idb=()=>idbP||(idbP=new Promise((ok,no)=>{try{const r=indexedDB.open('cat-sb',1);r.onupgradeneeded=()=>r.result.createObjectStore('d');r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error);}catch(e){no(e);}}));
-  const cGet=k=>idb().then(db=>new Promise((ok,no)=>{const q=db.transaction('d').objectStore('d').get(k);q.onsuccess=()=>ok(q.result);q.onerror=()=>no(q.error);}));
+  // Semua operasi cache dibatasi waktunya: bila IndexedDB macet (mode privat, diblokir tab lain, penyimpanan penuh), pemuatan tetap lanjut dari server.
+  const batas=(pr,ms)=>Promise.race([pr,new Promise((_,no)=>setTimeout(()=>no(new Error('idb timeout')),ms))]);
+  let idbP=null;const idb=()=>idbP||(idbP=batas(new Promise((ok,no)=>{try{const r=indexedDB.open('cat-sb',1);r.onupgradeneeded=()=>r.result.createObjectStore('d');r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error);r.onblocked=()=>no(new Error('idb blocked'));}catch(e){no(e);}}),3000));
+  const cGet=k=>batas(idb().then(db=>new Promise((ok,no)=>{const q=db.transaction('d').objectStore('d').get(k);q.onsuccess=()=>ok(q.result);q.onerror=()=>no(q.error);})),5000);
   // Selesai setelah transaksi tersimpan, agar bagian bank di cache tidak tercampur versi lama bila halaman dimuat ulang.
-  const cPut=(k,v)=>idb().then(db=>new Promise(ok=>{const t=db.transaction('d','readwrite');t.oncomplete=t.onerror=t.onabort=()=>ok();t.objectStore('d').put(v,k);})).catch(()=>{});
+  const cPut=(k,v)=>batas(idb().then(db=>new Promise(ok=>{const t=db.transaction('d','readwrite');t.oncomplete=t.onerror=t.onabort=()=>ok();t.objectStore('d').put(v,k);})),5000).catch(()=>{});
   // Hanya dokumen bank/* yang disimpan di cache (dokumen lain selalu dibaca dari server, jadi tidak perlu ditulis ke IndexedDB).
   const diCache=p=>/^bank\//.test(p);
 

@@ -2050,7 +2050,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
 
 <script src="/sb/supabase-js-2.117.3.js"></script>
 <script src="sb/supabase-config.js?v=20261102b"></script>
-<script src="sb/fb-shim.js?v=20261107a"></script>
+<script src="sb/fb-shim.js?v=20261107b"></script>
 <script>
 // Gerbang izin berbasis Firebase: login Google, permintaan akses di izin/<uid>, bank soal di bank/* hanya untuk akun yang disetujui.
 (function(){
@@ -2361,6 +2361,9 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
   async function start(){
     if(started)return;started=true;
     show('Loading question bank…','The first load may take a few seconds.');
+    // Bila server lambat, beri tahu pengguna alih-alih layar diam tanpa kabar.
+    const t0=Date.now(),lama=setInterval(()=>{if(!started||$('gate').hidden){clearInterval(lama);return;}const d=Math.round((Date.now()-t0)/1000);
+      if(d>=15&&gh.textContent.indexOf('Loading question bank')===0)gp.textContent=d<45?`The server is busy right now. Still loading… (${d}s)`:`The server is very busy. Still trying (${d}s). If this keeps going, reload the page in a minute.`;},5000);
     try{const [arr]=await Promise.all([loadBank(),progP=progP||progres()]);QB.push(...arr);startQuiz();open();tryoutKartu();paketKartu();try{window.__serapMock&&window.__serapMock();}catch(e){}}
     catch(e){started=false;if(isOwner){open();$('adm').open=true;$('adm').scrollIntoView();return;}show(e.message==='kosong'?'The question bank has not been uploaded yet':'Could not load the question bank',e.message==='kosong'?'The owner needs to upload the question bank from the approval panel.':'Check your connection, then reload the page. ('+(e.code||e.message)+')',null,false,true);}
   }
