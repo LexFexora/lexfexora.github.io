@@ -449,7 +449,7 @@ auth.onAuthStateChanged(async u=>{U=u;pMuat=false;aku=null;P={};if(unsubT){unsub
   if(window.Arsip)Arsip.mulai(window.__sb,u.uid,!!OWNER&&(u.email||"").toLowerCase()===OWNER&&u.emailVerified).then(()=>{if($("arsipbtn")&&T&&T.status==="mulai")render();});
   isOwner=!!OWNER&&(u.email||"").toLowerCase()===OWNER&&u.emailVerified;$("edsoal").hidden=!isOwner;if(!isOwner)detakIzinMulai();if(isOwner){siapkanEdit();pantauLoginMulai();}$("akun").hidden=false;$("akunav").innerHTML=av({foto:u.photoURL,nama:u.displayName||u.email});$("akunnm").textContent=u.displayName||(u.email||"").split("@")[0];document.body.classList.toggle("bebas",isOwner||BEBAS_SALIN.includes((u.email||"").toLowerCase())&&u.emailVerified);
   unsubT=db.doc("tryout/"+TID).onSnapshot(s=>{if(!s.exists){gate("Mock exam tidak ditemukan","Periksa kembali tautannya.");return;}
-      T=s.data({serverTimestamps:"estimate"});T.id=s.id;if(!T.judul||T.judul==="Mock Exam Seleksi Kemampuan Bidang")T.judul="Mock Exam";if(T.subJudul)T.judul+=" - "+T.subJudul.replace(/^Package (\d)/,"Prediction Package $1");gabung();render();},
+      T=s.data({serverTimestamps:"estimate"});T.id=s.id;catatStatus();if(!T.judul||T.judul==="Mock Exam Seleksi Kemampuan Bidang")T.judul="Mock Exam";if(T.subJudul)T.judul+=" - "+T.subJudul.replace(/^Package (\d)/,"Prediction Package $1");gabung();render();},
     e=>gate("Mock exam belum dapat dibuka","Muat ulang halaman. ("+(e.code||e.message)+")"));
   unsubP=db.collection("tryout/"+TID+"/peserta").onSnapshot(qs=>{const m={};qs.forEach(d=>{m[d.id]=d.data();});catatJawab(m);P=m;pMuat=true;if(T)gabung();
       // Heartbeat (kolom t) saja tidak perlu menggambar ulang layar, agar tombol tidak "lari" saat diklik.
@@ -465,7 +465,8 @@ auth.onAuthStateChanged(async u=>{U=u;pMuat=false;aku=null;P={};if(unsubT){unsub
       if(SINK()){const q=$("sisaq"),sq=soalSisaMs();if(q){q.textContent=fmt(sq);jamSet(q,sq);q.parentElement.classList.toggle("warn",sq<=10000);q.parentElement.classList.toggle("kedip",sq>0&&sq<=10000);}
         if(sq<=0&&habisIdx!==(T.idx||0)){habisIdx=T.idx||0;render();}}}
     if(SINK()&&Date.now()-cekT>5000){cekT=Date.now();cekMaster();}},250);
-  if(!detak)detak=setInterval(()=>{if(SINK()&&aku&&!aku.selesai&&T&&T.status==="mulai"&&!dikick(U.uid))db.doc("tryout/"+TID+"/peserta/"+U.uid).update({t:FV.serverTimestamp()}).catch(()=>{});},10000);
+  // Heartbeat juga berjalan di ruang tunggu, agar saat Play ditekan kolom t semua peserta (termasuk room master) sudah segar.
+  if(!detak)detak=setInterval(()=>detakKirim(),10000);
 });
 // Aktivitas langsung untuk panel pemilik (izin/<uid>.posisi): Mock Exam yang diikuti, nomor soal, dan jawaban peserta.
 // Formatnya sama dengan halaman latihan. Dikirim tiap 60 detik dan setiap ada perubahan (paling cepat tiap 4 detik).
@@ -520,8 +521,13 @@ function isMaster(){return SINK()&&!!U&&T.master===U.uid;}
 function namaP(uid){const p=P[uid];return p?p.nama:"(belum bergabung)";}
 function segar(){const ps=Object.entries(P).filter(([u,p])=>!p.selesai&&!(T&&T.keluar&&T.keluar[u]));if(!ps.length)return [];const mx=Math.max(...ps.map(([,p])=>tms(p.t)));
   return ps.filter(([,p])=>mx-tms(p.t)<25000).map(([u])=>u);}
+function detakKirim(){if(SINK()&&U&&aku&&!aku.selesai&&T&&["menunggu","siap","mulai"].includes(T.status)&&!dikick(U.uid))db.doc("tryout/"+TID+"/peserta/"+U.uid).update({t:FV.serverTimestamp()}).catch(()=>{});}
+// Masa tenggang: alih otomatis room master baru boleh terjadi 35 detik setelah ujian mulai/dilanjutkan di perangkat ini,
+// supaya semua peserta sempat mengirim heartbeat dan room master tidak berpindah sendiri saat Play ditekan.
+let mulaiLokal=0,statusLalu="";
+function catatStatus(){if(!T)return;if(T.status==="mulai"&&statusLalu!=="mulai"){mulaiLokal=Date.now();detakKirim();}statusLalu=T.status;}
 function pilihMaster(uid){if(!uid||uid===T.master)return;db.doc("tryout/"+TID).update({master:uid}).catch(e=>alert("Gagal memindahkan: "+(e.code||e.message)));}
-function cekMaster(){if(!SINK()||!U||!aku||T.status!=="mulai"||selesaiSemua())return;const sg=segar();if(!sg.length||sg.includes(T.master))return;
+function cekMaster(){if(!SINK()||!U||!aku||T.status!=="mulai"||selesaiSemua()||Date.now()-mulaiLokal<35000)return;const sg=segar();if(!sg.length||sg.includes(T.master))return;
   const calon=sg.includes(T.pembuat)?T.pembuat:sg.sort()[0];if(calon===U.uid)db.doc("tryout/"+TID).update({master:U.uid}).catch(()=>{});}
 function lanjutSemua(){if(!isMaster())return;const i=(T.idx||0)+1;
   if(i>=T.soal.length&&!confirm("Ini soal terakhir. Selesaikan mock exam untuk semua peserta?"))return;
