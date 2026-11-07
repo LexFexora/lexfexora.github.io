@@ -2122,21 +2122,35 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
   const perbaikan=async()=>{try{const {data,error}=await window.__sb.from('cat_bayar').select('harga').eq('id','perbaikan').maybeSingle();if(error)return true;return !(data&&data.harga==='nonaktif');}catch(e){return true;}};
   const vvipKah=async()=>{try{const {data,error}=await window.__sb.rpc('cat_sudah_beli');return !error&&data===true;}catch(e){return false;}};
   window.__perbaikan=perbaikan;let pbT=null;
+  // Bank soal: pengguna yang pernah memuat bank langsung memakai salinan di perangkat (IndexedDB) tanpa menunggu server,
+  // lalu versi server diperiksa di latar belakang. Bila pemilik mengunggah versi baru, bagian-bagiannya diunduh pelan di latar belakang
+  // dan dipakai saat halaman dibuka berikutnya; suntingan soal (bank/edit) yang baru langsung diterapkan.
+  // Pengguna baru dan pemilik selalu memuat dari server; meta, bagian bank, pindah, dan edit diambil bersamaan.
+  const bankIsi=d=>(d&&d.exists&&d.data().m)||{};
+  const bankGabung=docs=>JSON.parse('['+docs.map(d=>d.data().d).join(',')+']');
+  const bankTerap=(arr,mp,me)=>{arr.forEach(q=>{if(mp[q.id])applyPindah(q,mp[q.id]);});arr.forEach(q=>{if(me[q.id]&&applyEdit(q,me[q.id]))DIKUNCI.add(q.id);});return arr;};
+  const bankTandai=(v,n)=>{try{localStorage.setItem('bank-versi',String(v));localStorage.setItem('bank-chunks',String(n));}catch(e){}};
   async function loadBank(){
+    let vLama='',nLama=0;try{vLama=localStorage.getItem('bank-versi')||'';nLama=+localStorage.getItem('bank-chunks')||0;}catch(e){}
+    if(!isOwner&&vLama&&nLama){try{const C=p=>db.doc(p).get({source:'cache'});
+      const [docs,pd,ed]=await Promise.all([Promise.all(Array.from({length:nLama},(_,i)=>C('bank/c'+i))),C('bank/pindah').catch(()=>null),C('bank/edit').catch(()=>null)]);
+      const me=bankIsi(ed),arr=bankTerap(bankGabung(docs),bankIsi(pd),me);setTimeout(()=>segarBank(vLama,me),3000+Math.random()*5000);return arr;}catch(e){}}
     const m=await db.doc('bank/meta').get();
     if(!m.exists)throw new Error('kosong');
-    const {chunks,versi}=m.data();let src='server';
-    try{if(localStorage.getItem('bank-versi')===String(versi))src='cache';}catch(e){}
+    const {chunks,versi}=m.data(),src=vLama===String(versi)?'cache':'server';
     const get=i=>db.doc('bank/c'+i).get({source:src}).catch(()=>db.doc('bank/c'+i).get());
-    const docs=await Promise.all(Array.from({length:chunks},(_,i)=>get(i)));
-    const arr=JSON.parse('['+docs.map(d=>d.data().d).join(',')+']');
-    try{const pd=await db.doc('bank/pindah').get();const mp=(pd.exists&&pd.data().m)||{};
-      arr.forEach(q=>{if(mp[q.id])applyPindah(q,mp[q.id]);});}catch(e){}
-    try{const ed=await db.doc('bank/edit').get();const me=(ed.exists&&ed.data().m)||{};
-      arr.forEach(q=>{if(me[q.id]&&applyEdit(q,me[q.id]))DIKUNCI.add(q.id);});}catch(e){}
-    try{localStorage.setItem('bank-versi',String(versi));}catch(e){}
+    const [docs,pd,ed]=await Promise.all([Promise.all(Array.from({length:chunks},(_,i)=>get(i))),db.doc('bank/pindah').get().catch(()=>null),db.doc('bank/edit').get().catch(()=>null)]);
+    const arr=bankTerap(bankGabung(docs),bankIsi(pd),bankIsi(ed));bankTandai(versi,chunks);
     return arr;
   }
+  async function segarBank(vLama,meLama){try{
+    db.doc('bank/edit').get().then(ed=>{const me=bankIsi(ed);Object.keys(me).forEach(id=>{if(JSON.stringify(me[id])!==JSON.stringify(meLama[id])&&window.__terapkanEdit)try{window.__terapkanEdit(id,me[id]);}catch(e){}});}).catch(()=>{});
+    db.doc('bank/pindah').get().catch(()=>{});
+    const m=await db.doc('bank/meta').get();if(!m.exists)return;const {chunks,versi}=m.data();if(String(versi)===vLama)return;
+    // Versi baru: tandai cache tidak berlaku dulu, unduh bagian satu per satu, baru tandai versi baru setelah semuanya tersimpan.
+    try{localStorage.removeItem('bank-versi');}catch(e){}
+    for(let i=0;i<chunks;i++)await db.doc('bank/c'+i).get();
+    bankTandai(versi,chunks);}catch(e){}}
   // Soal yang pernah dijawab benar disimpan di progres/<uid> agar tetap ada setelah keluar atau ganti perangkat.
   async function progres(){const u=auth.currentUser;if(!u)return;window.__UID=u.uid;const ref=db.doc('progres/'+u.uid);
     let imporSudah=false,arAwal;try{const s=await ref.get();arAwal=(s.exists&&s.data().ar)||'';window.__BENAR_AWAL=(s.exists&&s.data().b)||{};window.__COBA_AWAL=(s.exists&&s.data().c)||{};window.__PK_AWAL=(s.exists&&s.data().pk)||{};window.__SS_AWAL=(s.exists&&s.data().ss)||{};window.__POS_AWAL=(s.exists&&s.data().pos)||'';imporSudah=!!(s.exists&&s.data().impor);}catch(e){window.__BENAR_AWAL={};window.__COBA_AWAL={};window.__PK_AWAL={};window.__SS_AWAL={};window.__POS_AWAL='';}
@@ -2342,10 +2356,12 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
     tampil();window.__pkSegar=()=>{if(!buka)return;if(box.open&&!box.dataset.anim)pkRender();if(kpBox&&kpBox.open&&!kpBox.dataset.anim)kpRender();};
     box.addEventListener('toggle',()=>{if(!box.open)return;const t=()=>{if(box.dataset.anim)return setTimeout(t,120);if(buka)pkRender();};setTimeout(t,120);});
   }
+  // progres() cukup sekali per halaman walau start() diulang setelah gagal memuat bank.
+  let progP=null;
   async function start(){
     if(started)return;started=true;
     show('Loading question bank…','The first load may take a few seconds.');
-    try{const arr=await loadBank();QB.push(...arr);await progres();startQuiz();open();tryoutKartu();paketKartu();try{window.__serapMock&&window.__serapMock();}catch(e){}}
+    try{const [arr]=await Promise.all([loadBank(),progP=progP||progres()]);QB.push(...arr);startQuiz();open();tryoutKartu();paketKartu();try{window.__serapMock&&window.__serapMock();}catch(e){}}
     catch(e){started=false;if(isOwner){open();$('adm').open=true;$('adm').scrollIntoView();return;}show(e.message==='kosong'?'The question bank has not been uploaded yet':'Could not load the question bank',e.message==='kosong'?'The owner needs to upload the question bank from the approval panel.':'Check your connection, then reload the page. ('+(e.code||e.message)+')',null,false,true);}
   }
   // Aktivitas langsung untuk panel pemilik (izin/<uid>.posisi, teks JSON): mode, paket/bagian, sub-materi, soal yang sedang tampil,

@@ -59,7 +59,10 @@
   // ---------- Cache lokal (IndexedDB) untuk get({source:'cache'}), dipakai bank soal ----------
   let idbP=null;const idb=()=>idbP||(idbP=new Promise((ok,no)=>{try{const r=indexedDB.open('cat-sb',1);r.onupgradeneeded=()=>r.result.createObjectStore('d');r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error);}catch(e){no(e);}}));
   const cGet=k=>idb().then(db=>new Promise((ok,no)=>{const q=db.transaction('d').objectStore('d').get(k);q.onsuccess=()=>ok(q.result);q.onerror=()=>no(q.error);}));
-  const cPut=(k,v)=>idb().then(db=>{const t=db.transaction('d','readwrite');t.objectStore('d').put(v,k);}).catch(()=>{});
+  // Selesai setelah transaksi tersimpan, agar bagian bank di cache tidak tercampur versi lama bila halaman dimuat ulang.
+  const cPut=(k,v)=>idb().then(db=>new Promise(ok=>{const t=db.transaction('d','readwrite');t.oncomplete=t.onerror=t.onabort=()=>ok();t.objectStore('d').put(v,k);})).catch(()=>{});
+  // Hanya dokumen bank/* yang disimpan di cache (dokumen lain selalu dibaca dari server, jadi tidak perlu ditulis ke IndexedDB).
+  const diCache=p=>/^bank\//.test(p);
 
   // ---------- Realtime: satu kanal per pendengar ----------
   let seq=0;const live=new Set();
@@ -76,13 +79,18 @@
         const r=p.new;if(!r||!r.path)return;if(p.errors&&p.errors.length)onRow(r.path,null,true);else onRow(r.path,{path:r.path,data:r.data,updated_at:r.updated_at},false);})
       .on('postgres_changes',{event:'DELETE',schema:'public',table:'docs'},p=>{if(p.old&&p.old.path)onDel(p.old.path);})
       .subscribe((s,e)=>{st.s=s;if(e)st.e=String(e.message||e);dbg();if(s==='SUBSCRIBED')onReady();});
+    // Cek cadangan: tiap 4-6 detik hanya selama realtime belum tersambung. Setelah tersambung: 15-20 detik bila realtime sudah
+    // mengirim perubahan (seperti sebelumnya), 30-40 detik untuk dokumen yang belum pernah berubah. Dulu dokumen yang jarang berubah
+    // (mis. bank/akses) dicek tiap 3 detik selamanya, sehingga 70 pengguna sekaligus membuat puluhan permintaan per detik ke database
+    // dan pemuatan bank soal menjadi lambat. Jeda diacak agar permintaan semua pengguna tidak jatuh di detik yang sama.
+    const jeda=()=>st.s!=='SUBSCRIBED'?4000+Math.random()*2000:st.rt?15000+Math.random()*5000:30000+Math.random()*10000;
     let tm=null,off=false;const tick=async()=>{if(off)return;
       if(!document.hidden)try{if(await check()){st.pl++;dbg();}}catch(e){}
-      tm=setTimeout(tick,st.rt?15000:3000);};tm=setTimeout(tick,3000);
-    const L={ch,touch:onRow};live.add(L);
+      tm=setTimeout(tick,jeda());};tm=setTimeout(tick,jeda());
+    const [fk,fv]=filter.split('=eq.'),L={ch,touch:onRow,cocok:p=>fk==='path'?p===fv:p.slice(0,p.lastIndexOf('/'))===fv};live.add(L);
     return ()=>{off=true;clearTimeout(tm);live.delete(L);sb.removeChannel(ch);const i=stat.indexOf(st);if(i>=0)stat.splice(i,1);dbg();};}
   // Setelah menulis, segarkan pendengar yang memantau dokumen itu tanpa menunggu realtime.
-  async function local(path){if(!live.size)return;const r=await sb.from('docs').select('path,data,updated_at').eq('path',path).maybeSingle();
+  async function local(path){if(![...live].some(L=>L.cocok(path)))return;const r=await sb.from('docs').select('path,data,updated_at').eq('path',path).maybeSingle();
     if(r.error)return;live.forEach(L=>L.touch(path,r.data||null,false,true));}
 
   // ---------- Referensi dokumen ----------
@@ -93,7 +101,7 @@
     async get(o){const src=o&&o.source;
       if(src==='cache'){const v=await cGet(this.path).catch(()=>null);if(!v)throw Object.assign(new Error('not in cache'),{code:'unavailable'});return new DocSnap(this.path,v);}
       const r=await sb.from('docs').select('path,data,updated_at').eq('path',this.path).maybeSingle();const row=chk(r);
-      if(row)cPut(this.path,row);return new DocSnap(this.path,row);}
+      if(row&&diCache(this.path))await cPut(this.path,row);return new DocSnap(this.path,row);}
     async set(d,o){chk(await sb.rpc('doc_set',{p_path:this.path,p_data:encTop(d),p_merge:!!(o&&o.merge)}));local(this.path);}
     async update(d){chk(await sb.rpc('doc_update',{p_path:this.path,p_patch:encTop(d)}));local(this.path);}
     async delete(){chk(await sb.from('docs').delete().eq('path',this.path));live.forEach(L=>L.touch(this.path,null,false,true));}
@@ -123,7 +131,9 @@
       return this._l?q.limit(this._l):q;}
     async _fetch(){return this._sort(chk(await this._q('path,data,updated_at'))||[]);}
     async get(){return new QuerySnap(await this._fetch());}
-    onSnapshot(a,b){const next=typeof a==='function'?a:a.next,fail=typeof a==='function'?b:a.error;let off=false,m=new Map(),last,tm=null;
+    onSnapshot(a,b){const next=typeof a==='function'?a:a.next,fail=typeof a==='function'?b:a.error;let off=false,m=new Map(),last,tm=null,et=null;
+      // Perubahan realtime yang datang beruntun (mis. 70 peserta mengirim detak) digabung menjadi satu pembaruan tiap 150 ms.
+      const nanti=()=>{if(et)return;et=setTimeout(()=>{et=null;emit();},150);};
       const emit=()=>{if(off)return;const rows=this._sort(Array.from(m.values()));const s=JSON.stringify(rows);if(s===last)return;last=s;next(new QuerySnap(rows));};
       const load=()=>this._fetch().then(rows=>{m=new Map(rows.map(r=>[r.path,r]));emit();}).catch(e=>{if(!off&&fail)fail(err(e));});
       const later=()=>{clearTimeout(tm);tm=setTimeout(load,150);};
@@ -132,9 +142,9 @@
       const check=async()=>{const r=await this._q('path,updated_at');if(r.error)return false;
         if(sig(r.data||[])===sig(this._sort(Array.from(m.values()))))return false;await load();return true;};
       const stop=listen('col=eq.'+this.col,(p,row,partial)=>{if(!mine(p))return;if(partial){later();return;}
-          if(row)m.set(p,row);else m.delete(p);if(!row&&this._l)later();else emit();},
-        p=>{if(!mine(p)||!m.has(p))return;m.delete(p);if(this._l)later();else emit();},load,check);
-      return ()=>{off=true;clearTimeout(tm);stop();};}
+          if(row)m.set(p,row);else m.delete(p);if(!row&&this._l)later();else nanti();},
+        p=>{if(!mine(p)||!m.has(p))return;m.delete(p);if(this._l)later();else nanti();},load,check);
+      return ()=>{off=true;clearTimeout(tm);clearTimeout(et);stop();};}
   }
 
   // ---------- Auth ala Firebase ----------
