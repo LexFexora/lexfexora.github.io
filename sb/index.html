@@ -1927,7 +1927,10 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
         if(error){box.innerHTML='<small>Run sb/supabase-update-6.sql in Supabase to enable bank transfers.</small>';return;}
         box.innerHTML=data.length?data.map(x=>`<div class="pkbrow"><span><b>${rp(x.nominal)}</b> · ${escH(x.pengirim)}<br><small>${escH(x.email)} · ${new Date(x.dikirim_pada).toLocaleString('id-ID',{dateStyle:'short',timeStyle:'short'})}</small></span><button class="btn copy" type="button" data-ok="${escH(x.order_id)}">✓ Confirm</button><button class="btn copy" type="button" data-no="${escH(x.order_id)}">✕</button></div>`).join(''):'<small>No transfers waiting.</small>';
         box.querySelectorAll('[data-ok],[data-no]').forEach(b=>b.onclick=async()=>{const ok=!!b.dataset.ok,id=b.dataset.ok||b.dataset.no;
-          if(!confirm(ok?'Confirm this transfer? Make sure the exact amount appears in your BRImo transaction history.':'Reject this transfer?'))return;b.disabled=true;
+          if(ok){const row=b.closest('.pkbrow'),nm=(row&&row.querySelector('b')||{}).textContent||'',k=(nm.replace(/\D/g,'').slice(-3));
+            const v=prompt('Buka mutasi BRImo dulu. Ketik 3 digit TERAKHIR nominal yang benar-benar masuk di mutasi BRImo:','');if(v===null)return;
+            if(v.replace(/\D/g,'')!==k){alert('Tidak cocok. Transfer TIDAK dikonfirmasi. Pastikan nominal '+nm+' persis ada di mutasi BRImo.');return;}}
+          else if(!confirm('Reject this transfer?'))return;b.disabled=true;
           const {error}=await sb.rpc('cat_beli_konfirmasi',{p_order:id,p_terima:ok});if(error){alert('Failed: '+(error.message||error.code));b.disabled=false;return;}muat();if(window.__muatBayar)window.__muatBayar();});};
       $('pkbmuat').onclick=muat;muat();
       $('pkbsalin').onclick=()=>{const b=$('pkbsalin'),ok=()=>{b.textContent='✓ Copied';setTimeout(()=>b.textContent='⧉ Copy public link',1500);};
