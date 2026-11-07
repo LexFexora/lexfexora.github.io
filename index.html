@@ -1556,17 +1556,19 @@ function renderBag(){
   const n=QB.filter(q=>inCat(q,state.cat,state.sub)).length,{k,sz,bonus}=bagInfo(n);
   const semua=k>1||bonus>0;
   if((state.bag==="bonus"&&!bonus)||(state.bag==="all"&&!semua))state.bag=1;
+  // Akses terbatas: hanya Part 1; Part lain, Bonus, dan All Parts terkunci.
+  const tb=terbatas();if(tb&&state.bag!==1)state.bag=1;const kc=v=>tb&&String(v)!=="1";
   // Opsi "All Parts": kerjakan seluruh soal sub-materi ini sekaligus.
   // Tanda ✓ pada Part yang sedang atau terakhir dikerjakan.
   const ck=v=>String(state.bag)===String(v)?"✓ ":"";
-  s.innerHTML=Array.from({length:k},(_,i)=>`<option value="${i+1}">${ck(i+1)}Part ${i+1} · Questions ${i*sz+1}–${Math.min(n,(i+1)*sz)}</option>`).join("")+(bonus?`<option value="bonus">${ck("bonus")}Bonus · Questions ${k*sz+1}–${n}</option>`:"")+(semua?`<option value="all">${ck("all")}All Parts · Questions 1–${n}</option>`:"");
+  s.innerHTML=Array.from({length:k},(_,i)=>`<option value="${i+1}"${kc(i+1)?" disabled":""}>${kc(i+1)?"🔒 ":ck(i+1)}Part ${i+1} · Questions ${i*sz+1}–${Math.min(n,(i+1)*sz)}</option>`).join("")+(bonus?`<option value="bonus"${tb?" disabled":""}>${tb?"🔒 ":ck("bonus")}Bonus · Questions ${k*sz+1}–${n}</option>`:"")+(semua?`<option value="all"${tb?" disabled":""}>${tb?"🔒 ":ck("all")}All Parts · Questions 1–${n}</option>`:"");
   s.value=String(state.bag);
 }
 // Part yang terakhir dikerjakan di sub-materi ini (tersimpan di akun); bawaan Part 1.
 function bagTerakhir(c,s){const b=store.bagAkhir&&store.bagAkhir[c+"|"+s];return b==null?1:bagNum(b);}
 function selectCat(k,sub,bag){
   if(k!=="all"&&!subBuka(k,sub)){const i=SUBS[k].findIndex((_,j)=>bukaSub(k,j+1));sub=i<0?1:i+1;bag=null;}
-  state.ulang=null;state.cat=k; state.sub=sub; state.bag=sub==="all"?"all":(bag==null?bagTerakhir(k,sub):bagNum(bag));
+  state.ulang=null;state.cat=k; state.sub=sub; state.bag=sub==="all"?"all":terbatas()?1:(bag==null?bagTerakhir(k,sub):bagNum(bag));
   try{history.replaceState(null,"",k==="all"?location.pathname:"#"+CATS[k].key);}catch(e){}
   restore(); $("order").value=state.order; renderTabs(); renderSub(); render();
 }
@@ -1867,7 +1869,7 @@ function nilaiHTML(ok,n){const min=p=>Math.ceil(p*n/100-1e-9),cap=n?STANDAR.find
 // Judul pengerjaan di kepala soal: nama sub-materi atau paket, ditambah Part yang sedang dikerjakan.
 function judulKerja(){if(state.cat==="all")return "All Clusters";const c=CATS[state.cat].short;if(state.ulang)return c+" · "+state.ulang.label;
   if(state.sub==="all")return c+" · All Sections";return state.sub+". "+SUBS[state.cat][state.sub-1]+" · "+(state.bag==="all"?"All Parts":state.bag==="bonus"?"Bonus Questions":"Part "+state.bag);}
-function bagNext(){if(state.ulang||state.sub==="all"||state.bag==="all"||state.bag==="bonus")return false;const {k,bonus}=bagInfo(QB.filter(q=>inCat(q,state.cat,state.sub)).length);return +state.bag<k?+state.bag+1:bonus?"bonus":false;}
+function bagNext(){if(terbatas()||state.ulang||state.sub==="all"||state.bag==="all"||state.bag==="bonus")return false;const {k,bonus}=bagInfo(QB.filter(q=>inCat(q,state.cat,state.sub)).length);return +state.bag<k?+state.bag+1:bonus?"bonus":false;}
 // Quiz Options wajib disimpan setiap kali halaman dibuka; setelah itu tombol Mulai muncul.
 let siapCat=null;
 // Soal baru tampil setelah klaster dipilih dan Keep it ditekan (juga untuk pengguna baru tanpa pilihan tersimpan).
@@ -1958,8 +1960,8 @@ function retake(){buildSession(true,null,true);render();}
 function retryWrong(){const w=state.list.filter(isBad);if(!w.length)return;buildSession(true,w,true);render();}
 
 // Memilih Part langsung menyimpan pilihan (seperti Keep it) dan membuka layar soal tanpa klik tambahan.
-$("bag").onchange=e=>{state.ulang=null;state.bag=bagNum(e.target.value);renderBag();restore();$("order").value=state.order;render();const b=$("siapbtn");if(b)b.click();};
-$("sub").onchange=e=>{state.ulang=null;state.sub=e.target.value==="all"?"all":+e.target.value;state.bag=state.sub==="all"?"all":bagTerakhir(state.cat,state.sub);renderBag();restore();$("order").value=state.order;
+$("bag").onchange=e=>{state.ulang=null;state.bag=terbatas()?1:bagNum(e.target.value);renderBag();restore();$("order").value=state.order;render();const b=$("siapbtn");if(b)b.click();};
+$("sub").onchange=e=>{state.ulang=null;state.sub=e.target.value==="all"?"all":+e.target.value;state.bag=state.sub==="all"?"all":terbatas()?1:bagTerakhir(state.cat,state.sub);renderBag();restore();$("order").value=state.order;
   // Khusus pemilik: ganti sub-materi saat mengerjakan, gulungan menutup dan baru terbuka lagi setelah Keep it.
   if(window.__isOwner&&siapOK()){siapCat=null;state.mulai=false;window.__gulTutup=true;}render();};
 $("order").onchange=e=>{state.order=e.target.value;buildSession(true,null,true);render();};
