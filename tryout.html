@@ -439,7 +439,7 @@ if(!TID){gate("Tautan mock exam tidak lengkap","Buka tautan mock exam yang dibag
 
 // Mode perbaikan (diatur pemilik di panel situs utama): baris cat_bayar id='perbaikan'. Tanpa baris atau gagal dibaca = aktif.
 // Selama aktif hanya pemilik dan akun VVIP Akses yang bisa membuka mock exam.
-const pbAktif=async()=>{try{const {data,error}=await window.__sb.from("cat_bayar").select("info").eq("id","perbaikan").maybeSingle();if(error)return true;return !(data&&data.info&&data.info.aktif===false);}catch(e){return true;}};
+const pbAktif=async()=>{try{const {data,error}=await window.__sb.from("cat_bayar").select("harga").eq("id","perbaikan").maybeSingle();if(error)return true;return !(data&&data.harga==="nonaktif");}catch(e){return true;}};
 const pbVvip=async()=>{try{const {data,error}=await window.__sb.rpc("cat_sudah_beli");return !error&&data===true;}catch(e){return false;}};
 const PB_H="Under Maintenance";
 auth.onAuthStateChanged(async u=>{U=u;pMuat=false;aku=null;P={};if(unsubT){unsubT();unsubT=null;}if(unsubP){unsubP();unsubP=null;}if(unsubC){unsubC();unsubC=null;}

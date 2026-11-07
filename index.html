@@ -2,7 +2,7 @@
 <html lang="id" class="gate-wait">
 <head>
 <meta charset="utf-8">
-<meta name="versi-situs" content="20261106q">
+<meta name="versi-situs" content="20261107pb">
 <script>try{var t=localStorage.getItem("cat-tema");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;}catch(e){}</script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Computer Assisted Test - LEX FEXORA.</title>
@@ -2116,10 +2116,10 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
   $('adm-logout').onclick=e=>{e.preventDefault();e.stopPropagation();bOut.onclick();};
 
   let started=false,unsub=null,beat=null;let isOwner=false;
-  // Mode perbaikan: baris cat_bayar id='perbaikan' (info.aktif, bisa dibaca siapa saja). Tanpa baris atau gagal dibaca = perbaikan AKTIF.
+  // Mode perbaikan: baris cat_bayar id='perbaikan' (kolom harga = 'aktif'/'nonaktif'; dipakai kolom harga karena kolom info belum ada di tabel; bisa dibaca siapa saja). Tanpa baris atau gagal dibaca = perbaikan AKTIF.
   // Selama aktif hanya pemilik dan akun VVIP Akses (cat_sudah_beli: pembeli lunas + paket gratis) yang bisa memakai situs; akun lain melihat layar perbaikan.
   const PB_H='Under Maintenance',PB_P='We are currently performing scheduled maintenance to improve our service. We apologize for the inconvenience and appreciate your patience. Please check back later.';
-  const perbaikan=async()=>{try{const {data,error}=await window.__sb.from('cat_bayar').select('info').eq('id','perbaikan').maybeSingle();if(error)return true;return !(data&&data.info&&data.info.aktif===false);}catch(e){return true;}};
+  const perbaikan=async()=>{try{const {data,error}=await window.__sb.from('cat_bayar').select('harga').eq('id','perbaikan').maybeSingle();if(error)return true;return !(data&&data.harga==='nonaktif');}catch(e){return true;}};
   const vvipKah=async()=>{try{const {data,error}=await window.__sb.rpc('cat_sudah_beli');return !error&&data===true;}catch(e){return false;}};
   window.__perbaikan=perbaikan;let pbT=null;
   async function loadBank(){
@@ -2435,7 +2435,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
         tog.textContent=on?'Matikan mode perbaikan':'Aktifkan mode perbaikan';tog.disabled=false;};
       perbaikan().then(v=>{on=v;tulis();});
       tog.onclick=async()=>{const ke=!on;if(!confirm(ke?'Aktifkan mode perbaikan? Akun selain VVIP Akses akan melihat layar "Under Maintenance".':'Matikan mode perbaikan? Situs kembali terbuka untuk semua akun.'))return;
-        tog.disabled=true;const {error}=await window.__sb.from('cat_bayar').upsert({id:'perbaikan',info:{aktif:ke},diubah:new Date().toISOString()});
+        tog.disabled=true;const {error}=await window.__sb.from('cat_bayar').upsert({id:'perbaikan',harga:ke?'aktif':'nonaktif',diubah:new Date().toISOString()});
         if(error){alert('Gagal menyimpan: '+(error.message||error.code));tog.disabled=false;return;}on=await perbaikan();tulis();};}
 
     // Mock Exam bersama: pemilik memilih sub-materi dan jumlah soal; peserta ikut lewat tryout.html?t=<id>.
