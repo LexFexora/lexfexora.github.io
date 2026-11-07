@@ -1427,8 +1427,8 @@ function bagNum(b){return b==="bonus"?"bonus":b==="all"?"all":+b;}
 // Bila pengaturan lama memuat beberapa sub-materi, hanya nomor terkecil yang terbuka.
 // Status per akun (izin.sub): 'penuh' = semua sub-materi, 'terbatas' = hanya yang terbuka; kosong = otomatis
 // (pembeli/kode Akses seluruhnya dan pengguna yang bergabung sebelum 2 Nov 2026 21.50 WIB = penuh).
-// Teks pilihan yang terkunci disamarkan (huruf jadi ░) karena dropdown bawaan HP tidak bisa di-blur dengan CSS.
-const samar=t=>String(t).replace(/[^\s·–\-]/g,"░");
+// Teks pilihan yang terkunci disamarkan (diganti blok seragam, panjang sama) karena dropdown bawaan HP tidak bisa di-blur dengan CSS.
+const samar=()=>"█████████████";
 const SUB_GRATIS=1,subSatu=(m,c)=>m&&Array.isArray(m[c])?(m[c].length?Math.min(...m[c].map(Number)):0):SUB_GRATIS,bukaSub=(c,s)=>+s===subSatu(window.__aksesBuka,c);
 const terbatas=()=>{if(window.__isOwner||window.__penuh)return false;const md=window.__subMode;if(md==='penuh')return false;if(md==='terbatas')return true;return !window.__penuh&&!window.__lama;};
 const subBuka=(c,s)=>!terbatas()||(s!=="all"&&bukaSub(c,s));
