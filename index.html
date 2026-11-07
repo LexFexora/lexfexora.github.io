@@ -1427,6 +1427,8 @@ function bagNum(b){return b==="bonus"?"bonus":b==="all"?"all":+b;}
 // Bila pengaturan lama memuat beberapa sub-materi, hanya nomor terkecil yang terbuka.
 // Status per akun (izin.sub): 'penuh' = semua sub-materi, 'terbatas' = hanya yang terbuka; kosong = otomatis
 // (pembeli/kode Akses seluruhnya dan pengguna yang bergabung sebelum 2 Nov 2026 21.50 WIB = penuh).
+// Teks pilihan yang terkunci disamarkan (huruf jadi ░) karena dropdown bawaan HP tidak bisa di-blur dengan CSS.
+const samar=t=>String(t).replace(/[^\s·–\-]/g,"░");
 const SUB_GRATIS=1,subSatu=(m,c)=>m&&Array.isArray(m[c])?(m[c].length?Math.min(...m[c].map(Number)):0):SUB_GRATIS,bukaSub=(c,s)=>+s===subSatu(window.__aksesBuka,c);
 const terbatas=()=>{if(window.__isOwner||window.__penuh)return false;const md=window.__subMode;if(md==='penuh')return false;if(md==='terbatas')return true;return !window.__penuh&&!window.__lama;};
 const subBuka=(c,s)=>!terbatas()||(s!=="all"&&bukaSub(c,s));
@@ -1546,7 +1548,7 @@ function renderSub(){
   s.disabled=false;
   const c=state.cat;
   const tb=terbatas();
-  s.innerHTML=`<option value="all"${tb?" disabled":""}>${tb?"🔒 All Sections":"All Sections"}</option>`+SUBS[c].map((n,i)=>`<option value="${i+1}"${tb&&!bukaSub(c,i+1)?" disabled":""}>${tb&&!bukaSub(c,i+1)?"🔒 ":""}${i+1}. ${esc(n)}</option>`).join("");
+  s.innerHTML=`<option value="all"${tb?" disabled":""}>${tb?"🔒 All Sections":"All Sections"}</option>`+SUBS[c].map((n,i)=>`<option value="${i+1}"${tb&&!bukaSub(c,i+1)?" disabled":""}>${tb&&!bukaSub(c,i+1)?"🔒 ":""}${i+1}. ${tb&&!bukaSub(c,i+1)?samar(n):esc(n)}</option>`).join("");
   s.value=String(state.sub);
   renderBag();
 }
@@ -1561,7 +1563,7 @@ function renderBag(){
   // Opsi "All Parts": kerjakan seluruh soal sub-materi ini sekaligus.
   // Tanda ✓ pada Part yang sedang atau terakhir dikerjakan.
   const ck=v=>String(state.bag)===String(v)?"✓ ":"";
-  s.innerHTML=Array.from({length:k},(_,i)=>`<option value="${i+1}"${kc(i+1)?" disabled":""}>${kc(i+1)?"🔒 ":ck(i+1)}Part ${i+1} · Questions ${i*sz+1}–${Math.min(n,(i+1)*sz)}</option>`).join("")+(bonus?`<option value="bonus"${tb?" disabled":""}>${tb?"🔒 ":ck("bonus")}Bonus · Questions ${k*sz+1}–${n}</option>`:"")+(semua?`<option value="all"${tb?" disabled":""}>${tb?"🔒 ":ck("all")}All Parts · Questions 1–${n}</option>`:"");
+  s.innerHTML=Array.from({length:k},(_,i)=>`<option value="${i+1}"${kc(i+1)?" disabled":""}>${kc(i+1)?"🔒 ":ck(i+1)}Part ${i+1} · ${kc(i+1)?samar(`Questions ${i*sz+1}–${Math.min(n,(i+1)*sz)}`):`Questions ${i*sz+1}–${Math.min(n,(i+1)*sz)}`}</option>`).join("")+(bonus?`<option value="bonus"${tb?" disabled":""}>${tb?"🔒 ":ck("bonus")}Bonus · ${tb?samar(`Questions ${k*sz+1}–${n}`):`Questions ${k*sz+1}–${n}`}</option>`:"")+(semua?`<option value="all"${tb?" disabled":""}>${tb?"🔒 ":ck("all")}All Parts · ${tb?samar(`Questions 1–${n}`):`Questions 1–${n}`}</option>`:"");
   s.value=String(state.bag);
 }
 // Part yang terakhir dikerjakan di sub-materi ini (tersimpan di akun); bawaan Part 1.
