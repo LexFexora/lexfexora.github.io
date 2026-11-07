@@ -2220,7 +2220,10 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       if(!isOwner)$('toket').textContent=rows.length?'Mock exam yang sedang dibuka. Ketuk Ikut untuk bergabung.':'No mock exams are available right now.';
       $('tolist').querySelectorAll('[data-salin]').forEach(b=>b.onclick=()=>navigator.clipboard&&navigator.clipboard.writeText(b.dataset.salin).then(()=>{b.textContent='✓ Tersalin';}));
       $('tolist').querySelectorAll('[data-hapus]').forEach(b=>b.onclick=()=>{if(!confirm('Hapus mock exam ini? Tautannya tidak bisa dibuka lagi. Soalnya kembali dihitung belum diujikan.'))return;const id=b.dataset.hapus;
-        Promise.resolve(window.__toLepas&&window.__toLepas(id)).catch(()=>{}).then(()=>db.doc('tryout/'+id).delete());});},
+        // Hitungan rotasi soal dikurangi dulu (paling lama 8 detik, agar tidak menahan penghapusan), lalu dokumen dihapus. Tombol menunjukkan proses dan galat ditampilkan, tidak lagi diam.
+        b.disabled=true;b.textContent='Menghapus…';const lepas=Promise.race([Promise.resolve(window.__toLepas&&window.__toLepas(id)).catch(()=>{}),new Promise(ok=>setTimeout(ok,8000))]);
+        lepas.then(()=>db.doc('tryout/'+id).delete()).then(()=>db.doc('tryout/'+id).get()).then(g=>{if(g.exists)throw new Error('database menolak penghapusan (izin pemilik tidak terbaca). Keluar lalu masuk lagi, kemudian coba ulang');const r=b.closest('.tr');if(r)r.remove();})
+          .catch(e=>{b.disabled=false;b.textContent='Hapus';alert('Gagal menghapus mock exam: '+(e.code||e.message||e));});});},
       ()=>{$('tolist').innerHTML=isOwner?'<p class="note">Could not load the mock exam list.</p>':'';if(!isOwner)$('toket').textContent='No mock exams are available right now.';});}
   // Paket Prediksi: tampil untuk semua pengguna yang disetujui, tetapi daftar paket baru terbuka setelah kode akses benar.
   // Hanya pemilik dan pembeli yang sudah lunas (cat_sudah_beli) yang bisa membuka paket. Kode akses lama (cat_kode) tidak dipakai lagi.
