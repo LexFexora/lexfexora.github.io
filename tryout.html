@@ -466,7 +466,7 @@ auth.onAuthStateChanged(async u=>{U=u;pMuat=false;aku=null;P={};if(unsubT){unsub
         if(sq<=0&&habisIdx!==(T.idx||0)){habisIdx=T.idx||0;render();}}}
     if(SINK()&&Date.now()-cekT>5000){cekT=Date.now();cekMaster();}},250);
   // Heartbeat juga berjalan di ruang tunggu, agar saat Play ditekan kolom t semua peserta (termasuk room master) sudah segar.
-  if(!detak){detak=setInterval(()=>detakKirim(),10000);document.addEventListener("visibilitychange",()=>{if(!document.hidden)detakKirim();});}
+  if(!detak){detak=setInterval(()=>detakKirim(),20000);document.addEventListener("visibilitychange",()=>{if(!document.hidden)detakKirim(true);});}
 });
 // Aktivitas langsung untuk panel pemilik (izin/<uid>.posisi): Mock Exam yang diikuti, nomor soal, dan jawaban peserta.
 // Formatnya sama dengan halaman latihan. Dikirim tiap 60 detik dan setiap ada perubahan (paling cepat tiap 4 detik).
@@ -502,7 +502,7 @@ function fmt(ms){const s=Math.ceil(ms/1000);return String(Math.floor(s/60)).padS
 function selesaiSemua(){return T.status==="selesai"||(T.status==="mulai"&&(SINK()?(T.idx||0)>=T.soal.length:sisaMs()<=0));}
 
 // Mode serentak: semua peserta melihat soal ke-idx; tiap soal dibatasi detikSoal, room master (T.master) menekan Next.
-// Kehadiran dibaca dari kolom t (heartbeat tiap 10 detik); bila room master tidak terlihat >25 detik, kewenangan pindah otomatis.
+// Kehadiran dibaca dari kolom t (heartbeat tiap 20 detik, dilewati bila baru saja menyimpan jawaban); peserta dianggap offline setelah >60 detik tanpa sinyal, kewenangan pindah otomatis.
 function SINK(){return !!T&&T.mode==="sinkron";}
 function tms(t){return t?(t.toMillis?t.toMillis():t.seconds*1000):0;}
 // Timer kartu soal: cincin tipis yang menyusut sesuai sisa waktu, angka tabular; merah berkedip saat hampir habis.
@@ -510,7 +510,7 @@ function jamHTML(id,ms,tot,warnAt){const w=ms<=warnAt;return `<span class="timer
 function jamOff(ms,tot){return (100-Math.max(0,Math.min(1,tot?ms/tot:0))*100).toFixed(2);}
 function jamSet(el,ms){const j=el&&el.closest(".jam");if(!j)return;const b=j.querySelector(".busur");if(b)b.style.strokeDashoffset=jamOff(ms,+j.dataset.tot);}
 function soalSisaMs(){const det=(T.detikSisa!=null&&T.detikSisaIdx===(T.idx||0)?T.detikSisa:(T.detikSoal||54))*1000,st=T.idxMulai?tms(T.idxMulai):mulaiMs();return Math.max(0,st+det-Date.now());}
-// Kick: pemilik mengeluarkan peserta (T.keluar[uid]). Peserta yang dikeluarkan atau offline (>25 detik tanpa sinyal) tidak ditunggu untuk Next.
+// Kick: pemilik mengeluarkan peserta (T.keluar[uid]). Peserta yang dikeluarkan atau offline (>60 detik tanpa sinyal) tidak ditunggu untuk Next.
 function dikick(uid){return !!(T&&T.keluar&&T.keluar[uid]);}
 function ditunggu(){const sg=segar();return Object.entries(P).filter(([u,p])=>!p.selesai&&!dikick(u)&&(sg.includes(u)||u===(U&&U.uid))).map(([,p])=>p);}
 function belumJawab(q){return ditunggu().filter(p=>(p.jawab||{})[q.id]===undefined).length;}
@@ -520,12 +520,14 @@ function kick(uid){if(!isOwner||!uid||uid===(U&&U.uid))return;const p=P[uid];if(
 function isMaster(){return SINK()&&!!U&&T.master===U.uid;}
 function namaP(uid){const p=P[uid];return p?p.nama:"(belum bergabung)";}
 function segar(){const ps=Object.entries(P).filter(([u,p])=>!p.selesai&&!(T&&T.keluar&&T.keluar[u]));if(!ps.length)return [];const mx=Math.max(...ps.map(([,p])=>tms(p.t)));
-  return ps.filter(([,p])=>mx-tms(p.t)<25000).map(([u])=>u);}
-function detakKirim(){if(SINK()&&U&&aku&&!aku.selesai&&T&&["menunggu","siap","mulai"].includes(T.status)&&!dikick(U.uid))db.doc("tryout/"+TID+"/peserta/"+U.uid).update({t:FV.serverTimestamp()}).catch(()=>{});}
+  return ps.filter(([,p])=>mx-tms(p.t)<60000).map(([u])=>u);}
+// Dengan ~70 peserta, tiap tulisan diteruskan realtime ke semua perangkat; heartbeat dijarangkan agar database tidak tersendat.
+let tulisT=0;
+function detakKirim(paksa){if(!paksa&&Date.now()-tulisT<15000)return;if(SINK()&&U&&aku&&!aku.selesai&&T&&["menunggu","siap","mulai"].includes(T.status)&&!dikick(U.uid))db.doc("tryout/"+TID+"/peserta/"+U.uid).update({t:FV.serverTimestamp()}).then(()=>{tulisT=Date.now();}).catch(()=>{});}
 // Masa tenggang: alih otomatis room master baru boleh terjadi 35 detik setelah ujian mulai/dilanjutkan di perangkat ini,
 // supaya semua peserta sempat mengirim heartbeat dan room master tidak berpindah sendiri saat Play ditekan.
 let mulaiLokal=0,statusLalu="";
-function catatStatus(){if(!T)return;if(T.status==="mulai"&&statusLalu!=="mulai"){mulaiLokal=Date.now();detakKirim();}statusLalu=T.status;}
+function catatStatus(){if(!T)return;if(T.status==="mulai"&&statusLalu!=="mulai"){mulaiLokal=Date.now();detakKirim(true);}statusLalu=T.status;}
 // Room master terkunci di pemilik (T.pembuat) selama pemilik ada di ruangan. Pemilik hanya melepas kunci bila ia sendiri memindahkan 🎩 (kunci:false).
 function pilihMaster(uid){if(!uid||uid===T.master)return;db.doc("tryout/"+TID).update(isOwner?{master:uid,kunci:uid===U.uid}:{master:uid}).catch(e=>alert("Gagal memindahkan: "+(e.code||e.message)));}
 function cekMaster(){if(!SINK()||!U||!aku||T.status!=="mulai"||selesaiSemua())return;
@@ -563,7 +565,7 @@ function acak(n,seed){let h=2166136261;for(const c of seed)h=Math.imul(h^c.charC
 function catatRiwayat(j){try{const R=JSON.parse(localStorage.getItem("to-riwayat")||"{}")||{};Object.keys(j||{}).forEach(id=>{if(R[id]===undefined)R[id]=j[id];});localStorage.setItem("to-riwayat",JSON.stringify(R));}catch(e){}}
 function hitung(){const j=aku.jawab||{};let b=0,d=0;T.soal.forEach(q=>{if(j[q.id]!==undefined){d++;if(j[q.id]===q.a)b++;}});
   aku.benar=b;aku.dijawab=d;aku.skor=Math.round(b*100/T.soal.length);aku.dur=Math.min(T.durasi*1000,(T.terpakai||0)*1000+Math.max(0,Date.now()-mulaiMs()));}
-function simpan(segera){clearTimeout(simpanT);const f=()=>db.doc("tryout/"+TID+"/peserta/"+U.uid).set({nama:aku.nama,foto:aku.foto,jawab:aku.jawab||{},benar:aku.benar||0,dijawab:aku.dijawab||0,skor:aku.skor||0,dur:aku.dur||0,selesai:!!aku.selesai,siap:!!aku.siap,t:FV.serverTimestamp()}).catch(()=>{});
+function simpan(segera){clearTimeout(simpanT);const f=()=>(tulisT=Date.now(),db.doc("tryout/"+TID+"/peserta/"+U.uid)).set({nama:aku.nama,foto:aku.foto,jawab:aku.jawab||{},benar:aku.benar||0,dijawab:aku.dijawab||0,skor:aku.skor||0,dur:aku.dur||0,selesai:!!aku.selesai,siap:!!aku.siap,t:FV.serverTimestamp()}).catch(()=>{});
   simpanT=segera?null:setTimeout(()=>{simpanT=null;f();},350);if(segera)f();}
 // Jawaban terakhir tetap tersimpan meski halaman ditutup atau dimuat ulang sebelum jeda simpan berakhir.
 addEventListener("pagehide",()=>{if(simpanT&&aku&&!aku.selesai)simpan(true);});
