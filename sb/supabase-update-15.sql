@@ -4,6 +4,7 @@
 -- yang dibuka sebelum mode perbaikan dipasang. Pemilik dan akun VVIP (pembeli lunas aktif + paket gratis) tidak terpengaruh.
 -- Status mode perbaikan dibaca dari baris cat_bayar id='perbaikan' (kolom harga = 'aktif' / 'nonaktif'),
 -- yaitu baris yang sama yang diubah tombol "Mode perbaikan" di panel pemilik. Tanpa baris = aktif.
+-- VVIP = public.cat_sudah_beli(), fungsi yang sama yang dipakai situs untuk menandai akun VVIP.
 -- Jalankan sekali di Supabase > SQL Editor > New query > tempel seluruh isi > Run.
 
 create or replace function public.cat_perbaikan() returns boolean
@@ -17,7 +18,7 @@ create or replace function public.cat_approved() returns boolean
 language sql stable security definer set search_path = public as $$
   select exists (select 1 from public.docs
                  where path = 'izin/' || auth.uid()::text and data ->> 'status' = 'disetujui')
-     and (not public.cat_perbaikan() or public.cat_beli_aktif(auth.uid()))
+     and (not public.cat_perbaikan() or public.cat_sudah_beli())
 $$;
 revoke all on function public.cat_approved() from public, anon;
 grant execute on function public.cat_approved() to authenticated, service_role;
