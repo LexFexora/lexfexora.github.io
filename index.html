@@ -1491,12 +1491,14 @@ window.addEventListener("storage",e=>{if(e.key!==KEY||!e.newValue)return;let dis
   if(store[pk]!==lama){restore();render();}});
 // Sesi yang sudah mulai dikerjakan: urutannya tidak disusun ulang lagi (perubahan bank soal tidak boleh memindahkan soal yang sudah dijawab).
 function dikerjakan(s){return !!s&&(PKJ(s)>0||Object.keys(s.expired||{}).length>0||(s.pos||0)>0);}
+// Urutan opsi tersimpan yang tidak cocok lagi dengan jumlah opsi soal (bank soal diperbarui) dibuat ulang agar tidak muncul opsi undefined.
+function fixPerm(){(state.list||[]).forEach(id=>{const q=BYID[id];if(!q)return;const n=q.o.length,p=state.perm[id];const ok=Array.isArray(p)&&p.length===n&&p.slice().sort((x,y)=>x-y).every((v,i)=>v===i);if(!ok){state.perm[id]=shuffle(q.o.map((_,i)=>i));if(state.ans&&typeof state.ans[id]==='number'&&state.ans[id]>=n)delete state.ans[id];}});}
 function restore(){
   const s=store[sessionKey()];
   const valid=s&&Array.isArray(s.list)&&s.list.length&&s.list.every(id=>BYID[id]&&s.perm&&s.perm[id]);
   const ids=new Set(pool().map(q=>q.id));
   // Ulangi yang salah (rs): daftarnya sengaja lebih kecil dari pool, tetap dipulihkan selama semua soalnya masih ada di pool.
-  if(valid&&(s.list.length===ids.size||(s.rs&&s.list.length<ids.size))&&s.list.every(id=>ids.has(id))){state.list=!(state.ulang&&state.ulang.tetap)&&!dikerjakan(s)?((s.order||"seq")==="seq"?sortSeq(s.list.map(id=>BYID[id])).map(q=>q.id):atrBaru()?aturanAkhir(s.list,id=>BYID[id]):s.list):s.list;state.pos=Math.min(s.pos||0,s.list.length);state.ans=s.ans||{};state.ep=s.ep||0;state.rs=!!s.rs;state.t=s.t||0;state.perm=s.perm;state.order=s.order||"seq";state.mulai=typeof s.mulai==="boolean"?s.mulai:!!(s.pos||Object.keys(s.ans||{}).length);state.tLeft=typeof s.tLeft==="number"?s.tLeft:SEC*s.list.length;state.timeUp=!!s.timeUp;state.qLeft=typeof s.qLeft==="number"?s.qLeft:SEC;state.qId=s.qId||null;state.expired=s.expired||{};}
+  if(valid&&(s.list.length===ids.size||(s.rs&&s.list.length<ids.size))&&s.list.every(id=>ids.has(id))){state.list=!(state.ulang&&state.ulang.tetap)&&!dikerjakan(s)?((s.order||"seq")==="seq"?sortSeq(s.list.map(id=>BYID[id])).map(q=>q.id):atrBaru()?aturanAkhir(s.list,id=>BYID[id]):s.list):s.list;state.pos=Math.min(s.pos||0,s.list.length);state.ans=s.ans||{};state.ep=s.ep||0;state.rs=!!s.rs;state.t=s.t||0;state.perm=s.perm||{};fixPerm();state.order=s.order||"seq";state.mulai=typeof s.mulai==="boolean"?s.mulai:!!(s.pos||Object.keys(s.ans||{}).length);state.tLeft=typeof s.tLeft==="number"?s.tLeft:SEC*s.list.length;state.timeUp=!!s.timeUp;state.qLeft=typeof s.qLeft==="number"?s.qLeft:SEC;state.qId=s.qId||null;state.expired=s.expired||{};}
   else if(s&&s.ans&&Object.keys(s.ans).length){
     // Bank soal berubah (soal diedit/dihapus): susun ulang daftar, tapi jawaban dan posisi lama tetap dipakai.
     // Urutan lama dipertahankan: soal yang masih ada tetap di urutan semula (jadi soal yang sudah dijawab tidak pindah ke depan
