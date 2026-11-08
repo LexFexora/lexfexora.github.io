@@ -2,7 +2,7 @@
 <html lang="id" class="gate-wait">
 <head>
 <meta charset="utf-8">
-<meta name="versi-situs" content="20261107pb">
+<meta name="versi-situs" content="20261108pb">
 <script>try{var t=localStorage.getItem("cat-tema");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;}catch(e){}</script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Computer Assisted Test - LEX FEXORA.</title>
@@ -2451,7 +2451,9 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
     {const [on,vv]=await Promise.all([perbaikan(),vvipKah()]);if(!auth.currentUser||auth.currentUser.uid!==u.uid)return;
       if(on&&!vv){show(PB_H,PB_P,who,false,true);pbT=setInterval(async()=>{if(!(await perbaikan()))location.reload();},60000);return;}
       // Bukan VVIP dan perbaikan sedang nonaktif: periksa tiap 2 menit, tutup situs bila pemilik mengaktifkannya lagi.
-      if(!vv)pbT=setInterval(async()=>{if(!window.__penuh&&await perbaikan()&&!(await vvipKah())){clearInterval(pbT);location.reload();}},120000);}
+      // Diperiksa juga setiap kali tab kembali dibuka (ponsel membekukan timer di tab latar belakang).
+      if(!vv){const pbCek=async()=>{if(document.hidden||window.__penuh||!pbT)return;if(await perbaikan()&&!(await vvipKah())){clearInterval(pbT);pbT=null;location.reload();}};
+        pbT=setInterval(pbCek,60000);if(!window.__pbVis){window.__pbVis=1;document.addEventListener('visibilitychange',()=>window.__pbCek&&window.__pbCek());addEventListener('pageshow',()=>window.__pbCek&&window.__pbCek());}window.__pbCek=pbCek;}}
     const ref=db.doc('izin/'+u.uid);
     try{const s=await ref.get();
       if(!s.exists)await ref.set({email:u.email||'',nama:u.displayName||'',foto:u.photoURL||'',status:'menunggu',diminta:FV.serverTimestamp(),terakhir:FV.serverTimestamp(),posisi:''});
