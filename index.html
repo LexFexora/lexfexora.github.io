@@ -2139,7 +2139,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
   let started=false,unsub=null,beat=null;let isOwner=false;
   // Mode perbaikan: baris cat_bayar id='perbaikan' (kolom harga = 'aktif'/'nonaktif'; dipakai kolom harga karena kolom info belum ada di tabel; bisa dibaca siapa saja). Tanpa baris atau gagal dibaca = perbaikan AKTIF.
   // Selama aktif hanya pemilik dan akun VVIP Akses (cat_sudah_beli: pembeli lunas + paket gratis) yang bisa memakai situs; akun lain melihat layar perbaikan.
-  const PB_H='Under Maintenance',PB_P='We are currently performing scheduled maintenance to improve our service. We apologize for the inconvenience and appreciate your patience. Please check back later.';
+  const PB_H='Tidak Lagi Dikomersialkan',PB_P='Sejak dikeluarkannya Surat Edaran Mahkamah Agung, CAT Lex Fexora tidak lagi dikomersialkan. Akses kini hanya tersedia untuk akun VVIP.';
   const perbaikan=async()=>{try{const {data,error}=await window.__sb.from('cat_bayar').select('harga').eq('id','perbaikan').maybeSingle();if(error)return true;return !(data&&data.harga==='nonaktif');}catch(e){return true;}};
   const vvipKah=async()=>{try{const {data,error}=await window.__sb.rpc('cat_sudah_beli');return !error&&data===true;}catch(e){return false;}};
   window.__perbaikan=perbaikan;let pbT=null;
@@ -2434,6 +2434,8 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
         if(!beat)heartbeat(ref);start();if(!window.__penuh)window.__sb.rpc('cat_sudah_beli').then(({data})=>{if(data===true&&!window.__penuh){window.__penuh=true;document.documentElement.classList.add('vvip');window.__segarSub&&window.__segarSub();}}).catch(()=>{});}
       else if(st==='ditolak'){show('Access denied','The owner has not granted access to this account.',who,false,true);}
       else{show('Waiting for approval','Your access request has been sent. This page will open automatically once the owner approves it.',who,false,true);
+        // Selama mode perbaikan aktif, akun yang belum disetujui juga melihat pemberitahuan tidak dikomersialkan.
+        perbaikan().then(on=>{if(on&&!$('gate').hidden&&gh.textContent==='Waiting for approval'){gh.textContent=PB_H;gp.textContent=PB_P;}});
         {$('g-kode').hidden=false;if(akHasil&&!$('g-kodemsg').textContent)$('g-kodemsg').textContent=akHasil.err?'Access codes are not available yet. Please try again later.':akHasil.jenis==='terlalu'?'Too many incorrect attempts. Please try again in an hour.':akHasil.jenis?'':'The access code from your link is no longer valid.';}}
     },e=>show('Could not check access','Please reload the page. ('+(e.code||e.message)+')',who,false,true));
   });
@@ -2442,12 +2444,12 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
     $('pindahinfo').textContent=`Soal yang Anda ubah lewat pojok kanan atas setiap soal: ${n} dipindahkan (⇄ Pindahkan), ${ne} diedit (✎ Edit). Tombolnya hanya terlihat oleh Anda, sedangkan perubahannya berlaku untuk semua pengguna dan tetap berlaku setelah bank diunggah ulang.`;}).catch(()=>{});}
   function admin(){
     pinfo();
-    // Mode perbaikan: pemilik menyalakan/mematikan layar "Under Maintenance" untuk akun non-VVIP (situs utama dan Mock Exam).
+    // Mode perbaikan: pemilik menyalakan/mematikan layar "Tidak Lagi Dikomersialkan" untuk akun non-VVIP (situs utama dan Mock Exam).
     {const tog=$('pbtog'),inf=$('pbinfo');let on=true;
-      const tulis=()=>{inf.innerHTML=on?'<b>AKTIF.</b> Akun selain VVIP Akses melihat layar "Under Maintenance" (situs utama dan Mock Exam). Anda dan akun VVIP tetap bisa memakai situs seperti biasa.':'<b>Nonaktif.</b> Situs terbuka untuk semua akun seperti biasa.';
+      const tulis=()=>{inf.innerHTML=on?'<b>AKTIF.</b> Akun selain VVIP Akses melihat layar "Tidak Lagi Dikomersialkan" (situs utama dan Mock Exam). Anda dan akun VVIP tetap bisa memakai situs seperti biasa.':'<b>Nonaktif.</b> Situs terbuka untuk semua akun seperti biasa.';
         tog.textContent=on?'Matikan mode perbaikan':'Aktifkan mode perbaikan';tog.disabled=false;};
       perbaikan().then(v=>{on=v;tulis();});
-      tog.onclick=async()=>{const ke=!on;if(!confirm(ke?'Aktifkan mode perbaikan? Akun selain VVIP Akses akan melihat layar "Under Maintenance".':'Matikan mode perbaikan? Situs kembali terbuka untuk semua akun.'))return;
+      tog.onclick=async()=>{const ke=!on;if(!confirm(ke?'Aktifkan mode perbaikan? Akun selain VVIP Akses akan melihat layar "Tidak Lagi Dikomersialkan".':'Matikan mode perbaikan? Situs kembali terbuka untuk semua akun.'))return;
         tog.disabled=true;const {error}=await window.__sb.from('cat_bayar').upsert({id:'perbaikan',harga:ke?'aktif':'nonaktif',diubah:new Date().toISOString()});
         if(error){alert('Gagal menyimpan: '+(error.message||error.code));tog.disabled=false;return;}on=await perbaikan();tulis();};}
 
