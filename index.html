@@ -2135,7 +2135,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
   let started=false,unsub=null,beat=null;let isOwner=false;
   // Mode perbaikan: baris cat_bayar id='perbaikan' (kolom harga = 'aktif'/'nonaktif'; dipakai kolom harga karena kolom info belum ada di tabel; bisa dibaca siapa saja). Tanpa baris atau gagal dibaca = perbaikan AKTIF.
   // Selama aktif hanya pemilik dan akun VVIP Akses (cat_sudah_beli: pembeli lunas + paket gratis) yang bisa memakai situs; akun lain melihat layar perbaikan.
-  const PB_H='Tidak Lagi Dikomersialkan',PB_P='Sejak dikeluarkannya Surat Edaran Badan Pengawasan Mahkamah Agung Nomor 5 Tahun 2026, CAT Lex Fexora tidak lagi dikomersialkan. Akses kini hanya tersedia untuk akun VVIP.';
+  const PB_H='Tidak Lagi Dikomersialkan',PB_P='Sejak dikeluarkannya Surat Edaran Badan Pengawasan Mahkamah Agung Nomor 5 Tahun 2026, CAT Lex Fexora tidak lagi dikomersialkan.';
   const perbaikan=async()=>{try{const {data,error}=await window.__sb.from('cat_bayar').select('harga').eq('id','perbaikan').maybeSingle();if(error)return true;return !(data&&data.harga==='nonaktif');}catch(e){return true;}};
   const vvipKah=async()=>{try{const {data,error}=await window.__sb.rpc('cat_sudah_beli');return !error&&data===true;}catch(e){return false;}};
   window.__perbaikan=perbaikan;let pbT=null;
