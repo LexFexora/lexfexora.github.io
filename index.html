@@ -2296,7 +2296,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
         if(b.dataset.ulangi){window.__ulangiPaket(2,'all',ids,'Package '+n,'paket|'+n);return;}
         window.__ulang(2,'all',ids,'Package '+n,'paket|'+n,true);});};
     const KK='pk-kode',sb=window.__sb;let buka=isOwner;
-    const kunci=(pesan)=>{kpRender();const L=susunPaket();$('pkket').innerHTML='<span class="pklead">Built to mirror the CAT for Religious Court judge candidates. Somewhere inside are the questions that will decide your result. How many can you clear?</span>'+pkStat();
+    const kunci=(pesan)=>{kpRender();const L=susunPaket();$('pkket').innerHTML='<span class="pklead">Each package is a full CAT simulation with 25 questions from each cluster: Legal Theory, Procedural Law, Substantive Law, and ICT.</span>'+pkStat()+'<small class="pkcat">The predictions are drawn from the CAT - Lex Fexora question bank. They are not leaked exam questions.</small>';
       $('pklist').innerHTML=`<div class="pkkunci"><b>🔒 Restricted Access</b><span>Available to VVIP accounts only.</span><small id="pkpesan">${pesan||''}</small></div>`+[1,2,3,4,5,6].map(n=>`<div class="tr pk pkghost" aria-hidden="true"><span class="trj"><b>Package ${n}</b></span><span class="pkpct">🔒</span><span class="pkgbtn">Sealed</span></div>`).join('')+`<p class="pkmore">+ ${L.length-6} more sealed packages</p>`;
     };
     const lunas=async()=>{try{const {data,error}=await sb.rpc('cat_sudah_beli');return !error&&data===true;}catch(e){return false;}};
