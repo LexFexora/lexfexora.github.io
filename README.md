@@ -1,6 +1,6 @@
 # Computer Assisted Test - Lex Fexora
 
-Latihan Seleksi Kemampuan Bidang Calon Hakim Peradilan Agama.
+Latihan Seleksi Kemampuan Bidang.
 
 Situs: https://lexfexora.github.io/
 
