@@ -1059,7 +1059,6 @@ html.vvip #arcard .arjml{padding-right:92px}
   <p class="who" id="gate-who"></p>
   <div class="gate-act">
     <button class="btn primary" id="g-login" type="button" hidden>Sign in with Google</button>
-    <button class="btn primary" id="g-beli" type="button" hidden>Buy instant access</button>
     <button class="btn" id="g-logout" type="button" hidden>Switch account</button>
   </div>
   <div class="gkode" id="g-kode" hidden><span>Have an access code?</span><div class="linkrow"><input id="g-kodein" autocomplete="off" placeholder="Access code" aria-label="Access code"><button class="btn" type="button" id="g-kodebtn">Activate</button></div><small id="g-kodemsg"></small></div>
@@ -2073,8 +2072,7 @@ function renderArsip(){const box=$("arcard");if(!box||!window.Arsip)return;box.h
   $("arjml").textContent="";
   $("arket").innerHTML=`<span class="pklead">A shared record for all users. Every question anyone marks with 🔖 Record, in any mode, is collected here in the order it was recorded, so you can work through questions others saved and they can work through yours. Each part holds ${Arsip.BAGIAN} questions. Once a part is full, the next recorded question becomes No. 1 of the next part. Your answers and progress stay your own.</span>`;
   if(!Arsip.siap){$("arlist").innerHTML=`<p class="arkosong">Loading…</p>`;return;}
-  if(!Arsip.boleh){$("arlist").innerHTML=`<div class="pkkunci"><b>🔒 Restricted Access</b><span>Available to buyers only. The same purchase unlocks Prediction Packages, Category Packages, and Vital Test Record.</span><button class="btn copy pkbeli" type="button" id="arbeli">Buy access</button></div>`;
-    $("arbeli").onclick=()=>window.__beliAkses&&window.__beliAkses($("arbeli"));return;}
+  if(!Arsip.boleh){$("arlist").innerHTML=`<div class="pkkunci"><b>🔒 Restricted Access</b><span>Available to VVIP accounts only. VVIP access also unlocks Prediction Packages and Category Packages.</span></div>`;return;}
   if(Arsip.galat==="belum"){$("arlist").innerHTML=`<p class="arkosong">${window.__isOwner?"Run sb/supabase-update-11.sql in the Supabase SQL Editor to turn on the shared Vital Test Record.":"Vital Test Record is not available yet."}</p>`;return;}
   if(!n&&Arsip.galat){$("arlist").innerHTML=`<p class="arkosong">Could not load Vital Test Record. Check your connection, then reopen this card.</p>`;return;}
   if(!n){$("arlist").innerHTML=`<p class="arkosong">No recorded questions yet. Tap 🔖 Record below the answer options while working on a question.</p>`;return;}
@@ -2116,45 +2114,9 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
   const H=document.documentElement,$=id=>document.getElementById(id);
   const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
   const gh=$('gate-h'),gp=$('gate-p'),gw=$('gate-who'),bIn=$('g-login'),bOut=$('g-logout'),gnote=$('gate-note');
-  const show=(h,p,who,login,logout)=>{$('gate').hidden=false;H.classList.add('gate-wait');gh.textContent=h;gp.textContent=p||'';gw.textContent=who||'';bIn.hidden=!login;bOut.hidden=!logout;gnote.hidden=!login;$('g-beli').hidden=true;$('g-kode').hidden=true;let ak='';try{ak=localStorage.getItem('akses-kode')||'';}catch(e){}$('g-kodeada').hidden=!(login&&ak);};
-  // Pembelian akses: Edge Function beli-akses membuat tagihan Xendit (VA/QRIS) lalu pembeli diarahkan ke halaman bayar.
-  // Setelah lunas, webhook menyetujui akun dan Paket Prediksi langsung terbuka.
-  try{if(/[?&]beli=1\b/.test(location.search))localStorage.setItem('beli-niat','1');}catch(e){}
-  // Transfer bank langsung (bila pemilik mengisi rekening): nominal unik + konfirmasi pemilik. Bila tidak, pakai Xendit.
+  const show=(h,p,who,login,logout)=>{$('gate').hidden=false;H.classList.add('gate-wait');gh.textContent=h;gp.textContent=p||'';gw.textContent=who||'';bIn.hidden=!login;bOut.hidden=!logout;gnote.hidden=!login;$('g-kode').hidden=true;let ak='';try{ak=localStorage.getItem('akses-kode')||'';}catch(e){}$('g-kodeada').hidden=!(login&&ak);};
+  // Fitur penjualan dihapus (11 Nov 2026): akses Paket hanya untuk akun VVIP yang diberikan pemilik.
   const escH=t=>String(t==null?'':t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const salinT=(v,b)=>{const ok=()=>{const o=b.textContent;b.textContent='✓ Copied';setTimeout(()=>b.textContent=o,1500);};if(navigator.clipboard)navigator.clipboard.writeText(v).then(ok).catch(()=>prompt('Copy:',v));else prompt('Copy:',v);};
-  let tfPoll=null;const tfTunggu=()=>{if(tfPoll)return;let n=0;tfPoll=setInterval(async()=>{if(++n>360){clearInterval(tfPoll);tfPoll=null;return;}
-    try{const {data}=await window.__sb.rpc('cat_sudah_beli');if(data===true){clearInterval(tfPoll);tfPoll=null;const m=$('tfmodal');if(m)m.remove();if(window.__pkBuka)window.__pkBuka();}}catch(e){}},10000);};
-  window.__tfTunggu=tfTunggu;
-  function modalTransfer(d){let m=$('tfmodal');if(m)m.remove();m=document.createElement('div');m.id='tfmodal';m.className='tfmodal';
-    const rp='Rp'+Number(d.nominal).toLocaleString('id-ID'),noRek=(String(d.rekening).match(/\d[\d .-]{5,}\d/)||[''])[0].replace(/[^0-9]/g,'');
-    m.innerHTML=`<div class="tfbox" role="dialog" aria-modal="true" aria-labelledby="tfh"><b id="tfh">Beli akses Paket Prediksi</b>
-      <span>1. Transfer <b>tepat sebesar</b> nominal ini, termasuk 3 digit terakhir:</span><div class="tfrow"><big>${rp}</big><button class="btn copy" type="button" data-c="${d.nominal}">⧉ Salin</button></div>
-      <span>Ke rekening:</span><div class="tfrow"><span class="tfrek">${escH(d.rekening)}</span>${noRek?`<button class="btn copy" type="button" data-c="${noRek}">⧉ Salin</button>`:''}</div>
-      <span>2. Isi nama pengirim sesuai rekening Anda, lalu ketuk tombol di bawah.</span><input id="tfnama" autocomplete="name" placeholder="Nama pengirim" value="${escH(d.pengirim)}" aria-label="Nama pengirim">
-      <button class="btn primary" type="button" id="tfkirim">${d.dikirim?'Perbarui nama pengirim':'Saya sudah transfer'}</button>
-      <small id="tfinfo">${d.dikirim?'Transfer sudah dikirim. Paket terbuka otomatis setelah pemilik mengonfirmasi.':'Paket terbuka otomatis setelah pemilik mengonfirmasi transfer Anda. Akses berlaku 1 tahun sejak dikonfirmasi.'}</small>
-      ${d.wa?`<a class="btn" id="tfwa" target="_blank" rel="noopener" ${d.dikirim?'':'hidden'}>Kabari pemilik via WhatsApp</a>`:''}
-      <button class="btn" type="button" id="tftutup">Tutup</button></div>`;
-    document.body.appendChild(m);
-    m.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>salinT(b.dataset.c,b));
-    const waSet=()=>{const a=$('tfwa');if(!a)return;const no=String(d.wa).replace(/[^0-9]/g,'').replace(/^0/,'62');
-      a.href='https://wa.me/'+no+'?text='+encodeURIComponent(`Halo, saya sudah transfer ${rp} untuk Paket Prediksi. Pengirim: ${$('tfnama').value.trim()}. Akun: ${((auth.currentUser&&auth.currentUser.email)||'')}`);};
-    waSet();$('tftutup').onclick=()=>m.remove();m.onclick=e=>{if(e.target===m)m.remove();};
-    $('tfkirim').onclick=async()=>{const nm=$('tfnama').value.trim();if(nm.length<2){alert('Isi nama pengirim dulu.');return;}
-      $('tfkirim').disabled=true;const {data,error}=await window.__sb.rpc('cat_beli_transfer',{p_nama:nm});$('tfkirim').disabled=false;
-      if(error||!data){$('tfinfo').textContent='Gagal mengirim. Silakan coba lagi.';return;}
-      if(data.lunas){m.remove();if(window.__pkBuka)window.__pkBuka();return;}
-      $('tfkirim').textContent='Perbarui nama pengirim';$('tfinfo').textContent='Terima kasih, transfer Anda sudah tercatat. Paket terbuka otomatis setelah pemilik mengonfirmasi. Jendela ini boleh ditutup.';
-      if($('tfwa')){$('tfwa').hidden=false;waSet();}tfTunggu();};
-    if(d.dikirim)tfTunggu();}
-  async function beliAkses(btn){const sb=window.__sb,t=btn&&btn.textContent;if(btn){btn.disabled=true;btn.textContent='Preparing payment…';}
-    try{const r=await sb.rpc('cat_beli_transfer',{p_nama:null});
-      if(!r.error&&r.data){if(btn){btn.disabled=false;btn.textContent=t;}if(r.data.lunas){location.href=location.pathname;return;}modalTransfer(r.data);return;}}catch(e){}
-    try{const {data,error}=await sb.functions.invoke('beli-akses',{body:{}});if(error)throw error;
-      if(data&&data.lunas){location.href=location.pathname;return;}if(data&&data.url){location.href=data.url;return;}throw new Error('no url');}
-    catch(e){alert('Online payment is not available right now. Please try again later.');if(btn){btn.disabled=false;btn.textContent=t;}}}
-  $('g-beli').onclick=()=>beliAkses($('g-beli'));window.__beliAkses=beliAkses;
   const open=()=>{$('gate').hidden=true;H.classList.remove('gate-wait');};
   const cfg=window.FIREBASE_CONFIG||{};
   if(!window.firebase||!cfg.apiKey||/^ISI_/.test(cfg.apiKey)){show('Site not configured','The owner needs to complete the site configuration first.');return;}
@@ -2339,45 +2301,12 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
         window.__ulang(2,'all',ids,'Package '+n,'paket|'+n,true);});};
     const KK='pk-kode',sb=window.__sb;let buka=isOwner;
     const kunci=(pesan)=>{kpRender();const L=susunPaket();$('pkket').innerHTML='<span class="pklead">Built to mirror the CAT for Religious Court judge candidates. Somewhere inside are the questions that will decide your result. How many can you clear?</span>'+pkStat();
-      $('pklist').innerHTML=`<div class="pkkunci"><b>🔒 Restricted Access</b><span>Available to buyers only. One payment unlocks every package for a full year.</span><small id="pkpesan">${pesan||''}</small><button class="btn copy pkbeli" type="button" id="pkbeli">Buy access</button></div>`+[1,2,3,4,5,6].map(n=>`<div class="tr pk pkghost" aria-hidden="true"><span class="trj"><b>Package ${n}</b></span><span class="pkpct">🔒</span><span class="pkgbtn">Sealed</span></div>`).join('')+`<p class="pkmore">+ ${L.length-6} more sealed packages</p>`;
-      $('pkbeli').onclick=()=>beliAkses($('pkbeli'));
-      sb.from('cat_beli').select('order_id').eq('status','menunggu').eq('metode','transfer').not('dikirim_pada','is',null).limit(1).then(({data})=>{if(data&&data.length&&$('pkpesan')&&!$('pkpesan').textContent){$('pkpesan').textContent='Transfer submitted. Waiting for the owner to confirm it.';if(window.__tfTunggu)window.__tfTunggu();}},()=>{});
-      if(/[?&]bayar=ok\b/.test(location.search)&&!window.__pkTunggu){window.__pkTunggu=1;$('pkpesan').textContent='Payment received. Unlocking your packages…';let n=0;
-        const t=setInterval(async()=>{if(buka||++n>40){clearInterval(t);if(!buka&&$('pkpesan'))$('pkpesan').textContent='Your payment is still being confirmed. Please reload this page in a few minutes.';return;}if(await lunas()){clearInterval(t);buka=true;pkRender();}},4000);}
+      $('pklist').innerHTML=`<div class="pkkunci"><b>🔒 Restricted Access</b><span>Available to VVIP accounts only.</span><small id="pkpesan">${pesan||''}</small></div>`+[1,2,3,4,5,6].map(n=>`<div class="tr pk pkghost" aria-hidden="true"><span class="trj"><b>Package ${n}</b></span><span class="pkpct">🔒</span><span class="pkgbtn">Sealed</span></div>`).join('')+`<p class="pkmore">+ ${L.length-6} more sealed packages</p>`;
     };
     const lunas=async()=>{try{const {data,error}=await sb.rpc('cat_sudah_beli');return !error&&data===true;}catch(e){return false;}};
-    const tampil=async()=>{if(buka){pkRender();if(isOwner)kodeOwner();return;}if(await lunas()){buka=true;pkRender();return;}
+    const tampil=async()=>{if(buka){pkRender();return;}if(await lunas()){buka=true;pkRender();return;}
       // Hanya pembeli yang sudah lunas (dan pemilik) yang bisa membuka paket; kode akses lama tidak berlaku lagi.
       try{localStorage.removeItem(KK);}catch(e){}kunci('');};
-    // Pemilik: pengaturan penjualan (harga, rekening, konfirmasi transfer).
-    const kodeOwner=async()=>{if($('pkown'))return;const d=document.createElement('div');d.id='pkown';d.className='pkown';
-      d.insertAdjacentHTML('beforeend','<b>Sales</b><div class="linkrow"><input id="pkbharga" autocomplete="off" inputmode="numeric" placeholder="Price in Rp, e.g. 99000" aria-label="Price in rupiah"><input id="pkbwa" autocomplete="off" inputmode="tel" placeholder="WhatsApp for help, e.g. 0812…" aria-label="WhatsApp number"></div><input id="pkbrek" autocomplete="off" placeholder="Bank account, e.g. BRI 0123 4567 8901 234 a.n. Your Name" aria-label="Bank account for transfers"><div class="linkrow"><button class="btn copy" type="button" id="pkbsimpan">Save price</button><button class="btn copy" type="button" id="pkbsalin">⧉ Copy public link</button></div><small id="pkbinfo">Buyers transfer the exact amount (price plus 3 unique digits) to your account. Check your BRImo transaction history, then tap Confirm below. The buyer&#39;s account is approved and the packages unlock right away. Leave the bank account empty to use Xendit instead.</small><small id="pkbjual"></small><b class="pkbsub">Transfers to confirm <button class="btn copy" type="button" id="pkbmuat">↻ Refresh</button></b><div id="pkbtunggu" class="pkbtunggu"><small>No transfers waiting.</small></div>');
-      $('pklist').before(d);
-      const PUBLIK='https://lexfexora.github.io/beli/',rp=v=>'Rp'+Number(v).toLocaleString('id-ID');
-      try{const {data,error}=await sb.from('cat_bayar').select('nominal,wa,rekening').eq('id','paket').maybeSingle();if(error)throw error;if(data){$('pkbharga').value=data.nominal||'';$('pkbwa').value=data.wa||'';$('pkbrek').value=data.rekening||'';}
-        // Ringkasan bank soal untuk halaman publik /beli/ (jumlah soal per kategori dan jumlah paket), diperbarui saat pemilik membuka kartu ini.
-        try{const L=susunPaket(),BYQ={};QB.forEach(q=>BYQ[q.id]=q);const per={};L.forEach(ids=>ids.forEach(id=>{const q=BYQ[id];if(q)per[q.c]=(per[q.c]||0)+1;}));
-          const info={soal:L.reduce((t,x)=>t+x.length,0),paket:L.length,per};const lama=await sb.from('cat_bayar').select('info').eq('id','paket').maybeSingle();
-          if(!lama.error&&JSON.stringify(lama.data&&lama.data.info)!==JSON.stringify(info))await sb.from('cat_bayar').upsert({id:'paket',info});}catch(e){}}
-      catch(e){$('pkbinfo').textContent='The sales tables do not exist yet. Run sb/supabase-update-4.sql and sb/supabase-update-5.sql in Supabase first.';}
-      try{const {data,error}=await sb.from('cat_beli').select('nominal,email,lunas_pada').eq('status','lunas').order('lunas_pada',{ascending:false});if(!error&&data){const tot=data.reduce((t,x)=>t+x.nominal,0);
-        $('pkbjual').textContent=data.length?`Paid buyers: ${data.length} · Total ${rp(tot)} · Latest: ${data.slice(0,3).map(x=>x.email).join(', ')}`:'Paid buyers: 0';}}catch(e){}
-      $('pkbsimpan').onclick=async()=>{const n=parseInt(String($('pkbharga').value).replace(/[^0-9]/g,''),10)||0;if(n&&n<10000){alert('The minimum price is Rp10.000.');return;}
-        $('pkbsimpan').disabled=true;const {error}=await sb.from('cat_bayar').upsert({id:'paket',nominal:n,harga:n?rp(n):'',wa:$('pkbwa').value.trim(),rekening:$('pkbrek').value.trim(),diubah:new Date().toISOString()});$('pkbsimpan').disabled=false;
-        if(!error)$('pkbharga').value=n||'';$('pkbinfo').textContent=error?'Save failed: '+(error.message||error.code):(n?'Price saved: '+rp(n)+'. The public link is ready to share.':'Price cleared. Sales are paused.');};
-      const muat=async()=>{const box=$('pkbtunggu');const {data,error}=await sb.from('cat_beli').select('order_id,email,nominal,pengirim,dikirim_pada').eq('metode','transfer').eq('status','menunggu').not('dikirim_pada','is',null).order('dikirim_pada',{ascending:false});
-        if(error){box.innerHTML='<small>Run sb/supabase-update-6.sql in Supabase to enable bank transfers.</small>';return;}
-        box.innerHTML=data.length?data.map(x=>`<div class="pkbrow"><span><b>${rp(x.nominal)}</b> · ${escH(x.pengirim)}<br><small>${escH(x.email)} · ${new Date(x.dikirim_pada).toLocaleString('id-ID',{dateStyle:'short',timeStyle:'short'})}</small></span><button class="btn copy" type="button" data-ok="${escH(x.order_id)}">✓ Confirm</button><button class="btn copy" type="button" data-no="${escH(x.order_id)}">✕</button></div>`).join(''):'<small>No transfers waiting.</small>';
-        box.querySelectorAll('[data-ok],[data-no]').forEach(b=>b.onclick=async()=>{const ok=!!b.dataset.ok,id=b.dataset.ok||b.dataset.no;
-          if(ok){const row=b.closest('.pkbrow'),nm=(row&&row.querySelector('b')||{}).textContent||'',k=(nm.replace(/\D/g,'').slice(-3));
-            const v=prompt('Buka mutasi BRImo dulu. Ketik 3 digit TERAKHIR nominal yang benar-benar masuk di mutasi BRImo:','');if(v===null)return;
-            if(v.replace(/\D/g,'')!==k){alert('Tidak cocok. Transfer TIDAK dikonfirmasi. Pastikan nominal '+nm+' persis ada di mutasi BRImo.');return;}}
-          else if(!confirm('Reject this transfer?'))return;b.disabled=true;
-          const {error}=await sb.rpc('cat_beli_konfirmasi',{p_order:id,p_terima:ok});if(error){alert('Failed: '+(error.message||error.code));b.disabled=false;return;}muat();if(window.__muatBayar)window.__muatBayar();});};
-      $('pkbmuat').onclick=muat;muat();
-      $('pkbsalin').onclick=()=>{const b=$('pkbsalin'),ok=()=>{b.textContent='✓ Copied';setTimeout(()=>b.textContent='⧉ Copy public link',1500);};
-        if(navigator.clipboard)navigator.clipboard.writeText(PUBLIK).then(ok).catch(()=>prompt('Copy this link:',PUBLIK));else prompt('Copy this link:',PUBLIK);};
-    };
     // Category Packages: satu paket untuk setiap sub-materi, judulnya nama sub-materi itu, dikelompokkan per kategori.
     // Isi paket = semua soal sub-materi itu (termasuk soal yang juga dipetakan ke sub ini), tanpa soal kembar. Sub > 100 soal dibagi rata menjadi beberapa Part.
     // Hak akses sama dengan Prediction Packages (pemilik dan pembeli lunas). Progres disimpan dengan kunci paket|k<c>-<s>-<part>, jadi ikut tersimpan di akun dan memakai timer 54 detik.
@@ -2397,9 +2326,9 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
     const kpIkat=()=>$('kplist').querySelectorAll('.kpkat').forEach(d=>d.addEventListener('toggle',()=>{d.open?kpBuka.add(d.dataset.kat):kpBuka.delete(d.dataset.kat);}));
     const kpRender=()=>{if(!kpBox)return;kpBox.hidden=false;const L=susunKat();
       if(!buka){$('kpket').innerHTML='<span class="pklead">Study one sub-topic at a time. Every package is named after its sub-topic and holds only that sub-topic\'s questions, grouped by category.</span>'+kpStat();
-        $('kplist').innerHTML=`<div class="pkkunci"><b>🔒 Restricted Access</b><span>Available to buyers only. The same purchase unlocks Prediction Packages and Category Packages.</span><button class="btn copy pkbeli" type="button" id="kpbeli">Buy access</button></div>`+
+        $('kplist').innerHTML=`<div class="pkkunci"><b>🔒 Restricted Access</b><span>Available to VVIP accounts only. VVIP access also unlocks Prediction Packages.</span></div>`+
           Object.keys(CATS).map(c=>{const P=L.filter(p=>p.c===+c);return kpKat(c,P.slice(0,4).map(p=>`<div class="tr pk pkghost" aria-hidden="true"><span class="trj"><b>${kpJudul(p)}</b><small>${kpKet(p)}</small></span><span class="kpr"><span class="pkgbtn">🔒 Sealed</span></span></div>`).join('')+(P.length>4?`<p class="pkmore">+ ${P.length-4} more sealed packages</p>`:''),P.length+' packages · locked');}).join('');
-        $('kpbeli').onclick=()=>beliAkses($('kpbeli'));kpIkat();return;}
+        kpIkat();return;}
       const BYQ={};QB.forEach(q=>BYQ[q.id]=q);
       $('kpket').innerHTML='<span class="pklead">Study one sub-topic at a time. Every package is named after its sub-topic and holds only that sub-topic\'s questions, with the same 54-second timer as Prediction Packages. Sub-topics with more than 100 questions are split into parts.</span>'+kpStat();
       $('kplist').innerHTML=Object.keys(CATS).map(c=>{const P=L.filter(p=>p.c===+c);let tot=0,jw=0,bt=0;
@@ -2489,7 +2418,6 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
     try{const s=await ref.get();
       if(!s.exists)await ref.set({email:u.email||'',nama:u.displayName||'',foto:u.photoURL||'',status:'menunggu',diminta:FV.serverTimestamp(),terakhir:FV.serverTimestamp(),posisi:''});
     }catch(e){show('Could not check access','Please reload the page. ('+(e.code||e.message)+')',who,false,true);return;}
-    try{if(localStorage.getItem('beli-niat')){localStorage.removeItem('beli-niat');beliAkses(null);}}catch(e){}
     // Kode akses gratis dari pemilik (tautan ?akses=… atau diketik di layar tunggu): akses langsung aktif.
     const klaim=async k=>{try{const {data,error}=await window.__sb.rpc('cat_klaim_kode',{p_kode:k});if(error)return {err:error.message||error.code};return {jenis:data};}catch(e){return {err:e.message};}};
     let akk='';try{akk=localStorage.getItem('akses-kode')||'';localStorage.removeItem('akses-kode');}catch(e){}
@@ -2505,9 +2433,8 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
         if(!window.__aksesPantau){window.__aksesPantau=1;db.doc('bank/akses').onSnapshot(d=>{window.__aksesBuka=d.exists?(d.data().buka||null):null;window.__segarSub&&window.__segarSub();},()=>{});}
         if(!beat)heartbeat(ref);start();if(!window.__penuh)window.__sb.rpc('cat_sudah_beli').then(({data})=>{if(data===true&&!window.__penuh){window.__penuh=true;document.documentElement.classList.add('vvip');window.__segarSub&&window.__segarSub();}}).catch(()=>{});}
       else if(st==='ditolak'){show('Access denied','The owner has not granted access to this account.',who,false,true);}
-      else{const sdh=/[?&]bayar=ok\b/.test(location.search);
-        show(sdh?'Payment received':'Waiting for approval',sdh?'Your payment is being confirmed. This page will open automatically in a moment.':'Your access request has been sent. This page will open automatically once the owner approves it, or right away after you buy access.',who,false,true);
-        if(!sdh){$('g-beli').hidden=false;$('g-kode').hidden=false;if(akHasil&&!$('g-kodemsg').textContent)$('g-kodemsg').textContent=akHasil.err?'Access codes are not available yet. Please try again later.':akHasil.jenis==='terlalu'?'Too many incorrect attempts. Please try again in an hour.':akHasil.jenis?'':'The access code from your link is no longer valid.';}}
+      else{show('Waiting for approval','Your access request has been sent. This page will open automatically once the owner approves it.',who,false,true);
+        {$('g-kode').hidden=false;if(akHasil&&!$('g-kodemsg').textContent)$('g-kodemsg').textContent=akHasil.err?'Access codes are not available yet. Please try again later.':akHasil.jenis==='terlalu'?'Too many incorrect attempts. Please try again in an hour.':akHasil.jenis?'':'The access code from your link is no longer valid.';}}
     },e=>show('Could not check access','Please reload the page. ('+(e.code||e.message)+')',who,false,true));
   });
 
