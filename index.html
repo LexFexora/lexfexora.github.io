@@ -1290,9 +1290,12 @@ function pasalDari(d,src){if(!d)return -1;const seg=d.split(/;\s*/);for(const sg
   return +p[1]*1000+(p[2]?p[2].charCodeAt(0)-64:0)*100+(+(p[3]||p[4]||0))*20/(p[2]?100:1)+(p[5]?p[5].charCodeAt(0)-96:0);}
   return -1;}
 function srcUtama(c,s){return c===3&&(s===10||s===11)?SRC_KHES:c===3&&s===12?SRC_QJ:null;}
-function urutKHI(q,c,s,lama){const pg=isPengertian(q),k=pasalDari(q.d,SRC_KHI),su=srcUtama(c,s),u=su?pasalDari(q.d,su):-1,L=2e6+(lama<0?0:lama+1);
-  if(pg)return k>=0?k:u>=0?1e6+u:L;
-  return k>=0?1e7+k:u>=0?2e7+u:3e7+L;}
+const SRC_ATURAN=/Pasal|Undang|\bUU\b|Peraturan|Herzien|\bHIR\b|R\.?Bg|Rechtsvordering|Buku II|Pedoman|Qanun|KHES|Kompilasi|Fatwa|SEMA|PERMA|Surat Edaran|Keputusan|Instruksi|Putusan|Rumusan|Staatsblad|KUH/i;
+// V69b (KHI dulu, baru fikih): 0 pengertian KHI, 1 isi KHI (menurut pasal), 2 pengertian sumber utama (KHES/Qanun), 3 pengertian aturan lain, 4 pengertian fikih/literatur, 5 isi sumber utama, 6 isi aturan lain, 7 isi fikih/literatur (urutan lama).
+function urutKHI(q,c,s,lama){const pg=isPengertian(q),k=pasalDari(q.d,SRC_KHI),su=srcUtama(c,s),u=su?pasalDari(q.d,su):-1,L=(lama<0?0:lama+1),fq=!SRC_ATURAN.test(q.d||'');
+  if(k>=0)return (pg?0:1e7)+k;
+  if(u>=0)return (pg?2e7:5e7)+u;
+  return (pg?(fq?4e7:3e7):(fq?7e7:6e7))+L;}
 function getFlowStage(q,c,s){const k='_kh'+c+'_'+s;if(q[k]!==undefined)return q[k];const lama=getFlowStageLama(q,c,s);return q[k]=(c===2||c===3)&&s!==99?urutKHI(q,c,s,lama):lama;}
 
 
