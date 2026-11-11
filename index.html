@@ -1008,7 +1008,7 @@ html.fokus body #card{padding-bottom:calc(72px + env(safe-area-inset-bottom,0px)
 .pbadm{margin:6px 0 10px;padding-bottom:8px;border-bottom:1px solid var(--line)}.pbadm b{color:#c0392b}
 .aksesub{margin:6px 0 10px;padding-top:8px;border-top:1px solid var(--line)}.aksesub .asgrup{display:flex;flex-direction:column;gap:4px;margin:8px 0}.aksesub .asgrup>small{font-size:12px;color:var(--muted)}.aksesub .asn{color:var(--muted);font-weight:500}
 .aksesub .asnama{display:flex;flex-wrap:wrap;gap:6px}.aksesub .aschip{font:600 12.5px/1.2 var(--f-body,inherit);padding:5px 10px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer}.aksesub .aspin{color:color-mix(in srgb,var(--brass) 80%,var(--ink));font-weight:700}.aksesub .aschip i{font-style:normal;font-weight:400;font-size:11px;color:var(--muted)}.aksesub .aschip:hover{border-color:color-mix(in srgb,var(--brass) 60%,var(--line))}
-.aksesub .aschip.lunas{cursor:default;color:#c9962e;border-color:color-mix(in srgb,#c9962e 40%,var(--line))}.aksesub #aspilih{flex:1 1 180px;min-width:0}.aksesub .asatur{margin:8px 0}.aksesub .asatur>summary{cursor:pointer;font-weight:600;font-size:13px}.aksesub .ascat{margin:8px 0}.aksesub .ascat>b{display:block;margin-bottom:4px;font-size:12.5px}.aksesub .ascat input{flex:none;width:16px;height:16px;margin:2px 0 0}.aksesub .ascat label{display:flex;gap:6px;align-items:flex-start;font-size:12.5px;padding:2px 0;color:var(--ink)}.aksesub #asinfo{font-size:12px;color:var(--muted)}
+.aksesub .aschip.lunas{cursor:default;color:#c9962e;border-color:color-mix(in srgb,#c9962e 40%,var(--line))}.aksesub #aspilih{flex:1 1 180px;min-width:0}.aksesub .asatur{margin:8px 0}.aksesub .asatur>summary{cursor:pointer;font-weight:600;font-size:13px}.aksesub .ascat{margin:8px 0}.aksesub .ascat>b{display:block;margin-bottom:4px;font-size:12.5px}.aksesub .ascat input{flex:none;width:16px;height:16px;margin:2px 0 0}.aksesub .ascat label{display:flex;gap:6px;align-items:flex-start;font-size:12.5px;padding:2px 0;color:var(--ink)}.aksesub #asinfo,.aksesub #ashapusinfo{font-size:12px;color:var(--muted)}.aksesub #ashapusinfo:empty{display:none}
 .setelan.tocard>summary .vvipakses{position:absolute;right:40px;top:50%;transform:translateY(-50%);padding:1px 7px;border-radius:999px;font:600 8.5px/1.5 var(--f-body,inherit);letter-spacing:.14em;text-transform:uppercase;white-space:nowrap;color:var(--muted);-webkit-text-fill-color:var(--muted);border:1px solid color-mix(in srgb,var(--muted) 35%,transparent);background:transparent;text-shadow:none;align-self:center}
 #pkcard>summary,#kpcard>summary,#arcard>summary{position:relative}
 html:not(.vvip) .setelan.tocard>summary .vvipakses{display:none}
@@ -1076,19 +1076,15 @@ html.vvip #arcard .arjml{padding-right:92px}
   <details class="online adm" id="adm" hidden>
     <summary><span class="dot" aria-hidden="true"></span><span>Access approvals: <strong id="admcount">0</strong> pending · <strong id="admon">0</strong> active</span><button class="btn keluar admout" type="button" id="adm-logout">EXIT</button></summary>
     <div class="pbadm" id="pbadm"><h4>Mode perbaikan</h4><p class="note" id="pbinfo">Memeriksa…</p><div class="linkrow"><button class="btn copy" type="button" id="pbtog" disabled>…</button></div></div>
-    <div class="akslink" id="akslink"><h4>Tautan akses gratis</h4>
-      <div class="aksrow" data-aks="gratis"><b>Latihan 4 klaster</b><small>Ilmu Hukum, Hukum Formil, Hukum Materil, TIK</small><div class="linkrow"><input class="akskode" autocomplete="off" placeholder="Ketik kode, min. 6 karakter" aria-label="Kode latihan 4 klaster"><button class="btn copy" type="button" data-a="simpan">Simpan kode</button></div><div class="linkrow"><input class="aksurl" readonly placeholder="Tautan muncul setelah kode disimpan" aria-label="Tautan latihan 4 klaster"><button class="btn copy" type="button" data-a="salin">⧉ Salin tautan</button><button class="btn copy" type="button" data-a="mati">Nonaktifkan</button></div><small class="aksinfo"></small></div>
-      <div class="aksrow" data-aks="penuh"><b>Akses seluruhnya</b><small>4 klaster + Prediction Packages + Category Packages (kecuali Mock Exam)</small><div class="linkrow"><input class="akskode" autocomplete="off" placeholder="Ketik kode, min. 6 karakter" aria-label="Kode akses seluruhnya"><button class="btn copy" type="button" data-a="simpan">Simpan kode</button></div><div class="linkrow"><input class="aksurl" readonly placeholder="Tautan muncul setelah kode disimpan" aria-label="Tautan akses seluruhnya"><button class="btn copy" type="button" data-a="salin">⧉ Salin tautan</button><button class="btn copy" type="button" data-a="mati">Nonaktifkan</button></div><small class="aksinfo"></small></div>
-      <p class="note">Bagikan tautannya. Siapa pun yang membukanya lalu masuk dengan Gmail langsung mendapat akses itu, tanpa menunggu persetujuan. Kodenya juga bisa diketik langsung di layar tunggu. Ganti kode atau Nonaktifkan untuk menutup kode/tautan lama; akun yang sudah aktif tetap aktif sampai Anda Cabut.</p></div>
     <div class="aksesub" id="aksesub"><h4>Akses sub materi</h4>
-      <div class="asgrup"><b>Akses penuh <span class="asn" id="asnpenuh"></span></b><small>Bisa membuka semua sub materi dan All Sections.</small><div class="asnama" id="aspenuh"></div></div>
-      <div class="asgrup"><b>Akses terbatas <span class="asn" id="asnbatas"></span></b><small>Hanya 1 sub materi per kategori (pilih di bawah). Sub materi lain dan All Sections terkunci.</small><div class="asnama" id="asbatas"></div></div>
+      <div class="asgrup"><b>Akses penuh <span class="asn" id="asnpenuh"></span></b><small>Bisa membuka semua sub materi dan All Sections.</small><div class="asnama" id="aspenuh"></div><div class="linkrow"><button class="btn copy ashapus" type="button" id="ashapuspenuh" hidden>🗑 Hapus semua akun non-VVIP di grup ini</button></div></div>
+      <div class="asgrup"><b>Akses terbatas <span class="asn" id="asnbatas"></span></b><small>Hanya 1 sub materi per kategori (pilih di bawah). Sub materi lain dan All Sections terkunci.</small><div class="asnama" id="asbatas"></div><div class="linkrow"><button class="btn copy ashapus" type="button" id="ashapusbatas" hidden>🗑 Hapus semua akun terbatas</button></div><small id="ashapusinfo"></small></div>
       <div class="asgrup"><b>VVIP Akses <span class="asn" id="asnpaket"></span></b><small>Prediction &amp; Category Packages + semua sub materi (kecuali Mock Exam).</small><small>Ketuk nama bertanda ✕ untuk mencabut akses paket gratis. Akun Lunas (membeli) tidak bisa dicabut dari sini.</small><div class="asnama" id="aspaket"></div>
         <div class="linkrow"><select id="aspilih" aria-label="Pilih akun"></select><button class="btn copy" type="button" id="asberi">＋ Beri VVIP Akses</button></div></div>
       <div class="asgrup"><b>Autopilot <span class="asn" id="asnap"></span></b><small>Akun yang boleh memakai tombol ▶ Auto (soal, kunci jawaban, dan pembahasan berjalan sendiri). Ketuk nama bertanda ✕ untuk mencabut.</small><div class="asnama" id="asap"></div>
         <div class="linkrow"><select id="apilih" aria-label="Pilih akun untuk Autopilot"></select><button class="btn copy" type="button" id="apberi">＋ Beri Autopilot</button></div></div>
       <details class="asatur"><summary>Sub materi yang terbuka untuk akses terbatas (1 per kategori)</summary><div id="asatur"></div><div class="linkrow"><button class="btn copy" type="button" id="assimpan">Simpan pengaturan</button><small id="asinfo"></small></div></details>
-      <p class="note">Ketuk nama untuk memindahkan akun antara Akses penuh dan Akses terbatas. Tanda <i>otomatis</i> = mengikuti aturan bawaan (pembeli, kode Akses seluruhnya, dan pengguna lama mendapat akses penuh). Akses Prediction/Category Packages tetap diatur lewat tombol Paket gratis.</p></div>
+      <p class="note">Ketuk nama untuk memindahkan akun antara Akses penuh dan Akses terbatas. Tanda <i>otomatis</i> = mengikuti aturan bawaan (pengguna lama mendapat akses penuh). Akses Prediction/Category Packages diatur lewat VVIP Akses.</p></div>
     <div class="linkrow"><input id="admlink" readonly aria-label="Tautan latihan"><button class="btn copy" type="button" id="admcopy">⧉ Salin tautan</button></div>
     <div id="admbody"></div>
     <div class="linkrow" id="izinsqlrow" style="display:none"><button class="btn copy" type="button" id="izinsql">⧉ Salin daftar izin (SQL untuk Supabase)</button></div>
@@ -2436,7 +2432,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       else{show('Waiting for approval','Your access request has been sent. This page will open automatically once the owner approves it.',who,false,true);
         // Selama mode perbaikan aktif, akun yang belum disetujui juga melihat pemberitahuan tidak dikomersialkan.
         perbaikan().then(on=>{if(on&&!$('gate').hidden&&gh.textContent==='Waiting for approval'){gh.textContent=PB_H;gp.textContent=PB_P;}});
-        {$('g-kode').hidden=false;if(akHasil&&!$('g-kodemsg').textContent)$('g-kodemsg').textContent=akHasil.err?'Access codes are not available yet. Please try again later.':akHasil.jenis==='terlalu'?'Too many incorrect attempts. Please try again in an hour.':akHasil.jenis?'':'The access code from your link is no longer valid.';}}
+        {if(akHasil&&!$('g-kodemsg').textContent)$('g-kodemsg').textContent=akHasil.err?'Access codes are not available yet. Please try again later.':akHasil.jenis==='terlalu'?'Too many incorrect attempts. Please try again in an hour.':akHasil.jenis?'':'The access code from your link is no longer valid.';}}
     },e=>show('Could not check access','Please reload the page. ('+(e.code||e.message)+')',who,false,true));
   });
 
@@ -2556,18 +2552,8 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(QB,null,1)],{type:'application/json'}));a.download='bank-soal.json';document.body.appendChild(a);a.click();a.remove();};
     const box=$('adm'),body=$('admbody');box.hidden=false;
     const link=location.origin+location.pathname;$('admlink').value=link;
-    // Tautan akses gratis: kode dibuat pemilik, disimpan di cat_kode ('gratis' = 4 klaster, 'penuh' = seluruhnya kecuali Mock Exam).
-    (()=>{const sb=window.__sb,url=k=>location.origin+location.pathname+'?akses='+encodeURIComponent(k);
-      document.querySelectorAll('#akslink .aksrow').forEach(row=>{const id=row.dataset.aks,kd=row.querySelector('.akskode'),inp=row.querySelector('.aksurl'),inf=row.querySelector('.aksinfo'),btn=a=>row.querySelector('[data-a="'+a+'"]');
-        const isi=k=>{kd.value=k||'';inp.value=k?url(k):'';btn('salin').disabled=btn('mati').disabled=!k;};isi('');
-        sb.from('cat_kode').select('kode').eq('id',id).maybeSingle().then(({data,error})=>{if(error){inf.textContent='Jalankan supabase-update-4.sql di Supabase dulu.';return;}isi(data&&data.kode);});
-        btn('salin').onclick=()=>{if(!inp.value)return;const b=btn('salin'),ok=()=>{b.textContent='✓ Tersalin';setTimeout(()=>b.textContent='⧉ Salin tautan',1500);};
-          if(navigator.clipboard)navigator.clipboard.writeText(inp.value).then(ok).catch(()=>{inp.select();document.execCommand('copy');ok();});else{inp.select();document.execCommand('copy');ok();}};
-        btn('simpan').onclick=async()=>{const k=kd.value.trim();if(k.length<6){alert('Kode minimal 6 karakter.');return;}
-          const lain=document.querySelector('#akslink .aksrow:not([data-aks="'+id+'"]) .akskode');if(lain&&lain.value.trim()===k){alert('Kode ini sudah dipakai untuk akses lainnya. Pakai kode yang berbeda.');return;}
-          btn('simpan').disabled=true;const {error}=await sb.from('cat_kode').upsert({id,kode:k,diubah:new Date().toISOString()});btn('simpan').disabled=false;
-          if(error){inf.textContent='Gagal menyimpan: '+(error.message||error.code);return;}isi(k);inf.textContent='Kode tersimpan. Bagikan kodenya atau tautan di bawah.';};
-        btn('mati').onclick=async()=>{if(!confirm('Nonaktifkan kode ini?'))return;const {error}=await sb.from('cat_kode').delete().eq('id',id);if(error){inf.textContent='Gagal: '+(error.message||error.code);return;}isi('');inf.textContent='Kode dinonaktifkan.';};});})();
+    // Tautan akses gratis dihapus (11 Nov 2026): kedua kode (4 klaster dan Akses seluruhnya) dinonaktifkan saat pemilik membuka panel.
+    window.__sb.from('cat_kode').delete().in('id',['gratis','penuh']).then(()=>{},()=>{});
     $('admcopy').onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(link).then(()=>{$('admcopy').textContent='✓ Tersalin';setTimeout(()=>$('admcopy').textContent='⧉ Salin tautan',1500);});};
     const fmt=t=>{if(!t||!t.toDate)return '';const d=t.toDate(),m=Math.round((Date.now()-d)/60000);
       return m<2?'aktif sekarang':m<60?m+' menit lalu':m<1440?Math.round(m/60)+' jam lalu':d.toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'});};
@@ -2630,6 +2616,16 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
         $('apberi').onclick=()=>{const u=as.value;if(!u){alert('Pilih akun dulu.');return;}if(!confirm('Beri akses Autopilot ke '+as.selectedOptions[0].textContent+'?'))return;apSet(u,true,$('apberi'));setTimeout(()=>{$('apberi').disabled=false;},1500);};
         document.querySelectorAll('#asap [data-apcabut]').forEach(b=>b.onclick=()=>{if(!confirm('Cabut Autopilot dari '+b.textContent.replace(/\s*✕\s*$/,'').trim()+'?'))return;apSet(b.dataset.apcabut,false,b);});}
       $('asnpenuh').textContent='('+G.penuh.length+')';$('asnbatas').textContent='('+G.terbatas.length+')';
+      // Hapus massal (pemilik): akun keluar dari daftar izin dan pra-izin, progresnya ikut dihapus. Akun VVIP tidak pernah ikut.
+      {const hapusMassal=async(rows,label,b)=>{rows=rows.filter(([id])=>!BAYAR.has(id)&&!GRATIS.has(id));if(!rows.length)return;
+          if(!confirm('Hapus '+rows.length+' akun '+label+'?\n\nIzin dan progres latihan mereka dihapus permanen. Akun VVIP tidak ikut terhapus. Mereka harus minta persetujuan lagi bila login ulang.'))return;
+          b.disabled=true;let ok=0,gagal=0;const inf=$('ashapusinfo');
+          for(const [id] of rows){inf.textContent='Menghapus '+(ok+gagal+1)+' dari '+rows.length+'…';
+            try{const {error}=await window.__sb.rpc('cat_izin_hapus',{p_uid:id});if(error)throw error;await window.__sb.from('docs').delete().eq('path','progres/'+id);ok++;}catch(e){gagal++;}}
+          b.disabled=false;inf.textContent='✓ '+ok+' akun dihapus'+(gagal?', '+gagal+' gagal (ketuk lagi untuk mencoba ulang)':'')+'.';};
+        const np=G.penuh.filter(([id])=>!BAYAR.has(id)&&!GRATIS.has(id));
+        $('ashapuspenuh').hidden=!np.length;$('ashapuspenuh').textContent='🗑 Hapus semua akun non-VVIP di grup ini ('+np.length+')';$('ashapuspenuh').onclick=()=>hapusMassal(G.penuh,'non-VVIP dari Akses penuh',$('ashapuspenuh'));
+        $('ashapusbatas').hidden=!G.terbatas.length;$('ashapusbatas').textContent='🗑 Hapus semua akun terbatas ('+G.terbatas.length+')';$('ashapusbatas').onclick=()=>hapusMassal(G.terbatas,'terbatas',$('ashapusbatas'));}
       document.querySelectorAll('#aksesub .aschip[data-asu]').forEach(b=>b.onclick=()=>{const ke=b.dataset.ke;if(!confirm('Pindahkan '+b.textContent.replace(/ otomatis| [↑↓]/g,'').trim()+' ke Akses '+ke+'?'))return;b.disabled=true;
         db.doc('izin/'+b.dataset.asu).update({sub:ke}).catch(e=>{alert('Gagal: '+(e.code||e.message));b.disabled=false;});});};
     // Aktivitas langsung (posisi dari halaman peserta). Format baru = teks JSON berisi mode, paket, soal kini, dan jawaban sesi ini;
