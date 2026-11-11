@@ -29,7 +29,7 @@
   const A={
     BAGIAN,
     get siap(){return siap;},get galat(){return galat;},
-    // Hanya akun yang bisa membuka Prediction & Category Packages (pemilik dan pembeli aktif).
+    // Hanya akun yang bisa membuka Simulation & Category Packages (pemilik dan pembeli aktif).
     get boleh(){return boleh;},
     async buka(){if(boleh||!sb)return;boleh=true;await muat();await pindahLama(A._lama,A._hapusLama);},
     // Dipanggil setelah login: client Supabase, uid akun, dan apakah akun ini pemilik.

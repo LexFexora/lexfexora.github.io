@@ -449,7 +449,7 @@ auth.onAuthStateChanged(async u=>{U=u;pMuat=false;aku=null;P={};if(unsubT){unsub
   if(window.Arsip)Arsip.mulai(window.__sb,u.uid,!!OWNER&&(u.email||"").toLowerCase()===OWNER&&u.emailVerified).then(()=>{if($("arsipbtn")&&T&&T.status==="mulai")render();});
   isOwner=!!OWNER&&(u.email||"").toLowerCase()===OWNER&&u.emailVerified;$("edsoal").hidden=!isOwner;if(!isOwner)detakIzinMulai();if(isOwner){siapkanEdit();pantauLoginMulai();}$("akun").hidden=false;$("akunav").innerHTML=av({foto:u.photoURL,nama:u.displayName||u.email});$("akunnm").textContent=u.displayName||(u.email||"").split("@")[0];document.body.classList.toggle("bebas",isOwner||BEBAS_SALIN.includes((u.email||"").toLowerCase())&&u.emailVerified);
   unsubT=db.doc("tryout/"+TID).onSnapshot(s=>{if(!s.exists){gate("Mock exam tidak ditemukan","Periksa kembali tautannya.");return;}
-      T=s.data({serverTimestamps:"estimate"});T.id=s.id;catatStatus();if(!T.judul||T.judul==="Mock Exam Seleksi Kemampuan Bidang")T.judul="Mock Exam";if(T.subJudul)T.judul+=" - "+T.subJudul.replace(/^Package (\d)/,"Prediction Package $1");gabung();render();},
+      T=s.data({serverTimestamps:"estimate"});T.id=s.id;catatStatus();if(!T.judul||T.judul==="Mock Exam Seleksi Kemampuan Bidang")T.judul="Mock Exam";if(T.subJudul)T.judul+=" - "+T.subJudul.replace(/^Package (\d)/,"Simulation Package $1");gabung();render();},
     e=>gate("Mock exam belum dapat dibuka","Muat ulang halaman. ("+(e.code||e.message)+")"));
   unsubP=db.collection("tryout/"+TID+"/peserta").onSnapshot(qs=>{const m={};qs.forEach(d=>{m[d.id]=d.data();});catatJawab(m);P=m;pMuat=true;if(T)gabung();
       // Heartbeat (kolom t) saja tidak perlu menggambar ulang layar, agar tombol tidak "lari" saat diklik.
@@ -561,7 +561,7 @@ function gabung(){if(!U||!pMuat||P[U.uid]||aku||T.status==="selesai"||T.status==
 // Urutan pilihan diacak per peserta, tetap sama setiap kali dimuat ulang.
 function acak(n,seed){let h=2166136261;for(const c of seed)h=Math.imul(h^c.charCodeAt(0),16777619);const a=[...Array(n).keys()];
   for(let i=n-1;i>0;i--){h=Math.imul(h^(h>>>15),2246822507);h^=h>>>13;const j=(h>>>0)%(i+1);[a[i],a[j]]=[a[j],a[i]];}return a;}
-// Catat jawaban ke perangkat agar halaman utama memasukkannya ke riwayat Prediction/Category Packages.
+// Catat jawaban ke perangkat agar halaman utama memasukkannya ke riwayat Simulation/Category Packages.
 function catatRiwayat(j){try{const R=JSON.parse(localStorage.getItem("to-riwayat")||"{}")||{};Object.keys(j||{}).forEach(id=>{if(R[id]===undefined)R[id]=j[id];});localStorage.setItem("to-riwayat",JSON.stringify(R));}catch(e){}}
 function hitung(){const j=aku.jawab||{};let b=0,d=0;T.soal.forEach(q=>{if(j[q.id]!==undefined){d++;if(j[q.id]===q.a)b++;}});
   aku.benar=b;aku.dijawab=d;aku.skor=Math.round(b*100/T.soal.length);aku.dur=Math.min(T.durasi*1000,(T.terpakai||0)*1000+Math.max(0,Date.now()-mulaiMs()));}

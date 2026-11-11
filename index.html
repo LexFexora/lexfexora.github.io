@@ -427,7 +427,7 @@ html.gate-wait .wrap{display:none}
 #tosub legend label{font-size:13px;font-weight:600;align-items:center}#tosub legend label>input{margin-top:0}
 #tosub legend{width:100%;padding:4px 0}
 #tosub label[hidden],#tosub fieldset[hidden]{display:none!important}
-/* Sumber soal Mock Exam: Sub-materi, Prediction Packages, Category Packages. */
+/* Sumber soal Mock Exam: Sub-materi, Simulation Packages, Category Packages. */
 .tosrc{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:6px 0 0}
 .tosrc button{font:inherit;font-size:12.5px;font-weight:600;line-height:1.25;padding:7px 6px;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--muted);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:1px}
 .tosrc button small{font-size:10.5px;font-weight:700;color:var(--brass,#c9a24a);min-height:1em}
@@ -936,7 +936,7 @@ html:root[data-theme="dark"] body #siapbtn{background:radial-gradient(120% 90% a
 html:root[data-theme="dark"] body #siapbtn:hover{background:radial-gradient(120% 90% at 0 0,rgb(255 255 255 / .09),transparent 62%),linear-gradient(160deg,rgb(255 255 255 / .06),rgb(255 255 255 / .02)),#070908!important;border-color:rgb(255 255 255 / .24)!important}
 @media (prefers-color-scheme:dark){html:root:not([data-theme="light"]) body #siapbtn{background:radial-gradient(120% 90% at 0 0,rgb(255 255 255 / .055),transparent 60%),linear-gradient(160deg,rgb(255 255 255 / .04),rgb(255 255 255 / .01) 55%,rgb(255 255 255 / .02)),#070908!important;border:1px solid rgb(255 255 255 / .11)!important;border-radius:12px!important;box-shadow:inset 0 1px 0 rgb(255 255 255 / .06),inset 0 -1px 0 rgb(0 0 0 / .35),0 10px 24px rgb(0 0 0 / .5)!important;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}html:root:not([data-theme="light"]) body #siapbtn:hover{background:radial-gradient(120% 90% at 0 0,rgb(255 255 255 / .09),transparent 62%),linear-gradient(160deg,rgb(255 255 255 / .06),rgb(255 255 255 / .02)),#070908!important;border-color:rgb(255 255 255 / .24)!important}}
 
-/* Paket Prediksi: nama paket dan keterangannya bertumpuk di kiri. */
+/* Paket Simulasi: nama paket dan keterangannya bertumpuk di kiri. */
 .tolist .tr.pk .trj{display:flex;flex-direction:column;gap:2px;flex:1 1 200px;min-width:0;white-space:normal;overflow:visible}
 .tolist .tr.pk .trj b{margin:0;font-size:13.5px}
 .tolist .tr.pk .trj small{color:var(--muted);font-size:12px;line-height:1.35}
@@ -953,7 +953,7 @@ html:root[data-theme="dark"] body #siapbtn:hover{background:radial-gradient(120%
 #pkket,
 #kpket{margin:0 0 8px;font-size:12.5px;color:var(--muted)}
 
-/* Paket Prediksi: kisi rapat 3 paket per baris (juga di ponsel). */
+/* Paket Simulasi: kisi rapat 3 paket per baris (juga di ponsel). */
 #pklist{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
 #pklist>.pkkunci{grid-column:1/-1}
 #pklist .tr.pk{flex-direction:column;align-items:stretch;gap:4px;padding:8px 6px;text-align:center;border-radius:10px;margin:0}
@@ -1079,12 +1079,12 @@ html.vvip #arcard .arjml{padding-right:92px}
     <div class="aksesub" id="aksesub"><h4>Akses sub materi</h4>
       <div class="asgrup"><b>Akses penuh <span class="asn" id="asnpenuh"></span></b><small>Bisa membuka semua sub materi dan All Sections.</small><div class="asnama" id="aspenuh"></div><div class="linkrow"><button class="btn copy ashapus" type="button" id="ashapuspenuh" hidden>🗑 Hapus semua akun non-VVIP di grup ini</button></div></div>
       <div class="asgrup"><b>Akses terbatas <span class="asn" id="asnbatas"></span></b><small>Hanya 1 sub materi per kategori (pilih di bawah). Sub materi lain dan All Sections terkunci.</small><div class="asnama" id="asbatas"></div><div class="linkrow"><button class="btn copy ashapus" type="button" id="ashapusbatas" hidden>🗑 Hapus semua akun terbatas</button></div><small id="ashapusinfo"></small></div>
-      <div class="asgrup"><b>VVIP Akses <span class="asn" id="asnpaket"></span></b><small>Prediction &amp; Category Packages + semua sub materi (kecuali Mock Exam).</small><small>Ketuk nama bertanda ✕ untuk mencabut akses paket gratis. Akun Lunas (membeli) tidak bisa dicabut dari sini.</small><div class="asnama" id="aspaket"></div>
+      <div class="asgrup"><b>VVIP Akses <span class="asn" id="asnpaket"></span></b><small>Simulation &amp; Category Packages + semua sub materi (kecuali Mock Exam).</small><small>Ketuk nama bertanda ✕ untuk mencabut akses paket gratis. Akun Lunas (membeli) tidak bisa dicabut dari sini.</small><div class="asnama" id="aspaket"></div>
         <div class="linkrow"><select id="aspilih" aria-label="Pilih akun"></select><button class="btn copy" type="button" id="asberi">＋ Beri VVIP Akses</button></div></div>
       <div class="asgrup"><b>Autopilot <span class="asn" id="asnap"></span></b><small>Akun yang boleh memakai tombol ▶ Auto (soal, kunci jawaban, dan pembahasan berjalan sendiri). Ketuk nama bertanda ✕ untuk mencabut.</small><div class="asnama" id="asap"></div>
         <div class="linkrow"><select id="apilih" aria-label="Pilih akun untuk Autopilot"></select><button class="btn copy" type="button" id="apberi">＋ Beri Autopilot</button></div></div>
       <details class="asatur"><summary>Sub materi yang terbuka untuk akses terbatas (1 per kategori)</summary><div id="asatur"></div><div class="linkrow"><button class="btn copy" type="button" id="assimpan">Simpan pengaturan</button><small id="asinfo"></small></div></details>
-      <p class="note">Ketuk nama untuk memindahkan akun antara Akses penuh dan Akses terbatas. Tanda <i>otomatis</i> = mengikuti aturan bawaan (pengguna lama mendapat akses penuh). Akses Prediction/Category Packages diatur lewat VVIP Akses.</p></div>
+      <p class="note">Ketuk nama untuk memindahkan akun antara Akses penuh dan Akses terbatas. Tanda <i>otomatis</i> = mengikuti aturan bawaan (pengguna lama mendapat akses penuh). Akses Simulation/Category Packages diatur lewat VVIP Akses.</p></div>
     <div class="linkrow"><input id="admlink" readonly aria-label="Tautan latihan"><button class="btn copy" type="button" id="admcopy">⧉ Salin tautan</button></div>
     <div id="admbody"></div>
     <div class="linkrow" id="izinsqlrow" style="display:none"><button class="btn copy" type="button" id="izinsql">⧉ Salin daftar izin (SQL untuk Supabase)</button></div>
@@ -1121,8 +1121,8 @@ html.vvip #arcard .arjml{padding-right:92px}
         <label>Title<input id="tojudul" value="Mock Exam"></label>
         <div class="torow"><label>Number of Questions<input type="number" id="tojml" min="1" max="1000" step="1" value="100" inputmode="numeric" list="tojmlsaran" aria-label="Jumlah soal (ketik bebas)"><datalist id="tojmlsaran"><option value="25"></option><option value="50"></option><option value="75"></option><option value="100"></option><option value="150"></option><option value="200"></option></datalist></label>
         <label>Seconds per Question<input id="todetik" type="number" min="10" max="600" value="54"></label></div>
-        <p class="note" style="margin:4px 0 0">Pilih sumber soal: sub-materi, Prediction Packages, atau Category Packages (boleh dicampur). Sub-materi diracik otomatis: jatah tiap sub-materi sebanding jumlah soalnya, seimbang antara dasar hukum, istilah &amp; prosedur, dan pendapat ahli, tanpa soal kembar. Paket dipakai apa adanya, soal dari beberapa paket diselang-seling.</p>
-        <div class="tosrc" id="tosrc" role="group" aria-label="Sumber soal"><button type="button" class="on" data-src="sub">Sub-materi<small id="tosrcn-sub"></small></button><button type="button" data-src="pk">Prediction Packages<small id="tosrcn-pk"></small></button><button type="button" data-src="kp">Category Packages<small id="tosrcn-kp"></small></button></div>
+        <p class="note" style="margin:4px 0 0">Pilih sumber soal: sub-materi, Simulation Packages, atau Category Packages (boleh dicampur). Sub-materi diracik otomatis: jatah tiap sub-materi sebanding jumlah soalnya, seimbang antara dasar hukum, istilah &amp; prosedur, dan pendapat ahli, tanpa soal kembar. Paket dipakai apa adanya, soal dari beberapa paket diselang-seling.</p>
+        <div class="tosrc" id="tosrc" role="group" aria-label="Sumber soal"><button type="button" class="on" data-src="sub">Sub-materi<small id="tosrcn-sub"></small></button><button type="button" data-src="pk">Simulation Packages<small id="tosrcn-pk"></small></button><button type="button" data-src="kp">Category Packages<small id="tosrcn-kp"></small></button></div>
         <input type="search" id="tocari" class="tocari" placeholder="Cari sub-materi (mis. waris, kasasi, mediasi)…" autocomplete="off" aria-label="Cari sub-materi">
         <div class="tosub" id="tosub"></div>
         <p class="note" id="toinfo"></p>
@@ -1135,7 +1135,7 @@ html.vvip #arcard .arjml{padding-right:92px}
   </details>
 
   <details class="setelan tocard" id="pkcard" hidden>
-    <summary><span class="stl"><svg class="piala" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="url(#pialaEmas)" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5.2"/></g><circle cx="12" cy="12" r="1.9" fill="url(#pialaEmas)"/></svg>Prediction Packages</span><span class="vvipakses" title="VVIP Access">VVIP Access</span></summary>
+    <summary><span class="stl"><svg class="piala" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="url(#pialaEmas)" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5.2"/></g><circle cx="12" cy="12" r="1.9" fill="url(#pialaEmas)"/></svg>Simulation Packages</span><span class="vvipakses" title="VVIP Access">VVIP Access</span></summary>
     <div class="toisi">
       <p class="note" id="pkket"></p>
       <div id="pklist" class="tolist"></div>
@@ -1209,7 +1209,7 @@ function getQuestionTier(q){const s=q.q,a=q.o[q.a];
   if(PINRE.test(s+" "+a)||TIER_EXP.test(s))return 3;
   return 2;}
 // V65: soal aturan = tier 1 ditambah soal yang jawabannya nama/nomor aturan lain (Staatsblad, TAP MPR, Perpres, Surat Panitera MA, nota kesepahaman, dll.).
-// Hanya dipakai untuk urutan tampil (soal aturan di akhir sub-materi), tidak mengubah tier sehingga isi Prediction/Category Packages tetap sama.
+// Hanya dipakai untuk urutan tampil (soal aturan di akhir sub-materi), tidak mengubah tier sehingga isi Simulation/Category Packages tetap sama.
 const ATR_ANS=/^(Perpres\b|Perppu\b|Permen|TAP MPR|Ketetapan MPR|Staatsblad|Stbl\b|Surat Panitera|Nota Kesepahaman|Perjanjian Kerja Sama|Angka [IVXL]+ (Keputusan|SK)|Indische Staatsregeling|Regeringsreglement)/i;
 const ATR_ASK=/(merujuk pada|mengacu pada)\?$|menjadi dasar berlakunya|[Kk]eputusan [^?]*\bnomor\?$/;
 const ATR_C=new WeakMap();function isAturan(q){let v=ATR_C.get(q);if(v===undefined){v=getQuestionTier(q)===1||ATR_ANS.test(q.o[q.a])||ATR_ASK.test(q.q);ATR_C.set(q,v);}return v;}
@@ -1362,7 +1362,7 @@ try{store=JSON.parse(localStorage.getItem(KEY)||"{}")||{};}catch(e){store={};}
 // yang dikerjakan di paket. Dibuang agar persentase paket yang belum dikerjakan tidak ikut bertambah.
 const sesiPalsu=(k,v)=>/^ulang\|paket\|/.test(k)&&!!v&&typeof v==="object"&&!(Array.isArray(v.list)&&v.list.length);
 Object.keys(store).forEach(k=>{if(sesiPalsu(k,store[k]))delete store[k];});
-// Progres Paket Prediksi juga disimpan di akun (progres/<uid>.pk, satu teks JSON per paket), jadi tidak hilang walau
+// Progres Paket Simulasi juga disimpan di akun (progres/<uid>.pk, satu teks JSON per paket), jadi tidak hilang walau
 // ganti HP, browser dibersihkan, atau login ulang. Saat dimuat, versi dengan jawaban terbanyak (akun atau perangkat) yang dipakai.
 const PKJ=o=>o&&o.ans?Object.keys(o.ans).length:0,PKT={};
 // Gabungkan dua versi sesi yang sama (perangkat, tab lain, akun). Jawaban TIDAK pernah dibuang: jawaban kedua versi disatukan,
@@ -1415,7 +1415,7 @@ async function segarkanPaket(){window.__segar=1;setTimeout(()=>{window.__segar=0
     if(window.__ambilSemuaPaket){const raw=await window.__ambilSemuaPaket();if(raw)gabungStore(pkCloud(raw));}
     if(window.__ambilSemuaSesi){const r=await window.__ambilSemuaSesi();if(r){gabungStore(ssCloud(r.ss));gabungPos(r.pos);}}
     if(store[pk]!==lama){save();terapkan(pk);}try{window.__pkSegar&&window.__pkSegar();}catch(e){}}catch(e){}finally{window.__segar=0;lastTick=Date.now();}}
-// Jawaban Mock Exam (dicatat tryout.html di "to-riwayat") TIDAK lagi dimasukkan ke sesi Prediction/Category Packages: soal paket harus
+// Jawaban Mock Exam (dicatat tryout.html di "to-riwayat") TIDAK lagi dimasukkan ke sesi Simulation/Category Packages: soal paket harus
 // mulai kosong sampai benar-benar dijawab di paket itu. Catatannya cukup dibuang.
 function serapMock(){try{localStorage.removeItem("to-riwayat");}catch(e){}}
 window.__serapMock=serapMock;
@@ -1494,7 +1494,7 @@ function buildSession(fresh,onlyIds,reset){
 }
 // Timer Total: 40 detik per soal dikali jumlah soal yang dipilih; Per question memakai pilihan Duration.
 const SEC_TOTAL=40;
-// Paket Prediksi: selalu timer 54 detik per soal; habis waktu → soal terkunci dan pindah ke soal berikutnya.
+// Paket Simulasi: selalu timer 54 detik per soal; habis waktu → soal terkunci dan pindah ke soal berikutnya.
 function PKT_ON(){return !!(state.ulang&&/^paket\|/.test(state.ulang.k));}
 function tmode(){return PKT_ON()?"per":tMode;}
 function sec(){return PKT_ON()?54:SEC;}
@@ -1998,10 +1998,10 @@ function bukaSetelan(){const st=$("setelan");if(!st||st.hidden||st.open)return;
 // Bar Mock Exam: dibuka dan ditutup dengan gerak perlahan yang sama.
 document.querySelector("#tocard>summary").addEventListener("click",e=>{const d=$("tocard");e.preventDefault();if(d.dataset.anim)return;if(d.open){tutupPerlahan(d,[d.querySelector(".toisi")].filter(Boolean));return;}
   const h0=d.offsetHeight;d.open=true;turunPerlahan(d,h0,[d.querySelector(".toisi")].filter(Boolean));});
-// Category Packages: gerak buka/tutup sama dengan Prediction Packages.
+// Category Packages: gerak buka/tutup sama dengan Simulation Packages.
 document.querySelector("#kpcard>summary").addEventListener("click",e=>{const d=$("kpcard");e.preventDefault();if(d.dataset.anim)return;if(d.open){tutupPerlahan(d,[d.querySelector(".toisi")].filter(Boolean));return;}
   const h0=d.offsetHeight;d.open=true;turunPerlahan(d,h0,[d.querySelector(".toisi")].filter(Boolean));});
-// Prediction Packages: gerak buka/tutup sama persis dengan Mock Exam.
+// Simulation Packages: gerak buka/tutup sama persis dengan Mock Exam.
 document.querySelector("#pkcard>summary").addEventListener("click",e=>{const d=$("pkcard");e.preventDefault();if(d.dataset.anim)return;if(d.open){tutupPerlahan(d,[d.querySelector(".toisi")].filter(Boolean));return;}
   const h0=d.offsetHeight;d.open=true;turunPerlahan(d,h0,[d.querySelector(".toisi")].filter(Boolean));});
 function renderRingkas(){const st=$("setelan");if(st){if(!st.dataset.anim)st.hidden=state.cat==="all"||!!state.setHilang;st.classList.toggle("perlu",!siapOK());document.querySelector(".wrap").classList.toggle("blmsiap",!siapOK()&&!(window.__gulTutup&&state.cat!=="all"));document.querySelector(".wrap").classList.toggle("blmmulai",state.cat!=="all"&&siapOK()&&!state.mulai&&state.pos<state.list.length);const sr=$("siaprow");if(sr)sr.hidden=false;}const r=$("ringkas");if(!r)return;const s=state.cat==="all"||state.sub==="all"?"All Sections":state.sub+". "+SUBS[state.cat][state.sub-1]+(state.ulang?" · "+state.ulang.label:state.bag==="bonus"?" · Bonus":state.bag!=="all"?" · Part "+state.bag:" · All Parts");
@@ -2068,7 +2068,7 @@ function renderArsip(){const box=$("arcard");if(!box||!window.Arsip)return;box.h
   $("arjml").textContent="";
   $("arket").innerHTML=`<span class="pklead">A shared record for all users. Every question anyone marks with 🔖 Record, in any mode, is collected here in the order it was recorded, so you can work through questions others saved and they can work through yours. Each part holds ${Arsip.BAGIAN} questions. Once a part is full, the next recorded question becomes No. 1 of the next part. Your answers and progress stay your own.</span>`;
   if(!Arsip.siap){$("arlist").innerHTML=`<p class="arkosong">Loading…</p>`;return;}
-  if(!Arsip.boleh){$("arlist").innerHTML=`<div class="pkkunci"><b>🔒 Restricted Access</b><span>Available to VVIP accounts only. VVIP access also unlocks Prediction Packages and Category Packages.</span></div>`;return;}
+  if(!Arsip.boleh){$("arlist").innerHTML=`<div class="pkkunci"><b>🔒 Restricted Access</b><span>Available to VVIP accounts only. VVIP access also unlocks Simulation Packages and Category Packages.</span></div>`;return;}
   if(Arsip.galat==="belum"){$("arlist").innerHTML=`<p class="arkosong">${window.__isOwner?"Run sb/supabase-update-11.sql in the Supabase SQL Editor to turn on the shared Vital Test Record.":"Vital Test Record is not available yet."}</p>`;return;}
   if(!n&&Arsip.galat){$("arlist").innerHTML=`<p class="arkosong">Could not load Vital Test Record. Check your connection, then reopen this card.</p>`;return;}
   if(!n){$("arlist").innerHTML=`<p class="arkosong">No recorded questions yet. Tap 🔖 Record below the answer options while working on a question.</p>`;return;}
@@ -2076,7 +2076,7 @@ function renderArsip(){const box=$("arcard");if(!box||!window.Arsip)return;box.h
       lanjut=I.lanjut,selesai=I.selesai,awal=i*Arsip.BAGIAN;
     return `<div class="tr pk"><span class="trj"><b>PART ${i+1}</b><small>${ids.length} questions${ids.length<Arsip.BAGIAN?` · ${ids.length} of ${Arsip.BAGIAN} filled`:""} · records ${awal+1}–${awal+ids.length}</small></span><span class="kpr"><span class="muted pkpct" title="${I.done} of ${I.N} questions done">${I.pct}%</span>${dj?`<span class="pkbs" title="${bn} correct and ${dj-bn} wrong out of ${dj} answered"><i class="ok">✓ ${pb}%</i><i class="no">✗ ${100-pb}%</i></span>`:""}<button class="btn copy" type="button" data-ar="${i}" data-ulangi="${selesai?1:""}">${selesai?"Retry":lanjut?"Continue":"Start"}</button></span></div>`;}).join("");
   $("arlist").querySelectorAll("[data-ar]").forEach(b=>b.onclick=()=>bukaArsip(+b.dataset.ar,!!b.dataset.ulangi));}
-// Progres paket untuk kartu Prediction/Category Packages dan Vital Test Record: soal dihitung selesai bila dijawab ATAU waktunya habis,
+// Progres paket untuk kartu Simulation/Category Packages dan Vital Test Record: soal dihitung selesai bila dijawab ATAU waktunya habis,
 // jadi paket yang sudah sampai akhir tampil 100%. Sesi "Retry Wrong" (rs, daftarnya lebih kecil) dihitung terhadap daftarnya sendiri.
 window.__pkInfo=(ss,ids)=>{const BQ=BYID,N0=ids.length,sub=!!(ss&&ss.rs&&Array.isArray(ss.list)&&ss.list.length&&ss.list.length<N0),
     L=sub?ss.list:ids,N=L.length,A=ss&&ss.ans||{},E=ss&&ss.expired||{};let dj=0,bn=0,hb=0;
@@ -2227,10 +2227,10 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
     const ST={menunggu:'ruang tunggu',siap:'cek kesiapan',mulai:'sedang berjalan',jeda:'disimpan · bisa dilanjutkan',selesai:'selesai'};
     db.collection('tryout').orderBy('dibuat','desc').limit(15).onSnapshot(qs=>{const rows=[];qs.forEach(d=>{const t=d.data(),u=location.origin+location.pathname.replace(/[^/]*$/,'')+'tryout.html?t='+d.id;
         if(!isOwner&&t.status==='selesai')return;
-        const sj=(t.subJudul||subMock(t)).replace(/^Package (\d)/,'Prediction Package $1');if(isOwner&&!t.subJudul&&sj)db.doc('tryout/'+d.id).update({subJudul:sj}).catch(()=>{});rows.push(`<div class="tr">${sj?`<span class="trj" title="${esc(sj)}">${esc(sj)}</span>`:''}<span class="muted trm">${(t.soal||[]).length} soal · ${ST[t.status]||t.status}</span><a class="btn copy${isOwner?'':' primary'}" href="${u}" target="_blank" rel="noopener">${isOwner?'Buka':'Ikut'}</a>${isOwner?`<button class="btn copy" type="button" data-hapus="${d.id}">Hapus</button>`:''}</div>`);});
+        const sj=(t.subJudul||subMock(t)).replace(/^Package (\d)/,'Simulation Package $1');if(isOwner&&!t.subJudul&&sj)db.doc('tryout/'+d.id).update({subJudul:sj}).catch(()=>{});rows.push(`<div class="tr">${sj?`<span class="trj" title="${esc(sj)}">${esc(sj)}</span>`:''}<span class="muted trm">${(t.soal||[]).length} soal · ${ST[t.status]||t.status}</span><a class="btn copy${isOwner?'':' primary'}" href="${u}" target="_blank" rel="noopener">${isOwner?'Buka':'Ikut'}</a>${isOwner?`<button class="btn copy" type="button" data-hapus="${d.id}">Hapus</button>`:''}</div>`);});
       // Pemilik: tautan join mock exam terbaru yang belum selesai, siap disalin atau dibagikan.
       let jl='',d0=null;qs.forEach(d=>{if(!d0&&d.data().status!=='selesai')d0=d;});if(isOwner){if(d0){const u0=location.origin+location.pathname.replace(/[^/]*$/,'')+'tryout.html?t='+d0.id;
-        jl=`<div class="tojoin"><b>Tautan join peserta</b><span class="muted">${esc(jdl(d0.data().judul)+(d0.data().subJudul?' - '+d0.data().subJudul.replace(/^Package (\d)/,'Prediction Package $1'):''))}</span><div class="linkrow"><input readonly value="${u0}" aria-label="Tautan join peserta" onclick="this.select()"><button class="btn copy" type="button" data-salin="${u0}">⧉ Salin tautan</button><button class="btn copy" type="button" data-bagi="${u0}">Bagikan</button></div><p class="note" style="margin:0">Kirim tautan ini ke peserta. Mereka masuk dengan Google lalu otomatis ke ruang tunggu, dan papan peringkat diurutkan menurut jumlah jawaban benar.</p></div>`;}}
+        jl=`<div class="tojoin"><b>Tautan join peserta</b><span class="muted">${esc(jdl(d0.data().judul)+(d0.data().subJudul?' - '+d0.data().subJudul.replace(/^Package (\d)/,'Simulation Package $1'):''))}</span><div class="linkrow"><input readonly value="${u0}" aria-label="Tautan join peserta" onclick="this.select()"><button class="btn copy" type="button" data-salin="${u0}">⧉ Salin tautan</button><button class="btn copy" type="button" data-bagi="${u0}">Bagikan</button></div><p class="note" style="margin:0">Kirim tautan ini ke peserta. Mereka masuk dengan Google lalu otomatis ke ruang tunggu, dan papan peringkat diurutkan menurut jumlah jawaban benar.</p></div>`;}}
       $('tolist').innerHTML=rows.join('')+jl;
       $('tolist').querySelectorAll('[data-bagi]').forEach(b=>b.onclick=()=>{const u=b.dataset.bagi,tx='Ikut Mock Exam bersama: '+u;if(navigator.share)navigator.share({title:'Mock Exam',text:'Ikut Mock Exam bersama',url:u}).catch(()=>{});else window.open('https://wa.me/?text='+encodeURIComponent(tx),'_blank');});
       // Peserta: teks kosong bila tidak ada mock exam yang dibuka, ajakan Ikut bila ada.
@@ -2242,10 +2242,10 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
         lepas.then(()=>db.doc('tryout/'+id).delete()).then(()=>db.doc('tryout/'+id).get()).then(g=>{if(g.exists)throw new Error('database menolak penghapusan (izin pemilik tidak terbaca). Keluar lalu masuk lagi, kemudian coba ulang');const r=b.closest('.tr');if(r)r.remove();})
           .catch(e=>{b.disabled=false;b.textContent='Hapus';alert('Gagal menghapus mock exam: '+(e.code||e.message||e));});});},
       ()=>{$('tolist').innerHTML=isOwner?'<p class="note">Could not load the mock exam list.</p>':'';if(!isOwner)$('toket').textContent='No mock exams are available right now.';});}
-  // Paket Prediksi: tampil untuk semua pengguna yang disetujui, tetapi daftar paket baru terbuka setelah kode akses benar.
+  // Paket Simulasi: tampil untuk semua pengguna yang disetujui, tetapi daftar paket baru terbuka setelah kode akses benar.
   // Hanya pemilik dan pembeli yang sudah lunas (cat_sudah_beli) yang bisa membuka paket. Kode akses lama (cat_kode) tidak dipakai lagi.
   function paketKartu(){const box=$('pkcard');if(!box)return;box.hidden=false;
-    // Paket Prediksi (khusus pemilik): paket tetap 100 soal = 25 soal dari tiap klaster, setiap paket memuat semua sub-materi klaster itu.
+    // Paket Simulasi (khusus pemilik): paket tetap 100 soal = 25 soal dari tiap klaster, setiap paket memuat semua sub-materi klaster itu.
     // Tidak ada soal yang berulang antar paket; jumlah paket mengikuti klaster dengan soal paling sedikit. Urutan acak berbenih, jadi isi paket selalu sama.
     // Di tiap sub-materi, soal dasar hukum (tier 1) lalu istilah/prosedur (tier 2) didahulukan, jadi paket awal berisi materi yang paling sering diujikan.
     const PER_KL=25;
@@ -2305,7 +2305,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       try{localStorage.removeItem(KK);}catch(e){}kunci('');};
     // Category Packages: satu paket untuk setiap sub-materi, judulnya nama sub-materi itu, dikelompokkan per kategori.
     // Isi paket = semua soal sub-materi itu (termasuk soal yang juga dipetakan ke sub ini), tanpa soal kembar. Sub > 100 soal dibagi rata menjadi beberapa Part.
-    // Hak akses sama dengan Prediction Packages (pemilik dan pembeli lunas). Progres disimpan dengan kunci paket|k<c>-<s>-<part>, jadi ikut tersimpan di akun dan memakai timer 54 detik.
+    // Hak akses sama dengan Simulation Packages (pemilik dan pembeli lunas). Progres disimpan dengan kunci paket|k<c>-<s>-<part>, jadi ikut tersimpan di akun dan memakai timer 54 detik.
     const KP_MAX=100,kpBox=$('kpcard'),kpBuka=new Set();let KPS=null;
     const susunKat=()=>{if(KPS)return KPS;const r=benih('paket-kategori');KPS=[];
       Object.keys(CATS).forEach(c=>{c=+c;(SUBS[c]||[]).forEach((nm,i)=>{const s=i+1,seen=new Set(),perJwb={},T={};
@@ -2322,11 +2322,11 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
     const kpIkat=()=>$('kplist').querySelectorAll('.kpkat').forEach(d=>d.addEventListener('toggle',()=>{d.open?kpBuka.add(d.dataset.kat):kpBuka.delete(d.dataset.kat);}));
     const kpRender=()=>{if(!kpBox)return;kpBox.hidden=false;const L=susunKat();
       if(!buka){$('kpket').innerHTML='<span class="pklead">Study one sub-topic at a time. Every package is named after its sub-topic and holds only that sub-topic\'s questions, grouped by category.</span>'+kpStat();
-        $('kplist').innerHTML=`<div class="pkkunci"><b>🔒 Restricted Access</b><span>Available to VVIP accounts only. VVIP access also unlocks Prediction Packages.</span></div>`+
+        $('kplist').innerHTML=`<div class="pkkunci"><b>🔒 Restricted Access</b><span>Available to VVIP accounts only. VVIP access also unlocks Simulation Packages.</span></div>`+
           Object.keys(CATS).map(c=>{const P=L.filter(p=>p.c===+c);return kpKat(c,P.slice(0,4).map(p=>`<div class="tr pk pkghost" aria-hidden="true"><span class="trj"><b>${kpJudul(p)}</b><small>${kpKet(p)}</small></span><span class="kpr"><span class="pkgbtn">🔒 Sealed</span></span></div>`).join('')+(P.length>4?`<p class="pkmore">+ ${P.length-4} more sealed packages</p>`:''),P.length+' packages · locked');}).join('');
         kpIkat();return;}
       const BYQ={};QB.forEach(q=>BYQ[q.id]=q);
-      $('kpket').innerHTML='<span class="pklead">Study one sub-topic at a time. Every package is named after its sub-topic and holds only that sub-topic\'s questions, with the same 54-second timer as Prediction Packages. Sub-topics with more than 100 questions are split into parts.</span>'+kpStat();
+      $('kpket').innerHTML='<span class="pklead">Study one sub-topic at a time. Every package is named after its sub-topic and holds only that sub-topic\'s questions, with the same 54-second timer as Simulation Packages. Sub-topics with more than 100 questions are split into parts.</span>'+kpStat();
       $('kplist').innerHTML=Object.keys(CATS).map(c=>{const P=L.filter(p=>p.c===+c);let tot=0,jw=0,bt=0;
         const rows=P.map((p,i)=>{const ss=window.__quiz&&window.__quiz.sesi&&window.__quiz.sesi(p.key),I=window.__pkInfo(ss,p.ids),dj=I.dj,
             bn=I.bn,pb=dj?Math.round(bn*100/dj):0;tot+=p.ids.length;jw+=Math.min(dj,p.ids.length);bt+=bn;
@@ -2340,7 +2340,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
         if(b.dataset.ulangi){window.__ulangiPaket(p.c,'all',p.ids,p.nm+(p.of>1?' · Part '+p.part:''),p.key);return;}
         window.__ulang(p.c,'all',p.ids,p.nm+(p.of>1?' · Part '+p.part:''),p.key,true);});};
     if(kpBox)kpBox.addEventListener('toggle',()=>{if(!kpBox.open)return;const t=()=>{if(kpBox.dataset.anim)return setTimeout(t,120);kpRender();};setTimeout(t,120);});
-    // Dipakai form Buat Mock Exam (khusus pemilik) untuk mengambil isi Prediction Packages dan Category Packages.
+    // Dipakai form Buat Mock Exam (khusus pemilik) untuk mengambil isi Simulation Packages dan Category Packages.
     window.__pkSusun=susunPaket;window.__kpSusun=susunKat;
     window.__pkBuka=()=>{buka=true;pkRender();if(window.Arsip)Arsip.buka();document.documentElement.classList.add('vvip');if(!window.__penuh){window.__penuh=true;window.__segarSub&&window.__segarSub();}};
     tampil();window.__pkSegar=()=>{if(!buka)return;if(box.open&&!box.dataset.anim)pkRender();if(kpBox&&kpBox.open&&!kpBox.dataset.anim)kpRender();};
@@ -2367,7 +2367,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
   function posisi(){try{const s=window.__quiz&&window.__quiz.state;if(!s||!s.list)return '';const c=s.cat;
     const cat=c==='all'?'Semua Kategori':(CATS[c]&&CATS[c].short)||'';const sub=c==='all'||s.sub==='all'?'Semua sub-materi':(SUBS[c]&&SUBS[c][s.sub-1])||'';
     const u=s.ulang,k=u?String(u.k||''):'';
-    const m=!u?'Latihan per kategori':/^paket\|ar-/.test(k)?'Vital Test Record':/^paket\|\d+$/.test(k)?'Prediction Packages':/^paket\|k/.test(k)?'Category Packages':'Ulangi soal';
+    const m=!u?'Latihan per kategori':/^paket\|ar-/.test(k)?'Vital Test Record':/^paket\|\d+$/.test(k)?'Simulation Packages':/^paket\|k/.test(k)?'Category Packages':'Ulangi soal';
     const bg=!u&&s.sub!=='all'?(s.bag==='all'?'All Parts':s.bag==='bonus'?'Soal Bonus':'Part '+s.bag):'';
     const N=s.list.length,sl=N>0&&s.pos>=N,L='ABCDEF',hf=(id,v)=>{const p=s.perm&&s.perm[id],i=p?p.indexOf(v):v;return L[i<0?v:i]||'?';};
     let j=[],b=0,x=0,h=0;s.list.forEach((id,i)=>{const v=s.ans[id];
@@ -2448,9 +2448,9 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
     // Mock Exam bersama: pemilik memilih sub-materi dan jumlah soal; peserta ikut lewat tryout.html?t=<id>.
     const toPool=()=>{const sel=new Set([...document.querySelectorAll('#tosub input[data-cs]:checked')].map(i=>i.dataset.cs));
       return QB.filter(q=>q.mappings.some(m=>sel.has(m.c+'|'+m.s)));};
-    // Paket terpilih (Prediction Packages / Category Packages): [{nm, ids}] dengan urutan soal paket apa adanya.
+    // Paket terpilih (Simulation Packages / Category Packages): [{nm, ids}] dengan urutan soal paket apa adanya.
     const toPaket=()=>[...document.querySelectorAll('#tosub input[data-pkg]:checked')].map(i=>{const [t,n]=i.dataset.pkg.split(':'),k=+n;
-      if(t==='pk'){const L=window.__pkSusun?window.__pkSusun():[];return L[k]?{nm:'Prediction Package '+(k+1),ids:L[k]}:null;}
+      if(t==='pk'){const L=window.__pkSusun?window.__pkSusun():[];return L[k]?{nm:'Simulation Package '+(k+1),ids:L[k]}:null;}
       const L=window.__kpSusun?window.__kpSusun():[],p=L[k];return p?{nm:'Category Package · '+(CATS[p.c]?CATS[p.c].short+' · ':'')+p.nm+(p.of>1?' · Part '+p.part:''),ids:p.ids}:null;}).filter(Boolean);
     // Soal dari paket: diselang-seling antar paket, tanpa soal ganda, dipotong sampai j soal.
     const ambilPaket=(P,j)=>{const out=[],seen=new Set(),it=P.map(p=>p.ids.slice());
@@ -2484,16 +2484,16 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       const PKL=window.__pkSusun?window.__pkSusun():[],KPL=window.__kpSusun?window.__kpSusun():[];
       $('tosub').innerHTML=Object.keys(CATS).map(c=>`<fieldset data-src="sub"><legend><label><input type="checkbox" data-all="${c}"> ${esc(CATS[c].short)}</label></legend>`+
         SUBS[c].map((nm,i)=>{const k=QB.filter(q=>q.mappings.some(m=>m.c===+c&&m.s===i+1)).length;return `<label><input type="checkbox" data-cs="${c}|${i+1}" data-g="${c}"><span>${i+1}. ${esc(nm)} <small>(${k})</small></span></label>`;}).join('')+`</fieldset>`).join('')+
-        (PKL.length?`<fieldset data-src="pk" hidden><legend><label><input type="checkbox" data-all="pk"> Prediction Packages</label></legend>`+
+        (PKL.length?`<fieldset data-src="pk" hidden><legend><label><input type="checkbox" data-all="pk"> Simulation Packages</label></legend>`+
           PKL.map((ids,i)=>`<label><input type="checkbox" data-pkg="pk:${i}" data-g="pk"><span>Package ${i+1} <small>(${ids.length})</small></span></label>`).join('')+`</fieldset>`
-          :`<fieldset data-src="pk" hidden><p class="note">Prediction Packages belum tersedia.</p></fieldset>`)+
+          :`<fieldset data-src="pk" hidden><p class="note">Simulation Packages belum tersedia.</p></fieldset>`)+
         Object.keys(CATS).map(c=>{const P=KPL.map((p,i)=>[p,i]).filter(([p])=>p.c===+c);if(!P.length)return '';
           return `<fieldset data-src="kp" hidden><legend><label><input type="checkbox" data-all="kp${c}"> Category Packages · ${esc(CATS[c].short)}</label></legend>`+
             P.map(([p,i])=>`<label><input type="checkbox" data-pkg="kp:${i}" data-g="kp${c}"><span>${p.s}. ${esc(p.nm)}${p.of>1?` · Part ${p.part} of ${p.of}`:''} <small>(${p.ids.length})</small></span></label>`).join('')+`</fieldset>`;}).join('');
       // Centang kategori hanya mengenai baris yang sedang tampil (hasil pencarian), atau semuanya bila kolom cari kosong.
       $('tosub').querySelectorAll('input[data-all]').forEach(a=>a.onchange=()=>{$('tosub').querySelectorAll(`input[data-g="${a.dataset.all}"]`).forEach(i=>{if(!i.closest('label').hidden)i.checked=a.checked;});
         if(a.dataset.all.startsWith('p')||a.dataset.all.startsWith('k'))pkgJml();toInfo();});
-      // Sumber soal: tombol Sub-materi / Prediction Packages / Category Packages hanya mengganti daftar yang tampil; pilihan tetap tersimpan.
+      // Sumber soal: tombol Sub-materi / Simulation Packages / Category Packages hanya mengganti daftar yang tampil; pilihan tetap tersimpan.
       let SRC='sub';const PH={sub:'Cari sub-materi (mis. waris, kasasi, mediasi)…',pk:'Cari paket (mis. 12)…',kp:'Cari Category Package (mis. waris, kasasi)…'};
       $('tosrc').querySelectorAll('button').forEach(b=>b.onclick=()=>{SRC=b.dataset.src;$('tosrc').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));$('tocari').placeholder=PH[SRC];$('tocari').oninput();});
       // Cari sub-materi: semua kata kunci harus ada (tanpa beda huruf besar/kecil dan tanda baca).
@@ -2581,7 +2581,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
         return h+`<div class="skr"><span class="snm">${r.s}. ${esc(SUBS[r.c][r.s-1])}</span><span class="snl"><b>${r.ok}</b>/${r.all.length} benar · ${pc}% · dikerjakan ${r.all.length} dari ${tot}</span>`+
           `<button class="btn" type="button" data-ul="${esc(uid)}|${r.c}|${r.s}|a">Ulangi ${r.all.length}</button>`+(r.bad.length?`<button class="btn" type="button" data-ul="${esc(uid)}|${r.c}|${r.s}|x">Yang salah ${r.bad.length}</button>`:'')+`</div>`;}).join('');};setInterval(()=>{if(izinQs&&!document.hidden)izinRender(izinQs);},30000);
     // Pembeli yang sudah lunas: namanya berwarna emas dengan tanda "Lunas" (dibaca dari cat_beli, diperbarui tiap menit).
-    // GRATIS: akses Paket Prediksi yang diberikan pemilik tanpa bayar (metode 'gratis'), ditandai terpisah dari pembeli.
+    // GRATIS: akses Paket Simulasi yang diberikan pemilik tanpa bayar (metode 'gratis'), ditandai terpisah dari pembeli.
     const BAYAR=new Set(),GRATIS=new Set();const muatBayar=()=>window.__sb&&window.__sb.from('cat_beli').select('uid,metode').eq('status','lunas').then(({data,error})=>{if(error||!data)return;
       const baru=data.map(r=>r.uid+r.metode).sort().join();if(baru===muatBayar.sidik)return;muatBayar.sidik=baru;BAYAR.clear();GRATIS.clear();
       data.forEach(r=>(r.metode==='gratis'?GRATIS:BAYAR).add(r.uid));if(izinQs)izinRender(izinQs);},()=>{});
@@ -2603,7 +2603,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       const sel=$('aspilih'),pv=sel.value;sel.innerHTML='<option value="">Pilih akun…</option>'+tp.map(([id,x])=>`<option value="${esc(id)}">${nm(x)}</option>`).join('');if(tp.some(([id])=>id===pv))sel.value=pv;
       const paket=async(uid,on,b)=>{b.disabled=true;const {error}=await window.__sb.rpc(on?'cat_beri_gratis':'cat_cabut_gratis',{p_uid:uid});b.disabled=false;
         if(error){alert(/function|schema cache/i.test(error.message||'')?'Jalankan dulu SQL "paket gratis" di Supabase.':'Gagal: '+(error.message||error.code));return;}muatBayar.sidik='';muatBayar();};
-      $('asberi').onclick=()=>{const u=sel.value;if(!u){alert('Pilih akun dulu.');return;}if(!confirm('Beri VVIP Akses (Prediction & Category Packages + semua sub materi) gratis ke '+sel.selectedOptions[0].textContent+'?'))return;paket(u,true,$('asberi'));};
+      $('asberi').onclick=()=>{const u=sel.value;if(!u){alert('Pilih akun dulu.');return;}if(!confirm('Beri VVIP Akses (Simulation & Category Packages + semua sub materi) gratis ke '+sel.selectedOptions[0].textContent+'?'))return;paket(u,true,$('asberi'));};
       document.querySelectorAll('#aspaket [data-cabut]').forEach(b=>b.onclick=()=>{if(!confirm('Cabut VVIP Akses (paket gratis) dari '+b.textContent.replace(/\s*VVIP\s*✕\s*$/,'').trim()+'?'))return;paket(b.dataset.cabut,false,b);});
       {const ya=list.filter(([,x])=>x.autopilot===true),blm=list.filter(([,x])=>x.autopilot!==true),as=$('apilih'),av=as.value;
         $('asap').innerHTML=ya.map(([id,x])=>`<button type="button" class="aschip" data-apcabut="${esc(id)}" title="Cabut Autopilot">${nm(x)} <span class="aspin">✕</span></button>`).join('')||'<small>Belum ada.</small>';
@@ -2629,14 +2629,14 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
     const aktBaca=x=>{const r=String(x.posisi||'');if(!r)return null;if(r[0]==='{'){try{return JSON.parse(r);}catch(e){return null;}}
       const p=r.split(' · '),m=/^soal (\d+)\/(\d+)$/.exec(p[2]||'');return {lama:1,c:p[0]||'',s:p[1]||'',n:m?+m[1]:0,N:m?+m[2]:0};};
     // Mode sesi. Halaman versi lama tidak mengirim mode, jadi ditebak dari bentuk sesinya: Latihan memakai satu sub-materi atau seluruh soal
-    // kategori (ratusan soal); Prediction Packages selalu Hukum Formil 100 soal; Category Packages paling banyak 100 soal; Vital Test Record 50 soal per PART.
+    // kategori (ratusan soal); Simulation Packages selalu Hukum Formil 100 soal; Category Packages paling banyak 100 soal; Vital Test Record 50 soal per PART.
     // Durasi dari jam perangkat peserta: (sekarang − waktu tulis server) + (jam kirim − jam peristiwa) → tidak terpengaruh selisih jam perangkat.
     const aktDur=(x,a,t)=>!t||!a||!a.tn||!x.terakhir||!x.terakhir.toDate?null:Math.max(0,(Date.now()-x.terakhir.toDate())+(a.tn-t));
     const aktLama=ms=>{const m=Math.floor(ms/60000);return m<1?'<1 menit':m<60?m+' menit':Math.floor(m/60)+' jam'+(m%60?' '+m%60+' menit':'');};
     const LAYAR={menu:'Di menu, belum membuka soal',mulai:'Di layar Start, belum menekan Start',soal:'Sedang membuka soal',skor:'Di layar skor akhir'};
     const aktMode=a=>{if(!a)return '';if(a.ly==='menu')return 'Di menu';if(!a.lama)return a.m||'';
       if(a.c==='Semua Kategori'||a.s!=='Semua sub-materi'||!a.N||a.N>100)return 'Latihan per kategori';
-      return (a.c==='Hukum Formil'&&a.N===100?'Prediction atau Category Packages':a.N<=50?'Category Packages atau Vital Test Record':'Category Packages')+' (perkiraan)';};
+      return (a.c==='Hukum Formil'&&a.N===100?'Simulation atau Category Packages':a.N<=50?'Category Packages atau Vital Test Record':'Category Packages')+' (perkiraan)';};
     const aktRingkas=x=>{const a=aktBaca(x);if(!a)return '';const m=aktMode(a);
       return ` · <b class="akmode">${esc(m)}</b>${a.ly==='menu'?'':(a.pk?' · '+esc(a.pk):a.c?' · '+esc(a.c):'')+(a.sl?' · skor akhir':a.n&&a.N?` · soal ${a.n}/${a.N}`:'')}`;};
     const aktHtml=(id,x)=>{const a=aktBaca(x);if(!a)return '';const on=!!(x.terakhir&&x.terakhir.toDate&&Date.now()-x.terakhir.toDate()<180000);
@@ -2711,7 +2711,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
         window.__ulang(+c,+s,m==='x'?r.bad:r.all,nm+(m==='x'?' (yang salah)':''),u+'|'+c+'|'+s+'|'+m);});
       body.querySelectorAll('.siapa').forEach(b=>b.onclick=()=>{const e=b.parentElement.querySelector('.em');e.hidden=!e.hidden;e.hidden?emBuka.delete(b.dataset.u):emBuka.add(b.dataset.u);b.setAttribute('aria-expanded',String(!e.hidden));});
       body.querySelectorAll('button[data-gratis]').forEach(b=>b.onclick=async()=>{const on=b.dataset.on==='1';
-        if(!confirm(on?'Cabut akses Paket Prediksi gratis untuk akun ini?':'Beri akses Paket Prediksi tanpa bayar untuk akun ini?'))return;b.disabled=true;
+        if(!confirm(on?'Cabut akses Paket Simulasi gratis untuk akun ini?':'Beri akses Paket Simulasi tanpa bayar untuk akun ini?'))return;b.disabled=true;
         const {error}=await window.__sb.rpc(on?'cat_cabut_gratis':'cat_beri_gratis',{p_uid:b.dataset.gratis});
         if(error){alert(/function|schema cache/i.test(error.message||'')?'Jalankan dulu SQL "paket gratis" di Supabase.':'Gagal: '+(error.message||error.code));b.disabled=false;return;}muatBayar.sidik='';muatBayar();});
       body.querySelectorAll('button[data-id]').forEach(b=>b.onclick=()=>{const r=db.doc('izin/'+b.dataset.id);b.disabled=true;
