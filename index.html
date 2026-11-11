@@ -1011,7 +1011,7 @@ html.fokus body #card{padding-bottom:calc(72px + env(safe-area-inset-bottom,0px)
 .aksesub .aschip.lunas{cursor:default;color:#c9962e;border-color:color-mix(in srgb,#c9962e 40%,var(--line))}.aksesub #aspilih{flex:1 1 180px;min-width:0}.aksesub .asatur{margin:8px 0}.aksesub .asatur>summary{cursor:pointer;font-weight:600;font-size:13px}.aksesub .ascat{margin:8px 0}.aksesub .ascat>b{display:block;margin-bottom:4px;font-size:12.5px}.aksesub .ascat input{flex:none;width:16px;height:16px;margin:2px 0 0}.aksesub .ascat label{display:flex;gap:6px;align-items:flex-start;font-size:12.5px;padding:2px 0;color:var(--ink)}.aksesub #asinfo,.aksesub #ashapusinfo{font-size:12px;color:var(--muted)}.aksesub #ashapusinfo:empty{display:none}
 .setelan.tocard>summary .vvipakses{position:absolute;right:40px;top:50%;transform:translateY(-50%);padding:1px 7px;border-radius:999px;font:600 8.5px/1.5 var(--f-body,inherit);letter-spacing:.14em;text-transform:uppercase;white-space:nowrap;color:var(--muted);-webkit-text-fill-color:var(--muted);border:1px solid color-mix(in srgb,var(--muted) 35%,transparent);background:transparent;text-shadow:none;align-self:center}
 #pkcard>summary,#kpcard>summary,#arcard>summary{position:relative}
-html:not(.vvip) .setelan.tocard>summary .vvipakses{display:none}
+html:not(.vvip) .setelan.tocard>summary .vvipakses{display:none}html:not(.vvip) .akunku .vip{display:none!important}
 
 /* Autopilot (khusus pemilik): soal dan pembahasan diputar otomatis untuk menghafal. */
 .owntools .qap{margin-right:auto}
@@ -2135,7 +2135,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
   let started=false,unsub=null,beat=null;let isOwner=false;
   // Mode perbaikan: baris cat_bayar id='perbaikan' (kolom harga = 'aktif'/'nonaktif'; dipakai kolom harga karena kolom info belum ada di tabel; bisa dibaca siapa saja). Tanpa baris atau gagal dibaca = perbaikan AKTIF.
   // Selama aktif hanya pemilik dan akun VVIP Akses (cat_sudah_beli: pembeli lunas + paket gratis) yang bisa memakai situs; akun lain melihat layar perbaikan.
-  const PB_H='Tidak Lagi Dikomersialkan',PB_P='Sejak dikeluarkannya Surat Edaran Mahkamah Agung, CAT Lex Fexora tidak lagi dikomersialkan. Akses kini hanya tersedia untuk akun VVIP.';
+  const PB_H='Tidak Lagi Dikomersialkan',PB_P='Sejak dikeluarkannya Surat Edaran Badan Pengawasan Mahkamah Agung Nomor 5 Tahun 2026, CAT Lex Fexora tidak lagi dikomersialkan. Akses kini hanya tersedia untuk akun VVIP.';
   const perbaikan=async()=>{try{const {data,error}=await window.__sb.from('cat_bayar').select('harga').eq('id','perbaikan').maybeSingle();if(error)return true;return !(data&&data.harga==='nonaktif');}catch(e){return true;}};
   const vvipKah=async()=>{try{const {data,error}=await window.__sb.rpc('cat_sudah_beli');return !error&&data===true;}catch(e){return false;}};
   window.__perbaikan=perbaikan;let pbT=null;
@@ -2403,9 +2403,10 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       // ✎ Edit soal di kartu akun: cari soal mana pun di bank lalu sunting tanpa harus membuka kategorinya.
       if($('edsoal'))$('edsoal').onclick=()=>window.EditSoal&&EditSoal.cari({ambil:()=>QB,kini:()=>{try{return (window.__soalKini&&window.__soalKini())||null;}catch(e){return null;}},terkunci:id=>DIKUNCI.has(id),
         simpan:(rec,q)=>window.__edit(q.id,rec).then(()=>{if(window.__terapkanEdit)window.__terapkanEdit(q.id,rec);else{applyEdit(q,rec);DIKUNCI.add(q.id);}})});
-      admin();start();return;}
+      document.documentElement.classList.add('vvip');admin();start();return;}
     {const [on,vv]=await Promise.all([perbaikan(),vvipKah()]);if(!auth.currentUser||auth.currentUser.uid!==u.uid)return;
-      if(on&&!vv){show(PB_H,PB_P,who,false,true);pbT=setInterval(async()=>{if(!(await perbaikan()))location.reload();},60000);return;}
+      // Sejak 11 Nov 2026 situs tidak lagi dikomersialkan: akun selain pemilik dan VVIP selalu melihat pemberitahuan ini, apa pun status mode perbaikan.
+      if(!vv){show(PB_H,PB_P,who,false,true);return;}
       // Bukan VVIP dan perbaikan sedang nonaktif: periksa tiap 2 menit, tutup situs bila pemilik mengaktifkannya lagi.
       // Diperiksa juga setiap kali tab kembali dibuka (ponsel membekukan timer di tab latar belakang).
       if(!vv){const pbCek=async()=>{if(document.hidden||window.__penuh||!pbT)return;if(await perbaikan()&&!(await vvipKah())){clearInterval(pbT);pbT=null;location.reload();}};
@@ -2431,7 +2432,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       else if(st==='ditolak'){show('Access denied','The owner has not granted access to this account.',who,false,true);}
       else{show('Waiting for approval','Your access request has been sent. This page will open automatically once the owner approves it.',who,false,true);
         // Selama mode perbaikan aktif, akun yang belum disetujui juga melihat pemberitahuan tidak dikomersialkan.
-        perbaikan().then(on=>{if(on&&!$('gate').hidden&&gh.textContent==='Waiting for approval'){gh.textContent=PB_H;gp.textContent=PB_P;}});
+        Promise.resolve(true).then(on=>{if(on&&!$('gate').hidden&&gh.textContent==='Waiting for approval'){gh.textContent=PB_H;gp.textContent=PB_P;}});
         {if(akHasil&&!$('g-kodemsg').textContent)$('g-kodemsg').textContent=akHasil.err?'Access codes are not available yet. Please try again later.':akHasil.jenis==='terlalu'?'Too many incorrect attempts. Please try again in an hour.':akHasil.jenis?'':'The access code from your link is no longer valid.';}}
     },e=>show('Could not check access','Please reload the page. ('+(e.code||e.message)+')',who,false,true));
   });
@@ -2441,13 +2442,8 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
   function admin(){
     pinfo();
     // Mode perbaikan: pemilik menyalakan/mematikan layar "Tidak Lagi Dikomersialkan" untuk akun non-VVIP (situs utama dan Mock Exam).
-    {const tog=$('pbtog'),inf=$('pbinfo');let on=true;
-      const tulis=()=>{inf.innerHTML=on?'<b>AKTIF.</b> Akun selain VVIP Akses melihat layar "Tidak Lagi Dikomersialkan" (situs utama dan Mock Exam). Anda dan akun VVIP tetap bisa memakai situs seperti biasa.':'<b>Nonaktif.</b> Situs terbuka untuk semua akun seperti biasa.';
-        tog.textContent=on?'Matikan mode perbaikan':'Aktifkan mode perbaikan';tog.disabled=false;};
-      perbaikan().then(v=>{on=v;tulis();});
-      tog.onclick=async()=>{const ke=!on;if(!confirm(ke?'Aktifkan mode perbaikan? Akun selain VVIP Akses akan melihat layar "Tidak Lagi Dikomersialkan".':'Matikan mode perbaikan? Situs kembali terbuka untuk semua akun.'))return;
-        tog.disabled=true;const {error}=await window.__sb.from('cat_bayar').upsert({id:'perbaikan',harga:ke?'aktif':'nonaktif',diubah:new Date().toISOString()});
-        if(error){alert('Gagal menyimpan: '+(error.message||error.code));tog.disabled=false;return;}on=await perbaikan();tulis();};}
+    // Pembatasan non-VVIP selalu aktif (juga ditegakkan di server lewat baris cat_bayar 'perbaikan').
+    {const box=$('pbadm');if(box)box.hidden=true;perbaikan().then(on=>{if(!on)window.__sb.from('cat_bayar').upsert({id:'perbaikan',harga:'aktif',diubah:new Date().toISOString()}).then(()=>{},()=>{});});}
 
     // Mock Exam bersama: pemilik memilih sub-materi dan jumlah soal; peserta ikut lewat tryout.html?t=<id>.
     const toPool=()=>{const sel=new Set([...document.querySelectorAll('#tosub input[data-cs]:checked')].map(i=>i.dataset.cs));

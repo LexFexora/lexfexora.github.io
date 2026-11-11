@@ -445,7 +445,7 @@ const PB_H="Tidak Lagi Dikomersialkan";
 auth.onAuthStateChanged(async u=>{U=u;pMuat=false;aku=null;P={};if(unsubT){unsubT();unsubT=null;}if(unsubP){unsubP();unsubP=null;}if(unsubC){unsubC();unsubC=null;}
   if(!u){gate("Mock Exam","Masuk dengan akun Google untuk ikut mock exam. Nama akun Anda akan tampil di papan peringkat.",true);return;}
   if(!(OWNER&&(u.email||"").toLowerCase()===OWNER&&u.emailVerified)){const [on,vv]=await Promise.all([pbAktif(),pbVvip()]);if(!auth.currentUser||auth.currentUser.uid!==u.uid)return;
-    if(on&&!vv){gate(PB_H,"Sejak dikeluarkannya Surat Edaran Mahkamah Agung, CAT Lex Fexora tidak lagi dikomersialkan. Akses kini hanya tersedia untuk akun VVIP.");return;}}
+    if(!vv){gate(PB_H,"Sejak dikeluarkannya Surat Edaran Badan Pengawasan Mahkamah Agung Nomor 5 Tahun 2026, CAT Lex Fexora tidak lagi dikomersialkan. Akses kini hanya tersedia untuk akun VVIP.");return;}}
   if(window.Arsip)Arsip.mulai(window.__sb,u.uid,!!OWNER&&(u.email||"").toLowerCase()===OWNER&&u.emailVerified).then(()=>{if($("arsipbtn")&&T&&T.status==="mulai")render();});
   isOwner=!!OWNER&&(u.email||"").toLowerCase()===OWNER&&u.emailVerified;$("edsoal").hidden=!isOwner;if(!isOwner)detakIzinMulai();if(isOwner){siapkanEdit();pantauLoginMulai();}$("akun").hidden=false;$("akunav").innerHTML=av({foto:u.photoURL,nama:u.displayName||u.email});$("akunnm").textContent=u.displayName||(u.email||"").split("@")[0];document.body.classList.toggle("bebas",isOwner||BEBAS_SALIN.includes((u.email||"").toLowerCase())&&u.emailVerified);
   unsubT=db.doc("tryout/"+TID).onSnapshot(s=>{if(!s.exists){gate("Mock exam tidak ditemukan","Periksa kembali tautannya.");return;}
