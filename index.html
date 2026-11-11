@@ -2288,7 +2288,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       const BYQ={};QB.forEach(q=>BYQ[q.id]=q);const kom=ids=>{const h={};ids.forEach(id=>{const q=BYQ[id];if(q)h[q.c]=(h[q.c]||0)+1;});return Object.keys(CATS).filter(c=>h[c]).map(c=>({1:'IH',2:'Formil',3:'Materil',4:'TIK'}[c]||CATS[c].short)+' '+h[c]).join(' · ');};
       if(!buka){kunci();return;}
       kpRender();
-      $('pkket').innerHTML=`<span class="pklead">Each package is a full CAT simulation with 25 questions from each cluster: Legal Theory, Procedural Law, Substantive Law, and ICT.</span>${pkStat()}<small class="pkcat">The predictions are drawn from the CAT - Lex Fexora question bank. They are not leaked exam questions.</small>`;
+      $('pkket').innerHTML=`<span class="pklead">Each package is a full CAT simulation with 25 questions from each cluster: Legal Theory, Procedural Law, Substantive Law, and ICT.</span>${pkStat()}`;
       $('pklist').innerHTML=L.map((ids,i)=>{const ss=window.__quiz&&window.__quiz.sesi&&window.__quiz.sesi('paket|'+(i+1)),I=window.__pkInfo(ss,ids),
           dj=I.dj,bn=I.bn,pb=dj?Math.round(bn*100/dj):0;
         return `<div class="tr pk"><span class="trj"><b>Package ${i+1}</b></span><span class="muted trm pkpct" title="${I.done} of ${I.N} questions done">${I.pct}%</span>${dj?`<span class="pkbs" title="${bn} correct and ${dj-bn} wrong out of ${dj} answered"><i class="ok">✓ ${pb}%</i><i class="no">✗ ${100-pb}%</i></span>`:''}<button class="btn copy" type="button" data-pk="${i+1}" data-ulangi="${I.selesai?1:''}">${I.selesai?'Retry':I.lanjut?'Continue':'Start'}</button></div>`;}).join('');
@@ -2296,7 +2296,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
         if(b.dataset.ulangi){window.__ulangiPaket(2,'all',ids,'Package '+n,'paket|'+n);return;}
         window.__ulang(2,'all',ids,'Package '+n,'paket|'+n,true);});};
     const KK='pk-kode',sb=window.__sb;let buka=isOwner;
-    const kunci=(pesan)=>{kpRender();const L=susunPaket();$('pkket').innerHTML='<span class="pklead">Each package is a full CAT simulation with 25 questions from each cluster: Legal Theory, Procedural Law, Substantive Law, and ICT.</span>'+pkStat()+'<small class="pkcat">The predictions are drawn from the CAT - Lex Fexora question bank. They are not leaked exam questions.</small>';
+    const kunci=(pesan)=>{kpRender();const L=susunPaket();$('pkket').innerHTML='<span class="pklead">Each package is a full CAT simulation with 25 questions from each cluster: Legal Theory, Procedural Law, Substantive Law, and ICT.</span>'+pkStat();
       $('pklist').innerHTML=`<div class="pkkunci"><b>🔒 Restricted Access</b><span>Available to VVIP accounts only.</span><small id="pkpesan">${pesan||''}</small></div>`+[1,2,3,4,5,6].map(n=>`<div class="tr pk pkghost" aria-hidden="true"><span class="trj"><b>Package ${n}</b></span><span class="pkpct">🔒</span><span class="pkgbtn">Sealed</span></div>`).join('')+`<p class="pkmore">+ ${L.length-6} more sealed packages</p>`;
     };
     const lunas=async()=>{try{const {data,error}=await sb.rpc('cat_sudah_beli');return !error&&data===true;}catch(e){return false;}};
