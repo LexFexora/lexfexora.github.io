@@ -1292,7 +1292,9 @@ function pasalDari(d,src){if(!d)return -1;const seg=d.split(/;\s*/);for(const sg
 function srcUtama(c,s){return c===3&&(s===10||s===11)?SRC_KHES:c===3&&s===12?SRC_QJ:null;}
 const SRC_ATURAN=/Pasal|Undang|\bUU\b|Peraturan|Herzien|\bHIR\b|R\.?Bg|Rechtsvordering|Buku II|Pedoman|Qanun|KHES|Kompilasi|Fatwa|SEMA|PERMA|Surat Edaran|Keputusan|Instruksi|Putusan|Rumusan|Staatsblad|KUH/i;
 // V69b (KHI dulu, baru fikih): 0 pengertian KHI, 1 isi KHI (menurut pasal), 2 pengertian sumber utama (KHES/Qanun), 3 pengertian aturan lain, 4 pengertian fikih/literatur, 5 isi sumber utama, 6 isi aturan lain, 7 isi fikih/literatur (urutan lama).
-function urutKHI(q,c,s,lama){const pg=isPengertian(q),k=pasalDari(q.d,SRC_KHI),su=srcUtama(c,s),u=su?pasalDari(q.d,su):-1,L=(lama<0?0:lama+1),fq=!SRC_ATURAN.test(q.d||'');
+// V69c: soal yang jawabannya ayat atau hadis (QS/HR) (dasar hukum syar'i) ditaruh paling belakang bersama soal dasar hukum.
+const DALIL_ANS=/^(QS|Q\.?S\.|Surah|HR\b|Hadis|Hadits)/i;
+function urutKHI(q,c,s,lama){if(DALIL_ANS.test((q.o[q.a]||'').trim()))return 8e7+(lama<0?0:lama+1);const pg=isPengertian(q),k=pasalDari(q.d,SRC_KHI),su=srcUtama(c,s),u=su?pasalDari(q.d,su):-1,L=(lama<0?0:lama+1),fq=!SRC_ATURAN.test(q.d||'');
   if(k>=0)return (pg?0:1e7)+k;
   if(u>=0)return (pg?2e7:5e7)+u;
   return (pg?(fq?4e7:3e7):(fq?7e7:6e7))+L;}
@@ -1433,6 +1435,8 @@ function save(){if(window.__keluar)return;try{const disk=JSON.parse(localStorage
   clearTimeout(window.__pkT);window.__pkT=setTimeout(()=>{try{window.__pkSegar&&window.__pkSegar();}catch(e){}try{window.__arSegar&&window.__arSegar();}catch(e){}},700);}
 
 // Daftar Pilih Klaster terbuka saat halaman dibuka dan bisa ditutup kembali.
+// V69c: versi urutan Berurutan. Sesi Berurutan yang disimpan dengan versi lama disusun ulang sekali (jawaban tetap), posisi ke soal pertama yang belum dijawab.
+const ORD_V="69c";
 const state={klOpen:true,cat:"all",sub:"all",bag:"all",order:"seq",list:[],pos:0,perm:{},ans:{},tLeft:0,timeUp:false,qLeft:0,qId:null,expired:{}};
 // Lama waktu per soal: 54 detik (bawaan) atau 45 detik, dipilih di Quiz Options.
 let SEC=[45,35,30].includes(store.timerSec)?store.timerSec:54;
@@ -1500,7 +1504,7 @@ function PKT_ON(){return !!(state.ulang&&/^paket\|/.test(state.ulang.k));}
 function tmode(){return PKT_ON()?"per":tMode;}
 function sec(){return PKT_ON()?54:SEC;}
 function resetTimer(){state.tLeft=SEC_TOTAL*state.list.length;state.timeUp=false;state.qLeft=SEC;state.qId=null;state.expired={};}
-function persist(){const pk=sessionKey(),mine={list:state.list,pos:state.pos,mulai:!!state.mulai,ans:state.ans,perm:state.perm,order:state.order,tLeft:state.tLeft,timeUp:state.timeUp,qLeft:state.qLeft,qId:state.qId,expired:state.expired,ep:state.ep||0,rs:!!state.rs};
+function persist(){const pk=sessionKey(),mine={list:state.list,pos:state.pos,mulai:!!state.mulai,ans:state.ans,perm:state.perm,order:state.order,tLeft:state.tLeft,timeUp:state.timeUp,qLeft:state.qLeft,qId:state.qId,expired:state.expired,ep:state.ep||0,rs:!!state.rs,ov:ORD_V};
   {const p=store[pk];mine.t=(!p||p.ep!==mine.ep||p.pos!==mine.pos||PKJ(p)!==PKJ(mine)||Object.keys(p.expired||{}).length!==Object.keys(mine.expired||{}).length)?Date.now():(p.t||state.t||0);state.t=mine.t;}
   store[pk]=mine;
   {const lp=JSON.stringify([store.last,store.subAkhir,store.bagAkhir]);store.last={cat:state.cat,sub:state.sub,bag:state.bag};if(!state.ulang&&state.cat!=="all"&&state.sub!=="all"){store.subAkhir=store.subAkhir||{};store.subAkhir[state.cat]={sub:state.sub,bag:state.bag};store.bagAkhir=store.bagAkhir||{};store.bagAkhir[state.cat+"|"+state.sub]=state.bag;}
@@ -1523,7 +1527,7 @@ function restore(){
   const valid=s&&Array.isArray(s.list)&&s.list.length&&s.list.every(id=>BYID[id]&&s.perm&&s.perm[id]);
   const ids=new Set(pool().map(q=>q.id));
   // Ulangi yang salah (rs): daftarnya sengaja lebih kecil dari pool, tetap dipulihkan selama semua soalnya masih ada di pool.
-  if(valid&&(s.list.length===ids.size||(s.rs&&s.list.length<ids.size))&&s.list.every(id=>ids.has(id))){state.list=!(state.ulang&&state.ulang.tetap)&&!dikerjakan(s)?((s.order||"seq")==="seq"?sortSeq(s.list.map(id=>BYID[id])).map(q=>q.id):atrBaru()?aturanAkhir(s.list,id=>BYID[id]):s.list):s.list;state.pos=Math.min(s.pos||0,s.list.length);state.ans=s.ans||{};state.ep=s.ep||0;state.rs=!!s.rs;state.t=s.t||0;state.perm=s.perm||{};fixPerm();state.order=s.order||"seq";state.mulai=typeof s.mulai==="boolean"?s.mulai:!!(s.pos||Object.keys(s.ans||{}).length);state.tLeft=typeof s.tLeft==="number"?s.tLeft:SEC*s.list.length;state.timeUp=!!s.timeUp;state.qLeft=typeof s.qLeft==="number"?s.qLeft:SEC;state.qId=s.qId||null;state.expired=s.expired||{};}
+  if(valid&&(s.list.length===ids.size||(s.rs&&s.list.length<ids.size))&&s.list.every(id=>ids.has(id))){state.list=!(state.ulang&&state.ulang.tetap)&&!dikerjakan(s)?((s.order||"seq")==="seq"?sortSeq(s.list.map(id=>BYID[id])).map(q=>q.id):atrBaru()?aturanAkhir(s.list,id=>BYID[id]):s.list):s.list;state.pos=Math.min(s.pos||0,s.list.length);state.ans=s.ans||{};if(s.ov!==ORD_V&&!(state.ulang&&state.ulang.tetap)&&(s.order||"seq")==="seq"&&dikerjakan(s)){const L2=sortSeq(s.list.map(id=>BYID[id])).map(q=>q.id);if(L2.join()!==s.list.join()){const sudah=new Set(Object.keys(s.ans||{}).concat(Object.keys(s.expired||{})));state.list=L2;const i=L2.findIndex(id=>!sudah.has(id));state.pos=i<0?L2.length-1:i;}}state.ep=s.ep||0;state.rs=!!s.rs;state.t=s.t||0;state.perm=s.perm||{};fixPerm();state.order=s.order||"seq";state.mulai=typeof s.mulai==="boolean"?s.mulai:!!(s.pos||Object.keys(s.ans||{}).length);state.tLeft=typeof s.tLeft==="number"?s.tLeft:SEC*s.list.length;state.timeUp=!!s.timeUp;state.qLeft=typeof s.qLeft==="number"?s.qLeft:SEC;state.qId=s.qId||null;state.expired=s.expired||{};}
   else if(s&&s.ans&&Object.keys(s.ans).length){
     // Bank soal berubah (soal diedit/dihapus): susun ulang daftar, tapi jawaban dan posisi lama tetap dipakai.
     // Urutan lama dipertahankan: soal yang masih ada tetap di urutan semula (jadi soal yang sudah dijawab tidak pindah ke depan
