@@ -2110,7 +2110,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
   const H=document.documentElement,$=id=>document.getElementById(id);
   const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
   const gh=$('gate-h'),gp=$('gate-p'),gw=$('gate-who'),bIn=$('g-login'),bOut=$('g-logout'),gnote=$('gate-note');
-  const show=(h,p,who,login,logout)=>{$('gate').hidden=false;H.classList.add('gate-wait');gh.textContent=h;gp.textContent=p||'';gw.textContent=who||'';bIn.hidden=!login;bOut.hidden=!logout;gnote.hidden=!login;$('g-kode').hidden=true;let ak='';try{ak=localStorage.getItem('akses-kode')||'';}catch(e){}$('g-kodeada').hidden=!(login&&ak);};
+  const show=(h,p,who,login,logout)=>{$('gate').hidden=false;{const em=document.querySelector('#gate .gate-emb');if(em)em.style.display=h==='Website tidak lagi tersedia'?'none':'';}gp.hidden=!p;H.classList.add('gate-wait');gh.textContent=h;gp.textContent=p||'';gw.textContent=who||'';bIn.hidden=!login;bOut.hidden=!logout;gnote.hidden=!login;$('g-kode').hidden=true;let ak='';try{ak=localStorage.getItem('akses-kode')||'';}catch(e){}$('g-kodeada').hidden=!(login&&ak);};
   // Fitur penjualan dihapus (11 Nov 2026): akses Paket hanya untuk akun VVIP yang diberikan pemilik.
   const escH=t=>String(t==null?'':t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const open=()=>{$('gate').hidden=true;H.classList.remove('gate-wait');};
@@ -2432,7 +2432,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       else if(st==='ditolak'){show('Access denied','The owner has not granted access to this account.',who,false,true);}
       else{show('Waiting for approval','Your access request has been sent. This page will open automatically once the owner approves it.',who,false,true);
         // Selama mode perbaikan aktif, akun yang belum disetujui juga melihat pemberitahuan tidak dikomersialkan.
-        Promise.resolve(true).then(on=>{if(on&&!$('gate').hidden&&gh.textContent==='Waiting for approval'){gh.textContent=PB_H;gp.textContent=PB_P;}});
+        Promise.resolve(true).then(on=>{if(on&&!$('gate').hidden&&gh.textContent==='Waiting for approval'){show(PB_H,PB_P,who,false,true);}});
         {if(akHasil&&!$('g-kodemsg').textContent)$('g-kodemsg').textContent=akHasil.err?'Access codes are not available yet. Please try again later.':akHasil.jenis==='terlalu'?'Too many incorrect attempts. Please try again in an hour.':akHasil.jenis?'':'The access code from your link is no longer valid.';}}
     },e=>show('Could not check access','Please reload the page. ('+(e.code||e.message)+')',who,false,true));
   });
