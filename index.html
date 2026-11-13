@@ -1286,13 +1286,18 @@ function pasalDari(d,src){if(!d)return -1;const seg=d.split(/;\s*/);for(const sg
   return -1;}
 function srcUtama(c,s){return c===3&&(s===10||s===11)?SRC_KHES:c===3&&s===12?SRC_QJ:null;}
 const SRC_ATURAN=/Pasal|Undang|\bUU\b|Peraturan|Herzien|\bHIR\b|R\.?Bg|Rechtsvordering|Buku II|Pedoman|Qanun|KHES|Kompilasi|Fatwa|SEMA|PERMA|Surat Edaran|Keputusan|Instruksi|Putusan|Rumusan|Staatsblad|KUH/i;
-// V69b (KHI dulu, baru fikih): 0 pengertian KHI, 1 isi KHI (menurut pasal), 2 pengertian sumber utama (KHES/Qanun), 3 pengertian aturan lain, 4 pengertian fikih/literatur, 5 isi sumber utama, 6 isi aturan lain, 7 isi fikih/literatur (urutan lama).
-// V69c: soal yang jawabannya ayat atau hadis (QS/HR) (dasar hukum syar'i) ditaruh paling belakang bersama soal dasar hukum.
+// V69e (hukum positif dulu): soal bersumber aturan didahulukan; soal doktrin (kalimat soal menyebut doktrin/pendapat ahli/ulama, atau sumber pertamanya literatur) dan soal fikih menyusul.
+// 0 pengertian KHI, 1 isi KHI (urut pasal), 2 pengertian KHES/Qanun, 3 pengertian aturan lain, 4 isi KHES/Qanun (urut pasal), 5 isi aturan lain, 6 pengertian doktrin, 7 isi doktrin, 8 pengertian fikih/literatur murni, 8.5 isi fikih, 9 soal ayat/hadis. Soal dasar hukum tetap di akhir (sortSeq).
+const DOK_RE=/doktrin|menurut (para )?(ahli|pakar|sarjana|ulama|jumhur|teori|literatur|mazhab|Imam|fikih|fiqh)|pendapat (para )?(ahli|ulama|jumhur)|dikemukakan|berpendapat|dalam (fikih|fiqh|ilmu faraidh|ilmu fikih|teori|literatur|kepustakaan)|\bteori\b/i;
+function isDoktrin(q){const d=(q.d||'').trim(),f=d.split(/;\s*/)[0];if(DOK_RE.test(q.q))return true;if(typeof getQuestionTier==='function'&&getQuestionTier(q)===3)return true;return !SRC_ATURAN.test(f);}
 const DALIL_ANS=/^(QS|Q\.?S\.|Surah|HR\b|Hadis|Hadits)/i;
-function urutKHI(q,c,s,lama){if(DALIL_ANS.test((q.o[q.a]||'').trim()))return 8e7+(lama<0?0:lama+1);const pg=isPengertian(q),k=pasalDari(q.d,SRC_KHI),su=srcUtama(c,s),u=su?pasalDari(q.d,su):-1,L=(lama<0?0:lama+1),fq=!SRC_ATURAN.test(q.d||'');
-  if(k>=0)return (pg?0:1e7)+k;
-  if(u>=0)return (pg?2e7:5e7)+u;
-  return (pg?(fq?4e7:3e7):(fq?7e7:6e7))+L;}
+function urutKHI(q,c,s,lama){const L=(lama<0?0:lama+1);if(DALIL_ANS.test((q.o[q.a]||'').trim()))return 9e7+L;
+  const pg=isPengertian(q),fq=!SRC_ATURAN.test(q.d||'');
+  if(fq)return (pg?8e7:8.5e7)+L;
+  if(isDoktrin(q))return (pg?6e7:7e7)+L;
+  const k=pasalDari(q.d,SRC_KHI);if(k>=0)return (pg?0:1e7)+k;
+  const su=srcUtama(c,s),u=su?pasalDari(q.d,su):-1;if(u>=0)return (pg?2e7:4e7)+u;
+  return (pg?3e7:5e7)+L;}
 function getFlowStage(q,c,s){const k='_kh'+c+'_'+s;if(q[k]!==undefined)return q[k];const lama=getFlowStageLama(q,c,s);return q[k]=(c===2||c===3)&&s!==99?urutKHI(q,c,s,lama):lama;}
 
 
@@ -1443,7 +1448,7 @@ function save(){if(window.__keluar)return;try{const disk=JSON.parse(localStorage
 
 // Daftar Pilih Klaster terbuka saat halaman dibuka dan bisa ditutup kembali.
 // V69c: versi urutan Berurutan. Sesi Berurutan yang disimpan dengan versi lama disusun ulang sekali (jawaban tetap), posisi ke soal pertama yang belum dijawab.
-const ORD_V="69d";
+const ORD_V="69e";
 const state={klOpen:true,cat:"all",sub:"all",bag:"all",order:"seq",list:[],pos:0,perm:{},ans:{},tLeft:0,timeUp:false,qLeft:0,qId:null,expired:{}};
 // Lama waktu per soal: 54 detik (bawaan) atau 45 detik, dipilih di Quiz Options.
 let SEC=[45,35,30].includes(store.timerSec)?store.timerSec:54;
