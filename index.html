@@ -1404,7 +1404,10 @@ function siapkanUrut73(c,s){const kk=c+'_'+s;if(URUT73[kk])return;URUT73[kk]=1;c
   // V74: di sub tanpa daftar topik, soal pengertian yang istilahnya tidak muncul di soal isi mana pun tidak lagi dikumpulkan di depan, tetapi ditaruh di posisi materinya sendiri (urutan kurikulum lama).
   if(!adaFlow(c,s))qs.filter(q=>isPengertian(q)&&!istilahPengertian(q)).forEach(q=>{q._np74=1;q[k]=urutIsi(q,c,s,getFlowStageLama(q,c,s));delete q._np74;});
   qs.filter(q=>isPengertian(q)&&!istilahPengertian(q)&&topikFlow(q,c,s)>=0).forEach(q=>{q[k]=urutIsi(q,c,s,-1,true)-0.5;});}
-function getFlowStage(q,c,s){const k='_kh'+c+'_'+s;if(q[k]!==undefined)return q[k];if((c===2||c===3)&&s!==99&&!URUT73[c+'_'+s]){siapkanUrut73(c,s);if(q[k]!==undefined)return q[k];}const lama=getFlowStageLama(q,c,s);return q[k]=(c===2||c===3)&&s!==99?urutIsi(q,c,s,lama):(c===4&&lama>=0&&TIK_BLK.test(q.q)?lama+1e7:lama);}
+// V79 (TIK sub 4): urutan Berurutan Persidangan Elektronik mengikuti alur sidang: 1 pendaftaran/pengajuan gugatan, 2 pemanggilan elektronik & surat tercatat, 2.5 delegasi & rogatori, 4 sidang pertama (kuasa, persetujuan sidang elektronik), 5 mediasi, 6 court calendar & jalannya sidang elektronik, 7 jawaban-replik-duplik, 7.5 intervensi, 7.7 perubahan gugatan, 7.8 pencabutan, 8 pembuktian (bukti surat, saksi/ahli jarak jauh), 9 kesimpulan, 10 putusan, 11 ikrar talak, 13 gugatan sederhana. Di dalam tahap tetap urutan TIK_ORD; soal dasar hukum tetap di akhir.
+const TIK4_ALUR=[[/ikrar talak/i,11],[/surat kuasa/i,4],[/intervensi/i,7.5],[/\bsaksi\b|\bahli\b|pemeriksaan jarak jauh/i,8],[/alat bukti|bukti surat|meterai|nazegel/i,8],[/jawaban|replik|duplik|jawab-jinawab/i,7],[/kesimpulan/i,9],[/mediasi|mediator|berdamai/i,5],[/pencabutan|mencabut/i,7.8],[/(perubahan|perbaikan) (atau perbaikan )?(gugatan|permohonan)/i,7.7],[/delegasi|rogatori|luar negeri|luar yurisdiksi|Malaysia|Kemlu/i,2.5],[/panggil|relaas|surat tercatat|e-Summons|domisili elektronik|geotagging|lurah|kepala desa|alamat tidak ditemukan|resepsionis|anggota keluarga/i,2],[/putusan|mengucapkan|pengucapan|pemberitahuan isi/i,10],[/bukti|meterai|pemeriksaan setempat/i,8],[/gugatan sederhana/i,13],[/sidang pertama|surat kuasa|persetujuan|menyetujui|hak dan kewajiban|tidak hadir|kuasa hukum|\bakun\b/i,4],[/gugatan diajukan|didaftarkan|pendaftaran|mendaftar/i,1],[/court calendar|gangguan|kendala teknis|berita acara|\bBAS\b|telekonferensi|ditunda/i,6]];
+function tik4Alur(q,lama){if(lama<0||lama>=1e7)return lama;const t=q.q+" ||| "+q.o[q.a];const h=TIK4_ALUR.find(([r])=>r.test(t));return (h?h[1]:6.5)*5e5+lama;}
+function getFlowStage(q,c,s){const k='_kh'+c+'_'+s;if(q[k]!==undefined)return q[k];if((c===2||c===3)&&s!==99&&!URUT73[c+'_'+s]){siapkanUrut73(c,s);if(q[k]!==undefined)return q[k];}const lama=getFlowStageLama(q,c,s);return q[k]=(c===2||c===3)&&s!==99?urutIsi(q,c,s,lama):(c===4&&lama>=0&&TIK_BLK.test(q.q)?lama+1e7:c===4&&s===4?tik4Alur(q,lama):lama);}
 // V77 (TIK): di tiap sub TIK, soal perkara jinayat dan sengketa kewenangan ditaruh sesudah materi umum perdata agar tidak menyela urutan.
 const TIK_BLK=/jinayat|syar.iyah|dua pengadilan atau lebih/i;
 
@@ -1584,7 +1587,7 @@ function save(){if(window.__keluar)return;try{const disk=JSON.parse(localStorage
 
 // Daftar Pilih Klaster terbuka saat halaman dibuka dan bisa ditutup kembali.
 // V69c: versi urutan Berurutan. Sesi Berurutan yang disimpan dengan versi lama disusun ulang sekali (jawaban tetap), posisi ke soal pertama yang belum dijawab.
-const ORD_V="78";
+const ORD_V="79";
 const state={klOpen:true,cat:"all",sub:"all",bag:"all",order:"seq",list:[],pos:0,perm:{},ans:{},tLeft:0,timeUp:false,qLeft:0,qId:null,expired:{}};
 // Lama waktu per soal: 54 detik (bawaan) atau 45 detik, dipilih di Quiz Options.
 let SEC=[45,35,30].includes(store.timerSec)?store.timerSec:54;
