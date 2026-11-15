@@ -1556,11 +1556,21 @@ function tandaiCoba(id){if(COBA[id])return;COBA[id]=1;try{localStorage.setItem(C
 const LKEY="tkbcakim-lihat-"+(window.__UID||"lokal");
 let LIHAT={};try{LIHAT=JSON.parse(localStorage.getItem(LKEY)||"{}")||{};}catch(e){LIHAT={};}
 // LIHAT[id] = {n: berapa kali soal dipelajari, e: sesi terakhir yang dihitung (state.ep)}; satu soal dihitung sekali per sesi/putaran.
-// Riwayat lama (COBA saat halaman dimuat) dihitung sebagai 1 kali.
-const COBA0=Object.assign({},COBA);
-function tandaiLihat(id,ep){if(!id)return;let r=LIHAT[id];if(typeof r==="number")r={n:r};if(r&&r.e===ep)return;
-  LIHAT[id]={n:(r?r.n:(COBA0[id]?1:0))+1,e:ep};try{localStorage.setItem(LKEY,JSON.stringify(LIHAT));}catch(e){}}
-function kaliLihat(id){const r=LIHAT[id];return r?(typeof r==="number"?r:r.n):(COBA[id]?1:0);}
+// Riwayat akun sejak awal (soal pernah dikerjakan = COBA, pernah benar = BENAR, saat halaman dimuat) dihitung sebagai 1 kali,
+// karena riwayat lama hanya mencatat sudah/belum, tidak mencatat berapa kali. Hitungan disalin ke akun (progres/<uid>.lh).
+const COBA0=Object.assign({},BENAR,COBA);
+(function(){const sv=window.__LH_AWAL||{};let ubah=false;
+  Object.keys(LIHAT).forEach(id=>{if(typeof LIHAT[id]==="number")LIHAT[id]={n:LIHAT[id]};});
+  Object.keys(sv).forEach(id=>{const n=+sv[id]||0,r=LIHAT[id];if(!r)LIHAT[id]={n};else if(n>r.n){r.n=n;}});
+  const kirim={};Object.keys(LIHAT).forEach(id=>{if((+sv[id]||0)<LIHAT[id].n)kirim[id]=LIHAT[id].n;ubah=true;});
+  if(window.__sinkronLihat&&Object.keys(kirim).length)window.__sinkronLihat(kirim);
+  if(ubah)try{localStorage.setItem(LKEY,JSON.stringify(LIHAT));}catch(e){}})();
+// Jawaban yang diklik di halaman ini. Jawaban sesi yang sudah ada sebelum halaman dimuat sudah termasuk riwayat, jadi tidak ditambah lagi.
+const JAWAB_BARU=new Set();
+function tandaiLihat(id,ep,lamaJawab){if(!id)return;const r=LIHAT[id];if(r&&r.e===ep)return;const base=r?r.n:(COBA0[id]?1:0);
+  const n=lamaJawab?Math.max(base,1):base+1;LIHAT[id]={n,e:ep};try{localStorage.setItem(LKEY,JSON.stringify(LIHAT));}catch(e){}
+  if(window.__simpanLihat&&(!r||r.n!==n))window.__simpanLihat(id,n);}
+function kaliLihat(id){const r=LIHAT[id];return r?r.n:(COBA[id]||BENAR[id]?1:0);}
 function pctBulat(k,n){return n?(k&&k<n?Math.min(99,Math.max(1,Math.floor(k*100/n))):Math.floor(k*100/n)):0;}
 // Progres sub: pct = soal yang pernah dipelajari minimal sekali; ulang = putaran tuntas (semua soal sub sudah dipelajari sebanyak itu);
 // lanjut = persen putaran berikutnya yang sedang berjalan.
@@ -2001,7 +2011,7 @@ function renderCard(){
   // Mode jawaban benar (khusus pemilik): soal yang belum dijawab langsung tampil dengan kunci, status, pembahasan, dan sumber.
   // Hanya tampilan: tidak mengisi state.ans, tidak menandai lilin/gulungan, tidak dikirim ke Leaderboard atau progres akun.
   const kunci=own&&kunciOn()&&!answered&&!locked;
-  if(own&&(kunci||apKey||locked||answered)){if(!state.ep)state.ep=Date.now();tandaiLihat(id,state.ep);}
+  if(own&&(kunci||apKey||locked||answered)){if(!state.ep)state.ep=Date.now();tandaiLihat(id,state.ep,answered&&!JAWAB_BARU.has(id));}
   html+=`<div class="qjudul" title="${esc(judulKerja())}">${esc(judulKerja())}</div><p class="qtext">${esc(q.q)}</p><ol class="opts">`;
   perm.forEach((oi,pi)=>{
     let cls="",mark="";
@@ -2023,7 +2033,7 @@ function renderCard(){
       fill();$("mvc").onchange=fill;$("mvno").onclick=()=>{state.mvOpen=false;renderCard();};
       $("mvok").onclick=()=>moveQ(id,here,+$("mvc").value,+$("mvs").value);}}
   pasangArsip(id);
-  card.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{state.ans[id]=+b.dataset.o;tandaiCoba(id);if(state.ans[id]===q.a)tandaiBenar(id);if(window.__catatVip)window.__catatVip(id,state.ans[id]===q.a);persist();
+  card.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{state.ans[id]=+b.dataset.o;JAWAB_BARU.add(id);tandaiCoba(id);if(state.ans[id]===q.a)tandaiBenar(id);if(window.__catatVip)window.__catatVip(id,state.ans[id]===q.a);persist();
     // Autopilot: pengguna tetap boleh menjawab; setelah menjawab, langsung ke fase pembahasan.
     const ap=AP.on&&AP.id===id&&AP.fase===0;if(ap){AP.fase=1;apAtur();}render();if(ap)apGulir(true);});
   $("prev").onclick=()=>{state.pos--;persist();render();};
@@ -2443,7 +2453,7 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
     bankTandai(versi,chunks);}catch(e){}}
   // Soal yang pernah dijawab benar disimpan di progres/<uid> agar tetap ada setelah keluar atau ganti perangkat.
   async function progres(){const u=auth.currentUser;if(!u)return;window.__UID=u.uid;const ref=db.doc('progres/'+u.uid);
-    let imporSudah=false,arAwal;try{const s=await ref.get();arAwal=(s.exists&&s.data().ar)||'';window.__BENAR_AWAL=(s.exists&&s.data().b)||{};window.__COBA_AWAL=(s.exists&&s.data().c)||{};window.__PK_AWAL=(s.exists&&s.data().pk)||{};window.__SS_AWAL=(s.exists&&s.data().ss)||{};window.__POS_AWAL=(s.exists&&s.data().pos)||'';imporSudah=!!(s.exists&&s.data().impor);}catch(e){window.__BENAR_AWAL={};window.__COBA_AWAL={};window.__PK_AWAL={};window.__SS_AWAL={};window.__POS_AWAL='';}
+    let imporSudah=false,arAwal;try{const s=await ref.get();arAwal=(s.exists&&s.data().ar)||'';window.__BENAR_AWAL=(s.exists&&s.data().b)||{};window.__COBA_AWAL=(s.exists&&s.data().c)||{};window.__PK_AWAL=(s.exists&&s.data().pk)||{};window.__SS_AWAL=(s.exists&&s.data().ss)||{};window.__LH_AWAL=(s.exists&&s.data().lh)||{};window.__POS_AWAL=(s.exists&&s.data().pos)||'';imporSudah=!!(s.exists&&s.data().impor);}catch(e){window.__BENAR_AWAL={};window.__COBA_AWAL={};window.__PK_AWAL={};window.__SS_AWAL={};window.__POS_AWAL='';}
     window.__simpanBenar=id=>ref.set({b:{[id]:1}},{merge:true}).catch(()=>{});
     window.__sinkronBenar=m=>ref.set({b:m},{merge:true}).catch(()=>{});
     window.__ambilSemuaPaket=async()=>{try{const s=await ref.get();return (s.exists&&s.data().pk)||{};}catch(e){return null;}};
@@ -2454,6 +2464,9 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
     window.__simpanSesi=(k,v)=>{try{return ref.set({ss:{[k]:JSON.stringify(v)}},{merge:true}).catch(()=>{});}catch(e){return Promise.resolve();}};
     window.__simpanPosisi=v=>{try{return ref.set({pos:JSON.stringify(v)},{merge:true}).catch(()=>{});}catch(e){return Promise.resolve();}};
     window.__simpanCoba=id=>ref.set({c:{[id]:1}},{merge:true}).catch(()=>{});
+    // Khusus pemilik: berapa kali tiap soal dipelajari (lh), agar progres dan pengulangan sub materi sama di semua perangkat.
+    window.__simpanLihat=(id,n)=>ref.set({lh:{[id]:n}},{merge:true}).catch(()=>{});
+    window.__sinkronLihat=m=>ref.set({lh:m},{merge:true}).catch(()=>{});
     window.__sinkronCoba=m=>ref.set({c:m},{merge:true}).catch(()=>{});
     if(window.Arsip){Arsip._namaku=u.displayName||(u.email||'').split('@')[0];}if(window.Arsip)Arsip.mulai(window.__sb,u.uid,isOwner,arAwal,()=>ref.set({ar:"{}"},{merge:true}));
     if(window.__sb)tawarImpor(u,ref,imporSudah);}
