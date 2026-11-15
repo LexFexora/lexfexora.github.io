@@ -2265,7 +2265,7 @@ function renderArsip(){const box=$("arcard");if(!box||!window.Arsip)return;box.h
   $("arket").innerHTML=`<span class="pklead">A shared record for all users. Every question anyone marks with 🔖 Record, in any mode, is collected here in the order it was recorded, so you can work through questions others saved and they can work through yours. Each part holds ${Arsip.BAGIAN} questions. Once a part is full, the next recorded question becomes No. 1 of the next part. Your answers and progress stay your own.</span>`;
   if(!Arsip.siap){$("arlist").innerHTML=`<p class="arkosong">Loading…</p>`;return;}
   if(!Arsip.boleh){$("arlist").innerHTML=`<div class="pkkunci"><b>🔒 Restricted Access</b><span>Available to VVIP accounts only. VVIP access also unlocks Simulation Packages and Category Packages.</span></div>`;return;}
-  if(Arsip.galat==="belum"){$("arlist").innerHTML=`<p class="arkosong">${window.__isOwner?"Run sb/supabase-update-11.sql in the Supabase SQL Editor to turn on the shared Vital Test Record.":"Vital Test Record is not available yet."}</p>`;return;}
+  if(Arsip.galat==="belum"){$("arlist").innerHTML="";return;}
   if(!n&&Arsip.galat){$("arlist").innerHTML=`<p class="arkosong">Could not load Vital Test Record. Check your connection, then reopen this card.</p>`;return;}
   if(!n){$("arlist").innerHTML=`<p class="arkosong">No recorded questions yet. Tap 🔖 Record below the answer options while working on a question.</p>`;return;}
   $("arlist").innerHTML=P.map((ids,i)=>{const ss=store["ulang|paket|ar-"+(i+1)],I=window.__pkInfo(ss,ids),dj=I.dj,bn=I.bn,pb=dj?Math.round(bn*100/dj):0,
@@ -2319,7 +2319,7 @@ document.querySelector("#arcard>summary").addEventListener("click",e=>{const d=$
     document.querySelectorAll("#rktab [data-rk]").forEach(b=>b.classList.toggle("on",b.dataset.rk===urut));
     const L=$("rklist"),W=$("rkwaktu");W.textContent="";
     if(!data&&!galat){L.innerHTML=`<p class="rkkosong">Loading…</p>`;return;}
-    if(galat==="belum"){L.innerHTML=`<p class="rkkosong">${window.__isOwner?"Run sb/supabase-update-17.sql in the Supabase SQL Editor to turn on the Leaderboard.":"Leaderboard is not available yet."}</p>`;return;}
+    if(galat==="belum"){L.innerHTML="";return;}
     if(galat==="tolak"){L.innerHTML=`<div class="pkkunci"><b>🔒 Restricted Access</b><span>Available to VVIP accounts only.</span></div>`;return;}
     if(galat&&!data){L.innerHTML=`<p class="rkkosong">Could not load the leaderboard. Check your connection, then reopen this card.</p>`;return;}
     const R=susun(),aku=(data||[]).find(r=>r.saya);
