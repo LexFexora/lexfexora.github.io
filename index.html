@@ -774,6 +774,11 @@ body.bebas label.ctl-sub .subtap{display:block;position:absolute;inset:0;cursor:
 .apick .apcari{position:sticky;top:0;z-index:1;display:block;width:100%;box-sizing:border-box;margin:0 0 4px;padding:12px 14px;border:0;border-bottom:1px solid rgb(127 127 127 / .25);background:inherit;-webkit-backdrop-filter:blur(22px);backdrop-filter:blur(22px);color:inherit;font:inherit;font-size:16px;outline:none;border-radius:22px 22px 0 0}
 .apick .apcari::placeholder{color:rgb(160 165 162)}
 .apick .apcari{color:#f2f4f3}:root[data-theme="light"] .apick .apcari{color:#111}@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .apick .apcari{color:#111}}
+.apick button.adapct{grid-template-columns:26px 1fr auto}
+.apick .pct{align-self:center;min-width:46px;padding:3px 8px;border-radius:999px;font-size:13px;font-weight:700;text-align:center;font-variant-numeric:tabular-nums;background:rgb(127 127 127 / .18);opacity:.75}
+.apick .pct.ada{background:rgb(212 168 67 / .22);color:#e8c46a;opacity:1}.apick .pct.full{background:rgb(46 160 90 / .25);color:#5fd38d;opacity:1}
+:root[data-theme="light"] .apick .pct.ada{color:#8a6410}:root[data-theme="light"] .apick .pct.full{color:#1d7a43}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .apick .pct.ada{color:#8a6410}:root:not([data-theme="dark"]) .apick .pct.full{color:#1d7a43}}
 .apick button[hidden]{display:none}.apick .apkosong{margin:10px 18px;font-size:14px;opacity:.7}
 .apick{position:fixed;z-index:9999;box-sizing:border-box;max-height:min(62vh,520px);overflow-y:auto;overscroll-behavior:contain;padding:6px 0;border-radius:22px;background:rgb(32 35 33 / .82);-webkit-backdrop-filter:blur(22px) saturate(1.4);backdrop-filter:blur(22px) saturate(1.4);box-shadow:0 0 0 .5px rgb(255 255 255 / .12),0 18px 50px rgb(0 0 0 / .55);font-family:var(--f-sans,system-ui,sans-serif);transform-origin:50% 0;animation:apickin .16s ease-out}
 .apick button{display:grid;grid-template-columns:26px 1fr;align-items:start;gap:4px;width:100%;margin:0;padding:11px 18px 11px 12px;border:0;background:none;color:#f2f4f3;font:inherit;font-size:17px;line-height:1.25;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent}
@@ -1544,6 +1549,14 @@ const CSRV=window.__COBA_AWAL||{};
 if(window.__sinkronCoba&&Object.keys(COBA).some(id=>!CSRV[id]))window.__sinkronCoba(COBA);
 Object.assign(COBA,CSRV);try{localStorage.setItem(CKEY,JSON.stringify(COBA));}catch(e){}
 function tandaiCoba(id){if(COBA[id])return;COBA[id]=1;try{localStorage.setItem(CKEY,JSON.stringify(COBA));}catch(e){}if(window.__simpanCoba)window.__simpanCoba(id);}
+// Khusus pemilik: soal yang sudah dipelajari lewat mode Kunci atau Autopilot (kunci jawaban tampil) walau tidak dijawab.
+// Disimpan per akun di perangkat ini. Progres sub materi = soal yang dijawab/waktu habis (COBA) atau dipelajari (LIHAT).
+const LKEY="tkbcakim-lihat-"+(window.__UID||"lokal");
+let LIHAT={};try{LIHAT=JSON.parse(localStorage.getItem(LKEY)||"{}")||{};}catch(e){LIHAT={};}
+function tandaiLihat(id){if(!id||LIHAT[id])return;LIHAT[id]=1;try{localStorage.setItem(LKEY,JSON.stringify(LIHAT));}catch(e){}}
+function pctSub(c,sb){let n=0,k=0;QB.forEach(q=>{if(!inCat(q,c,sb))return;n++;if(COBA[q.id]||LIHAT[q.id])k++;});return n?(k&&k<n?Math.min(99,Math.max(1,Math.floor(k*100/n))):Math.floor(k*100/n)):0;}
+window.__pctSegar=()=>{if(!window.__isOwner||state.cat==="all")return;const sel=$("sub");if(!sel)return;
+  [...sel.options].forEach(o=>{o.dataset.pct=pctSub(state.cat,o.value==="all"?"all":+o.value);});};
 function fmtPct(c,n){const v=n?c*100/n:0;return (v>0&&v<10?v.toFixed(1).replace(".",","):Math.round(v))+"%";}
 const TIERNAME={1:"Dasar hukum",2:"Istilah, jenis & prosedur",3:"Pendapat ahli & doktrin"};
 let store={};
@@ -1778,6 +1791,7 @@ function renderSub(){
   const tb=terbatas();
   s.innerHTML=`<option value="all"${tb?" disabled":""}>${tb?"🔒 All Sections":"All Sections"}</option>`+SUBS[c].map((n,i)=>`<option value="${i+1}"${tb&&!bukaSub(c,i+1)?" disabled":""}>${tb&&!bukaSub(c,i+1)?"🔒 ":""}${i+1}. ${tb&&!bukaSub(c,i+1)?samar(n):esc(n)}</option>`).join("");
   s.value=String(state.sub);
+  if(window.__isOwner)window.__pctSegar();
   renderBag();kustom(s);
 }
 function renderBag(){
@@ -1976,6 +1990,7 @@ function renderCard(){
   // Mode jawaban benar (khusus pemilik): soal yang belum dijawab langsung tampil dengan kunci, status, pembahasan, dan sumber.
   // Hanya tampilan: tidak mengisi state.ans, tidak menandai lilin/gulungan, tidak dikirim ke Leaderboard atau progres akun.
   const kunci=own&&kunciOn()&&!answered&&!locked;
+  if(own&&(kunci||apKey||locked))tandaiLihat(id);
   html+=`<div class="qjudul" title="${esc(judulKerja())}">${esc(judulKerja())}</div><p class="qtext">${esc(q.q)}</p><ol class="opts">`;
   perm.forEach((oi,pi)=>{
     let cls="",mark="";
@@ -3048,12 +3063,14 @@ function inkTengah(v,t){if(!v||!t)return;
   function tutup(){if(!terbuka)return;terbuka.bg.remove();terbuka.box.remove();const s=terbuka.sel;terbuka=null;removeEventListener('resize',tutup);s.focus({preventScroll:true});}
   function buka(sel,cari){tutup();const bg=document.createElement('div');bg.className='apick-bg';const box=document.createElement('div');box.className='apick'+(cari?' cari':'');box.setAttribute('role','listbox');
     let inp=null;if(cari){inp=document.createElement('input');inp.type='search';inp.className='apcari';inp.placeholder='Cari sub materi…';inp.autocomplete='off';inp.setAttribute('aria-label','Cari sub materi');box.appendChild(inp);}
+    if(sel.id==='sub'&&window.__pctSegar)window.__pctSegar();
     [...sel.options].forEach((o,i)=>{if(o.hidden)return;const b=document.createElement('button');b.type='button';b.setAttribute('role','option');b.setAttribute('aria-selected',String(i===sel.selectedIndex));b.disabled=o.disabled;
-      b.innerHTML='<span class="ck">✓</span><span></span>';b.lastChild.textContent=o.textContent;
+      b.innerHTML='<span class="ck">✓</span><span class="nm"></span>';b.children[1].textContent=o.textContent;
+      if(o.dataset.pct!==undefined){const v=+o.dataset.pct,t=document.createElement('span');t.className='pct'+(v>=100?' full':v>0?' ada':'');t.textContent=v+'%';t.title='Sudah dipelajari';b.classList.add('adapct');b.appendChild(t);}
       b.onclick=()=>{if(sel.selectedIndex!==i){sel.selectedIndex=i;sel.dispatchEvent(new Event('input',{bubbles:true}));sel.dispatchEvent(new Event('change',{bubbles:true}));}tutup();};box.appendChild(b);});
     let kos=null;if(cari){kos=document.createElement('p');kos.className='apkosong';kos.hidden=true;box.appendChild(kos);
       const norm=t=>t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ');
-      inp.oninput=()=>{const ks=norm(inp.value).split(' ').filter(Boolean);let n=0;box.querySelectorAll('button').forEach(b=>{const ok=ks.every(k=>norm(b.textContent).includes(k));b.hidden=!ok;if(ok)n++;});
+      inp.oninput=()=>{const ks=norm(inp.value).split(' ').filter(Boolean);let n=0;box.querySelectorAll('button').forEach(b=>{const ok=ks.every(k=>norm((b.querySelector('.nm')||b).textContent).includes(k));b.hidden=!ok;if(ok)n++;});
         kos.hidden=!!n;kos.textContent='Tidak ada sub materi yang cocok.';};
       inp.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();const b=box.querySelector('button:not([hidden])');if(b)b.click();}};}
     document.body.append(bg,box);const r=sel.getBoundingClientRect(),vw=innerWidth,vh=innerHeight,w=cari?Math.min(vw-24,Math.max(r.width,440)):Math.min(Math.max(r.width*.78,240),vw-24,380);
