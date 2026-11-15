@@ -1069,6 +1069,8 @@ html.vvip #arcard .arjml{padding-right:92px}
 .rkskor small{font-size:10.5px;color:var(--muted);letter-spacing:.04em}
 .rkket{margin:2px 0 0;font-size:12px;color:var(--muted)}
 .rkkosong{margin:4px 0 0;font-size:13.5px;color:var(--muted)}
+/* V81d: teks penjelasan di bawah judul kartu disembunyikan agar beranda tidak penuh tulisan. */
+.pklead{display:none!important}#arket,#rkket,#rkwaktu{display:none!important}#rkcard .rktab{margin-top:4px}
 </style>
 </head>
 <body>
@@ -1093,7 +1095,7 @@ html.vvip #arcard .arjml{padding-right:92px}
     <div class="eyebrow">Latihan · Seleksi Kemampuan Bidang</div>
   </header>
   <details class="setelan tocard" id="rkcard" hidden>
-    <summary><span class="stl"><svg class="piala" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="url(#pialaEmas)" stroke-width="1.8" stroke-linejoin="round"><path d="M8.5 20.5v-9h7v9"/><path d="M3 20.5v-5.5h5.5M21 20.5v-7.5h-5.5M2 20.5h20"/></g><path d="M12 3.2l1.1 2.2 2.4.35-1.75 1.7.42 2.4L12 8.7l-2.17 1.15.42-2.4L8.5 5.75l2.4-.35z" fill="url(#pialaEmas)"/></svg>VVIP Leaderboard</span><span class="vvipakses" title="VVIP Access">VVIP Access</span></summary>
+    <summary><span class="stl"><svg class="piala" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="url(#pialaEmas)" stroke-width="1.8" stroke-linejoin="round"><path d="M8.5 20.5v-9h7v9"/><path d="M3 20.5v-5.5h5.5M21 20.5v-7.5h-5.5M2 20.5h20"/></g><path d="M12 3.2l1.1 2.2 2.4.35-1.75 1.7.42 2.4L12 8.7l-2.17 1.15.42-2.4L8.5 5.75l2.4-.35z" fill="url(#pialaEmas)"/></svg>Leaderboard</span></summary>
     <div class="toisi">
       <p class="note" id="rkket"></p>
       <div class="tosrc rktab" id="rktab" role="group" aria-label="Urutan peringkat"><button type="button" class="on" data-rk="benar">Most Correct</button><button type="button" data-rk="akurasi">Accuracy</button></div>
@@ -2313,11 +2315,11 @@ document.querySelector("#arcard>summary").addEventListener("click",e=>{const d=$
     // Nilai sama = peringkat sama (1, 1, 3, ...).
     let no=0;L.forEach((r,i)=>{const p=L[i-1],sama=p&&(urut==="akurasi"?pct(p)===pct(r)&&p.b===r.b:p.b===r.b&&pct(p)===pct(r));no=sama?no:i+1;r.no=r.d?no:0;});return L;}
   function render(){
-    $("rkket").innerHTML=`<span class="pklead">Ranking among VVIP accounts by the number of questions answered correctly while holding VVIP status. Each question counts once, however many times you retake it. Answers given before VVIP, or after it ends, are not counted.</span>`;
+    $("rkket").innerHTML=`<span class="pklead">Ranking among VVIP accounts by the number of questions answered correctly. Each question counts once, however many times you retake it. Scores include your earlier practice history, and new answers count while your account holds VVIP status.</span>`;
     document.querySelectorAll("#rktab [data-rk]").forEach(b=>b.classList.toggle("on",b.dataset.rk===urut));
     const L=$("rklist"),W=$("rkwaktu");W.textContent="";
     if(!data&&!galat){L.innerHTML=`<p class="rkkosong">Loading…</p>`;return;}
-    if(galat==="belum"){L.innerHTML=`<p class="rkkosong">${window.__isOwner?"Run sb/supabase-update-17.sql in the Supabase SQL Editor to turn on the VVIP Leaderboard.":"VVIP Leaderboard is not available yet."}</p>`;return;}
+    if(galat==="belum"){L.innerHTML=`<p class="rkkosong">${window.__isOwner?"Run sb/supabase-update-17.sql in the Supabase SQL Editor to turn on the Leaderboard.":"Leaderboard is not available yet."}</p>`;return;}
     if(galat==="tolak"){L.innerHTML=`<div class="pkkunci"><b>🔒 Restricted Access</b><span>Available to VVIP accounts only.</span></div>`;return;}
     if(galat&&!data){L.innerHTML=`<p class="rkkosong">Could not load the leaderboard. Check your connection, then reopen this card.</p>`;return;}
     const R=susun(),aku=(data||[]).find(r=>r.saya);
