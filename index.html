@@ -2307,11 +2307,11 @@ document.querySelector("#arcard>summary").addEventListener("click",e=>{const d=$
       muatP=null;render();})();return muatP;};
   const pct=r=>r.d?Math.round(r.b*100/r.d):0;
   const awalan=n=>esc((String(n||"?").trim()[0]||"?").toUpperCase());
-  function susun(){if(!data)return [];let L=data.filter(r=>r.d>0);
+  function susun(){if(!data)return [];let L=data.slice();
     if(urut==="akurasi")L=L.filter(r=>r.d>=MIN_AK).sort((a,b)=>pct(b)-pct(a)||b.b-a.b||a.nama.localeCompare(b.nama));
     else L.sort((a,b)=>b.b-a.b||pct(b)-pct(a)||a.nama.localeCompare(b.nama));
     // Nilai sama = peringkat sama (1, 1, 3, ...).
-    let no=0;L.forEach((r,i)=>{const p=L[i-1],sama=p&&(urut==="akurasi"?pct(p)===pct(r)&&p.b===r.b:p.b===r.b&&pct(p)===pct(r));no=sama?no:i+1;r.no=no;});return L;}
+    let no=0;L.forEach((r,i)=>{const p=L[i-1],sama=p&&(urut==="akurasi"?pct(p)===pct(r)&&p.b===r.b:p.b===r.b&&pct(p)===pct(r));no=sama?no:i+1;r.no=r.d?no:0;});return L;}
   function render(){
     $("rkket").innerHTML=`<span class="pklead">Ranking among VVIP accounts by the number of questions answered correctly while holding VVIP status. Each question counts once, however many times you retake it. Answers given before VVIP, or after it ends, are not counted.</span>`;
     document.querySelectorAll("#rktab [data-rk]").forEach(b=>b.classList.toggle("on",b.dataset.rk===urut));
@@ -2322,9 +2322,9 @@ document.querySelector("#arcard>summary").addEventListener("click",e=>{const d=$
     if(galat&&!data){L.innerHTML=`<p class="rkkosong">Could not load the leaderboard. Check your connection, then reopen this card.</p>`;return;}
     const R=susun(),aku=(data||[]).find(r=>r.saya);
     if(!R.length){L.innerHTML=`<p class="rkkosong">${urut==="akurasi"?`No one has answered ${MIN_AK} questions as VVIP yet.`:"No answers recorded yet. Answer any question to get on the board."}</p>`;}
-    else L.innerHTML=R.map(r=>`<div class="rkrow${r.saya?" me":""}"><span class="rkno${r.no<=3?" r"+r.no:""}">${r.no}</span><span class="rkav">${r.foto?`<img src="${esc(r.foto)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.replaceWith(document.createTextNode('${awalan(r.nama)}'))">`:awalan(r.nama)}</span><span class="rknm"><b>${esc(r.nama)}${r.saya?"<i>You</i>":""}</b><small>${r.d} answered · ${pct(r)}% correct</small></span><span class="rkskor"><b>${urut==="akurasi"?pct(r)+"%":r.b}</b><small>${urut==="akurasi"?r.b+" correct":"correct"}</small></span></div>`).join("");
+    else L.innerHTML=R.map(r=>`<div class="rkrow${r.saya?" me":""}"><span class="rkno${r.no&&r.no<=3?" r"+r.no:""}">${r.no||"–"}</span><span class="rkav">${r.foto?`<img src="${esc(r.foto)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.replaceWith(document.createTextNode('${awalan(r.nama)}'))">`:awalan(r.nama)}</span><span class="rknm"><b>${esc(r.nama)}${r.saya?"<i>You</i>":""}</b><small>${r.d?`${r.d} answered · ${pct(r)}% correct`:"No answers yet"}</small></span><span class="rkskor"><b>${urut==="akurasi"?pct(r)+"%":r.b}</b><small>${urut==="akurasi"?r.b+" correct":"correct"}</small></span></div>`).join("");
     const ket=[];if(urut==="akurasi")ket.push(`Accuracy ranks accounts with at least ${MIN_AK} answered questions.`);
-    if(!window.__isOwner&&!(aku&&R.some(r=>r.saya)))ket.push(aku&&urut==="akurasi"?`You have answered ${aku.d} of the ${MIN_AK} questions needed.`:"You are not on the board yet. Your answers count from now on.");
+    if(!window.__isOwner&&urut==="akurasi"&&aku&&aku.d<MIN_AK)ket.push(`You have answered ${aku.d} of the ${MIN_AK} questions needed.`);
     if(waktu)ket.push("Updated "+new Date(waktu).toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"})+".");W.textContent=ket.join(" ");}
   document.querySelectorAll("#rktab [data-rk]").forEach(b=>b.onclick=()=>{urut=b.dataset.rk;render();});
   document.querySelector("#rkcard>summary").addEventListener("click",e=>{const d=box;e.preventDefault();if(d.dataset.anim)return;if(d.open){tutupPerlahan(d,[d.querySelector(".toisi")].filter(Boolean));return;}
