@@ -1960,7 +1960,7 @@ function renderCard(){
   const here=state.cat==="all"?q.mappings[0]:(q.mappings.find(m=>m.c===state.cat&&(state.sub==="all"||m.s===+state.sub))||q.mappings[0]);
   const also=q.mappings.filter(m=>m!==here).map(m=>`${CATS[m.c].short} ${m.s}`).join(", ");
   const own=!!window.__isOwner;
-  let html=`<div class="qhead"><span class="qno"><span class="qlbl">Soal No. </span>${state.pos+1}${own&&DIKUNCI.has(id)?' <span title="Diedit pemilik: dikunci dari perubahan otomatis">🔒</span>':""} <span class="of">/ ${state.list.length}</span></span>`+(own||apIzin()?`<div class="owntools"><button class="btn mvbtn qap" id="apbtn" type="button" aria-pressed="${AP.on}" title="Autopilot: soal, kunci jawaban, dan pembahasan berjalan sendiri">${AP.on?"■ Stop":"▶ Auto"}</button>${own?`<button class="btn mvbtn" id="ed" type="button" aria-expanded="${!!state.edOpen}">✎ Edit</button><button class="btn mvbtn" id="mv" type="button" aria-expanded="${!!state.mvOpen}">⇄ Pindahkan</button>`:""}</div>`:"")+(t=>`<span class="qkoin" title="Lilin: jawaban benar · Gulungan naskah: jawaban salah"><span class="kn" aria-label="${t.ok} lilin">🕯️<b>${t.ok}</b></span><span class="kn" aria-label="${t.bad} gulungan naskah">📜<b>${t.bad}</b></span></span>`)(tally())+`<div class="qtools"><span id="tslot"></span><button class="btn qfs" id="cfs" type="button" title="Layar penuh" aria-label="Layar penuh">⛶</button></div></div>`;
+  let html=`<div class="qhead"><span class="qno"><span class="qlbl">Soal No. </span>${state.pos+1}${own&&DIKUNCI.has(id)?' <span title="Diedit pemilik: dikunci dari perubahan otomatis">🔒</span>':""} <span class="of">/ ${state.list.length}</span></span>`+(own||apIzin()?`<div class="owntools"><button class="btn mvbtn qap" id="apbtn" type="button" aria-pressed="${AP.on}" title="Autopilot: soal, kunci jawaban, dan pembahasan berjalan sendiri">${AP.on?"■ Stop":"▶ Auto"}</button>${own?`<button class="btn mvbtn qkey${kunciOn()?" primary":""}" id="kunci" type="button" aria-pressed="${kunciOn()}" title="Mode jawaban benar: semua soal tampil sudah terjawab (tidak dihitung ke skor)">${kunciOn()?"✓ Kunci: ON":"✓ Kunci"}</button><button class="btn mvbtn" id="ed" type="button" aria-expanded="${!!state.edOpen}">✎ Edit</button><button class="btn mvbtn" id="mv" type="button" aria-expanded="${!!state.mvOpen}">⇄ Pindahkan</button>`:""}</div>`:"")+(t=>`<span class="qkoin" title="Lilin: jawaban benar · Gulungan naskah: jawaban salah"><span class="kn" aria-label="${t.ok} lilin">🕯️<b>${t.ok}</b></span><span class="kn" aria-label="${t.bad} gulungan naskah">📜<b>${t.bad}</b></span></span>`)(tally())+`<div class="qtools"><span id="tslot"></span><button class="btn qfs" id="cfs" type="button" title="Layar penuh" aria-label="Layar penuh">⛶</button></div></div>`;
   if(own&&state.mvOpen){const cs=Object.keys(CATS).map(Number);
     html+=`<div class="mvbox" id="mvbox"><span>Pindahkan dari <b>${esc(here.kategori_utama)} ${here.s}</b> ke:</span><select id="mvc" aria-label="Kategori tujuan">${cs.map(c=>`<option value="${c}"${c===here.c?" selected":""}>${esc(CATS[c].short)}</option>`).join("")}</select><select id="mvs" aria-label="Sub-materi tujuan"></select><button class="btn primary" id="mvok" type="button">Simpan</button><button class="btn" id="mvno" type="button">Batal</button><p class="note" id="mvmsg">Perpindahan disimpan di server dan berlaku untuk semua pengguna setelah mereka memuat ulang halaman.</p></div>`;}
   if(own&&state.edOpen){
@@ -1973,23 +1973,26 @@ function renderCard(){
     $("edok").onclick=()=>editQ(id);
     return;}
   const apKey=AP.on&&AP.fase===1&&AP.id===id;
+  // Mode jawaban benar (khusus pemilik): soal yang belum dijawab langsung tampil dengan kunci, status, pembahasan, dan sumber.
+  // Hanya tampilan: tidak mengisi state.ans, tidak menandai lilin/gulungan, tidak dikirim ke Leaderboard atau progres akun.
+  const kunci=own&&kunciOn()&&!answered&&!locked;
   html+=`<div class="qjudul" title="${esc(judulKerja())}">${esc(judulKerja())}</div><p class="qtext">${esc(q.q)}</p><ol class="opts">`;
   perm.forEach((oi,pi)=>{
     let cls="",mark="";
     if(answered){ if(oi===q.a){cls="correct";mark="✅";} else if(oi===chosen){cls="wrong";mark="❌";} }
     // Khusus pemilik: saat waktu habis, jawaban benar langsung ditandai tanpa perlu diketuk.
-    else if((locked&&own||apKey)&&oi===q.a){cls="correct";mark="✅";}
-    html+=`<li><button type="button" class="opt ${cls}" data-o="${oi}" ${answered||locked||apKey?"disabled":""}><span class="l"><i>${L[pi]}</i></span><span class="t">${esc(q.o[oi])}</span><span class="mark">${mark}</span></button></li>`;
+    else if((locked&&own||apKey||kunci)&&oi===q.a){cls="correct";mark="✅";}
+    html+=`<li><button type="button" class="opt ${cls}" data-o="${oi}" ${answered||locked||apKey||kunci?"disabled":""}><span class="l"><i>${L[pi]}</i></span><span class="t">${esc(q.o[oi])}</span><span class="mark">${mark}</span></button></li>`;
   });
   html+="</ol>"+arsipHTML(id);
   if(answered){
     html+=`${ketHTML(q)}`;
   }
   if(locked) html+=ketHTML(q);
-  else if(apKey&&!answered) html+=ketHTML(q);
+  else if((apKey||kunci)&&!answered) html+=ketHTML(q);
   html+=`<div class="nav"><button class="btn" id="prev" type="button" ${state.pos===0?"disabled":""}><svg class="nvp" viewBox="0 0 16 16" aria-hidden="true"><path d="M13 8H3.5M7.5 4 3.5 8l4 4"/></svg><span>Previous</span></button><button class="btn primary" id="next" type="button">${state.pos===state.list.length-1?"<span>Lihat hasil</span>":'<span>Next</span><svg class="nvp" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4"/></svg>'}</button></div>`;
   card.innerHTML=html;pasangAlat();
-  if(own){$("mv").onclick=()=>{state.mvOpen=!state.mvOpen;renderCard();};$("ed").onclick=()=>{state.edOpen=true;state.mvOpen=false;renderCard();};
+  if(own){$("kunci").onclick=()=>{kunciSet(!kunciOn());renderCard();};$("mv").onclick=()=>{state.mvOpen=!state.mvOpen;renderCard();};$("ed").onclick=()=>{state.edOpen=true;state.mvOpen=false;renderCard();};
     if(state.mvOpen){const fill=()=>{const c=+$("mvc").value;$("mvs").innerHTML=SUBS[c].map((n,i)=>`<option value="${i+1}"${c===here.c&&i+1===here.s?" selected":""}>${i+1}. ${esc(n)}</option>`).join("");};
       fill();$("mvc").onchange=fill;$("mvno").onclick=()=>{state.mvOpen=false;renderCard();};
       $("mvok").onclick=()=>moveQ(id,here,+$("mvc").value,+$("mvs").value);}}
@@ -2003,6 +2006,9 @@ function renderCard(){
   if(AP.on)apSoal(id);
   pasFokus();
 }
+// Sakelar mode jawaban benar pemilik, disimpan per perangkat.
+function kunciOn(){try{return localStorage.getItem("lf-mode-kunci")==="1";}catch(e){return !!window.__kunciMem;}}
+function kunciSet(v){window.__kunciMem=v;try{localStorage.setItem("lf-mode-kunci",v?"1":"0");}catch(e){}}
 // Autopilot (pemilik dan pengguna yang diberi izin, untuk menghafal): soal tampil, jeda, kunci jawaban dan pembahasan terbuka, jeda, lalu pindah ke soal berikutnya.
 // Autopilot sendiri tidak mengisi jawaban dan tidak memengaruhi skor; pengguna tetap boleh menjawab sebelum kunci dibuka (lilin/gulungan); timer kuis tetap berjalan selama autopilot (berjalan maupun dijeda).
 // Pemilik selalu boleh; pengguna lain bila pemilik memberi izin Autopilot (izin/<uid>.autopilot = true).
@@ -2123,7 +2129,7 @@ let siapCat=null;
 function siapOK(){return siapCat===state.cat;}
 // Layar yang sedang dilihat peserta (untuk aktivitas langsung di panel pemilik): menu, layar Mulai, soal, atau skor akhir.
 window.__layar=()=>{if(!state.list.length||!siapOK()&&!(window.__gulTutup&&state.cat!=="all"))return "menu";if(state.pos>=state.list.length)return "skor";if(state.cat!=="all"&&!state.mulai)return "mulai";return "soal";};
-function timerActive(){return siapOK()&&state.mulai&&tmode()!=="off"&&state.cat!=="all"&&state.list.length&&!state.timeUp&&state.pos<state.list.length;}
+function timerActive(){return siapOK()&&state.mulai&&tmode()!=="off"&&state.cat!=="all"&&state.list.length&&!state.timeUp&&state.pos<state.list.length&&!(window.__isOwner&&kunciOn());}
 function syncQ(){const id=state.list[state.pos];if(id!==state.qId){state.qId=id;state.qLeft=sec();}}
 const TB=document.getElementById("timerbox");
 function pasangAlat(){const s=$("tslot");if(s)s.replaceWith(TB);const f=$("cfs");if(f)f.onclick=()=>fokus(true);const a=$("apbtn");if(a)a.onclick=()=>AP.on?apStop():apMulai();}
