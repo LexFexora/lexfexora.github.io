@@ -2297,7 +2297,7 @@ document.querySelector("#arcard>summary").addEventListener("click",e=>{const d=$
   const vip=()=>H.classList.contains("vvip");
   const tampil=()=>{const v=vip();if(box.hidden===v){box.hidden=!v;if(v)render();}};
   new MutationObserver(tampil).observe(H,{attributes:true,attributeFilter:["class"]});tampil();
-  window.__catatVip=(id,benar)=>{if(!vip()||window.__isOwner||!window.__sb||!id)return;
+  window.__catatVip=(id,benar)=>{if(!vip()||!window.__sb||!id)return;
     const kirim=n=>{let p;try{p=window.__sb.rpc("cat_vip_catat",{p_id:id,p_benar:!!benar});}catch(e){return;}
       Promise.resolve(p).then(r=>{const e=r&&r.error;if(e&&n<2&&!/does not exist|schema cache|function/i.test(e.message||""))setTimeout(()=>kirim(n+1),5000);},()=>{if(n<2)setTimeout(()=>kirim(n+1),5000);});};
     kirim(0);waktu=0;};
@@ -2326,7 +2326,7 @@ document.querySelector("#arcard>summary").addEventListener("click",e=>{const d=$
     if(!R.length){L.innerHTML=`<p class="rkkosong">${urut==="akurasi"?`No one has answered ${MIN_AK} questions as VVIP yet.`:"No answers recorded yet. Answer any question to get on the board."}</p>`;}
     else L.innerHTML=R.map(r=>`<div class="rkrow${r.saya?" me":""}"><span class="rkno${r.no&&r.no<=3?" r"+r.no:""}">${r.no||"–"}</span><span class="rkav">${r.foto?`<img src="${esc(r.foto)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.replaceWith(document.createTextNode('${awalan(r.nama)}'))">`:awalan(r.nama)}</span><span class="rknm"><b>${esc(r.nama)}${r.saya?"<i>You</i>":""}</b><small>${r.d?`${r.d} answered · ${pct(r)}% correct`:"No answers yet"}</small></span><span class="rkskor"><b>${urut==="akurasi"?pct(r)+"%":r.b}</b><small>${urut==="akurasi"?r.b+" correct":"correct"}</small></span></div>`).join("");
     const ket=[];if(urut==="akurasi")ket.push(`Accuracy ranks accounts with at least ${MIN_AK} answered questions.`);
-    if(!window.__isOwner&&urut==="akurasi"&&aku&&aku.d<MIN_AK)ket.push(`You have answered ${aku.d} of the ${MIN_AK} questions needed.`);
+    if(urut==="akurasi"&&aku&&aku.d<MIN_AK)ket.push(`You have answered ${aku.d} of the ${MIN_AK} questions needed.`);
     if(waktu)ket.push("Updated "+new Date(waktu).toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"})+".");W.textContent=ket.join(" ");}
   document.querySelectorAll("#rktab [data-rk]").forEach(b=>b.onclick=()=>{urut=b.dataset.rk;render();});
   document.querySelector("#rkcard>summary").addEventListener("click",e=>{const d=box;e.preventDefault();if(d.dataset.anim)return;if(d.open){tutupPerlahan(d,[d.querySelector(".toisi")].filter(Boolean));return;}

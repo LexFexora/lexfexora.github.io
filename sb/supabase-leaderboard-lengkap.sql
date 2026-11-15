@@ -5,7 +5,7 @@
 -- * Skor awal diisi dari riwayat lama progres/<uid> (b = pernah benar, c = pernah dikerjakan), termasuk jawaban
 --   dari sebelum akun menjadi VVIP (pilihan Gonthx, 15 Nov 2026). Menjalankan ulang tidak menggandakan skor.
 -- * Jawaban baru dicatat lewat cat_vip_catat() hanya selama akun berstatus VVIP aktif. Satu soal dihitung sekali.
--- * Semua akun VVIP aktif tampil, termasuk yang belum menjawab (skor 0). Akun pemilik tidak diperingkat.
+-- * Semua akun VVIP aktif dan akun pemilik tampil, termasuk yang belum menjawab (skor 0).
 -- * Hanya akun VVIP aktif dan pemilik yang bisa membaca papan. Email dan ID akun tidak dikirim ke situs.
 -- * Versi ini berdiri sendiri: status VVIP dihitung langsung dari tabel cat_beli (fungsi cat_vip_aktif di bawah),
 --   dengan aturan yang sama seperti tanda VVIP di situs, dan semua ID dibandingkan sebagai teks
@@ -49,7 +49,7 @@ language plpgsql security definer set search_path = public as $$
 declare u text := auth.uid()::text;
 begin
   if u is null or p_id is null or p_id !~ '^Q[0-9]{3,6}$' then return false; end if;
-  if public.cat_vip_pemilik(u) or not public.cat_vip_aktif(u) then return false; end if;
+  if not (public.cat_vip_pemilik(u) or public.cat_vip_aktif(u)) then return false; end if;
   if not exists (select 1 from public.cat_vip_skor where uid = u and id = p_id)
      and (select count(*) from public.cat_vip_skor where uid = u) >= 12000 then return false; end if;
   insert into public.cat_vip_skor (uid, id, benar, t, tb)
@@ -72,8 +72,9 @@ begin
   if me is null or not (public.cat_vip_pemilik(me) or public.cat_vip_aktif(me)) then raise exception 'akses ditolak'; end if;
   return query
   with v as (
-    select distinct b.uid::text as uid from public.cat_beli b
-     where public.cat_vip_aktif(b.uid::text) and not public.cat_vip_pemilik(b.uid::text)
+    select distinct b.uid::text as uid from public.cat_beli b where public.cat_vip_aktif(b.uid::text)
+    union
+    select x.id::text from auth.users x where public.cat_vip_pemilik(x.id::text)
   ), s as (
     select k.uid, count(*) filter (where k.benar)::int as benar, count(*)::int as dikerjakan,
            max(greatest(k.t, coalesce(k.tb, k.t))) as terakhir
@@ -88,9 +89,10 @@ begin
                else '' end)::text,
          coalesce(s.benar, 0), coalesce(s.dikerjakan, 0), s.terakhir, (v.uid = me)
     from v
-    join public.docs i on i.path = 'izin/' || v.uid and i.data ->> 'status' = 'disetujui'
+    left join public.docs i on i.path = 'izin/' || v.uid
     left join s on s.uid = v.uid
-    left join auth.users u on u.id::text = v.uid;
+    left join auth.users u on u.id::text = v.uid
+   where coalesce(i.data ->> 'status', '') = 'disetujui' or public.cat_vip_pemilik(v.uid);
 end $$;
 revoke all on function public.cat_peringkat() from public, anon;
 grant execute on function public.cat_peringkat() to authenticated;
@@ -98,8 +100,9 @@ grant execute on function public.cat_peringkat() to authenticated;
 -- ---------- Skor awal dari riwayat lama ----------
 insert into public.cat_vip_skor (uid, id, benar, t, tb)
 select v.uid, k.id, bool_or(k.benar), now(), case when bool_or(k.benar) then now() end
-  from (select distinct b.uid::text as uid from public.cat_beli b
-         where public.cat_vip_aktif(b.uid::text) and not public.cat_vip_pemilik(b.uid::text)) v
+  from (select distinct b.uid::text as uid from public.cat_beli b where public.cat_vip_aktif(b.uid::text)
+        union
+        select x.id::text from auth.users x where public.cat_vip_pemilik(x.id::text)) v
   join public.docs g on g.path = 'progres/' || v.uid
   cross join lateral (
     select e.key as id, true as benar from jsonb_each(case when jsonb_typeof(g.data -> 'b') = 'object' then g.data -> 'b' else '{}'::jsonb end) e
@@ -116,7 +119,7 @@ on conflict (uid, id) do update
 
 notify pgrst, 'reload schema';
 
--- Hasil yang diharapkan: jumlah akun VVIP aktif di papan (tanpa pemilik) dan jumlah soal benar yang tercatat.
-select (select count(distinct b.uid) from public.cat_beli b
-         where public.cat_vip_aktif(b.uid::text) and not public.cat_vip_pemilik(b.uid::text)) as akun_vvip,
+-- Hasil yang diharapkan: jumlah akun di papan (VVIP aktif + pemilik) dan jumlah soal benar yang tercatat.
+select (select count(*) from (select b.uid::text from public.cat_beli b where public.cat_vip_aktif(b.uid::text)
+          union select x.id::text from auth.users x where public.cat_vip_pemilik(x.id::text)) a) as akun_di_papan,
        (select count(*) from public.cat_vip_skor where benar) as soal_benar_tercatat;
