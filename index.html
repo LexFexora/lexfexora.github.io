@@ -774,8 +774,8 @@ body.bebas label.ctl-sub .subtap{display:block;position:absolute;inset:0;cursor:
 .apick .apcari{position:sticky;top:0;z-index:1;display:block;width:100%;box-sizing:border-box;margin:0 0 4px;padding:12px 14px;border:0;border-bottom:1px solid rgb(127 127 127 / .25);background:inherit;-webkit-backdrop-filter:blur(22px);backdrop-filter:blur(22px);color:inherit;font:inherit;font-size:16px;outline:none;border-radius:22px 22px 0 0}
 .apick .apcari::placeholder{color:rgb(160 165 162)}
 .apick .apcari{color:#f2f4f3}:root[data-theme="light"] .apick .apcari{color:#111}@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .apick .apcari{color:#111}}
-.apick button.adapct{grid-template-columns:26px 1fr auto}
-.apick .pct{align-self:center;min-width:46px;padding:3px 8px;border-radius:999px;font-size:13px;font-weight:700;text-align:center;font-variant-numeric:tabular-nums;background:rgb(127 127 127 / .18);opacity:.75}
+.apick button.adapct{grid-template-columns:26px auto 1fr;gap:4px 8px}
+.apick .pct{align-self:start;margin-top:-1px;min-width:46px;padding:3px 8px;border-radius:999px;font-size:13px;font-weight:700;text-align:center;font-variant-numeric:tabular-nums;background:rgb(127 127 127 / .18);opacity:.75}
 .apick .pct.ada{background:rgb(212 168 67 / .22);color:#e8c46a;opacity:1}.apick .pct.full{background:rgb(46 160 90 / .25);color:#5fd38d;opacity:1}
 :root[data-theme="light"] .apick .pct.ada{color:#8a6410}:root[data-theme="light"] .apick .pct.full{color:#1d7a43}
 @media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .apick .pct.ada{color:#8a6410}:root:not([data-theme="dark"]) .apick .pct.full{color:#1d7a43}}
@@ -3066,7 +3066,7 @@ function inkTengah(v,t){if(!v||!t)return;
     if(sel.id==='sub'&&window.__pctSegar)window.__pctSegar();
     [...sel.options].forEach((o,i)=>{if(o.hidden)return;const b=document.createElement('button');b.type='button';b.setAttribute('role','option');b.setAttribute('aria-selected',String(i===sel.selectedIndex));b.disabled=o.disabled;
       b.innerHTML='<span class="ck">✓</span><span class="nm"></span>';b.children[1].textContent=o.textContent;
-      if(o.dataset.pct!==undefined){const v=+o.dataset.pct,t=document.createElement('span');t.className='pct'+(v>=100?' full':v>0?' ada':'');t.textContent=v+'%';t.title='Sudah dipelajari';b.classList.add('adapct');b.appendChild(t);}
+      if(o.dataset.pct!==undefined){const v=+o.dataset.pct,t=document.createElement('span');t.className='pct'+(v>=100?' full':v>0?' ada':'');t.textContent=v+'%';t.title='Sudah dipelajari';b.classList.add('adapct');b.insertBefore(t,b.children[1]);}
       b.onclick=()=>{if(sel.selectedIndex!==i){sel.selectedIndex=i;sel.dispatchEvent(new Event('input',{bubbles:true}));sel.dispatchEvent(new Event('change',{bubbles:true}));}tutup();};box.appendChild(b);});
     let kos=null;if(cari){kos=document.createElement('p');kos.className='apkosong';kos.hidden=true;box.appendChild(kos);
       const norm=t=>t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ');
