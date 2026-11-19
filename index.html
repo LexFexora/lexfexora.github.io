@@ -1114,6 +1114,9 @@ html.vvip #arcard .arjml{padding-right:92px}
   <details class="online adm" id="adm" hidden>
     <summary><span class="dot" aria-hidden="true"></span><span>Access approvals: <strong id="admcount">0</strong> pending · <strong id="admon">0</strong> active</span><button class="btn keluar admout" type="button" id="adm-logout">EXIT</button></summary>
     <div class="pbadm" id="pbadm"><h4>Mode perbaikan</h4><p class="note" id="pbinfo">Memeriksa…</p><div class="linkrow"><button class="btn copy" type="button" id="pbtog" disabled>…</button></div></div>
+    <div class="akslink" id="akslink"><h4>Link undangan</h4>
+      <div class="aksrow" data-aks="penuh"><b>Akses penuh (VVIP)</b><small>Semua sub materi + Simulation &amp; Category Packages (kecuali Mock Exam)</small><div class="linkrow"><input class="akskode" autocomplete="off" placeholder="Ketik kode, min. 6 karakter" aria-label="Kode link undangan"><button class="btn copy" type="button" data-a="simpan">Simpan kode</button></div><div class="linkrow"><input class="aksurl" readonly placeholder="Link muncul setelah kode disimpan" aria-label="Link undangan"><button class="btn copy" type="button" data-a="salin">⧉ Salin link</button><button class="btn copy" type="button" data-a="mati">Nonaktifkan</button></div><small class="aksinfo"></small></div>
+      <p class="note">Bagikan link ini. Siapa pun yang membukanya lalu masuk dengan Google langsung mendapat akses penuh, tanpa persetujuan. Link situs biasa tetap tertutup. Ganti kode atau Nonaktifkan untuk mematikan link lama; akun yang sudah masuk tetap aktif sampai Anda cabut di VVIP Akses.</p></div>
     <div class="aksesub" id="aksesub"><h4>Akses sub materi</h4>
       <div class="asgrup"><b>Akses penuh <span class="asn" id="asnpenuh"></span></b><small>Bisa membuka semua sub materi dan All Sections.</small><div class="asnama" id="aspenuh"></div><div class="linkrow"><button class="btn copy ashapus" type="button" id="ashapuspenuh" hidden>🗑 Hapus semua akun non-VVIP di grup ini</button></div></div>
       <div class="asgrup"><b>Akses terbatas <span class="asn" id="asnbatas"></span></b><small>Hanya 1 sub materi per kategori (pilih di bawah). Sub materi lain dan All Sections terkunci.</small><div class="asnama" id="asbatas"></div><div class="linkrow"><button class="btn copy ashapus" type="button" id="ashapusbatas" hidden>🗑 Hapus semua akun terbatas</button></div><small id="ashapusinfo"></small></div>
@@ -2698,9 +2701,15 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       if($('edsoal'))$('edsoal').onclick=()=>window.EditSoal&&EditSoal.cari({ambil:()=>QB,kini:()=>{try{return (window.__soalKini&&window.__soalKini())||null;}catch(e){return null;}},terkunci:id=>DIKUNCI.has(id),
         simpan:(rec,q)=>window.__edit(q.id,rec).then(()=>{if(window.__terapkanEdit)window.__terapkanEdit(q.id,rec);else{applyEdit(q,rec);DIKUNCI.add(q.id);}})});
       document.documentElement.classList.add('vvip');admin();start();return;}
+    // V90: link undangan ?akses=<kode> diklaim lebih dulu; kode 'penuh' yang benar langsung menjadikan akun VVIP (akses penuh).
+    let akMsg='';{let k0='';try{k0=localStorage.getItem('akses-kode')||'';}catch(e){}
+      if(k0){show('Checking your invite link…','',who,false,false);let r;try{const {data,error}=await window.__sb.rpc('cat_klaim_kode',{p_kode:k0});r=error?{err:error.message||error.code}:{jenis:data};}catch(e){r={err:e.message};}
+        if(!auth.currentUser||auth.currentUser.uid!==u.uid)return;
+        if(!r.err||r.jenis){try{localStorage.removeItem('akses-kode');}catch(e){}}
+        akMsg=r.err?'The invite link could not be checked. Please reload the page.':r.jenis==='terlalu'?'Too many incorrect attempts. Please try again in an hour.':r.jenis==='ditolak'?'This account cannot be activated with the invite link.':r.jenis==='penuh'?'':'This invite link is no longer valid.';}}
     {const [on,vv]=await Promise.all([perbaikan(),vvipKah()]);if(!auth.currentUser||auth.currentUser.uid!==u.uid)return;
       // Sejak 11 Nov 2026 situs tidak lagi dikomersialkan: akun selain pemilik dan VVIP selalu melihat pemberitahuan ini, apa pun status mode perbaikan.
-      if(!vv){show(PB_H,PB_P,who,false,true);return;}
+      if(!vv){show(PB_H,akMsg||PB_P,who,false,true);return;}
       // Bukan VVIP dan perbaikan sedang nonaktif: periksa tiap 2 menit, tutup situs bila pemilik mengaktifkannya lagi.
       // Diperiksa juga setiap kali tab kembali dibuka (ponsel membekukan timer di tab latar belakang).
       if(!vv){const pbCek=async()=>{if(document.hidden||window.__penuh||!pbT)return;if(await perbaikan()&&!(await vvipKah())){clearInterval(pbT);pbT=null;location.reload();}};
@@ -2842,8 +2851,18 @@ window.__terapkanEdit=(id,rec)=>{if(BYID[id])applyEdit(BYID[id],rec);DIKUNCI.add
       const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(QB,null,1)],{type:'application/json'}));a.download='bank-soal.json';document.body.appendChild(a);a.click();a.remove();};
     const box=$('adm'),body=$('admbody');box.hidden=false;
     const link=location.origin+location.pathname;$('admlink').value=link;
-    // Tautan akses gratis dihapus (11 Nov 2026): kedua kode (4 klaster dan Akses seluruhnya) dinonaktifkan saat pemilik membuka panel.
-    window.__sb.from('cat_kode').delete().in('id',['gratis','penuh']).then(()=>{},()=>{});
+    // V90 (19 Nov 2026): link undangan dihidupkan lagi, hanya kode 'penuh' (akses penuh/VVIP gratis). Kode 'gratis' lama tetap mati.
+    window.__sb.from('cat_kode').delete().eq('id','gratis').then(()=>{},()=>{});
+    (()=>{const sb=window.__sb,url=k=>location.origin+location.pathname+'?akses='+encodeURIComponent(k);
+      document.querySelectorAll('#akslink .aksrow').forEach(row=>{const id=row.dataset.aks,kd=row.querySelector('.akskode'),inp=row.querySelector('.aksurl'),inf=row.querySelector('.aksinfo'),btn=a=>row.querySelector('[data-a="'+a+'"]');
+        const isi=k=>{kd.value=k||'';inp.value=k?url(k):'';btn('salin').disabled=btn('mati').disabled=!k;};isi('');
+        sb.from('cat_kode').select('kode').eq('id',id).maybeSingle().then(({data,error})=>{if(error){inf.textContent='Tabel kode belum ada di Supabase: '+(error.message||error.code);return;}isi(data&&data.kode);});
+        btn('salin').onclick=()=>{if(!inp.value)return;const b=btn('salin'),ok=()=>{b.textContent='✓ Tersalin';setTimeout(()=>b.textContent='⧉ Salin link',1500);};
+          if(navigator.clipboard)navigator.clipboard.writeText(inp.value).then(ok).catch(()=>{inp.select();document.execCommand('copy');ok();});else{inp.select();document.execCommand('copy');ok();}};
+        btn('simpan').onclick=async()=>{const k=kd.value.trim();if(k.length<6){inf.textContent='Kode minimal 6 karakter.';return;}
+          btn('simpan').disabled=true;const {error}=await sb.from('cat_kode').upsert({id,kode:k,diubah:new Date().toISOString()});btn('simpan').disabled=false;
+          if(error){inf.textContent='Gagal menyimpan: '+(error.message||error.code);return;}isi(k);inf.textContent='✓ Kode tersimpan. Salin link di bawah lalu bagikan.';};
+        btn('mati').onclick=async()=>{if(!confirm('Nonaktifkan link undangan ini?'))return;const {error}=await sb.from('cat_kode').delete().eq('id',id);if(error){inf.textContent='Gagal: '+(error.message||error.code);return;}isi('');inf.textContent='Link dinonaktifkan.';};});})();
     $('admcopy').onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(link).then(()=>{$('admcopy').textContent='✓ Tersalin';setTimeout(()=>$('admcopy').textContent='⧉ Salin tautan',1500);});};
     const fmt=t=>{if(!t||!t.toDate)return '';const d=t.toDate(),m=Math.round((Date.now()-d)/60000);
       return m<2?'aktif sekarang':m<60?m+' menit lalu':m<1440?Math.round(m/60)+' jam lalu':d.toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'});};
